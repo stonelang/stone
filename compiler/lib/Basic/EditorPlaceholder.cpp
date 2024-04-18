@@ -9,7 +9,6 @@
 
 #include <optional>
 
-
 using namespace stone;
 using namespace llvm;
 

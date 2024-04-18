@@ -3,8 +3,9 @@
 
 #include "stone/Syntax/ASTDescription.h"
 
-#include "llvm/ADT/Optional.h"
 #include "llvm/ADT/PointerUnion.h"
+
+#include <optional>
 #include <utility>
 
 namespace stone {

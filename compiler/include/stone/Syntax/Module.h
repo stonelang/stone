@@ -22,7 +22,7 @@ static inline unsigned AlignOfModuleFile();
 
 enum class ModuleFileKind : uint8_t { Syntax, Builtin };
 
-class ModuleFile : public DeclContext, public ASTAllocation<ModuleFile> {
+class ModuleFile : public DeclContext, public MemoryAllocation<ModuleFile> {
 private:
   ModuleFileKind kind;
 
@@ -42,8 +42,8 @@ public:
     return dc->GetDeclContextKind() == DeclContextKind::ModuleFile;
   }
 
-  using ASTAllocation<ModuleFile>::operator new;
-  using ASTAllocation<ModuleFile>::operator delete;
+  using MemoryAllocation<ModuleFile>::operator new;
+  using MemoryAllocation<ModuleFile>::operator delete;
 };
 
 enum class SourceFileKind : uint8_t {
@@ -218,7 +218,7 @@ public:
 
 class ModuleDecl final : public DeclContext,
                          public TypeDecl,
-                         public ASTAllocation<ModuleDecl> {
+                         public MemoryAllocation<ModuleDecl> {
 
   // TODO: This is not yet implemented
   ModuleDecl *parent = nullptr;

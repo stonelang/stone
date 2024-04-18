@@ -1,10 +1,10 @@
 #ifndef STONE_SYNTAX_SYNTAXDIAGARGUMENT_H
 #define STONE_SYNTAX_SYNTAXDIAGARGUMENT_H
 
-#include "stone/Diag/DiagnosticArgument.h"
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/TextDiagnosticEmitter.h"
-#include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Support/DiagnosticArgument.h"
+#include "stone/Support/DiagnosticEngine.h"
+#include "stone/Support/TextDiagnosticEmitter.h"
+#include "stone/Support/TextDiagnosticFormatter.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 

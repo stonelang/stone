@@ -25,7 +25,7 @@ class RootInterfaceConformance;
 class InterfaceConformance;
 class ModuleDecl;
 class SubstitutableType;
-enum class AllocationArena;
+enum class MemoryAllocationArena;
 
 // /// Type substitution mapping from substitutable types to their
 // /// replacements.
@@ -80,7 +80,7 @@ enum class InterfaceConformanceState {
 /// InterfaceConformance is an abstract base class, implemented by subclasses
 /// for the various kinds of conformance (normal, specialized, inherited).
 // class alignas(1 << DeclAlignInBits) InterfaceConformance
-//     : public ASTAllocation<InterfaceConformance> {
+//     : public MemoryAllocation<InterfaceConformance> {
 //   /// The kind of protocol conformance.
 //   InterfaceConformanceKind Kind;
 
@@ -284,8 +284,8 @@ enum class InterfaceConformanceState {
 //   /// Get any additional requirements that are required for this conformance
 //   to
 //   /// be satisfied, if it is possible for them to be computed.
-//   std::optional<ArrayRef<Requirement>> getConditionalRequirementsIfAvailable()
-//   const;
+//   std::optional<ArrayRef<Requirement>>
+//   getConditionalRequirementsIfAvailable() const;
 
 //   /// Get any additional requirements that are required for this conformance
 //   to
@@ -488,8 +488,8 @@ enum class InterfaceConformanceState {
 //   /// to be satisfied.
 //   ArrayRef<Requirement> getConditionalRequirements() const;
 
-//   std::optional<ArrayRef<Requirement>> getConditionalRequirementsIfAvailable()
-//   const;
+//   std::optional<ArrayRef<Requirement>>
+//   getConditionalRequirementsIfAvailable() const;
 
 //   /// Retrieve the state of this conformance.
 //   InterfaceConformanceState getState() const {
@@ -727,8 +727,8 @@ enum class InterfaceConformanceState {
 //   }
 //   Witness getWitness(ValueDecl *requirement) const;
 
-//   std::optional<ArrayRef<Requirement>> getConditionalRequirementsIfAvailable()
-//   const{
+//   std::optional<ArrayRef<Requirement>>
+//   getConditionalRequirementsIfAvailable() const{
 //     return ArrayRef<Requirement>();
 //   }
 

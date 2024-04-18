@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_TYPE_H
 #define STONE_SYNTAX_TYPE_H
 
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/Foreign.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/TypeAlignment.h"
@@ -18,8 +18,6 @@
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/ADT/Hashing.h"
-#include "llvm/ADT/None.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/STLExtras.h"
@@ -37,11 +35,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
-
-#include <string>
 
 namespace stone {
 

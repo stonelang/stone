@@ -5,9 +5,9 @@
 #include <cstring>
 #include <string>
 
-#include "stone/Basic/Char.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/TokenKind.h"
+#include "clang/Basic/CharInfo.h"
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/ADT/SmallString.h"
@@ -101,34 +101,34 @@ Identifier IdentifierTable::GetIdentifier(llvm::StringRef identifierStr) const {
 //===----------------------------------------------------------------------===//
 /// PrintStats - Print statistics about how well the identifier table is doing
 /// at hashing identifiers.
-void IdentifierTableStats::Print(ColorStream &stream) {
-  // unsigned numBuckets = table.symbols.getNumBuckets();
-  // unsigned numIdentifiers = table.symbols.getNumItems();
-  // unsigned numEmptyBuckets = numBuckets - numIdentifiers;
-  // unsigned averageIdentifierSize = 0;
-  // unsigned maxIdentifierLength = 0;
+// void IdentifierTableStats::Print(ColorStream &stream) {
+//  unsigned numBuckets = table.symbols.getNumBuckets();
+//  unsigned numIdentifiers = table.symbols.getNumItems();
+//  unsigned numEmptyBuckets = numBuckets - numIdentifiers;
+//  unsigned averageIdentifierSize = 0;
+//  unsigned maxIdentifierLength = 0;
 
-  // // TODO: Figure out maximum times an identifier had to probe for -stats.
-  // for (llvm::StringMap<Identifier *, llvm::BumpPtrAllocator>::const_iterator
-  //          I = table.symbols.begin(),
-  //          E = table.symbols.end();
-  //      I != E; ++I) {
-  //   unsigned idLen = I->getKeyLength();
-  //   averageIdentifierSize += idLen;
-  //   if (maxIdentifierLength < idLen)
-  //     maxIdentifierLength = idLen;
-  // }
+// // TODO: Figure out maximum times an identifier had to probe for -stats.
+// for (llvm::StringMap<Identifier *, llvm::BumpPtrAllocator>::const_iterator
+//          I = table.symbols.begin(),
+//          E = table.symbols.end();
+//      I != E; ++I) {
+//   unsigned idLen = I->getKeyLength();
+//   averageIdentifierSize += idLen;
+//   if (maxIdentifierLength < idLen)
+//     maxIdentifierLength = idLen;
+// }
 
-  // stream << GetName() << '\n';
+// stream << GetName() << '\n';
 
-  // fprintf(stderr, "# Identifiers:   %d\n", numIdentifiers);
-  // fprintf(stderr, "# Empty Buckets: %d\n", numEmptyBuckets);
-  // fprintf(stderr, "Hash density (#identifiers per bucket): %f\n",
-  //         numIdentifiers / (double)numBuckets);
-  // fprintf(stderr, "Ave identifier length: %f\n",
-  //         (averageIdentifierSize / (double)numIdentifiers));
-  // fprintf(stderr, "Max identifier length: %d\n", maxIdentifierLength);
+// fprintf(stderr, "# Identifiers:   %d\n", numIdentifiers);
+// fprintf(stderr, "# Empty Buckets: %d\n", numEmptyBuckets);
+// fprintf(stderr, "Hash density (#identifiers per bucket): %f\n",
+//         numIdentifiers / (double)numBuckets);
+// fprintf(stderr, "Ave identifier length: %f\n",
+//         (averageIdentifierSize / (double)numIdentifiers));
+// fprintf(stderr, "Max identifier length: %d\n", maxIdentifierLength);
 
-  // // Compute statistics about the memory allocated for identifiers.
-  // table.symbols.getAllocator().PrintStats();
-}
+// // Compute statistics about the memory allocated for identifiers.
+// table.symbols.getAllocator().PrintStats();
+//}

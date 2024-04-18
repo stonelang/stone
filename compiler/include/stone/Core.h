@@ -4,8 +4,8 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/FileMgr.h"
 #include "stone/Basic/LangOptions.h"
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/IDE.h"
+#include "stone/Support/DiagnosticEngine.h"
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSet.h"

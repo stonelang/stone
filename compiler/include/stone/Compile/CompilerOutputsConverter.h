@@ -5,9 +5,9 @@
 #include "stone/Basic/SupplementaryOutputPaths.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Diag/DiagnosticConsumer.h"
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Option/Options.h"
+#include "stone/Support/DiagnosticConsumer.h"
+#include "stone/Support/DiagnosticEngine.h"
 #include "llvm/Option/ArgList.h"
 
 #include <vector>
@@ -88,8 +88,8 @@ public:
   std::optional<std::vector<std::string>> ComputeOutputFiles() const;
 
 private:
-  std::optional<std::string> ComputeOutputFile(StringRef outputArg,
-                                          const CompilerInputFile &input) const;
+  std::optional<std::string>
+  ComputeOutputFile(StringRef outputArg, const CompilerInputFile &input) const;
 
   /// \return the correct output filename when none was specified.
   ///
@@ -128,7 +128,8 @@ public:
       ArrayRef<std::string> outputFiles, StringRef moduleName,
       CompilerAction action);
 
-  std::optional<std::vector<SupplementaryOutputPaths>> ComputeOutputPaths() const;
+  std::optional<std::vector<SupplementaryOutputPaths>>
+  ComputeOutputPaths() const;
 
 private:
   /// \Return a set of supplementary output paths for each input that might

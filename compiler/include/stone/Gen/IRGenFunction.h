@@ -1,7 +1,7 @@
 #ifndef STONE_GEN_IRCODEGENFUNCTION_H
 #define STONE_GEN_IRCODEGENFUNCTION_H
 
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/Status.h"
 #include "stone/Gen/IRGenBuilder.h"
 #include "stone/Gen/IRGenModule.h"

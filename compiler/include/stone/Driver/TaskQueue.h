@@ -272,8 +272,8 @@ public:
 
   void addTask(const Driver &driver, const char *ExecPath,
                ArrayRef<const char *> Args,
-               ArrayRef<const char *> Env = std::nullopt, void *Context = nullptr,
-               bool SeparateErrors = false) override;
+               ArrayRef<const char *> Env = std::nullopt,
+               void *Context = nullptr, bool SeparateErrors = false) override;
 
   bool
   execute(TaskBeganCallback Began = TaskBeganCallback(),

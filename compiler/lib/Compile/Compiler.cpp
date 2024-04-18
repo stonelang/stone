@@ -1,13 +1,13 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Basic/Defer.h"
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerObservation.h"
-#include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
+#include "stone/Support/CompilerDiagnostic.h"
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
 

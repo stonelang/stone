@@ -2,7 +2,7 @@
 #define STONE_GEN_CODEGEN_INVOCATION_H
 
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"

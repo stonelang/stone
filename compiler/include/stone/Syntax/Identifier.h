@@ -10,8 +10,8 @@
 
 #include "stone/Basic/EditorPlaceholder.h"
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/StatisticEngine.h"
 #include "stone/Basic/TokenKind.h"
+#include "stone/Support/StatisticEngine.h"
 
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/SmallString.h"
@@ -212,16 +212,6 @@ public:
   }
 };
 
-class IdentifierTable;
-class IdentifierTableStats final : public Stats {
-  const IdentifierTable &table;
-
-public:
-  IdentifierTableStats(const IdentifierTable &table)
-      : Stats("identifier table stats:"), table(table) {}
-  void Print(ColorStream &stream) override;
-};
-
 /// Implements an efficient mapping from strings to Identifier nodes.
 ///
 /// This has no other purpose, but this is an extremely performance-critical
@@ -229,7 +219,6 @@ public:
 /// here when lexed.
 class IdentifierTable final {
   friend ASTContext;
-  friend IdentifierTableStats;
 
   using Entries =
       llvm::StringMap<Identifier::Aligner, llvm::BumpPtrAllocator &>;

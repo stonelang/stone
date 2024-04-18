@@ -2,10 +2,10 @@
 #define STONE_DRIVER_DRIVER_TOOLCHAIN_H
 
 #include "stone/Basic/STDAlias.h"
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/JobConstruction.h"
+#include "stone/Support/DiagnosticEngine.h"
 
 #include "clang/Basic/DarwinSDKInfo.h"
 

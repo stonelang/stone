@@ -17,10 +17,9 @@
 #ifndef STONE_BASIC_OPTIONSET_H
 #define STONE_BASIC_OPTIONSET_H
 
-#include "llvm/ADT/None.h"
-
 #include <cstdint>
 #include <initializer_list>
+#include <optional>
 #include <type_traits>
 
 namespace stone {

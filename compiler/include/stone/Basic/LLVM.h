@@ -6,7 +6,6 @@
 // Casting.h has complex templates that cannot be easily forward declared.
 #include "llvm/Support/Casting.h"
 
-
 #include <optional>
 
 namespace llvm {
@@ -46,7 +45,6 @@ using llvm::isa;
 // ADT's.
 using llvm::ArrayRef;
 using llvm::MutableArrayRef;
-using std::nullopt;
 using llvm::Optional;
 using llvm::OwningArrayRef;
 using llvm::SaveAndRestore;
@@ -56,6 +54,7 @@ using llvm::SmallVectorImpl;
 using llvm::StringRef;
 using llvm::Twine;
 using llvm::VersionTuple;
+using std::nullopt;
 
 // Error handling.
 using llvm::Expected;

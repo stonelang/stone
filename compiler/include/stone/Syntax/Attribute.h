@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_ATTRIBUTE_H
 #define STONE_SYNTAX_ATTRIBUTE_H
 
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/AttributeKind.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/TypeAlignment.h"
@@ -17,7 +17,7 @@
 namespace stone {
 
 class alignas(1 << AttributeAlignInBits) Attribute
-    : public ASTAllocation<Attribute> {
+    : public MemoryAllocation<Attribute> {
 public:
   /// The location of the '[['.
   const SrcLoc llBracketLoc;

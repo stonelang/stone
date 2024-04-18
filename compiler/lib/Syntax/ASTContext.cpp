@@ -1,5 +1,5 @@
 #include "stone/Syntax/ASTContext.h"
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Support/DiagnosticEngine.h"
 #include "stone/Syntax/Module.h"
 
 #include "llvm/ADT/DenseMap.h"
@@ -17,25 +17,14 @@ using namespace stone;
 ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
                        ClangContext &clangContext, DiagnosticEngine &de,
                        StatisticEngine &se)
-    : langOpts(langOpts), searchPathOpts(spOpts), clangContext(clangContext),
-      de(de), se(se), identifiers(allocator),
-      stats(new ASTContextStats(*this)) {
-
-  builtin = std::make_unique<Builtin>(*this);
-  se.Register(stats.get());
-}
+    : MemoryContext(langOpts), langOpts(langOpts), searchPathOpts(spOpts),
+      clangContext(clangContext), de(de), se(se), identifiers(allocator),
+      builtin(*this) {}
 
 ASTContext::~ASTContext() {
   for (auto &cleanup : cleanups) {
     cleanup();
   }
-}
-
-Builtin &ASTContext::GetBuiltin() { return *builtin; }
-
-void *stone::AllocateInASTContext(size_t bytes, const ASTContext &ctx,
-                                  AllocationArena arena, unsigned alignment) {
-  return ctx.Allocate(bytes, alignment /*, arena*/);
 }
 
 Identifier ASTContext::GetIdentifier(llvm::StringRef name) {
@@ -81,11 +70,3 @@ Identifier ASTContext::GetRealModuleName(Identifier key,
   // Otherwise return the value found (whether the key is an alias or real name)
   return value.first;
 }
-size_t ASTContext::GetTotalMemUsed() const {
-  return GetAllocator().getTotalMemory();
-}
-// llvm::BumpPtrAllocator &ASTContext::GetBumpAllocator() const {
-//   return internal.allocator;
-// }
-
-void ASTContextStats::Print(ColorStream &stream) {}

@@ -4,8 +4,6 @@
 #include "stone/Basic/FileType.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/DriverDiagnostic.h"
 #include "stone/Driver/CompilationEntity.h"
 #include "stone/Driver/DriverInputFile.h"
 #include "stone/Driver/DriverOptions.h"
@@ -14,6 +12,8 @@
 #include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Stats/Stats.h"
+#include "stone/Support/DiagnosticEngine.h"
+#include "stone/Support/DriverDiagnostic.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/StringRef.h"

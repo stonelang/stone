@@ -15,7 +15,7 @@ void *Decl::AllocateMemory(AllocatorTy &allocatorTy, size_t baseSize,
   if (extraSace) {
     size += alignof(DeclTy);
   }
-  void *mem = allocatorTy.Allocate(size, alignof(DeclTy));
+  void *mem = allocatorTy.AllocateMemory(size, alignof(DeclTy));
   if (extraSace)
     mem = reinterpret_cast<char *>(mem) + alignof(DeclTy);
   return mem;

@@ -88,7 +88,7 @@ TypeChunkList *TypeChunkCollector::CreateTypeChunkList(ASTContext &astContext) {
 
   unsigned allocSize =
       TypeChunkList::totalSizeToAlloc<TypeChunk>(thunks.size());
-  void *memPtr = astContext.Allocate(allocSize, alignof(TypeChunkList));
+  void *memPtr = astContext.AllocateMemory(allocSize, alignof(TypeChunkList));
   return new (memPtr) TypeChunkList(llvm::MutableArrayRef<TypeChunk>());
 }
 

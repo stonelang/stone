@@ -1,9 +1,9 @@
 #ifndef STONE_SYNTAX_SYNTAXSCOPE_H
 #define STONE_SYNTAX_SYNTAXSCOPE_H
 
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Syntax/ASTAllocation.h"
+#include "stone/Support/DiagnosticEngine.h"
 #include "stone/Syntax/Decl.h"
 
 #include "llvm/ADT/SmallPtrSet.h"
@@ -98,7 +98,7 @@ enum class ScopeKind : UInt8 {
 
 };
 
-class Scope final : public ASTAllocation<Scope> {
+class Scope final : public MemoryAllocation<Scope> {
   ScopeKind kind;
   DiagnosticEngine &diags;
   Scope *parent = nullptr;

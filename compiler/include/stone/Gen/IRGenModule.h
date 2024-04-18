@@ -2,13 +2,12 @@
 #define STONE_GEN_IRCODEGENMODULE_H
 
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/OutputFile.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Gen/IRGenMetadata.h"
 #include "stone/Gen/IRGenTypeCache.h"
 #include "stone/Gen/IRGenTypeResolver.h"
-#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/ASTVisitor.h"
 #include "stone/Syntax/Module.h"
 
@@ -95,7 +94,7 @@ struct EmitFunctionFlags final {
 /// Options that control the parsing of declarations.
 using EmitFunctionOptions = stone::OptionSet<EmitFunctionFlags::ID>;
 
-// TODO: Use ASTAllocation in the future?
+// TODO: Use MemoryAllocation in the future?
 class IRGenResult final : public MemoryAllocation<IRGenResult> {
 
   std::unique_ptr<llvm::LLVMContext> llvmContext;

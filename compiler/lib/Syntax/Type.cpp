@@ -1,5 +1,5 @@
 #include "stone/Syntax/Type.h"
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Syntax/TypeLoc.h"
 #include "stone/Syntax/TypeQualifier.h"
 
@@ -26,14 +26,17 @@ bool TypeBase::IsNominalType() {
   }
 }
 
-VoidType *VoidType::Create(const ASTContext &sc, AllocationArena arena) {
-  return new (sc, arena) VoidType(sc);
-}
+// VoidType *VoidType::Create(const ASTContext &astContext,
+// MemoryAllocationArena arena) {
+//   return new (astContext) VoidType(astContext);
+// }
 
-// NullType* NullType::Create(const ASTContext& sc, AllocationArena arena) {
+// NullType* NullType::Create(const ASTContext& sc, MemoryAllocationArena arena)
+// {
 //   return new(sc, arena) NullType(sc);
 // }
-// BoolType* BoolType::Create(const ASTContext& sc, AllocationArena arena) {
+// BoolType* BoolType::Create(const ASTContext& sc, MemoryAllocationArena arena)
+// {
 //   return new(sc, arena) BoolType(sc);
 // }
 
@@ -76,8 +79,8 @@ SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
 
 void TypeLoc::SetType(Type ty) {}
 
-FunType::FunType(Type result, const ASTContext *sc)
-    : FunctionType(TypeKind::Fun, result, sc) {}
+FunType::FunType(Type result, const ASTContext *astContext)
+    : FunctionType(TypeKind::Fun, result, astContext) {}
 
 // FunType *TypeFactory::MakeFunType(Type result);
 
@@ -86,12 +89,12 @@ FunType::FunType(Type result, const ASTContext *sc)
 //   return new (sc) IntegerType(bitWidthKind, sc);
 // }
 
-IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
-                                 const ASTContext &sc) {
-  return new (sc) IntegerType(bitWidthKind, sc);
-}
+// IntegerType *IntegerType::Create(NumberBitWidthKind bitWidthKind,
+//                                  const ASTContext &astContext) {
+//   return new (astContext) IntegerType(bitWidthKind, astContext);
+// }
 
-FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
-                             const ASTContext &sc) {
-  return new (sc) FloatType(bitWidthKind, sc);
-}
+// FloatType *FloatType::Create(NumberBitWidthKind bitWidthKind,
+//                              const ASTContext &astContext) {
+//   return new (astContext) FloatType(bitWidthKind, astContext);
+// }

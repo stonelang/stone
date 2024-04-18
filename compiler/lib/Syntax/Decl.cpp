@@ -168,5 +168,3 @@ bool FunDecl::IsMember() const { return false; }
 bool FunDecl::IsForward() const { return false; }
 
 bool FunDecl::HasReturn() const { return false; }
-
-void DeclStats::Print(ColorStream &stream) {}

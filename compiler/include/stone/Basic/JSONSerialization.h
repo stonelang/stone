@@ -449,8 +449,10 @@ public:
 private:
   template <typename T>
   void processKeyWithDefault(StringRef Key, std::optional<T> &Val,
-                             const std::optional<T> &DefaultValue, bool Required) {
-    assert(!DefaultValue.hasValue() && "std::optional<T> shouldn't have a value!");
+                             const std::optional<T> &DefaultValue,
+                             bool Required) {
+    assert(!DefaultValue.hasValue() &&
+           "std::optional<T> shouldn't have a value!");
     void *SaveInfo;
     bool UseDefault;
     const bool sameAsDefault = !Val.hasValue();

@@ -3,9 +3,9 @@
 
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Diag/DiagnosticConsumer.h"
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Option/Options.h"
+#include "stone/Support/DiagnosticConsumer.h"
+#include "stone/Support/DiagnosticEngine.h"
 
 namespace stone {
 

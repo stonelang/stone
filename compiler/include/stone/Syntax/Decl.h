@@ -3,9 +3,9 @@
 
 #include "stone/Basic/AddressSpace.h"
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Diag/DiagnosticArgument.h"
-#include "stone/Syntax/ASTAllocation.h"
+#include "stone/Support/DiagnosticArgument.h"
 #include "stone/Syntax/Access.h"
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclKind.h"
@@ -61,15 +61,6 @@ class TrailingWhereClause;
 class DeclSpecifierCollector;
 class DiagnosticEngine;
 
-class DeclStats final : public Stats {
-  const Decl &declaration;
-
-public:
-  DeclStats(const Decl &declaration)
-      : Stats("ast-declaration stats:"), declaration(declaration) {}
-  void Print(ColorStream &stream) override;
-};
-
 using UnifiedContext = llvm::PointerUnion<DeclContext *, ASTContext *>;
 
 enum : unsigned {
@@ -81,8 +72,7 @@ enum PointerTypeKind : unsigned {
   Raw,
 };
 
-class alignas(1 << DeclAlignInBits) Decl : public ASTAllocation<Decl> {
-  friend DeclStats;
+class alignas(1 << DeclAlignInBits) Decl : public MemoryAllocation<Decl> {
 
   DeclKind kind;
   /// The location of the decl

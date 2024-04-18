@@ -1,12 +1,12 @@
 #ifndef STONE_PARSE_LEXER_H
 #define STONE_PARSE_LEXER_H
 
-#include "stone/Basic/StatisticEngine.h"
 #include "stone/Basic/Token.h"
 #include "stone/Basic/Tokenable.h"
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Parse/Lexing.h"
 #include "stone/Parse/Trivia.h"
+#include "stone/Support/DiagnosticEngine.h"
+#include "stone/Support/StatisticEngine.h"
 
 namespace stone {
 class SrcID;

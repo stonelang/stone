@@ -94,7 +94,7 @@ ModuleDecl *IRGenRequest::GetParentModule() const {
   return moduleOrFile.get<ModuleDecl *>();
 }
 
-// Maybe? Make ASTAllocation
+// Maybe? Make MemoryAllocation
 // IRGenRequest *IRGenRequest::Create(const CodeGenOptions
 // &codeGenOpts,
 //                                        const llvm::StringRef moduleName,

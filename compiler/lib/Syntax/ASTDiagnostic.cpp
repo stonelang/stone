@@ -1,4 +1,4 @@
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Support/DiagnosticEngine.h"
 #include "stone/Syntax/ASTDiagnosticArgument.h"
 
 using namespace stone;

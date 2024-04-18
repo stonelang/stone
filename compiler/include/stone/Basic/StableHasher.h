@@ -165,7 +165,7 @@ public:
   }
 
   template <typename T>
-  auto combine(const T *ptr) -> decltype("Cannot hash-combine pointers!"){};
+  auto combine(const T *ptr) -> decltype("Cannot hash-combine pointers!") {};
 
   template <typename T, typename... Ts>
   void combine(const T &arg, const Ts &...args) {

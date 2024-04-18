@@ -1,9 +1,9 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Diag/ASTDiagnostic.h"
 #include "stone/IDE.h"
+#include "stone/Support/ASTDiagnostic.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Scope.h"
 

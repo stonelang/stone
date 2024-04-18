@@ -326,8 +326,8 @@ public:
   /// Returns the context for which the declaration
   /// is annotated as available, or None if the declaration
   /// has no availability annotation.
-  static std::optional<AvailabilityContext> annotatedAvailableRange(const Decl *D,
-                                                               ASTContext &C);
+  static std::optional<AvailabilityContext>
+  annotatedAvailableRange(const Decl *D, ASTContext &C);
 
   static AvailabilityContext
   annotatedAvailableRangeForAttr(const SpecializeAttribute *attr,

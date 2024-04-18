@@ -1,7 +1,7 @@
 #ifndef STONE_GEN_IRCODEGENADDRESS_H
 #define STONE_GEN_IRCODEGENADDRESS_H
 
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Syntax/CodeGenAlignment.h"
 
 #include "clang/AST/CharUnits.h"

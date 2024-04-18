@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/ASTNode.h"
 #include "stone/Syntax/IfConfig.h"
 #include "stone/Syntax/StmtBits.h"
@@ -38,7 +38,7 @@ class Expr;
 class StringLiteral;
 class ASTContext;
 
-class Stmt : public ASTAllocation<Stmt> {
+class Stmt : public MemoryAllocation<Stmt> {
   StmtKind kind;
 
 public:

@@ -3,8 +3,8 @@
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Basic/Range.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Option/Options.h"
+#include "stone/Support/CompilerDiagnostic.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"

@@ -4,8 +4,8 @@
 #include "stone/Basic/FileMgr.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Stats/Stats.h"
+#include "stone/Support/DiagnosticEngine.h"
 //
 // #include "llvm/Support/HashingOutputBackend.h"
 // #include "llvm/Support/VirtualOutputBackend.h"
@@ -121,8 +121,8 @@ public:
 
   std::optional<unsigned> CreateCodeCompletionBuffer();
   std::optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
-                                               const bool shouldRecover,
-                                               bool &failed);
+                                              const bool shouldRecover,
+                                              bool &failed);
   std::optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);
 

@@ -4,9 +4,9 @@
 #include <type_traits>
 
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/DeclBits.h"
 #include "stone/Syntax/DeclKind.h"
 #include "stone/Syntax/Identifier.h"
@@ -79,7 +79,7 @@ struct FragileFunction final {
 };
 
 class alignas(1 << DeclContextAlignInBits) DeclContext
-    : public ASTAllocation<DeclContext> {
+    : public MemoryAllocation<DeclContext> {
 
   DeclContext *parent = nullptr;
   DeclContextKind declContextKind = DeclContextKind::None;

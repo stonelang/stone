@@ -42,7 +42,7 @@ set(stone_syn_sources
 
 
 	LINK_LIBS
-	StoneDiag
+	StoneSupport
 )
 add_stone_library(StoneSyntax
 	${stone_syn_sources}

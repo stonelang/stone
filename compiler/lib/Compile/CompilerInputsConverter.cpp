@@ -2,7 +2,7 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
-#include "stone/Diag/CompilerDiagnostic.h"
+#include "stone/Support/CompilerDiagnostic.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"

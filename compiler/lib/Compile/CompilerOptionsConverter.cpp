@@ -1,6 +1,6 @@
 #include "stone/Compile/CompilerOptionsConverter.h"
-#include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Strings.h"
+#include "stone/Support/CompilerDiagnostic.h"
 // #include "stone/Basic/Platform.h"
 #include "stone/Compile/CompilerInputsConverter.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
@@ -13,13 +13,13 @@
 #include "stone/Compile/Compiler.h"
 
 #include "llvm/ADT/STLExtras.h"
-#include "llvm/TargetParser/Triple.h"
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Option/Option.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/LineIterator.h"
 #include "llvm/Support/Path.h"
+#include "llvm/TargetParser/Triple.h"
 
 using namespace stone;
 using namespace llvm::opt;

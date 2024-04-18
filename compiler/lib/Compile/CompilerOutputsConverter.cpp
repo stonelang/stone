@@ -1,6 +1,6 @@
 #include "stone/Basic/OutputFileMap.h"
-#include "stone/Diag/CompilerDiagnostic.h"
 #include "stone/Strings.h"
+#include "stone/Support/CompilerDiagnostic.h"
 // #include "stone/Basic/Platform.h"
 #include "stone/Compile/CompilerInputsConverter.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
@@ -10,13 +10,13 @@
 // #include "stone/Option/SanitizerOptions.h"
 
 #include "llvm/ADT/STLExtras.h"
-#include "llvm/TargetParser/Triple.h"
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Option/Option.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/LineIterator.h"
 #include "llvm/Support/Path.h"
+#include "llvm/TargetParser/Triple.h"
 
 using namespace stone;
 using namespace stone::file;
@@ -227,7 +227,8 @@ CompilerOutputFilesComputer::DeriveOutputFileFromInput(
   return DeriveOutputFileFromParts("", baseName);
 }
 
-std::optional<std::string> CompilerOutputFilesComputer::DeriveOutputFileForDirectory(
+std::optional<std::string>
+CompilerOutputFilesComputer::DeriveOutputFileForDirectory(
     const CompilerInputFile &input) const {
   std::string baseName = DetermineBaseNameOfOutput(input);
   if (baseName.empty()) {

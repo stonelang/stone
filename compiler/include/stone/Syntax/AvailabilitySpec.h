@@ -1,10 +1,9 @@
 #ifndef STONE_SYNTAX_AVAILABILITYSPEC_H
 #define STONE_SYNTAX_AVAILABILITYSPEC_H
 
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/PlatformKind.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/Identifier.h"
 
 #include "llvm/Support/VersionTuple.h"
@@ -33,7 +32,7 @@ enum class AvailabilitySpecKind {
 
 /// The root class for specifications of API availability in availability
 /// queries.
-class AvailabilitySpec : public ASTAllocation<AvailabilitySpec> {
+class AvailabilitySpec : public MemoryAllocation<AvailabilitySpec> {
   AvailabilitySpecKind Kind;
 
 public:
@@ -114,8 +113,8 @@ public:
   void *operator new(
       size_t Bytes, ASTContext &C,
       unsigned Alignment = alignof(PlatformVersionConstraintAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(Bytes, C, AllocationArena::Permanent,
-                                          Alignment);
+    return AvailabilitySpec::operator new(
+        Bytes, C, MemoryAllocationArena::Permanent, Alignment);
   }
 };
 
@@ -165,8 +164,8 @@ public:
   void *operator new(size_t Bytes, ASTContext &C,
                      unsigned Alignment = alignof(
                          PlatformAgnosticVersionConstraintAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(Bytes, C, AllocationArena::Permanent,
-                                          Alignment);
+    return AvailabilitySpec::operator new(
+        Bytes, C, MemoryAllocationArena::Permanent, Alignment);
   }
 };
 
@@ -200,8 +199,8 @@ public:
   void *
   operator new(size_t Bytes, ASTContext &C,
                unsigned Alignment = alignof(OtherPlatformAvailabilitySpec)) {
-    return AvailabilitySpec::operator new(Bytes, C, AllocationArena::Permanent,
-                                          Alignment);
+    return AvailabilitySpec::operator new(
+        Bytes, C, MemoryAllocationArena::Permanent, Alignment);
   }
 };
 } // namespace stone

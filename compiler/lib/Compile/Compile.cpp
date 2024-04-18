@@ -4,11 +4,11 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Core.h"
-#include "stone/Diag/CompilerDiagnostic.h"
-#include "stone/Diag/TextDiagnosticConsumer.h"
-#include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Option/Action.h"
 #include "stone/Stats/Stats.h"
+#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Support/TextDiagnosticConsumer.h"
+#include "stone/Support/TextDiagnosticFormatter.h"
 #include "stone/Syntax/ASTDiagnosticArgument.h"
 
 using namespace stone;

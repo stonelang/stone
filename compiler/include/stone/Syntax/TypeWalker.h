@@ -1,7 +1,7 @@
 #ifndef STONE_SYNTAX_TYPEWALKER_H
 #define STONE_SYNTAX_TYPEWALKER_H
 
-#include "stone/Syntax/ASTAllocation.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Syntax/TypeAlignment.h"
 #include "stone/Syntax/TypeKind.h"
 

@@ -2,10 +2,9 @@
 #define STONE_SYNTAX_ASTCONTEXT_H
 
 #include "stone/Basic/LangOptions.h"
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Basic/StatisticEngine.h"
-#include "stone/Syntax/ASTAllocation.h"
+#include "stone/Support/StatisticEngine.h"
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
@@ -15,7 +14,7 @@
 #include "stone/Syntax/Types.h"
 
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Support/DiagnosticEngine.h"
 #include "stone/Syntax/ASTDiagnosticArgument.h"
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Expr.h"
@@ -30,19 +29,17 @@
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
 #include "llvm/ADT/MapVector.h"
-#include "llvm/ADT/None.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/TinyPtrVector.h"
-#include "llvm/TargetParser/Triple.h"
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/AlignOf.h"
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Casting.h"
+#include "llvm/TargetParser/Triple.h"
 // #include "llvm/Support/VirtualOutputBackend.h"
 
 #include <cassert>
@@ -50,6 +47,7 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -80,25 +78,13 @@ class Expr;
 class SourceFile;
 class CompilerStatsReporter;
 
-class ASTContextStats final : public Stats {
-  const ASTContext &sc;
-
-public:
-  ASTContextStats(const ASTContext &sc)
-      : Stats("syntax context stats:"), sc(sc) {}
-  void Print(ColorStream &stream) override;
-};
-
 /// Look up option used in \c GetRealModuleName when module aliasing is applied.
 enum class ModuleAliasLookupOption {
   AlwaysRealName,
   RealNameFromAlias,
   AliasFromRealName
 };
-class ASTContext final {
-  friend ASTContextStats;
-
-  std::unique_ptr<ASTContextStats> stats;
+class ASTContext final : public MemoryContext {
 
   ClangContext &clangContext;
 
@@ -111,12 +97,7 @@ class ASTContext final {
 
   LangOptions &langOpts;
 
-  std::unique_ptr<Builtin> builtin;
-  /// The allocator used to create ASTContext objects.
-  /// ASTContext objects are never destructed; rather, all memory associated
-  /// with the ASTContext objects will be released when the ASTContext
-  /// itself is destroyed.
-  mutable llvm::BumpPtrAllocator allocator;
+  Builtin builtin;
 
   /// Table for all
   IdentifierTable identifiers;
@@ -174,13 +155,16 @@ public:
   void AddCleanup(std::function<void(void)> cleanup);
 
 public:
+  ModuleDecl *mainModule = nullptr;
+
+public:
   ClangContext &GetClangContext() { return clangContext; }
   ///
   Identifier GetIdentifier(llvm::StringRef name);
 
   DeclNameTable &GetDeclNameTable() { return declNames; }
   ///
-  Builtin &GetBuiltin();
+  Builtin &GetBuiltin() { return builtin; }
   DiagnosticEngine &GetDiags() { return de; }
   ///
   LangABI *GetLangABI() const;
@@ -189,16 +173,7 @@ public:
 
   LangOptions &GetLangOptions() { return langOpts; }
 
-  ModuleDecl *mainModule = nullptr;
-
-  /// Retrieve the allocator for the given arena.
-  /// Using permanent always for now
-  llvm::BumpPtrAllocator &
-  GetAllocator(AllocationArena arena = AllocationArena::Permanent) const {
-    return allocator;
-  }
   StatisticEngine &GetStats() { return se; }
-  ASTContextStats &GetASTContextStats() { return *stats; }
 
 public:
   //==Module stuff==//
@@ -271,31 +246,10 @@ public:
   }
 
 public:
-  /// Return the total amount of physical memory allocated for representing
-  /// AST nodes and type information.
-  size_t GetTotalMemUsed() const;
-  void Deallocate(void *Ptr) const {}
-
-  /// Allocate - Allocate memory from the ASTContext bump pointer.
-  void *Allocate(unsigned long bytes, unsigned alignment = 8,
-                 AllocationArena arena = AllocationArena::Permanent) const {
-    if (bytes == 0) {
-      return nullptr;
-    }
-    if (langOpts.useMalloc) {
-      return stone::AlignedAlloc(bytes, alignment);
-    }
-    // TODO:
-    //  if (arena == AllocationArena::Permanent && Stats)
-    //    Stats->GetFrontendCounters().NumASTBytesAllocated += bytes;
-
-    return GetAllocator(arena).Allocate(bytes, alignment);
-  }
-
-public:
   template <typename T>
-  T *Allocate(AllocationArena arena = AllocationArena::Permanent) const {
-    T *res = (T *)Allocate(sizeof(T), alignof(T), arena);
+  T *Allocate(
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
+    T *res = (T *)AllocateMemory(sizeof(T), alignof(T), arena);
     new (res) T();
     return res;
   }
@@ -303,16 +257,16 @@ public:
   template <typename T>
   MutableArrayRef<T> AllocateUninitialized(
       unsigned NumElts,
-      AllocationArena Arena = AllocationArena::Permanent) const {
-    T *Data = (T *)Allocate(sizeof(T) * NumElts, alignof(T), Arena);
+      MemoryAllocationArena Arena = MemoryAllocationArena::Permanent) const {
+    T *Data = (T *)AllocateMemory(sizeof(T) * NumElts, alignof(T), Arena);
     return {Data, NumElts};
   }
 
   template <typename T>
-  MutableArrayRef<T>
-  Allocate(unsigned numElts,
-           AllocationArena arena = AllocationArena::Permanent) const {
-    T *res = (T *)Allocate(sizeof(T) * numElts, alignof(T), arena);
+  MutableArrayRef<T> Allocate(
+      unsigned numElts,
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
+    T *res = (T *)AllocateMemory(sizeof(T) * numElts, alignof(T), arena);
     for (unsigned i = 0; i != numElts; ++i)
       new (res + i) T();
     return {res, numElts};
@@ -320,67 +274,69 @@ public:
 
   /// Allocate a copy of the specified object.
   template <typename T>
-  typename std::remove_reference<T>::type *
-  AllocateObjectCopy(T &&t,
-                     AllocationArena arena = AllocationArena::Permanent) const {
+  typename std::remove_reference<T>::type *AllocateObjectCopy(
+      T &&t,
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
     // This function cannot be named AllocateCopy because it would always win
     // overload resolution over the AllocateCopy(ArrayRef<T>).
     using TNoRef = typename std::remove_reference<T>::type;
-    TNoRef *res = (TNoRef *)Allocate(sizeof(TNoRef), alignof(TNoRef), arena);
+    TNoRef *res =
+        (TNoRef *)AllocateMemory(sizeof(TNoRef), alignof(TNoRef), arena);
     new (res) TNoRef(std::forward<T>(t));
     return res;
   }
 
   template <typename T, typename It>
-  T *AllocateCopy(It start, It end,
-                  AllocationArena arena = AllocationArena::Permanent) const {
-    T *res = (T *)Allocate(sizeof(T) * (end - start), alignof(T), arena);
+  T *AllocateCopy(
+      It start, It end,
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
+    T *res = (T *)AllocateMemory(sizeof(T) * (end - start), alignof(T), arena);
     for (unsigned i = 0; start != end; ++start, ++i)
       new (res + i) T(*start);
     return res;
   }
 
   template <typename T, size_t N>
-  MutableArrayRef<T>
-  AllocateCopy(T (&array)[N],
-               AllocationArena arena = AllocationArena::Permanent) const {
+  MutableArrayRef<T> AllocateCopy(
+      T (&array)[N],
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
     return MutableArrayRef<T>(AllocateCopy<T>(array, array + N, arena), N);
   }
 
   template <typename T>
-  MutableArrayRef<T>
-  AllocateCopy(ArrayRef<T> array,
-               AllocationArena arena = AllocationArena::Permanent) const {
+  MutableArrayRef<T> AllocateCopy(
+      ArrayRef<T> array,
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
     return MutableArrayRef<T>(
         AllocateCopy<T>(array.begin(), array.end(), arena), array.size());
   }
 
   template <typename T>
-  ArrayRef<T>
-  AllocateCopy(const SmallVectorImpl<T> &vec,
-               AllocationArena arena = AllocationArena::Permanent) const {
+  ArrayRef<T> AllocateCopy(
+      const SmallVectorImpl<T> &vec,
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
     return AllocateCopy(ArrayRef<T>(vec), arena);
   }
 
   template <typename T>
-  MutableArrayRef<T>
-  AllocateCopy(SmallVectorImpl<T> &vec,
-               AllocationArena arena = AllocationArena::Permanent) const {
+  MutableArrayRef<T> AllocateCopy(
+      SmallVectorImpl<T> &vec,
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
     return AllocateCopy(MutableArrayRef<T>(vec), arena);
   }
 
-  StringRef
-  AllocateCopy(StringRef Str,
-               AllocationArena arena = AllocationArena::Permanent) const {
+  StringRef AllocateCopy(
+      StringRef Str,
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
     ArrayRef<char> Result =
-        AllocateCopy(llvm::makeArrayRef(Str.data(), Str.size()), arena);
+        AllocateCopy(llvm::ArrayRef(Str.data(), Str.size()), arena);
     return StringRef(Result.data(), Result.size());
   }
 
   template <typename T, typename Vector, typename Set>
-  MutableArrayRef<T>
-  AllocateCopy(llvm::SetVector<T, Vector, Set> setVector,
-               AllocationArena arena = AllocationArena::Permanent) const {
+  MutableArrayRef<T> AllocateCopy(
+      llvm::SetVector<T, Vector, Set> setVector,
+      MemoryAllocationArena arena = MemoryAllocationArena::Permanent) const {
     return MutableArrayRef<T>(
         AllocateCopy<T>(setVector.begin(), setVector.end(), arena),
         setVector.size());

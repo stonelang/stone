@@ -7,8 +7,8 @@ BraceStmt *BraceStmt::Create(SrcLoc lbloc, llvm::ArrayRef<ASTNode> elements,
                              SrcLoc rbloc, ASTContext &astContext,
                              std::optional<bool> implicit) {
 
-  void *stmtPtr =
-      astContext.Allocate(BraceStmt::totalSizeToAlloc<ASTNode>(elements.size()),
-                          alignof(BraceStmt));
+  void *stmtPtr = astContext.AllocateMemory(
+      BraceStmt::totalSizeToAlloc<ASTNode>(elements.size()),
+      alignof(BraceStmt));
   return ::new (stmtPtr) BraceStmt(lbloc, elements, rbloc);
 }

@@ -1,10 +1,9 @@
 #ifndef STONE_SYNTAX_TYPES_H
 #define STONE_SYNTAX_TYPES_H
 
-#include "stone/Basic/Mem.h"
+#include "stone/Basic/Memory.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Syntax/ASTAllocation.h"
 #include "stone/Syntax/Foreign.h"
 #include "stone/Syntax/InlineBitfield.h"
 #include "stone/Syntax/Ownership.h"
@@ -22,8 +21,6 @@
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/ADT/Hashing.h"
-#include "llvm/ADT/None.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/ADT/STLExtras.h"
@@ -41,6 +38,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -55,7 +53,7 @@ class CanType;
 class SweetType;
 
 class alignas(1 << TypeAlignInBits) TypeBase
-    : public ASTAllocation<std::aligned_storage<8, 8>::type> {
+    : public MemoryAllocation<std::aligned_storage<8, 8>::type> {
 
   friend class ASTContext;
 
@@ -285,7 +283,7 @@ public:
 
 public:
   static IntegerType *Create(NumberBitWidthKind bitWidthKind,
-                             const ASTContext &sc);
+                             const ASTContext &sc, MemoryAllocationArena arena);
 };
 
 class UIntegerType : public NumberType {
@@ -322,7 +320,8 @@ public:
 
 public:
   static FloatType *Create(NumberBitWidthKind bitWidthKind,
-                           const ASTContext &sc);
+                           const ASTContext &astContext,
+                           MemoryAllocationArena arena);
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
@@ -342,8 +341,9 @@ public:
   VoidType(const ASTContext &sc) : BuiltinType(TypeKind::Void, sc) {}
 
 public:
-  static VoidType *Create(const ASTContext &sc,
-                          AllocationArena arena = AllocationArena::Permanent);
+  static VoidType *
+  Create(const ASTContext &astContext,
+         MemoryAllocationArena arena = MemoryAllocationArena::Permanent);
 };
 
 class NullType : public BuiltinType {

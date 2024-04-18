@@ -3,7 +3,6 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Syntax/ASTContext.h"
-#include "stone/Syntax/ExprFactory.h"
 #include "stone/Syntax/Generics.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
