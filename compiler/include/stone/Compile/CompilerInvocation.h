@@ -4,18 +4,20 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Option/Options.h"
 #include "stone/Support/DiagnosticOptions.h"
+#include "stone/Option/Options.h"
 #include "stone/Syntax/ASTOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
-#include "stone/Basic/FileSystemOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Basic/Status.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/SearchPath.h"
+
+#include "clang/Basic/FileManager.h"
+#include "clang/Basic/FileSystemOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SetVector.h"
@@ -25,17 +27,13 @@
 
 namespace stone {
 
-class Compiler;
-
 using ConfigurationFileBuffers =
     llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
 
-struct ModuleBuffers {
-
+struct ModuleBuffers final {
   std::unique_ptr<llvm::MemoryBuffer> moduleBuffer;
   std::unique_ptr<llvm::MemoryBuffer> moduleDocBuffer;
   std::unique_ptr<llvm::MemoryBuffer> moduleSourceInfoBuffer;
-
   // Constructor
   ModuleBuffers(
       std::unique_ptr<llvm::MemoryBuffer> moduleBuffer,
@@ -50,7 +48,10 @@ using MemoryBuffers =
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>>;
 
 class CompilerInvocation final {
-  Compiler &compiler;
+
+  clang::FileManager fileMgr;
+  SrcMgr srcMgr;
+  DiagnosticEngine diags{srcMgr};
 
   CompilerOptions compilerOpts;
 
@@ -69,7 +70,7 @@ class CompilerInvocation final {
 
   DiagnosticOptions diagOpts;
 
-  FileSystemOptions fileSystemOpts;
+  clang::FileSystemOptions fileSystemOpts;
 
   TargetOptions targetOptions;
 
@@ -82,7 +83,21 @@ class CompilerInvocation final {
   std::unique_ptr<llvm::opt::InputArgList> inputArgList;
 
 public:
-  CompilerInvocation(Compiler &compiler);
+  CompilerInvocation();
+
+public:
+  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.AddConsumer(consumer);
+  }
+  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.RemoveConsumer(consumer);
+  }
+
+  DiagnosticEngine &GetDiags() { return diags; }
+  bool HasError() { return diags.HasError(); }
+
+  SrcMgr &GetSrcMgr() { return srcMgr; }
+  clang::FileManager &GetFileMgr() { return fileMgr; }
 
 public:
   const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
@@ -115,8 +130,8 @@ public:
   DiagnosticOptions &GetDiagnosticOptions() { return diagOpts; }
   const DiagnosticOptions &GetDiagnosticOptions() const { return diagOpts; }
 
-  FileSystemOptions &GetFileSystemOptions() { return fileSystemOpts; }
-  const FileSystemOptions &GetFileSystemOptions() const {
+  clang::FileSystemOptions &GetFileSystemOptions() { return fileSystemOpts; }
+  const clang::FileSystemOptions &GetFileSystemOptions() const {
     return fileSystemOpts;
   }
   void SetTargetTriple(llvm::StringRef triple);

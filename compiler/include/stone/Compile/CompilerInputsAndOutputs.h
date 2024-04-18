@@ -175,7 +175,7 @@ private:
   void SetMainAndSupplementaryOutputs(
       ArrayRef<std::string> outputFiles,
       ArrayRef<SupplementaryOutputPaths> supplementaryOutputs,
-      ArrayRef<std::string> outputFilesForIndexUnits = None);
+      ArrayRef<std::string> outputFilesForIndexUnits = std::nullopt);
 
 public:
   unsigned CountOfInputsProducingMainOutputs() const;

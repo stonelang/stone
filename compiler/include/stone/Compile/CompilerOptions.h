@@ -59,7 +59,7 @@ enum class CompilerAction : unsigned {
   //< Parse, type-check, and emit assembly
   EmitAssembly,
 };
-class CompilerOptions final : public StandardOptions {
+class CompilerOptions final : public Options {
 
   friend CompilerInvocation;
   friend CompilerOptionsConverter;

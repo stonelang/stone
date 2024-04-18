@@ -6,16 +6,15 @@
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerObservation.h"
-#include "stone/Parse/Lexer.h" // TODO: do better
 #include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Parse/Lexer.h" // TODO: do better
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
 
 using namespace stone;
 using namespace stone::file;
 
-Compiler::Compiler()
-    : invocation(*this), fileMgr(invocation.GetFileSystemOptions()) {}
+Compiler::Compiler(CompilerInvocation &invocation) : invocation(invocation) {}
 
 Status Compiler::Setup() {
 
@@ -29,10 +28,7 @@ Status Compiler::Setup() {
     if (SetupASTContext().IsError()) {
       return Status::Error();
     }
-    // For the time being, we ti MemoryContext to AST
-    memContext = std::make_unique<MemoryContext>(invocation.GetLangOptions());
   }
-  SetUpIsWholeModuleCompile();
 
   SetupStatsReporter();
 
@@ -176,7 +172,8 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
                               const bool shouldRecover, bool &failed) {
   if (!input.GetBuffer()) {
     if (std::optional<unsigned> existingBufferID =
-            GetSrcMgr().getIDForBufferIdentifier(input.GetFileName())) {
+            invocation.GetSrcMgr().getIDForBufferIdentifier(
+                input.GetFileName())) {
       return existingBufferID;
     }
   }
@@ -207,8 +204,8 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
   // assert(buffers->moduleSourceInfoBuffer.get() == nullptr);
 
   // Transfer ownership of the MemoryBuffer to the SourceMgr.
-  unsigned bufferID =
-      GetSrcMgr().addNewSourceBuffer(std::move(buffers->moduleBuffer));
+  unsigned bufferID = invocation.GetSrcMgr().addNewSourceBuffer(
+      std::move(buffers->moduleBuffer));
 
   inputSourceBufferIDList.push_back(bufferID);
   return bufferID;
@@ -244,11 +241,12 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
 
   using InputFileOrError = llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>>;
   InputFileOrError inputFileOrError =
-      GetFileMgr().getBufferForFile(input.GetFileName());
+      invocation.GetFileMgr().getBufferForFile(input.GetFileName());
 
   if (!inputFileOrError) {
-    GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-                      diag::LLVMStr(input.GetFileName()));
+    invocation.GetDiags().PrintD(SrcLoc(),
+                                 diag::err_unable_to_open_buffer_for_file,
+                                 diag::LLVMStr(input.GetFileName()));
     return std::nullopt;
   }
 
@@ -327,7 +325,7 @@ Status Compiler::SetupASTContext() {
 
   astContext = std::make_unique<ASTContext>(
       invocation.GetLangOptions(), invocation.GetSearchPathOptions(),
-      invocation.GetClangContext(), GetDiags(), GetStats());
+      invocation.GetClangContext(), invocation.GetDiags(), GetStats());
 }
 void Compiler::TryFreeASTContext() {
 
@@ -341,12 +339,6 @@ void Compiler::FreeASTContext() {
   }
   mainModule = nullptr;
   primarySourceBufferIDList.clear();
-}
-
-void Compiler::FreeMemoryContext() {
-  if (memContext) {
-    memContext.reset();
-  }
 }
 
 void Compiler::SetupStatsReporter() {
@@ -366,7 +358,8 @@ void Compiler::SetupStatsReporter() {
       invocation.GetCompilerOptions()
           .inputsAndOutputs.GetStatsFileMangledInputName(),
       invocation.GetLangOptions().Target.normalize(),
-      llvm::sys::path::extension(outputFile), "O", statsOutputDir, &GetSrcMgr(),
+      llvm::sys::path::extension(outputFile), "O", statsOutputDir,
+      &invocation.GetSrcMgr(),
       &invocation.GetClangContext().GetInstance().getSourceManager(),
       invocation.GetCompilerOptions().traceStats,
       invocation.GetCompilerOptions().profileEvents,

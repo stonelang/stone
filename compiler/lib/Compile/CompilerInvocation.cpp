@@ -1,16 +1,15 @@
 #include "stone/Compile/CompilerInvocation.h"
+#include "stone/Core.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
-#include "stone/Core.h"
-#include "stone/Option/Options.h"
 #include "stone/Strings.h"
 #include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Support/Options.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
 #include "llvm/Support/Errc.h"
 #include "llvm/Support/FileSystem.h"
-#include "llvm/Support/Host.h"
 #include "llvm/Support/LockFileManager.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
@@ -22,9 +21,9 @@
 
 using namespace stone;
 
-CompilerInvocation::CompilerInvocation(Compiler &compiler)
-    : compiler(compiler), clangContext(new ClangContext()),
-      optTable(stone::CreateOptTable()) {
+CompilerInvocation::CompilerInvocation()
+    : clangContext(new ClangContext()), optTable(stone::CreateOptTable()),
+      fileMgr(GetFileSystemOptions()) {
 
   llvm::sys::fs::current_path(GetCompilerOptions().workingDirectory);
   SetTargetTriple(llvm::sys::getDefaultTargetTriple());
@@ -182,7 +181,7 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   assert(inputArgList && "No input argument list.");
 
   if (missingArgCount) {
-    compiler.GetDiags().PrintD(
+    GetDiags().PrintD(
         SrcLoc(), diag::err_missing_arg_value,
         diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
         diag::UInt(missingArgCount));
@@ -190,38 +189,37 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::UNKNOWN)) {
-    compiler.GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
-                               diag::LLVMStr(arg->getAsString(*inputArgList)));
+    GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
+                      diag::LLVMStr(arg->getAsString(*inputArgList)));
 
     // TODO: Good for now. But, you want to print out all and check for diag
     // errors
     return Status::Error();
   }
-  if (compiler.GetDiags().HasError()) {
+  if (GetDiags().HasError()) {
     return Status::Error();
   }
   // TODO: Pass MemoryBuffers in ParseCommandLine
-  if (ParseCompilerOptions(*inputArgList, langOpts, compilerOpts,
-                           compiler.GetDiags(), nullptr)
+  if (ParseCompilerOptions(*inputArgList, langOpts, compilerOpts, GetDiags(),
+                           nullptr)
           .IsError()) {
     return Status::Error();
   }
   if (GetCompilerOptions().DoesActionGenerateIR() ||
       GetCompilerOptions().DoesActionGenerateNative()) {
     // TODO: hard coding -cc1 for now -- build out proper string.
-    if (compiler.GetInvocation()
-            .SetupClang(strings::ClangCC1,
-                        GetCompilerOptions().mainExecutablePath.data())
+    if (SetupClang(strings::ClangCC1,
+                   GetCompilerOptions().mainExecutablePath.data())
             .IsError()) {
       return Status::Error();
     }
     if (ParseTargetOptions(*inputArgList, compilerOpts, codeGenOpts, langOpts,
-                           GetClangContext(), compiler.GetDiags())
+                           GetClangContext(), GetDiags())
             .IsError()) {
       return Status::Error();
     }
   }
-  if (ParseCodeGenOptions(*inputArgList, *this, compiler.GetDiags(),
+  if (ParseCodeGenOptions(*inputArgList, *this, GetDiags(),
                           GetCompilerOptions(), GetCodeGenOptions())
           .IsError()) {
     return Status::Error();

@@ -1,11 +1,10 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
-#include "stone/Basic/FileMgr.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Stats/Stats.h"
 #include "stone/Support/DiagnosticEngine.h"
+#include "stone/Support/StatisticEngine.h"
 //
 // #include "llvm/Support/HashingOutputBackend.h"
 // #include "llvm/Support/VirtualOutputBackend.h"
@@ -20,18 +19,11 @@ class CompilerObservation;
 class CompilerExecution;
 
 class Compiler final {
-
-  FileMgr fileMgr;
-  SrcMgr srcMgr;
-  DiagnosticEngine diags{srcMgr};
   StatisticEngine stats;
 
+  CompilerInvocation &invocation;
+
   std::unique_ptr<ASTContext> astContext;
-
-  std::unique_ptr<MemoryContext> memContext;
-
-  CompilerInvocation invocation;
-
   /// Contains buffer IDs for input source code files.
   std::vector<unsigned> inputSourceBufferIDList;
 
@@ -59,7 +51,7 @@ public:
   void operator=(Compiler &&) = delete;
 
 public:
-  Compiler();
+  Compiler(CompilerInvocation &invocation);
   Status Setup();
 
   Status ExecuteAction(CompilerAction action);
@@ -70,13 +62,6 @@ public:
   void SetObservation(CompilerObservation *obs) { observation = obs; }
   CompilerObservation *GetObservation() { return observation; }
 
-  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
-    diags.AddConsumer(consumer);
-  }
-  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
-    diags.RemoveConsumer(consumer);
-  }
-
   void AddIRGenResult(IRGenResult *result) { irGenResults.push_back(result); }
   void ForEachIRGenResult(std::function<void(IRGenResult *result)> notify) {
     for (auto result : irGenResults) {
@@ -85,20 +70,9 @@ public:
   }
 
 public:
-  DiagnosticEngine &GetDiags() { return diags; }
-  bool HasError() { return diags.HasError(); }
-  StatisticEngine &GetStats() { return stats; }
-
-  SrcMgr &GetSrcMgr() { return srcMgr; }
-  FileMgr &GetFileMgr() { return fileMgr; }
-
   ASTContext &GetASTContext() { return *astContext; }
   const ASTContext &GetASTContext() const { return *astContext; }
   bool HasASTContext() const { return astContext != nullptr; }
-
-  MemoryContext &GetMemoryContext() { return *memContext; }
-  const MemoryContext &GetMemoryContext() const { return *memContext; }
-  bool HasMemoryContext() const { return memContext != nullptr; }
 
   CompilerInvocation &GetInvocation() { return invocation; }
 
@@ -169,17 +143,14 @@ public:
   bool IsCompileForWholeModule() { return primarySourceBufferIDList.empty(); }
   bool IsCompileForSourceFile() { return !GetPrimarySourceFiles().empty(); }
 
-  void SetUpIsWholeModuleCompile() {
+  bool IsWholeModuleCompile() {
     if (IsCompileForWholeModule()) {
-      invocation.GetCodeGenOptions().isWholeModuleCompile = true;
+      return true;
     } else if (IsCompileForSourceFile()) {
-      invocation.GetCodeGenOptions().isWholeModuleCompile = false;
+      return false;
     } else {
       llvm_unreachable("Invalid IR code generation target!");
     }
-  }
-  bool IsWholeModuleCompile() {
-    return invocation.GetCodeGenOptions().isWholeModuleCompile;
   }
 
   bool IsLLVMCompile() {
@@ -201,8 +172,6 @@ public:
   void SetupStatsReporter();
 
   bool TryLoadSTDLib();
-
-  void FreeMemoryContext();
 
   CompilerStatsReporter &GetStatsReporter() { return *statsReporter; }
 
