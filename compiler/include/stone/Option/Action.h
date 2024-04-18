@@ -55,8 +55,7 @@ public:
   bool IsEmitBC() { return GetKind() == ActionKind::EmitBC; }
   bool IsEmitObject() const { return GetKind() == ActionKind::EmitObject; }
   bool IsEmitAssembly() const { return GetKind() == ActionKind::EmitAssembly; }
-  bool IsAlien() const { return GetKind() == ActionKind::Alien; }
-
+  
   bool IsSupport() const {
     if (IsPrintHelp() || IsPrintHelpHidden() || IsPrintVersion()) {
       return true;

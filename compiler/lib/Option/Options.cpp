@@ -14,29 +14,44 @@ using namespace stone::opts;
 
 using namespace llvm::opt;
 
-#define PREFIX(NAME, VALUE) static const char *const NAME[] = VALUE;
-#include "stone/Option/Options.inc"
+#define OPTTABLE_VALUES_CODE
+#include "stone/Support/Options.inc"
+#undef OPTTABLE_VALUES_CODE
+
+#define PREFIX(NAME, VALUE)                                                    \
+  static constexpr llvm::StringLiteral NAME##_init[] = VALUE;                  \
+  static constexpr llvm::ArrayRef<llvm::StringLiteral> NAME(                   \
+      NAME##_init, std::size(NAME##_init) - 1);
+#include "stone/Support/Options.inc"
 #undef PREFIX
 
-static const OptTable::Info InfoTable[] = {
-#define OPTION(PREFIX, NAME, ID, KIND, GROUP, ALIAS, ALIASARGS, FLAGS, PARAM,  \
-               HELPTEXT, METAVAR, VALUES)                                      \
-  {PREFIX, NAME,  HELPTEXT, METAVAR, ID,        Option::KIND##Class,           \
-   PARAM,  FLAGS, GROUP,    ALIAS,   ALIASARGS, VALUES},
-#include "stone/Option/Options.inc"
+static constexpr const llvm::StringLiteral PrefixTable_init[] =
+#define PREFIX_UNION(VALUES) VALUES
+#include "stone/Support/Options.inc"
+#undef PREFIX_UNION
+    ;
+static constexpr const llvm::ArrayRef<llvm::StringLiteral>
+    PrefixTable(PrefixTable_init, std::size(PrefixTable_init) - 1);
+
+static constexpr llvm::opt::GenericOptTable::Info InfoTable[] = {
+#define OPTION(...) LLVM_CONSTRUCT_OPT_INFO(__VA_ARGS__),
+#include "stone/Support/Options.inc"
 #undef OPTION
 };
 
-namespace stone {
-class StoneOptTable : public llvm::opt::OptTable {
+
+namespace {
+
+class StoneOptTable : public llvm::opt::GenericOptTable {
 public:
-  StoneOptTable() : OptTable(InfoTable) {}
+  StoneOptTable() : GenericOptTable(InfoTable) {}
 };
-} // namespace stone
+} // end anonymous namespace
 
 std::unique_ptr<OptTable> stone::CreateOptTable() {
-  return std::unique_ptr<OptTable>(new stone::StoneOptTable());
+  return std::unique_ptr<GenericOptTable>(new StoneOptTable());
 }
+
 
 void opts::PrintArg(ColorStream &outStream, const char *Arg,
                     llvm::StringRef TempDir) {
@@ -52,7 +67,7 @@ void opts::PrintArg(ColorStream &outStream, const char *Arg,
     llvm::sys::fs::make_absolute(TempPath);
     llvm::sys::path::native(TempPath);
 
-    if (StringRef(ArgPath).startswith(TempPath)) {
+    if (StringRef(ArgPath).starts_with(TempPath)) {
       // Don't write temporary file names in the debug info. This would prevent
       // incremental llvm compilation because we would generate different IR on
       // every compiler invocation.
@@ -74,7 +89,7 @@ void opts::PrintArg(ColorStream &outStream, const char *Arg,
 }
 
 llvm::StringRef
-opts::GetEqualValueByOptionID(const opts::OptID optID,
+opts::GetEqualValueByOptID(const opts::OptID optID,
                               const llvm::opt::InputArgList &args) {
   if (args.hasArg(optID)) {
     auto arg = args.getLastArg(optID);
@@ -119,4 +134,4 @@ llvm::StringRef opts::GetArgName(const llvm::opt::Arg *arg) {
 //   return ial;
 // }
 
-StandardOptions::StandardOptions() : optTable(stone::CreateOptTable()) {}
+Options::Options() : optTable(stone::CreateOptTable()) {}

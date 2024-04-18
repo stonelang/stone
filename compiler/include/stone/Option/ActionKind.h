@@ -48,8 +48,6 @@ enum class ActionKind : unsigned {
   EmitAssembly,
   ///< Merge all modules
   MergeModules,
-  //< Alien
-  Alien,
 
 };
 } // namespace stone

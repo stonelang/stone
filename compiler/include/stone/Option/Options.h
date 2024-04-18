@@ -18,7 +18,6 @@ class OptTable;
 } // namespace llvm
 
 namespace stone {
-class Action;
 
 namespace opts {
 enum OptFlag {
@@ -40,18 +39,17 @@ enum OptFlag {
 
 };
 
-enum OptID : unsigned {
-  INVALID = 0, // This is not an option ID.
-#define OPTION(PREFIX, NAME, ID, KIND, GROUP, ALIAS, ALIASARGS, FLAGS, PARAM,  \
-               HELPTEXT, METAVAR, VALUES)                                      \
-  ID,
-#include "stone/Option/Options.inc"
-  LAST
+enum OptID {
+  OPT_INVALID = 0, // This is not an option ID.
+#define OPTION(...) LLVM_MAKE_OPT_ID(__VA_ARGS__),
+#include "stone/Support/Options.inc"
+  OPT_LAST
 #undef OPTION
 };
 
-ActionKind GetActionKindByOptionID(const unsigned actionOptionID);
-llvm::StringRef GetEqualValueByOptionID(const opts::OptID optID,
+
+ActionKind GetActionKindByOptID(const unsigned optID);
+llvm::StringRef GetEqualValueByOptID(const opts::OptID optID,
                                         const llvm::opt::InputArgList &args);
 unsigned GetArgID(const llvm::opt::Arg *arg);
 llvm::StringRef GetArgName(const llvm::opt::Arg *arg);
@@ -61,11 +59,12 @@ void PrintArg(ColorStream &outStream, const char *arg, llvm::StringRef tempDir);
 } // namespace opts
 std::unique_ptr<llvm::opt::OptTable> CreateOptTable();
 
-class StandardOptions {
+class Options {
   /// The driver options
   std::unique_ptr<llvm::opt::OptTable> optTable;
 
-protected:
+public:
+
   // bool showHiddenHelp = false;
 
   /// The path the executing program
@@ -84,7 +83,7 @@ protected:
   bool printDiagnostics = true;
 
 public:
-  StandardOptions();
+  Options();
 
 public:
   /// The main options table
@@ -113,6 +112,8 @@ public:
   // bool HasMainExecutableName() const {
   //   return !mainExecutableName.empty() && mainExecutableName.size() > 0;
   // }
+
+public:
 };
 
 } // namespace stone
