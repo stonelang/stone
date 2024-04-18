@@ -4,7 +4,7 @@
 #include "stone/Basic/StableHasher.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/Parsing.h"
-#include "stone/Support/StatisticEngine.h"
+#include "stone/Support/StatsReporter.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ASTNode.h"
 #include "stone/Syntax/ASTOptions.h"

@@ -14,34 +14,34 @@ ActionKind opts::GetActionKindByOptID(const unsigned actionOptionID) {
     return ActionKind::Parse;
   case OPT_ResolveImports:
     return ActionKind::ResolveImports;
-  // case opts::DumpAST:
-  //   return ActionKind::DumpAST;
-  // case opts::TypeCheck:
-  //   return ActionKind::TypeCheck;
-  // case opts::PrintAST:
-  //   return ActionKind::PrintAST;
-  // case opts::PrintIR:
-  //   return ActionKind::PrintIR;
-  // case opts::EmitIRAfter:
-  //   return ActionKind::EmitIRAfter;
-  // case opts::EmitIRBefore:
-  //   return ActionKind::EmitIRBefore;
-  // case opts::EmitBC:
-  //   return ActionKind::EmitBC;
-  // case opts::EmitObject:
-  //   return ActionKind::EmitObject;
-  // case opts::EmitAssembly:
-  //   return ActionKind::EmitAssembly;
-  // case opts::EmitLibrary:
-  //   return ActionKind::EmitLibrary;
-  // case opts::EmitModule:
-  //   return ActionKind::EmitModule;
-  // case opts::PrintVersion:
-  //   return ActionKind::PrintVersion;
-  // case opts::PrintHelp:
-  //   return ActionKind::PrintVersion;
-  // default:
-  //   return ActionKind::Alien;
+    // case opts::DumpAST:
+    //   return ActionKind::DumpAST;
+    // case opts::TypeCheck:
+    //   return ActionKind::TypeCheck;
+    // case opts::PrintAST:
+    //   return ActionKind::PrintAST;
+    // case opts::PrintIR:
+    //   return ActionKind::PrintIR;
+    // case opts::EmitIRAfter:
+    //   return ActionKind::EmitIRAfter;
+    // case opts::EmitIRBefore:
+    //   return ActionKind::EmitIRBefore;
+    // case opts::EmitBC:
+    //   return ActionKind::EmitBC;
+    // case opts::EmitObject:
+    //   return ActionKind::EmitObject;
+    // case opts::EmitAssembly:
+    //   return ActionKind::EmitAssembly;
+    // case opts::EmitLibrary:
+    //   return ActionKind::EmitLibrary;
+    // case opts::EmitModule:
+    //   return ActionKind::EmitModule;
+    // case opts::PrintVersion:
+    //   return ActionKind::PrintVersion;
+    // case opts::PrintHelp:
+    //   return ActionKind::PrintVersion;
+    // default:
+    //   return ActionKind::Alien;
   }
 }
 
@@ -49,8 +49,8 @@ ActionKind opts::GetActionKindByOptID(const unsigned actionOptionID) {
 
 //   auto actionArg = args.getLastArg(opts::ModeGroup);
 //   if (!actionArg) {
-//     // We just default to emitting an object file since nothing was presented.
-//     return Action(ActionKind::None);
+//     // We just default to emitting an object file since nothing was
+//     presented. return Action(ActionKind::None);
 //   }
 //   auto actionKind = opts::GetActionKindByOptionID(opts::GetArgID(actionArg));
 //   if (actionKind == ActionKind::Alien) {
@@ -126,8 +126,8 @@ ActionKind opts::GetActionKindByOptID(const unsigned actionOptionID) {
 //   return Action::GetName(GetKind());
 // }
 
-// llvm::StringRef Action::GetName(ActionKind kind) { return llvm::StringRef(); }
-// bool Action::ShouldParseOnly(ActionKind kind) {
+// llvm::StringRef Action::GetName(ActionKind kind) { return llvm::StringRef();
+// } bool Action::ShouldParseOnly(ActionKind kind) {
 //   switch (kind) {
 //   case ActionKind::Parse:
 //   case ActionKind::DumpAST:

@@ -4,7 +4,7 @@
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Support/DiagnosticEngine.h"
-#include "stone/Support/StatisticEngine.h"
+#include "stone/Support/StatsReporter.h"
 //
 // #include "llvm/Support/HashingOutputBackend.h"
 // #include "llvm/Support/VirtualOutputBackend.h"
@@ -19,19 +19,20 @@ class CompilerObservation;
 class CompilerExecution;
 
 class Compiler final {
-  StatisticEngine stats;
 
   CompilerInvocation &invocation;
 
   std::unique_ptr<ASTContext> astContext;
+
+  /// If there is no stats output directory by the time the
+  /// instance has completed its setup, this will be null.
+  std::unique_ptr<StatsReporter> stats;
+
   /// Contains buffer IDs for input source code files.
   std::vector<unsigned> inputSourceBufferIDList;
 
   /// The primary Sources
   llvm::SetVector<unsigned> primarySourceBufferIDList;
-
-  /// Stats collections
-  std::unique_ptr<CompilerStatsReporter> statsReporter;
 
   /// The main compiler modules
   mutable ModuleDecl *mainModule = nullptr;
@@ -169,11 +170,10 @@ public:
   void FreeASTContext();
   bool ShouldSetupASTContext();
   Status SetupASTContext();
-  void SetupStatsReporter();
-
   bool TryLoadSTDLib();
 
-  CompilerStatsReporter &GetStatsReporter() { return *statsReporter; }
+  void SetupStats();
+  StatsReporter *GetStats() { return stats.get(); }
 
 public:
   static Status IsValidModuleName(const llvm::StringRef moduleName);

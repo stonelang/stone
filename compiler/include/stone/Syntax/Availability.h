@@ -8,7 +8,6 @@
 
 #include <optional>
 
-
 namespace stone {
 
 class ASTContext;

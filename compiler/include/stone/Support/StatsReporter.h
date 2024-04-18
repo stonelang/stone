@@ -44,18 +44,18 @@ uint64_t getInstructionsExecuted();
 // else nondeterministic we find).
 bool environmentVariableRequestedMaximumDeterminism();
 
-class StatisticEngine {
+class StatsReporter final {
 
 public:
   struct AlwaysOnDriverCounters {
 #define DRIVER_STATISTIC(ID) int64_t ID;
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef DRIVER_STATISTIC
   };
 
   struct AlwaysOnFrontendCounters {
 #define FRONTEND_STATISTIC(NAME, ID) int64_t ID;
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef FRONTEND_STATISTIC
   };
 
@@ -129,19 +129,19 @@ private:
   void publishAlwaysOnStatsToLLVM();
   void printAlwaysOnStatsAndTimers(raw_ostream &OS);
 
-  StatisticEngine(llvm::StringRef ProgramName, llvm::StringRef AuxName,
-                  llvm::StringRef Directory, SrcMgr *SM,
-                  clang::SourceManager *CSM, bool TraceEvents,
-                  bool ProfileEvents, bool ProfileEntities);
+  StatsReporter(llvm::StringRef ProgramName, llvm::StringRef AuxName,
+                llvm::StringRef Directory, SrcMgr *SM,
+                clang::SourceManager *CSM, bool TraceEvents, bool ProfileEvents,
+                bool ProfileEntities);
 
 public:
-  StatisticEngine(llvm::StringRef ProgramName, llvm::StringRef ModuleName,
-                  llvm::StringRef InputName, llvm::StringRef TripleName,
-                  llvm::StringRef OutputType, llvm::StringRef OptType,
-                  llvm::StringRef Directory, SrcMgr *SM = nullptr,
-                  clang::SourceManager *CSM = nullptr, bool TraceEvents = false,
-                  bool ProfileEvents = false, bool ProfileEntities = false);
-  ~StatisticEngine();
+  StatsReporter(llvm::StringRef ProgramName, llvm::StringRef ModuleName,
+                llvm::StringRef InputName, llvm::StringRef TripleName,
+                llvm::StringRef OutputType, llvm::StringRef OptType,
+                llvm::StringRef Directory, SrcMgr *SM = nullptr,
+                clang::SourceManager *CSM = nullptr, bool TraceEvents = false,
+                bool ProfileEvents = false, bool ProfileEntities = false);
+  ~StatsReporter();
 
   AlwaysOnDriverCounters &getDriverCounters();
   AlwaysOnFrontendCounters &getFrontendCounters();
@@ -154,22 +154,22 @@ public:
 
 // This is a non-nested type just to make it less work to write at call sites.
 class FrontendStatsTracer {
-  FrontendStatsTracer(StatisticEngine *Reporter, llvm::StringRef EventName,
+  FrontendStatsTracer(StatsReporter *Reporter, llvm::StringRef EventName,
                       const void *Entity,
-                      const StatisticEngine::TraceFormatter *Formatter);
+                      const StatsReporter::TraceFormatter *Formatter);
 
   // In the general case we do not know how to format an entity for tracing.
   template <typename T>
-  static const StatisticEngine::TraceFormatter *getTraceFormatter() {
+  static const StatsReporter::TraceFormatter *getTraceFormatter() {
     return nullptr;
   }
 
 public:
-  StatisticEngine *Reporter;
+  StatsReporter *Reporter;
   llvm::TimeRecord SavedTime;
   llvm::StringRef EventName;
   const void *Entity;
-  const StatisticEngine::TraceFormatter *Formatter;
+  const StatsReporter::TraceFormatter *Formatter;
   FrontendStatsTracer();
   FrontendStatsTracer(FrontendStatsTracer &&other);
   FrontendStatsTracer &operator=(FrontendStatsTracer &&);
@@ -182,23 +182,23 @@ public:
   /// entity type, and produce a tracer that's either active or inert depending
   /// on whether the provided \p Reporter is null (nullptr means "tracing is
   /// disabled").
-  FrontendStatsTracer(StatisticEngine *Reporter, llvm::StringRef EventName);
+  FrontendStatsTracer(StatsReporter *Reporter, llvm::StringRef EventName);
 
-  FrontendStatsTracer(StatisticEngine *Reporter, llvm::StringRef EventName,
+  FrontendStatsTracer(StatsReporter *Reporter, llvm::StringRef EventName,
                       const Decl *D);
 
-  FrontendStatsTracer(StatisticEngine *Reporter, llvm::StringRef EventName,
+  FrontendStatsTracer(StatsReporter *Reporter, llvm::StringRef EventName,
                       const clang::Decl *D);
 
-  FrontendStatsTracer(StatisticEngine *Reporter, llvm::StringRef EventName,
+  FrontendStatsTracer(StatsReporter *Reporter, llvm::StringRef EventName,
                       const Expr *E);
 
-  FrontendStatsTracer(StatisticEngine *Reporter, llvm::StringRef EventName,
+  FrontendStatsTracer(StatsReporter *Reporter, llvm::StringRef EventName,
                       const SourceFile *F);
 
-  FrontendStatsTracer(StatisticEngine *Reporter, llvm::StringRef EventName,
+  FrontendStatsTracer(StatsReporter *Reporter, llvm::StringRef EventName,
                       const Stmt *S);
-  FrontendStatsTracer(StatisticEngine *Reporter, llvm::StringRef EventName,
+  FrontendStatsTracer(StatsReporter *Reporter, llvm::StringRef EventName,
                       const Type *ty);
 };
 
@@ -210,27 +210,27 @@ public:
 // linking with the object files that define the tracer.
 
 template <>
-const StatisticEngine::TraceFormatter *
+const StatsReporter::TraceFormatter *
 FrontendStatsTracer::getTraceFormatter<const Decl *>();
 
 template <>
-const StatisticEngine::TraceFormatter *
+const StatsReporter::TraceFormatter *
 FrontendStatsTracer::getTraceFormatter<const clang::Decl *>();
 
 template <>
-const StatisticEngine::TraceFormatter *
+const StatsReporter::TraceFormatter *
 FrontendStatsTracer::getTraceFormatter<const Expr *>();
 
 template <>
-const StatisticEngine::TraceFormatter *
+const StatsReporter::TraceFormatter *
 FrontendStatsTracer::getTraceFormatter<const SourceFile *>();
 
 template <>
-const StatisticEngine::TraceFormatter *
+const StatsReporter::TraceFormatter *
 FrontendStatsTracer::getTraceFormatter<const Stmt *>();
 
 template <>
-const StatisticEngine::TraceFormatter *
+const StatsReporter::TraceFormatter *
 FrontendStatsTracer::getTraceFormatter<const Type *>();
 
 // Provide inline definitions for the delegating constructors.  These avoid
@@ -241,36 +241,36 @@ FrontendStatsTracer::getTraceFormatter<const Type *>();
 // which is declared in the `FrontendStatsTracer` scope (the nested name
 // specifier scope cannot be used to declare them).
 
-inline FrontendStatsTracer::FrontendStatsTracer(StatisticEngine *R,
+inline FrontendStatsTracer::FrontendStatsTracer(StatsReporter *R,
                                                 llvm::StringRef S)
     : FrontendStatsTracer(R, S, nullptr, nullptr) {}
 
-inline FrontendStatsTracer::FrontendStatsTracer(StatisticEngine *R,
+inline FrontendStatsTracer::FrontendStatsTracer(StatsReporter *R,
                                                 llvm::StringRef S,
                                                 const Decl *D)
     : FrontendStatsTracer(R, S, D, getTraceFormatter<const Decl *>()) {}
 
-inline FrontendStatsTracer::FrontendStatsTracer(StatisticEngine *R,
+inline FrontendStatsTracer::FrontendStatsTracer(StatsReporter *R,
                                                 llvm::StringRef S,
                                                 const clang::Decl *D)
     : FrontendStatsTracer(R, S, D, getTraceFormatter<const clang::Decl *>()) {}
 
-inline FrontendStatsTracer::FrontendStatsTracer(StatisticEngine *R,
+inline FrontendStatsTracer::FrontendStatsTracer(StatsReporter *R,
                                                 llvm::StringRef S,
                                                 const Expr *E)
     : FrontendStatsTracer(R, S, E, getTraceFormatter<const Expr *>()) {}
 
-inline FrontendStatsTracer::FrontendStatsTracer(StatisticEngine *R,
+inline FrontendStatsTracer::FrontendStatsTracer(StatsReporter *R,
                                                 llvm::StringRef S,
                                                 const SourceFile *SF)
     : FrontendStatsTracer(R, S, SF, getTraceFormatter<const SourceFile *>()) {}
 
-inline FrontendStatsTracer::FrontendStatsTracer(StatisticEngine *R,
+inline FrontendStatsTracer::FrontendStatsTracer(StatsReporter *R,
                                                 llvm::StringRef S,
                                                 const Stmt *ST)
     : FrontendStatsTracer(R, S, ST, getTraceFormatter<const Stmt *>()) {}
 
-inline FrontendStatsTracer::FrontendStatsTracer(StatisticEngine *R,
+inline FrontendStatsTracer::FrontendStatsTracer(StatsReporter *R,
                                                 llvm::StringRef S,
                                                 const Type *ty)
     : FrontendStatsTracer(R, S, ty, getTraceFormatter<const Type *>()) {}
@@ -280,35 +280,35 @@ inline FrontendStatsTracer::FrontendStatsTracer(StatisticEngine *R,
 
 template <typename T>
 typename std::enable_if<
-    std::is_constructible<FrontendStatsTracer, StatisticEngine *,
-                          llvm::StringRef, const T *>::value,
+    std::is_constructible<FrontendStatsTracer, StatsReporter *, llvm::StringRef,
+                          const T *>::value,
     FrontendStatsTracer>::type
-make_tracer_direct(StatisticEngine *Reporter, llvm::StringRef Name, T *Value) {
+make_tracer_direct(StatsReporter *Reporter, llvm::StringRef Name, T *Value) {
   return FrontendStatsTracer(Reporter, Name, static_cast<const T *>(Value));
 }
 
 template <typename T>
 typename std::enable_if<
-    std::is_constructible<FrontendStatsTracer, StatisticEngine *,
-                          llvm::StringRef, const T *>::value,
+    std::is_constructible<FrontendStatsTracer, StatsReporter *, llvm::StringRef,
+                          const T *>::value,
     FrontendStatsTracer>::type
-make_tracer_direct(StatisticEngine *Reporter, llvm::StringRef Name,
+make_tracer_direct(StatsReporter *Reporter, llvm::StringRef Name,
                    const T *Value) {
   return FrontendStatsTracer(Reporter, Name, Value);
 }
 
 template <typename T>
 typename std::enable_if<
-    !std::is_constructible<FrontendStatsTracer, StatisticEngine *,
+    !std::is_constructible<FrontendStatsTracer, StatsReporter *,
                            llvm::StringRef, const T *>::value,
     FrontendStatsTracer>::type
-make_tracer_direct(StatisticEngine *Reporter, llvm::StringRef Name, T *Value) {
+make_tracer_direct(StatsReporter *Reporter, llvm::StringRef Name, T *Value) {
   return FrontendStatsTracer(Reporter, Name);
 }
 
 template <typename T>
 typename std::enable_if<!std::is_pointer<T>::value, FrontendStatsTracer>::type
-make_tracer_direct(StatisticEngine *Reporter, llvm::StringRef Name, T Value) {
+make_tracer_direct(StatsReporter *Reporter, llvm::StringRef Name, T Value) {
   return FrontendStatsTracer(Reporter, Name);
 }
 
@@ -317,7 +317,7 @@ template <typename T, typename U>
 struct is_pointerunion<llvm::PointerUnion<T, U>> : std::true_type {};
 
 template <typename T, typename U>
-FrontendStatsTracer make_tracer_pointerunion(StatisticEngine *Reporter,
+FrontendStatsTracer make_tracer_pointerunion(StatsReporter *Reporter,
                                              llvm::StringRef Name,
                                              llvm::PointerUnion<T, U> Value) {
   if (Value.template is<T>())
@@ -328,13 +328,13 @@ FrontendStatsTracer make_tracer_pointerunion(StatisticEngine *Reporter,
 
 template <typename T>
 typename std::enable_if<!is_pointerunion<T>::value, FrontendStatsTracer>::type
-make_tracer_pointerunion(StatisticEngine *Reporter, llvm::StringRef Name,
+make_tracer_pointerunion(StatsReporter *Reporter, llvm::StringRef Name,
                          T Value) {
   return make_tracer_direct(Reporter, Name, Value);
 }
 
 template <typename First, typename... Rest>
-FrontendStatsTracer make_tracer(StatisticEngine *Reporter, llvm::StringRef Name,
+FrontendStatsTracer make_tracer(StatsReporter *Reporter, llvm::StringRef Name,
                                 std::tuple<First, Rest...> Value) {
   return make_tracer_pointerunion(Reporter, Name, std::get<0>(Value));
 }

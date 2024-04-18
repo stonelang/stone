@@ -1,7 +1,7 @@
 #ifndef STONE_SEM_TYPECHECKER_H
 #define STONE_SEM_TYPECHECKER_H
 
-#include "stone/Support/StatisticEngine.h"
+#include "stone/Support/StatsReporter.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
 
@@ -17,7 +17,6 @@ class Decl;
 class Stmt;
 
 class TypeChecker;
-
 
 class TypeCheckerDiagnostics final {
 public:

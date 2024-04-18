@@ -10,12 +10,11 @@ using namespace stone;
 IRGenRequest::IRGenRequest(
     const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
     const llvm::StringRef moduleName, ASTContext &astContext,
-    MemoryContext &memContext,
     const PrimaryFileSpecificPaths primaryFileSpecificPaths,
     llvm::ArrayRef<std::string> parallelOutputFilenames,
     llvm::GlobalVariable *outModuleHash)
     : codeGenOpts(codeGenOpts), moduleOrFile(moduleDecl),
-      moduleName(moduleName), astContext(astContext), memContext(memContext),
+      moduleName(moduleName), astContext(astContext),
       primaryFileSpecificPaths(primaryFileSpecificPaths),
       outModuleHash(outModuleHash) {}
 
@@ -27,23 +26,20 @@ IRGenRequest::IRGenRequest(
     llvm::ArrayRef<std::string> parallelOutputFilenames,
     llvm::GlobalVariable *outModuleHash)
     : codeGenOpts(codeGenOpts), moduleOrFile(moduleFile),
-      moduleName(moduleName), astContext(astContext), memContext(memContext),
+      moduleName(moduleName), astContext(astContext),
       primaryFileSpecificPaths(primaryFileSpecificPaths),
       outModuleHash(outModuleHash) {}
 
-IRGenRequest
-IRGenRequest::ForModule(const CodeGenOptions &codeGenOpts,
-                        ModuleDecl *moduleDecl,
-                        const llvm::StringRef moduleName,
-                        ASTContext &astContext, MemoryContext &memContext,
-                        const PrimaryFileSpecificPaths primaryFileSpecificPaths,
-                        llvm::ArrayRef<std::string> parallelOutputFilenames,
-                        llvm::GlobalVariable *outModuleHash) {
+IRGenRequest IRGenRequest::ForModule(
+    const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
+    const llvm::StringRef moduleName, ASTContext &astContext,
+    const PrimaryFileSpecificPaths primaryFileSpecificPaths,
+    llvm::ArrayRef<std::string> parallelOutputFilenames,
+    llvm::GlobalVariable *outModuleHash) {
   return IRGenRequest{codeGenOpts,
                       moduleDecl,
                       moduleName,
                       astContext,
-                      memContext,
                       primaryFileSpecificPaths,
                       parallelOutputFilenames,
                       outModuleHash};
@@ -52,12 +48,15 @@ IRGenRequest::ForModule(const CodeGenOptions &codeGenOpts,
 IRGenRequest
 IRGenRequest::ForFile(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
                       const llvm::StringRef moduleName, ASTContext &astContext,
-                      MemoryContext &memContext,
                       const PrimaryFileSpecificPaths primaryFileSpecificPaths,
                       llvm::GlobalVariable *outModuleHash) {
-  return IRGenRequest{codeGenOpts, moduleFile,   moduleName,
-                      astContext,  memContext,   primaryFileSpecificPaths,
-                      {},          outModuleHash
+  return IRGenRequest{codeGenOpts,
+                      moduleFile,
+                      moduleName,
+                      astContext,
+                      primaryFileSpecificPaths,
+                      {},
+                      outModuleHash
 
   };
 }

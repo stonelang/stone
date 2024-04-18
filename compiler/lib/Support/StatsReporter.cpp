@@ -1,5 +1,5 @@
 
-#include "stone/Support/StatisticEngine.h"
+#include "stone/Support/StatsReporter.h"
 
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/SourceManager.h"
@@ -133,7 +133,7 @@ static std::string auxName(llvm::StringRef ModuleName,
           cleanName(OptType));
 }
 
-class StatisticEngine::RecursionSafeTimers {
+class StatsReporter::RecursionSafeTimers {
   struct RecursionSafeTimer {
     std::optional<llvm::NamedRegionTimer> Timer;
     size_t RecursionDepth;
@@ -166,7 +166,7 @@ class StatsProfiler {
   struct Node {
     int64_t SelfCount;
     using Key = std::tuple<llvm::StringRef, const void *,
-                           const StatisticEngine::TraceFormatter *>;
+                           const StatsReporter::TraceFormatter *>;
     Node *Parent;
     DenseMap<Key, std::unique_ptr<Node>> Children;
 
@@ -178,7 +178,7 @@ class StatsProfiler {
         for (auto const &K : Context) {
           llvm::StringRef Name;
           const void *Entity;
-          const StatisticEngine::TraceFormatter *Formatter;
+          const StatsReporter::TraceFormatter *Formatter;
           std::tie(Name, Entity, Formatter) = K;
           OS << delim << Name;
           if (Formatter && Entity) {
@@ -197,7 +197,7 @@ class StatsProfiler {
     }
 
     Node *getChild(llvm::StringRef Name, const void *Entity,
-                   const StatisticEngine::TraceFormatter *TF) {
+                   const StatsReporter::TraceFormatter *TF) {
       Key K(Name, Entity, TF);
       auto I = Children.find(K);
       if (I != Children.end()) {
@@ -238,14 +238,14 @@ public:
 
   void profileEvent(llvm::StringRef Name, double DeltaSeconds, bool IsEntry,
                     const void *Entity = nullptr,
-                    const StatisticEngine::TraceFormatter *TF = nullptr) {
+                    const StatsReporter::TraceFormatter *TF = nullptr) {
     int64_t DeltaUSec = int64_t(1000000.0 * DeltaSeconds);
     profileEvent(Name, DeltaUSec, IsEntry, Entity, TF);
   }
 
   void profileEvent(llvm::StringRef Name, int64_t Delta, bool IsEntry,
                     const void *Entity = nullptr,
-                    const StatisticEngine::TraceFormatter *TF = nullptr) {
+                    const StatsReporter::TraceFormatter *TF = nullptr) {
     assert(Curr);
     Curr->SelfCount += Delta;
     if (IsEntry) {
@@ -260,7 +260,7 @@ public:
   }
 };
 
-struct StatisticEngine::StatsProfilers {
+struct StatsReporter::StatsProfilers {
   // Timerecord of last update.
   llvm::TimeRecord LastUpdated;
 
@@ -272,28 +272,28 @@ struct StatisticEngine::StatsProfilers {
 
   // Then one profiler for each frontend statistic.
 #define FRONTEND_STATISTIC(TY, NAME) StatsProfiler NAME;
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef FRONTEND_STATISTIC
 
   StatsProfilers() : LastUpdated(llvm::TimeRecord::getCurrentTime()) {}
 };
 
-StatisticEngine::StatisticEngine(
+StatsReporter::StatsReporter(
     llvm::StringRef ProgramName, llvm::StringRef ModuleName,
     llvm::StringRef InputName, llvm::StringRef TripleName,
     llvm::StringRef OutputType, llvm::StringRef OptType,
     llvm::StringRef Directory, SrcMgr *SM, clang::SourceManager *CSM,
     bool TraceEvents, bool ProfileEvents, bool ProfileEntities)
-    : StatisticEngine(
+    : StatsReporter(
           ProgramName,
           auxName(ModuleName, InputName, TripleName, OutputType, OptType),
           Directory, SM, CSM, TraceEvents, ProfileEvents, ProfileEntities) {}
 
-StatisticEngine::StatisticEngine(llvm::StringRef ProgramName,
-                                 llvm::StringRef AuxName,
-                                 llvm::StringRef Directory, SrcMgr *SM,
-                                 clang::SourceManager *CSM, bool TraceEvents,
-                                 bool ProfileEvents, bool ProfileEntities)
+StatsReporter::StatsReporter(llvm::StringRef ProgramName,
+                             llvm::StringRef AuxName, llvm::StringRef Directory,
+                             SrcMgr *SM, clang::SourceManager *CSM,
+                             bool TraceEvents, bool ProfileEvents,
+                             bool ProfileEntities)
     : currentProcessExitStatusSet(false),
       currentProcessExitStatus(EXIT_FAILURE), StatsFilename(Directory),
       TraceFilename(Directory), ProfileDirname(Directory),
@@ -318,11 +318,11 @@ StatisticEngine::StatisticEngine(llvm::StringRef ProgramName,
     EntityProfilers = std::make_unique<StatsProfilers>();
 }
 
-void StatisticEngine::recordJobMaxRSS(long rss) {
+void StatsReporter::recordJobMaxRSS(long rss) {
   maxChildRSS = std::max(maxChildRSS, rss);
 }
 
-int64_t StatisticEngine::getChildrenMaxResidentSetSize() {
+int64_t StatsReporter::getChildrenMaxResidentSetSize() {
 #if defined(HAVE_GETRUSAGE) && !defined(__HAIKU__)
   struct rusage RU;
   ::getrusage(RUSAGE_CHILDREN, &RU);
@@ -341,27 +341,26 @@ int64_t StatisticEngine::getChildrenMaxResidentSetSize() {
 #endif
 }
 
-StatisticEngine::AlwaysOnDriverCounters &StatisticEngine::getDriverCounters() {
+StatsReporter::AlwaysOnDriverCounters &StatsReporter::getDriverCounters() {
   if (!DriverCounters)
     DriverCounters.emplace();
   return *DriverCounters;
 }
 
-StatisticEngine::AlwaysOnFrontendCounters &
-StatisticEngine::getFrontendCounters() {
+StatsReporter::AlwaysOnFrontendCounters &StatsReporter::getFrontendCounters() {
   if (!FrontendCounters)
     FrontendCounters.emplace();
   return *FrontendCounters;
 }
 
-void StatisticEngine::noteCurrentProcessExitStatus(int status) {
+void StatsReporter::noteCurrentProcessExitStatus(int status) {
   assert(MainThreadID == std::this_thread::get_id());
   assert(!currentProcessExitStatusSet);
   currentProcessExitStatusSet = true;
   currentProcessExitStatus = status;
 }
 
-void StatisticEngine::publishAlwaysOnStatsToLLVM() {
+void StatsReporter::publishAlwaysOnStatsToLLVM() {
   // NOTE: We do `Stat = 0` below to force LLVM to register the statistic,
   // ensuring we print counters, even if 0.
   if (FrontendCounters) {
@@ -372,7 +371,7 @@ void StatisticEngine::publishAlwaysOnStatsToLLVM() {
     Stat = 0;                                                                  \
     Stat += (C).NAME;                                                          \
   } while (0);
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef FRONTEND_STATISTIC
   }
   if (DriverCounters) {
@@ -383,12 +382,12 @@ void StatisticEngine::publishAlwaysOnStatsToLLVM() {
     Stat = 0;                                                                  \
     Stat += (C).NAME;                                                          \
   } while (0);
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef DRIVER_STATISTIC
   }
 }
 
-void StatisticEngine::printAlwaysOnStatsAndTimers(raw_ostream &OS) {
+void StatsReporter::printAlwaysOnStatsAndTimers(raw_ostream &OS) {
   // Adapted from llvm::PrintStatisticsJSON
   OS << "{\n";
   const char *delim = "";
@@ -399,7 +398,7 @@ void StatisticEngine::printAlwaysOnStatsAndTimers(raw_ostream &OS) {
     OS << delim << "\t\"" #TY "." #NAME "\": " << C.NAME;                      \
     delim = ",\n";                                                             \
   } while (0);
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef FRONTEND_STATISTIC
   }
   if (DriverCounters) {
@@ -409,7 +408,7 @@ void StatisticEngine::printAlwaysOnStatsAndTimers(raw_ostream &OS) {
     OS << delim << "\t\"Driver." #NAME "\": " << C.NAME;                       \
     delim = ",\n";                                                             \
   } while (0);
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef DRIVER_STATISTIC
   }
   // Print timers.
@@ -420,8 +419,8 @@ void StatisticEngine::printAlwaysOnStatsAndTimers(raw_ostream &OS) {
 }
 
 FrontendStatsTracer::FrontendStatsTracer(
-    StatisticEngine *Reporter, llvm::StringRef EventName, const void *Entity,
-    const StatisticEngine::TraceFormatter *Formatter)
+    StatsReporter *Reporter, llvm::StringRef EventName, const void *Entity,
+    const StatsReporter::TraceFormatter *Formatter)
     : Reporter(Reporter), SavedTime(), EventName(EventName), Entity(Entity),
       Formatter(Formatter) {
   if (Reporter) {
@@ -458,7 +457,7 @@ FrontendStatsTracer::~FrontendStatsTracer() {
 // Copy any interesting process-wide resource accounting stats to
 // associated fields in the provided AlwaysOnFrontendCounters.
 void updateProcessWideFrontendCounters(
-    StatisticEngine::AlwaysOnFrontendCounters &C) {
+    StatsReporter::AlwaysOnFrontendCounters &C) {
   if (auto instrExecuted = getInstructionsExecuted()) {
     C.NumInstructionsExecuted = instrExecuted;
   }
@@ -483,18 +482,18 @@ void updateProcessWideFrontendCounters(
 static inline void
 saveEvent(llvm::StringRef StatName, int64_t Curr, int64_t Last, uint64_t NowUS,
           uint64_t LiveUS,
-          std::vector<StatisticEngine::FrontendStatsEvent> &Events,
+          std::vector<StatsReporter::FrontendStatsEvent> &Events,
           FrontendStatsTracer const &T, bool IsEntry) {
   int64_t Delta = Curr - Last;
   if (Delta != 0) {
-    Events.emplace_back(StatisticEngine::FrontendStatsEvent{
+    Events.emplace_back(StatsReporter::FrontendStatsEvent{
         NowUS, LiveUS, IsEntry, T.EventName, StatName, Delta, Curr, T.Entity,
         T.Formatter});
   }
 }
 
-void StatisticEngine::saveAnyFrontendStatsEvents(FrontendStatsTracer const &T,
-                                                 bool IsEntry) {
+void StatsReporter::saveAnyFrontendStatsEvents(FrontendStatsTracer const &T,
+                                               bool IsEntry) {
   assert(MainThreadID == std::this_thread::get_id());
 
   // Don't record any new stats if we're currently flushing the ones we've
@@ -504,7 +503,7 @@ void StatisticEngine::saveAnyFrontendStatsEvents(FrontendStatsTracer const &T,
     return;
 
   // First make a note in the recursion-safe timers; these
-  // are active anytime StatisticEngine is active.
+  // are active anytime StatsReporter is active.
   if (IsEntry) {
     RecursiveTimers->beginTimer(T.EventName);
   } else {
@@ -532,7 +531,7 @@ void StatisticEngine::saveAnyFrontendStatsEvents(FrontendStatsTracer const &T,
                                           IsEntry);
 #define FRONTEND_STATISTIC(TY, N)                                              \
   EventProfilers->N.profileEvent(T.EventName, Curr.N - Last.N, IsEntry);
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef FRONTEND_STATISTIC
     EventProfilers->LastUpdated = Now;
   }
@@ -552,7 +551,7 @@ void StatisticEngine::saveAnyFrontendStatsEvents(FrontendStatsTracer const &T,
 #define FRONTEND_STATISTIC(TY, N)                                              \
   EntityProfilers->N.profileEvent(T.EventName, Curr.N - Last.N, IsEntry,       \
                                   T.Entity, T.Formatter);
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef FRONTEND_STATISTIC
     EntityProfilers->LastUpdated = Now;
   }
@@ -564,7 +563,7 @@ void StatisticEngine::saveAnyFrontendStatsEvents(FrontendStatsTracer const &T,
     auto &Events = *FrontendStatsEvents;
 #define FRONTEND_STATISTIC(TY, N)                                              \
   saveEvent(#TY "." #N, Curr.N, Last.N, NowUS, LiveUS, Events, T, IsEntry);
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef FRONTEND_STATISTIC
   }
 
@@ -572,9 +571,9 @@ void StatisticEngine::saveAnyFrontendStatsEvents(FrontendStatsTracer const &T,
   Last = Curr;
 }
 
-StatisticEngine::TraceFormatter::~TraceFormatter() {}
+StatsReporter::TraceFormatter::~TraceFormatter() {}
 
-StatisticEngine::~StatisticEngine() {
+StatsReporter::~StatsReporter() {
   assert(MainThreadID == std::this_thread::get_id());
   // If nobody's marked this process as successful yet,
   // mark it as failing.
@@ -647,7 +646,7 @@ StatisticEngine::~StatisticEngine() {
   flushTracesAndProfiles();
 }
 
-void StatisticEngine::flushTracesAndProfiles() {
+void StatsReporter::flushTracesAndProfiles() {
   // Note that we're currently flushing statistics and shouldn't record any
   // more until we've finished.
   llvm::SaveAndRestore<bool> flushing(IsFlushingTracesAndProfiles, true);
@@ -693,7 +692,7 @@ void StatisticEngine::flushTracesAndProfiles() {
       EventProfilers->WallTime.printToFile(D, "Time.Wall.events");
 #define FRONTEND_STATISTIC(TY, NAME)                                           \
   EventProfilers->NAME.printToFile(ProfileDirname, #TY "." #NAME ".events");
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef FRONTEND_STATISTIC
     }
     if (EntityProfilers) {
@@ -705,7 +704,7 @@ void StatisticEngine::flushTracesAndProfiles() {
 #define FRONTEND_STATISTIC(TY, NAME)                                           \
   EntityProfilers->NAME.printToFile(ProfileDirname, #TY "." #NAME ".entitie"   \
                                                         "s");
-#include "stone/Support/StatisticEngine.def"
+#include "stone/Support/StatsReporter.def"
 #undef FRONTEND_STATISTIC
     }
   }

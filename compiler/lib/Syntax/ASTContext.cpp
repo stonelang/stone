@@ -16,9 +16,9 @@ using namespace stone;
 
 ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
                        ClangContext &clangContext, DiagnosticEngine &de,
-                       StatisticEngine &se)
+                       StatsReporter *stats)
     : MemoryContext(langOpts), langOpts(langOpts), searchPathOpts(spOpts),
-      clangContext(clangContext), de(de), se(se), identifiers(allocator),
+      clangContext(clangContext), de(de), stats(stats), identifiers(allocator),
       builtin(*this) {}
 
 ASTContext::~ASTContext() {

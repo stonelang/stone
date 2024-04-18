@@ -4,9 +4,8 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Core.h"
-#include "stone/Option/Action.h"
-#include "stone/Stats/Stats.h"
 #include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Support/StatsReporter.h"
 #include "stone/Support/TextDiagnosticConsumer.h"
 #include "stone/Support/TextDiagnosticFormatter.h"
 #include "stone/Syntax/ASTDiagnosticArgument.h"
@@ -23,32 +22,30 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   ASTDiagnosticEmitter emitter(formatter);
   TextDiagnosticConsumer consumer(emitter);
 
-  Compiler compiler;
-  compiler.SetObservation(observation);
-  compiler.AddDiagnosticConsumer(consumer);
+  CompilerInvocation invocation;
+  invocation.AddDiagnosticConsumer(consumer);
 
   auto FinishCompile = [&](Status status = Status::Success()) -> int {
-    return (status.IsError() ? status.GetFlag() : compiler.GetDiags().Finish());
+    return (status.IsError() ? status.GetFlag()
+                             : invocation.GetDiags().Finish());
   };
   // Check for empty args
   if (args.empty()) {
-    compiler.GetDiags().PrintD(diag::err_no_compile_args);
+    invocation.GetDiags().PrintD(diag::err_no_compile_args);
     return FinishCompile(Status::Error());
   }
 
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  compiler.GetInvocation().SetMainExecutablePath(mainExecutablePath);
-  assert(
-      compiler.GetInvocation().GetCompilerOptions().HasMainExecutablePath() &&
-      "Did not find an executable path!");
+  invocation.SetMainExecutablePath(mainExecutablePath);
+  assert(invocation.GetCompilerOptions().HasMainExecutablePath() &&
+         "Did not find an executable path!");
 
   auto mainExecutableName = llvm::sys::path::stem(arg0);
-  compiler.GetInvocation().SetMainExecutableName(mainExecutableName);
-  assert(
-      compiler.GetInvocation().GetCompilerOptions().HasMainExecutableName() &&
-      "Did not find an executable name!");
+  invocation.SetMainExecutableName(mainExecutableName);
+  assert(invocation.GetCompilerOptions().HasMainExecutableName() &&
+         "Did not find an executable name!");
 
-  auto status = compiler.GetInvocation().ParseCommandLine(args);
+  auto status = invocation.ParseCommandLine(args);
   if (status.IsError()) {
 
     // Check that this is a help request
@@ -60,6 +57,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     // }
     return FinishCompile(Status::Error());
   }
+
+  Compiler compiler(invocation);
+  compiler.SetObservation(observation);
 
   if (compiler.HasObservation()) {
     compiler.GetObservation()->CompletedCommandLineParsing(compiler);

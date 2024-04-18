@@ -47,10 +47,9 @@ enum OptID {
 #undef OPTION
 };
 
-
 ActionKind GetActionKindByOptID(const unsigned optID);
 llvm::StringRef GetEqualValueByOptID(const opts::OptID optID,
-                                        const llvm::opt::InputArgList &args);
+                                     const llvm::opt::InputArgList &args);
 unsigned GetArgID(const llvm::opt::Arg *arg);
 llvm::StringRef GetArgName(const llvm::opt::Arg *arg);
 
@@ -64,7 +63,6 @@ class Options {
   std::unique_ptr<llvm::opt::OptTable> optTable;
 
 public:
-
   // bool showHiddenHelp = false;
 
   /// The path the executing program

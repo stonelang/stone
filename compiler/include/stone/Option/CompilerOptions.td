@@ -1,4 +1,4 @@
-let Flags = [CompilerOption, NoDriverOption] in {
+let Flags = [CompilerOption] in {
 
 def PrimaryFile : Separate<["-"], "primary-file">,
   HelpText<"Produce output for this file, not the whole module">;
@@ -26,8 +26,10 @@ def BypassBatchModeChecks: Flag<["-"], "bypass-batch-mode-checks">,
 def IndexUnitOutputPathFileList : Separate<["-"], "index-unit-output-path-filelist">,
   HelpText<"Specify index unit output paths in a file rather than on the command line">;
 
+
+// COMPILER ONLY 
 def EmitDependenciesPath
-  : Separate<["-"], "emit-dependencies-path">, MetaVarName<"<path>">,
+  : Separate<["-"], "emit-dependencies-path">,  MetaVarName<"<path>">,
     HelpText<"Output basic Make-compatible dependencies file to <path>">;
 
 def EmitReferenceDependencies : Flag<["-"], "emit-reference-dependencies">,

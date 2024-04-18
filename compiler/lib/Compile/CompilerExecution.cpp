@@ -114,8 +114,7 @@ ParseExecution::ParseExecution(Compiler &compiler)
 
 Status ParseExecution::ExecuteAction() {
 
-  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
-                             "parse-source-file");
+  FrontendStatsTracer tracer(compiler.GetStats(), "parse-source-file");
   VerifyMainActionHasNoConsumer();
 
   CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
@@ -154,8 +153,7 @@ ResolveImportsExecution::ResolveImportsExecution(Compiler &compiler)
 Status ResolveImportsExecution::ExecuteAction() {
   // assert(GetExecutionAction() == CompilerAction::ResolveImports);
 
-  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(),
-                             "import-resolution");
+  FrontendStatsTracer tracer(compiler.GetStats(), "import-resolution");
 
   VerifyMainActionHasNoConsumer();
 
@@ -185,7 +183,7 @@ TypeCheckExecution::TypeCheckExecution(Compiler &compiler)
 
 Status TypeCheckExecution::ExecuteAction() {
 
-  CompilerStatsTracer tracer(&GetCompiler().GetStatsReporter(), "type-check");
+  FrontendStatsTracer tracer(compiler.GetStats(), "type-check");
 
   VerifyMainActionHasNoConsumer();
 
@@ -252,8 +250,7 @@ Status EmitIRBeforeExecution::ExecuteAction() {
       auto result = stone::GenIR(IRGenRequest::ForModule(
           compiler.GetInvocation().GetCodeGenOptions(),
           compiler.GetMainModule(), psps.outputFilename,
-          compiler.GetASTContext(), compiler.GetMemoryContext(), psps,
-          parallelOutputFilenames));
+          compiler.GetASTContext(), psps, parallelOutputFilenames));
 
       if (ShouldNotifyConsumer()) {
         GetConsumer()->CompletedIRGeneration(result->GetLLVMModule());
@@ -270,8 +267,7 @@ Status EmitIRBeforeExecution::ExecuteAction() {
 
       auto result = stone::GenIR(IRGenRequest::ForFile(
           compiler.GetInvocation().GetCodeGenOptions(), &sourceFile,
-          psps.outputFilename, compiler.GetASTContext(),
-          compiler.GetMemoryContext(), psps));
+          psps.outputFilename, compiler.GetASTContext(), psps));
 
       if (ShouldNotifyConsumer()) {
         GetConsumer()->CompletedIRGeneration(result->GetLLVMModule());
@@ -337,7 +333,7 @@ EmitBitCodeExecution::EmitBitCodeExecution(Compiler &compiler)
 
 Status EmitBitCodeExecution::ExecuteAction() {
 
-  CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-bit-code");
+  FrontendStatsTracer tracer(compiler.GetStats(), "emit-bit-code");
   // GeneratedModule
   // compiler.GetIRGenResult();
 
@@ -350,7 +346,7 @@ EmitModuleExecution::EmitModuleExecution(Compiler &compiler)
 
 Status EmitModuleExecution::ExecuteAction() {
 
-  CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit-module-code");
+  FrontendStatsTracer tracer(compiler.GetStats(), "emit-module-code");
 
   // compiler.GetIRGenResult();
 
@@ -362,7 +358,7 @@ MergeModulesExecution::MergeModulesExecution(Compiler &compiler)
 
 Status MergeModulesExecution::ExecuteAction() {
 
-  CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "merge-modules");
+  FrontendStatsTracer tracer(compiler.GetStats(), "merge-modules");
 
   return Status();
 }
@@ -373,7 +369,7 @@ EmitObjectExecution::EmitObjectExecution(Compiler &compiler)
 
 Status EmitObjectExecution::ExecuteAction() {
 
-  CompilerStatsTracer tracer(&compiler.GetStatsReporter(), "emit object code");
+  FrontendStatsTracer tracer(compiler.GetStats(), "emit object code");
 
   // if (GenerateIR().IsError()) {
   //   return Status::Error();
@@ -414,8 +410,7 @@ EmitAssemblyExecution::EmitAssemblyExecution(Compiler &compiler)
 
 Status EmitAssemblyExecution::ExecuteAction() {
 
-  CompilerStatsTracer tracer(&compiler.GetStatsReporter(),
-                             "emit assembly code");
+  FrontendStatsTracer tracer(compiler.GetStats(), "emit assembly code");
 
   // if (GenerateIR().IsError()) {
   //   return Status::Error();

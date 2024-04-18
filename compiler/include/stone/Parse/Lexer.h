@@ -5,7 +5,7 @@
 #include "stone/Basic/Tokenable.h"
 #include "stone/Parse/Trivia.h"
 #include "stone/Support/DiagnosticEngine.h"
-#include "stone/Support/StatisticEngine.h"
+#include "stone/Support/StatsReporter.h"
 
 namespace stone {
 class SrcID;
@@ -78,7 +78,7 @@ class Lexer final : public Tokenable {
   const unsigned BufferID;
   const SrcMgr &sm;
   DiagnosticEngine *de;
-  StatisticEngine *se;
+  StatsReporter *se;
   LexerState state;
 
   /// Pointer to the first character of the buffer, even in a lexer that
@@ -145,7 +145,7 @@ class Lexer final : public Tokenable {
   /// Don't use this constructor for other purposes, it does not initialize
   /// everything.
   Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
-        DiagnosticEngine *de, StatisticEngine *se, LexerMode LexMode,
+        DiagnosticEngine *de, StatsReporter *se, LexerMode LexMode,
         HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
         TriviaRetentionMode TriviaRetention);
 
@@ -174,17 +174,17 @@ public:
   ///   when parsing SIL files.
   Lexer(
       unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
-      StatisticEngine *se, LexerMode LexMode,
+      StatsReporter *se, LexerMode LexMode,
       HashbangMode HashbangAllowed = HashbangMode::Disallowed,
       CommentRetentionMode RetainComments = CommentRetentionMode::None,
       TriviaRetentionMode TriviaRetention = TriviaRetentionMode::WithoutTrivia);
 
   Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
-        StatisticEngine *se);
+        StatsReporter *se);
 
   /// Create a lexer that scans a subrange of the source buffer.
   Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
-        StatisticEngine *se, LexerMode LexMode, HashbangMode HashbangAllowed,
+        StatsReporter *se, LexerMode LexMode, HashbangMode HashbangAllowed,
         CommentRetentionMode RetainComments,
         TriviaRetentionMode TriviaRetention, unsigned Offset,
         unsigned EndOffset);

@@ -139,7 +139,7 @@ uint32_t stone::validateUTF8CharacterAndAdvance(const char *&Ptr,
 //===----------------------------------------------------------------------===//
 
 Lexer::Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
-             DiagnosticEngine *de, StatisticEngine *se, LexerMode LexMode,
+             DiagnosticEngine *de, StatsReporter *se, LexerMode LexMode,
              HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
              TriviaRetentionMode TriviaRetention)
     : BufferID(BufferID), sm(sm), de(de), LexMode(LexMode),
@@ -183,8 +183,8 @@ void Lexer::initialize(unsigned Offset, unsigned EndOffset) {
 }
 
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
-             StatisticEngine *se, LexerMode LexMode,
-             HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
+             StatsReporter *se, LexerMode LexMode, HashbangMode HashbangAllowed,
+             CommentRetentionMode RetainComments,
              TriviaRetentionMode TriviaRetention)
     : Lexer(PrincipalCtor(), BufferID, sm, de, se, LexMode, HashbangAllowed,
             RetainComments, TriviaRetention) {
@@ -195,13 +195,13 @@ Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
 }
 
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
-             StatisticEngine *se)
+             StatsReporter *se)
     : Lexer(BufferID, sm, de, se, LexerMode::Stone, HashbangMode::Disallowed,
             CommentRetentionMode::None, TriviaRetentionMode::WithoutTrivia) {}
 
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
-             StatisticEngine *se, LexerMode LexMode,
-             HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
+             StatsReporter *se, LexerMode LexMode, HashbangMode HashbangAllowed,
+             CommentRetentionMode RetainComments,
              TriviaRetentionMode TriviaRetention, unsigned Offset,
              unsigned EndOffset)
     : Lexer(PrincipalCtor(), BufferID, sm, de, se, LexMode, HashbangAllowed,

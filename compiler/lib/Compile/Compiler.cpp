@@ -6,8 +6,8 @@
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerObservation.h"
-#include "stone/Support/CompilerDiagnostic.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
+#include "stone/Support/CompilerDiagnostic.h"
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
 
@@ -29,9 +29,7 @@ Status Compiler::Setup() {
       return Status::Error();
     }
   }
-
-  SetupStatsReporter();
-
+  SetupStats();
   return Status();
 }
 
@@ -156,7 +154,7 @@ Status Compiler::SetupCompilerInputFiles() {
         GetRecordedBufferID(input, shouldRecover, failed);
     hasFailed |= failed;
 
-    if (!bufferID.hasValue() || !input.IsPrimary()) {
+    if (!bufferID.has_value() || !input.IsPrimary()) {
       continue;
     }
     RecordPrimarySourceID(*bufferID);
@@ -180,13 +178,13 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
   auto buffers = GetInputBuffersIfPresent(input);
 
   // Recover by dummy buffer if requested.
-  if (!buffers.hasValue() && shouldRecover &&
+  if (!buffers.has_value() && shouldRecover &&
       input.GetType() == FileType::Stone) {
     buffers = ModuleBuffers(llvm::MemoryBuffer::getMemBuffer(
         "// missing file\n", input.GetFileName()));
   }
 
-  if (!buffers.hasValue()) {
+  if (!buffers.has_value()) {
     failed = true;
     return std::nullopt;
   }
@@ -341,7 +339,7 @@ void Compiler::FreeASTContext() {
   primarySourceBufferIDList.clear();
 }
 
-void Compiler::SetupStatsReporter() {
+void Compiler::SetupStats() {
 
   const std::string &statsOutputDir =
       invocation.GetCompilerOptions().statsOutputDir;
@@ -353,11 +351,11 @@ void Compiler::SetupStatsReporter() {
           .inputsAndOutputs.LastInputProducingOutput()
           .OutputFilename();
 
-  statsReporter = std::make_unique<CompilerStatsReporter>(
-      invocation.GetCompilerOptions().moduleOpts.moduleName,
+  stats = std::make_unique<StatsReporter>(
+      "stone-compile", invocation.GetCompilerOptions().moduleOpts.moduleName,
       invocation.GetCompilerOptions()
           .inputsAndOutputs.GetStatsFileMangledInputName(),
-      invocation.GetLangOptions().Target.normalize(),
+      invocation.GetLangOptions().DefaultTargetTriple.normalize(),
       llvm::sys::path::extension(outputFile), "O", statsOutputDir,
       &invocation.GetSrcMgr(),
       &invocation.GetClangContext().GetInstance().getSourceManager(),
@@ -473,16 +471,6 @@ Compiler::CreateExectution(CompilerAction action) {
   }
   llvm_unreachable("Unable to create CompilerExecution -- unknon action!");
 }
-
-void CompilerStatsReporter::CountASTStats(Compiler &compiler) {}
-
-void CompilerStatsReporter::CountDeclStats(Compiler &compiler) {}
-
-void CompilerStatsReporter::CountExprStats(Compiler &compiler) {}
-
-void CompilerStatsReporter::CountTypeStats(Compiler &compiler) {}
-
-void CompilerStatsReporter::CountSourceFileStats(Compiler &compiler) {}
 
 void Compiler::PrintHelp(bool showHidden) const {
 

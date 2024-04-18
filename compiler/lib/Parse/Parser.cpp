@@ -13,7 +13,7 @@ Parser::Parser(SourceFile &sf, ASTContext &astContext)
     : Parser(sf, astContext,
              std::unique_ptr<Lexer>(
                  new Lexer(sf.GetSrcID(), astContext.GetSrcMgr(),
-                           &astContext.GetDiags(), &astContext.GetStats()))) {}
+                           &astContext.GetDiags(), astContext.GetStats()))) {}
 
 Parser::Parser(SourceFile &sf, ASTContext &astContext,
                std::unique_ptr<Lexer> lx)

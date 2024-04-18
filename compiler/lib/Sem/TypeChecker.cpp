@@ -6,7 +6,6 @@ using namespace stone;
 
 TypeChecker::TypeChecker(ASTContext &astContext,
                          TypeCheckerOptions &typeCheckerOpts)
-    : astContext(astContext), typeCheckerOpts(typeCheckerOpts) {
-}
+    : astContext(astContext), typeCheckerOpts(typeCheckerOpts) {}
 
 TypeChecker::~TypeChecker() {}

@@ -70,7 +70,7 @@ Status CompilerOptionsConverter::Convert(
   } else {
 
     haveNewInputsAndOutputs = true;
-    compilerOpts.GetInputsAndOutputs() = std::move(inputsAndOutputs).getValue();
+    compilerOpts.GetInputsAndOutputs() = std::move(inputsAndOutputs).value();
 
     if (compilerOpts.allowModuleWithCompilerErrors) {
       compilerOpts.GetInputsAndOutputs().SetShouldRecoverMissingInputs();
@@ -84,7 +84,7 @@ Status CompilerOptionsConverter::Convert(
   if (compilerOpts.GetInputsAndOutputs().ShouldTreatAsModuleInterface()) {
     compilerOpts.parsingInputMode =
         CompilerOptions::ParsingInputMode::StoneModuleInterface;
-  } else if (args.hasArg(opts::ParseAsLibrary)) {
+  } else if (args.hasArg(opts::OPT_ParseAsLibrary)) {
     compilerOpts.parsingInputMode =
         CompilerOptions::ParsingInputMode::StoneLibrary;
   } else {
@@ -100,16 +100,16 @@ Status CompilerOptionsConverter::Convert(
 CompilerAction
 CompilerOptionsConverter::ComputeCompilerAction(const ArgList &args) {
 
-  auto const mode = args.getLastArg(opts::ModeGroup);
+  auto const mode = args.getLastArg(opts::OPT_ModeGroup);
   if (!mode) {
     // We don't have a mode, so determine a default.
-    if (args.hasArg(opts::EmitModule, opts::EmitModulePath)) {
+    if (args.hasArg(opts::OPT_EmitModule, opts::OPT_EmitModulePath)) {
       // We've been told to emit a module, but have no other mode indicators.
       // As a result, put the frontend into EmitModuleOnly mode.
       // (Setting up module output will be handled below.)
       return CompilerAction::EmitModule;
     }
-    if (args.hasArg(opts::PrintVersion)) {
+    if (args.hasArg(opts::OPT_PrintVersion)) {
       return CompilerAction::PrintVersion;
     }
     return CompilerAction::None;
@@ -120,39 +120,39 @@ CompilerOptionsConverter::ComputeCompilerAction(const ArgList &args) {
 CompilerAction
 CompilerOptionsConverter::ComputeCompilerAction(const unsigned modeOptID) {
   switch (modeOptID) {
-  case opts::Parse:
+  case opts::OPT_Parse:
     return CompilerAction::Parse;
-  case opts::ResolveImports:
+  case opts::OPT_ResolveImports:
     return CompilerAction::ResolveImports;
-  case opts::PrintASTBefore:
+  case opts::OPT_PrintASTBefore:
     return CompilerAction::PrintASTBefore;
-  case opts::TypeCheck:
+  case opts::OPT_TypeCheck:
     return CompilerAction::TypeCheck;
-  case opts::PrintASTAfter:
+  case opts::OPT_PrintASTAfter:
     return CompilerAction::PrintASTAfter;
-  case opts::PrintIR:
+  case opts::OPT_PrintIR:
     return CompilerAction::PrintIR;
-  case opts::EmitIRAfter:
+  case opts::OPT_EmitIRAfter:
     return CompilerAction::EmitIRAfter;
-  case opts::EmitIRBefore:
+  case opts::OPT_EmitIRBefore:
     return CompilerAction::EmitIRBefore;
-  case opts::EmitBC:
+  case opts::OPT_EmitBC:
     return CompilerAction::EmitBC;
-  case opts::EmitObject:
+  case opts::OPT_EmitObject:
     return CompilerAction::EmitObject;
-  case opts::EmitAssembly:
+  case opts::OPT_EmitAssembly:
     return CompilerAction::EmitAssembly;
-  case opts::EmitModule:
+  case opts::OPT_EmitModule:
     return CompilerAction::EmitModule;
-  case opts::MergeModules:
+  case opts::OPT_MergeModules:
     return CompilerAction::MergeModules;
-  case opts::PrintVersion:
+  case opts::OPT_PrintVersion:
     return CompilerAction::PrintVersion;
-  case opts::PrintHelp:
+  case opts::OPT_PrintHelp:
     return CompilerAction::PrintHelp;
-  case opts::PrintHelpHidden:
+  case opts::OPT_PrintHelpHidden:
     return CompilerAction::PrintHelpHidden;
-  case opts::PrintFeature:
+  case opts::OPT_PrintFeature:
     return CompilerAction::PrintFeature;
   }
   llvm_unreachable("Unhandled mode option");
@@ -164,7 +164,7 @@ Status CompilerOptionsConverter::ComputeModuleName() {
   // here since it can be called redundantly in batch-mode
   compilerOpts.moduleOpts.moduleAliasMap.clear();
 
-  const Arg *A = args.getLastArg(opts::ModuleName);
+  const Arg *A = args.getLastArg(opts::OPT_ModuleName);
   if (A) {
     compilerOpts.moduleOpts.moduleName = A->getValue();
   } else if (compilerOpts.moduleOpts.moduleName.empty()) {
@@ -218,7 +218,7 @@ Status CompilerOptionsConverter::ComputeFallbackModuleName() {
 
   std::optional<std::vector<std::string>> outputFilenames =
       CompilerOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
-          args, de, opts::o, opts::OutputFileList);
+          args, de, opts::OPT_o, opts::OPT_OutputFileList);
 
   std::string nameToStem =
       outputFilenames && outputFilenames->size() == 1 &&

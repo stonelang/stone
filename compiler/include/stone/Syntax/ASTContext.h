@@ -4,7 +4,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Support/StatisticEngine.h"
+#include "stone/Support/StatsReporter.h"
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
@@ -76,7 +76,7 @@ class IfStmt;
 class SwitchStmt;
 class Expr;
 class SourceFile;
-class CompilerStatsReporter;
+class StatsReporter;
 
 /// Look up option used in \c GetRealModuleName when module aliasing is applied.
 enum class ModuleAliasLookupOption {
@@ -92,8 +92,6 @@ class ASTContext final : public MemoryContext {
   const SearchPathOptions &searchPathOpts;
 
   DiagnosticEngine &de;
-
-  StatisticEngine &se;
 
   LangOptions &langOpts;
 
@@ -132,7 +130,7 @@ class ASTContext final : public MemoryContext {
   /// OutputBackend for writing outputs.
   // std::unique_ptr<llvm::vfs::OutputBackend> outputBackend;
 
-  CompilerStatsReporter *statsReporter;
+  StatsReporter *stats;
 
   /// OutputBackend for writing outputs.
   // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outputBackend;
@@ -147,7 +145,7 @@ public:
 
   ASTContext(LangOptions &langOpts, const SearchPathOptions &searchPathOpts,
              ClangContext &clangContext, DiagnosticEngine &de,
-             StatisticEngine &se);
+             StatsReporter *stats);
 
   ~ASTContext();
 
@@ -173,7 +171,9 @@ public:
 
   LangOptions &GetLangOptions() { return langOpts; }
 
-  StatisticEngine &GetStats() { return se; }
+  StatsReporter *GetStats() { return stats; }
+  /// Set a new stats reporter.
+  void SetStats(StatsReporter *inputStats) { stats = inputStats; }
 
 public:
   //==Module stuff==//
@@ -212,9 +212,6 @@ public:
 
   ModuleDecl *GetMainModule() { return mainModule; }
   void SetMainModule(ModuleDecl *inputModule) { mainModule = inputModule; }
-
-  /// Set a new stats reporter.
-  void SetStatsReporter(CompilerStatsReporter *stats) { statsReporter = stats; }
 
   /// Get the output backend. The output backend needs to be initialized via
   /// constructor or `setOutputBackend`.

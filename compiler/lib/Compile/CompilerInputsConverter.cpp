@@ -13,6 +13,7 @@
 #include "llvm/Support/Path.h"
 
 using namespace stone;
+using namespace stone::opts;
 using namespace stone::file;
 using namespace llvm::opt;
 
@@ -21,10 +22,10 @@ CompilerInputsConverter::CompilerInputsConverter(DiagnosticEngine &de,
                                                  CompilerOptions &compilerOpts)
 
     : de(de), args(args), compilerOpts(compilerOpts),
-      fileListPathArg(args.getLastArg(opts::FileList)),
-      primaryFileListPathArg(args.getLastArg(opts::PrimaryFileList)),
+      fileListPathArg(args.getLastArg(opts::OPT_FileList)),
+      primaryFileListPathArg(args.getLastArg(opts::OPT_PrimaryFileList)),
       badFileDescriptorRetryCountArg(
-          args.getLastArg(opts::BadFileDescriptorRetryCount)) {}
+          args.getLastArg(opts::OPT_BadFileDescriptorRetryCount)) {}
 
 std::optional<CompilerInputsAndOutputs> CompilerInputsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
@@ -64,19 +65,19 @@ std::optional<CompilerInputsAndOutputs> CompilerInputsConverter::Convert(
 
   // Must be set before iterating over inputs needing outputs.
   inputsAndOutputs.SetBypassBatchModeChecks(
-      args.hasArg(opts::BypassBatchModeChecks));
+      args.hasArg(opts::OPT_BypassBatchModeChecks));
 
   return std::move(inputsAndOutputs);
 }
 
 bool CompilerInputsConverter::EnforceFilelistExclusion() {
-  if (args.hasArg(opts::INPUT) && fileListPathArg) {
+  if (args.hasArg(opts::OPT_INPUT) && fileListPathArg) {
     de.PrintD(SrcLoc(), diag::err_cannot_have_input_files_with_file_list);
     return true;
   }
   // The following is not strictly necessary, but the restriction makes
   // it easier to understand a given command line:
-  if (args.hasArg(opts::PrimaryFile) && primaryFileListPathArg) {
+  if (args.hasArg(opts::OPT_PrimaryFile) && primaryFileListPathArg) {
     de.PrintD(SrcLoc(),
               diag::err_cannot_have_primary_files_with_primary_file_list);
     return true;
@@ -86,7 +87,7 @@ bool CompilerInputsConverter::EnforceFilelistExclusion() {
 
 bool CompilerInputsConverter::ReadInputFilesFromCommandLine() {
   bool hasDuplicate = false;
-  for (const Arg *A : args.filtered(opts::INPUT, opts::PrimaryFile)) {
+  for (const Arg *A : args.filtered(opts::OPT_INPUT, opts::OPT_PrimaryFile)) {
     hasDuplicate = AddFile(A->getValue());
     if (hasDuplicate && !compilerOpts.shouldProcessDuplicateInputFile) {
       return true;
@@ -165,7 +166,7 @@ bool CompilerInputsConverter::AddFile(llvm::StringRef file) {
 
 std::optional<std::set<StringRef>> CompilerInputsConverter::ReadPrimaryFiles() {
   std::set<StringRef> primaryFiles;
-  for (const Arg *A : args.filtered(opts::PrimaryFile)) {
+  for (const Arg *A : args.filtered(opts::OPT_PrimaryFile)) {
     primaryFiles.insert(A->getValue());
   }
   if (ForAllFilesInFileList(
@@ -193,8 +194,8 @@ CompilerInputsConverter::CreateInputFilesConsumingPrimaries(
   if (!files.empty() && !hasAnyPrimaryFiles) {
     std::optional<std::vector<std::string>> userSuppliedNamesOrErr =
         CompilerOutputFilesComputer::
-            GetOutputFilenamesFromCommandLineOrFileList(args, de, opts::o,
-                                                        opts::OutputFileList);
+            GetOutputFilenamesFromCommandLineOrFileList(
+                args, de, opts::OPT_o, opts::OPT_OutputFileList);
     if (userSuppliedNamesOrErr && userSuppliedNamesOrErr->size() == 1) {
       invocationInputsAndOutputs.SetIsSingleThreadedWMO(true);
     }

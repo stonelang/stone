@@ -1,10 +1,10 @@
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Core.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
+#include "stone/Core.h"
+#include "stone/Option/Options.h"
 #include "stone/Strings.h"
 #include "stone/Support/CompilerDiagnostic.h"
-#include "stone/Support/Options.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -188,7 +188,7 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
     return Status::Error();
   }
   // Check for unknown arguments.
-  for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::UNKNOWN)) {
+  for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::OPT_UNKNOWN)) {
     GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
                       diag::LLVMStr(arg->getAsString(*inputArgList)));
 

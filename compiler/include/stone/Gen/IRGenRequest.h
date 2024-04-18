@@ -32,7 +32,6 @@ class IRGenRequest final {
 
   const CodeGenOptions &codeGenOpts;
   ASTContext &astContext;
-  MemoryContext &memContext;
   const PrimaryFileSpecificPaths primaryFileSpecificPaths;
   ModuleDeclOrModuleFile moduleOrFile;
   llvm::StringRef moduleName;
@@ -42,14 +41,12 @@ class IRGenRequest final {
 public:
   IRGenRequest(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
                const llvm::StringRef moduleName, ASTContext &astContext,
-               MemoryContext &memContext,
                const PrimaryFileSpecificPaths primaryFileSpecificPaths,
                llvm::ArrayRef<std::string> parallelOutputFilenames,
                llvm::GlobalVariable *outModuleHash = nullptr);
 
   IRGenRequest(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
                const llvm::StringRef moduleName, ASTContext &astContext,
-               MemoryContext &memContext,
                const PrimaryFileSpecificPaths primaryFileSpecificPaths,
                llvm::ArrayRef<std::string> parallelOutputFilenames,
                llvm::GlobalVariable *outModuleHash = nullptr);
@@ -59,7 +56,6 @@ public:
 public:
   const CodeGenOptions &GetCodeGenOptions() const { return codeGenOpts; }
   ASTContext &GetASTContext() const { return astContext; }
-  MemoryContext &GetMemoryContext() { return memContext; }
 
   llvm::GlobalVariable *GetOutModuleHash() { return outModuleHash; }
   void SetOutModuleHash(llvm::GlobalVariable *hash) { outModuleHash = hash; }
@@ -89,7 +85,6 @@ public:
   static IRGenRequest
   ForModule(const CodeGenOptions &codeGenOpts, ModuleDecl *moduleDecl,
             const llvm::StringRef moduleName, ASTContext &astContext,
-            MemoryContext &memContext,
             const PrimaryFileSpecificPaths primaryFileSpecificPaths,
             llvm::ArrayRef<std::string> parallelOutputFilenames,
             llvm::GlobalVariable *outModuleHash = nullptr);
@@ -97,7 +92,6 @@ public:
   static IRGenRequest
   ForFile(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
           const llvm::StringRef moduleName, ASTContext &astContext,
-          MemoryContext &memContext,
           const PrimaryFileSpecificPaths primaryFileSpecificPaths,
           llvm::GlobalVariable *outModuleHash = nullptr);
 };

@@ -39,7 +39,6 @@ static constexpr llvm::opt::GenericOptTable::Info InfoTable[] = {
 #undef OPTION
 };
 
-
 namespace {
 
 class StoneOptTable : public llvm::opt::GenericOptTable {
@@ -51,7 +50,6 @@ public:
 std::unique_ptr<OptTable> stone::CreateOptTable() {
   return std::unique_ptr<GenericOptTable>(new StoneOptTable());
 }
-
 
 void opts::PrintArg(ColorStream &outStream, const char *Arg,
                     llvm::StringRef TempDir) {
@@ -90,7 +88,7 @@ void opts::PrintArg(ColorStream &outStream, const char *Arg,
 
 llvm::StringRef
 opts::GetEqualValueByOptID(const opts::OptID optID,
-                              const llvm::opt::InputArgList &args) {
+                           const llvm::opt::InputArgList &args) {
   if (args.hasArg(optID)) {
     auto arg = args.getLastArg(optID);
     if (arg) {

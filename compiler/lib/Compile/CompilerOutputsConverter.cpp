@@ -31,7 +31,7 @@ bool CompilerOutputsConverter::Convert(
   std::optional<CompilerOutputFilesComputer> ofc =
       CompilerOutputFilesComputer::Create(
           args, de, inputsAndOutputs,
-          {"output", opts::o, opts::OutputFileList, "-o"}, action);
+          {"output", opts::OPT_o, opts::OPT_OutputFileList, "-o"}, action);
 
   if (!ofc) {
     return true;
@@ -42,14 +42,14 @@ bool CompilerOutputsConverter::Convert(
   }
 
   std::optional<std::vector<std::string>> indexMains;
-  if (args.hasArg(opts::IndexUnitOutputPath,
-                  opts::IndexUnitOutputPathFileList)) {
+  if (args.hasArg(opts::OPT_IndexUnitOutputPath,
+                  opts::OPT_IndexUnitOutputPathFileList)) {
 
     std::optional<CompilerOutputFilesComputer> iuofc =
         CompilerOutputFilesComputer::Create(
             args, de, inputsAndOutputs,
-            {"index unit output path", opts::IndexUnitOutputPath,
-             opts::IndexUnitOutputPathFileList, "-index-unit-output-path"},
+            {"index unit output path", opts::OPT_IndexUnitOutputPath,
+             opts::OPT_IndexUnitOutputPathFileList, "-index-unit-output-path"},
             action);
 
     if (!iuofc) {
@@ -151,7 +151,8 @@ std::optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
   return CompilerOutputFilesComputer(
       de, inputsAndOutputs, std::move(outputFileArguments),
       outputDirectoryArgument, firstInput, action,
-      args.getLastArg(opts::ModuleName), file::GetTypeExt(actionOutputFileType),
+      args.getLastArg(opts::OPT_ModuleName),
+      file::GetTypeExt(actionOutputFileType),
       CompilerOptions::DoesActionProduceOutput(action), optInfo);
 }
 
@@ -269,7 +270,7 @@ SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
 std::optional<std::vector<SupplementaryOutputPaths>>
 SupplementaryOutputPathsComputer::ComputeOutputPaths() const {
   std::optional<std::vector<SupplementaryOutputPaths>> pathsFromUser =
-      args.hasArg(opts::SupplementaryOutputFileMap)
+      args.hasArg(opts::OPT_SupplementaryOutputFileMap)
           ? ReadSupplementaryOutputFileMap()
           : GetSupplementaryOutputPathsFromArguments();
   if (!pathsFromUser)
@@ -313,48 +314,48 @@ SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
       "TODO: GetSupplementaryOutputPathsFromArguments  not implemented");
 
   // auto moduleOutput =
-  //     GetSupplementaryFilenamesFromArguments(opts::EmitModulePath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_EmitModulePath);
 
   // auto moduleDocOutput =
-  //     GetSupplementaryFilenamesFromArguments(opts::EmitModuleDocPath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_EmitModuleDocPath);
 
   // auto dependenciesFile =
-  //     GetSupplementaryFilenamesFromArguments(opts::EmitDependenciesPath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_EmitDependenciesPath);
 
   // auto referenceDependenciesFile = GetSupplementaryFilenamesFromArguments(
-  //     opts::EmitReferenceDependenciesPath);
+  //     opts::OPT_EmitReferenceDependenciesPath);
 
   // auto serializedDiagnostics =
-  //     GetSupplementaryFilenamesFromArguments(opts::SerializeDiagnosticsPath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_SerializeDiagnosticsPath);
 
   // auto fixItsOutput =
-  //     GetSupplementaryFilenamesFromArguments(opts::EmitFixitsPath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_EmitFixitsPath);
 
   // auto loadedModuleTrace =
-  //     GetSupplementaryFilenamesFromArguments(opts::EmitLoadedModuleTracePath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_EmitLoadedModuleTracePath);
 
-  // auto TBD = GetSupplementaryFilenamesFromArguments(opts::EmitTBDPath);
+  // auto TBD = GetSupplementaryFilenamesFromArguments(opts::OPT_EmitTBDPath);
 
   // auto moduleInterfaceOutput =
-  //     GetSupplementaryFilenamesFromArguments(opts::EmitModuleInterfacePath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_EmitModuleInterfacePath);
 
   // auto privateModuleInterfaceOutput = GetSupplementaryFilenamesFromArguments(
-  //     opts::EmitPrivateModuleInterfacePath);
+  //     opts::OPT_EmitPrivateModuleInterfacePath);
 
   // auto moduleSourceInfoOutput =
-  //     GetSupplementaryFilenamesFromArguments(opts::EmitModuleSourceInfoPath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_EmitModuleSourceInfoPath);
 
   // auto moduleSummaryOutput =
-  //     GetSupplementaryFilenamesFromArguments(opts::EmitModuleSummaryPath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_EmitModuleSummaryPath);
 
   // auto abiDescriptorOutput =
-  //     GetSupplementaryFilenamesFromArguments(opts::EmitABIDescriptorPath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_EmitABIDescriptorPath);
 
   // auto moduleSemanticInfoOutput =
-  //     GetSupplementaryFilenamesFromArguments(opts::EmitModuleSemanticInfoPath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_EmitModuleSemanticInfoPath);
 
   // auto optRecordOutput =
-  //     GetSupplementaryFilenamesFromArguments(opts::SaveOptimizationRecordPath);
+  //     GetSupplementaryFilenamesFromArguments(opts::OPT_SaveOptimizationRecordPath);
 
   // if (!moduleOutput || !moduleDocOutput || !dependenciesFile ||
   //     !referenceDependenciesFile || !serializedDiagnostics || !fixItsOutput
@@ -404,7 +405,8 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
 
   if (paths.size() == N) {
     return paths;
-  } else if (pathID == opts::EmitLoadedModuleTracePath && paths.size() < N) {
+  } else if (pathID == opts::OPT_EmitLoadedModuleTracePath &&
+             paths.size() < N) {
     // We only need one file to output the module trace file because they
     // are all equivalent. Add supplementary empty output paths for moduletrace
     // to make sure the compiler won't panic for
@@ -434,18 +436,19 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
   StringRef defaultSupplementaryOutputPathExcludingExtension =
       DeriveDefaultSupplementaryOutputPathExcludingExtension(outputFile, input);
 
-  auto dependenciesFilePath = DetermineSupplementaryOutputFilename(
-      opts::EmitDependenciesPath, pathsFromArguments.dependenciesFilePath,
-      FileType::Dependencies, "",
-      defaultSupplementaryOutputPathExcludingExtension);
+  // TODO:
+  //  auto dependenciesFilePath = DetermineSupplementaryOutputFilename(
+  //      opts::OPT_EmitDependenciesPath,
+  //      pathsFromArguments.dependenciesFilePath, FileType::Dependencies, "",
+  //      defaultSupplementaryOutputPathExcludingExtension);
 
   auto referenceDependenciesFilePath = DetermineSupplementaryOutputFilename(
-      opts::EmitReferenceDependencies,
+      opts::OPT_EmitReferenceDependencies,
       pathsFromArguments.referenceDependenciesFilePath, FileType::StoneDeps, "",
       defaultSupplementaryOutputPathExcludingExtension);
 
   auto serializedDiagnosticsPath = DetermineSupplementaryOutputFilename(
-      opts::SerializeDiagnosticsPath,
+      opts::OPT_SerializeDiagnosticsPath,
       pathsFromArguments.serializedDiagnosticsPath,
       FileType::SerializedDiagnostics, "",
       defaultSupplementaryOutputPathExcludingExtension);
@@ -454,30 +457,30 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
   auto fixItsOutputPath = pathsFromArguments.fixItsOutputPath;
 
   // auto objcHeaderOutputPath = DetermineSupplementaryOutputFilename(
-  //     OPT_emit_objc_header, pathsFromArguments.ObjCHeaderOutputPath,
+  //     opts::OPT_emit_objc_header, pathsFromArguments.ObjCHeaderOutputPath,
   //     FileType::ObjCHeader, "",
   //     defaultSupplementaryOutputPathExcludingExtension);
 
   // auto loadedModuleTracePath = DetermineSupplementaryOutputFilename(
-  //     opts::EmitLoadedModuleTrace, pathsFromArguments.loadedModuleTracePath,
-  //     FileType::ModuleTrace, "",
+  //     opts::OPT_EmitLoadedModuleTrace,
+  //     pathsFromArguments.loadedModuleTracePath, FileType::ModuleTrace, "",
   //     defaultSupplementaryOutputPathExcludingExtension);
 
   auto tbdPath = DetermineSupplementaryOutputFilename(
-      opts::EmitTBD, pathsFromArguments.tbdPath, FileType::TBD, "",
+      opts::OPT_EmitTBD, pathsFromArguments.tbdPath, FileType::TBD, "",
       defaultSupplementaryOutputPathExcludingExtension);
 
   auto moduleDocOutputPath = DetermineSupplementaryOutputFilename(
-      opts::EmitModuleDoc, pathsFromArguments.moduleDocOutputPath,
+      opts::OPT_EmitModuleDoc, pathsFromArguments.moduleDocOutputPath,
       FileType::StoneModuleDoc, "",
       defaultSupplementaryOutputPathExcludingExtension);
 
   auto moduleSourceInfoOutputPath = DetermineSupplementaryOutputFilename(
-      opts::EmitModuleSourceInfo, pathsFromArguments.moduleSourceInfoOutputPath,
-      FileType::StoneSourceInfo, "",
-      defaultSupplementaryOutputPathExcludingExtension);
+      opts::OPT_EmitModuleSourceInfo,
+      pathsFromArguments.moduleSourceInfoOutputPath, FileType::StoneSourceInfo,
+      "", defaultSupplementaryOutputPathExcludingExtension);
   auto moduleSummaryOutputPath = DetermineSupplementaryOutputFilename(
-      opts::EmitModuleSummary, pathsFromArguments.moduleSummaryOutputPath,
+      opts::OPT_EmitModuleSummary, pathsFromArguments.moduleSummaryOutputPath,
       FileType::StoneModuleSummary, "",
       defaultSupplementaryOutputPathExcludingExtension);
 
@@ -503,12 +506,12 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
       defaultSupplementaryOutputPathExcludingExtension);
 
   // auto yamlOptRecordPath = DetermineSupplementaryOutputFilename(
-  //     opts::SaveOptimizationRecordPath, pathsFromArguments.YAMLOptRecordPath,
-  //     FileType::yamlOptRecord, "",
+  //     opts::OPT_SaveOptimizationRecordPath,
+  //     pathsFromArguments.YAMLOptRecordPath, FileType::yamlOptRecord, "",
   //     defaultSupplementaryOutputPathExcludingExtension);
 
   // auto bitstreamOptRecordPath = DetermineSupplementaryOutputFilename(
-  //     opts::SaveOptimizationRecordPath,
+  //     opts::OPT_SaveOptimizationRecordPath,
   //     pathsFromArguments.BitstreamOptRecordPath,
   //     FileType::BitstreamOptRecord,
   //     "", defaultSupplementaryOutputPathExcludingExtension);
@@ -517,7 +520,7 @@ SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
   // sop.ObjCHeaderOutputPath = objcHeaderOutputPath;
   sop.moduleOutputPath = moduleOutputPath;
   sop.moduleDocOutputPath = moduleDocOutputPath;
-  sop.dependenciesFilePath = dependenciesFilePath;
+  // sop.dependenciesFilePath = dependenciesFilePath;
   sop.referenceDependenciesFilePath = referenceDependenciesFilePath;
   sop.serializedDiagnosticsPath = serializedDiagnosticsPath;
   sop.fixItsOutputPath = fixItsOutputPath;
@@ -574,7 +577,7 @@ void SupplementaryOutputPathsComputer::DeriveModulePathParameters(
     StringRef mainOutputFile, opts::OptID &emitOption, std::string &extension,
     std::string &mainOutputIfUsable) const {
 
-  emitOption = opts::EmitModule;
+  emitOption = opts::OPT_EmitModule;
 
   bool canUseMainOutputForModule = action == CompilerAction::MergeModules ||
                                    action == CompilerAction::EmitModule;
@@ -624,17 +627,17 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
 
   // TODO:
   //  if (Arg *A = args.getLastArg(
-  //        opts::emit_objc_header_path,
-  //        opts::emit_module_path,
-  //        opts::emit_module_doc_path,
-  //        opts::emit_dependencies_path,
-  //        opts::emit_reference_dependencies_path,
-  //        opts::serialize_diagnostics_path,
-  //        opts::emit_loaded_module_trace_path,
-  //        opts::emit_module_interface_path,
-  //        opts::emit_private_module_interface_path,
-  //        opts::emit_module_source_info_path,
-  //        opts::emit_tbd_path)) {
+  //        opts::OPT_emit_objc_header_path,
+  //        opts::OPT_emit_module_path,
+  //        opts::OPT_emit_module_doc_path,
+  //        opts::OPT_emit_dependencies_path,
+  //        opts::OPT_emit_reference_dependencies_path,
+  //        opts::OPT_serialize_diagnostics_path,
+  //        opts::OPT_emit_loaded_module_trace_path,
+  //        opts::OPT_emit_module_interface_path,
+  //        opts::OPT_emit_private_module_interface_path,
+  //        opts::OPT_emit_module_source_info_path,
+  //        opts::OPT_emit_tbd_path)) {
   //    de.PrintD(SrcLoc(),
   //                   diag::error_cannot_have_supplementary_outputs,
   //                   A->getSpelling(), "-supplementary-output-file-map");
@@ -642,10 +645,10 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
   //  }
 
   const StringRef supplementaryFileMapPath =
-      args.getLastArgValue(opts::SupplementaryOutputFileMap);
+      args.getLastArgValue(opts::OPT_SupplementaryOutputFileMap);
 
   unsigned BadFileDescriptorRetryCount = 0;
-  if (const Arg *A = args.getLastArg(opts::BadFileDescriptorRetryCount)) {
+  if (const Arg *A = args.getLastArg(opts::OPT_BadFileDescriptorRetryCount)) {
     if (StringRef(A->getValue())
             .getAsInteger(10, BadFileDescriptorRetryCount)) {
       de.PrintD(SrcLoc(), diag::err_invalid_arg_value,
