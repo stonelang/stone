@@ -14,6 +14,8 @@
 #include "llvm/Support/Regex.h"
 #include "llvm/Support/VersionTuple.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/TargetParser/Host.h"
+
 
 namespace stone {
 
@@ -27,7 +29,7 @@ class LangOptions final {
 
 public:
   /// The target platform that we are running on.
-  llvm::Triple Target;
+  llvm::Triple DefaultTargetTriple;
 
   /// \brief The second target for a zippered build
   ///

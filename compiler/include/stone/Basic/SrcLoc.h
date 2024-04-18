@@ -4,9 +4,10 @@
 #include "stone/Basic/Debug.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/Tokenable.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/SMLoc.h"
+
+#include <optional>
 
 namespace stone {
 

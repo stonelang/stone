@@ -205,7 +205,8 @@ StringRef SrcMgr::extractText(CharSrcRange Range,
                        Range.getByteLength());
 }
 
-std::optional<unsigned> SrcMgr::findBufferContainingLocInternal(SrcLoc Loc) const {
+std::optional<unsigned>
+SrcMgr::findBufferContainingLocInternal(SrcLoc Loc) const {
   assert(Loc.isValid());
   // Search the buffers back-to front, so later alias buffers are
   // visited first.
@@ -223,13 +224,13 @@ std::optional<unsigned> SrcMgr::findBufferContainingLocInternal(SrcLoc Loc) cons
 
 unsigned SrcMgr::findBufferContainingLoc(SrcLoc Loc) const {
   auto Id = findBufferContainingLocInternal(Loc);
-  if (Id.hasValue())
+  if (Id.has_value())
     return *Id;
   llvm_unreachable("no buffer containing location found");
 }
 
 bool SrcMgr::isOwning(SrcLoc Loc) const {
-  return findBufferContainingLocInternal(Loc).hasValue();
+  return findBufferContainingLocInternal(Loc).has_value();
 }
 
 void SrcRange::widen(SrcRange Other) {
@@ -319,24 +320,24 @@ CharSrcRange CharSrcRange::ToCharSrcRange(SrcMgr &sm, SrcLoc start,
 
 void CharSrcRange::dump(const SrcMgr &SM) const { print(llvm::errs(), SM); }
 
-std::optional<unsigned>
-SrcMgr::resolveOffsetForEndOfLine(unsigned BufferId, unsigned Line) const {
+std::optional<unsigned> SrcMgr::resolveOffsetForEndOfLine(unsigned BufferId,
+                                                          unsigned Line) const {
   return resolveFromLineCol(BufferId, Line, ~0u);
 }
 
 std::optional<unsigned> SrcMgr::getLineLength(unsigned BufferId,
-                                               unsigned Line) const {
+                                              unsigned Line) const {
   auto BegOffset = resolveFromLineCol(BufferId, Line, 0);
   auto EndOffset = resolveFromLineCol(BufferId, Line, ~0u);
   if (BegOffset && EndOffset) {
-    return EndOffset.getValue() - BegOffset.getValue();
+    return EndOffset.value() - BegOffset.value();
   }
   return std::nullopt;
 }
 
 std::optional<unsigned> SrcMgr::resolveFromLineCol(unsigned BufferId,
-                                                    unsigned Line,
-                                                    unsigned Col) const {
+                                                   unsigned Line,
+                                                   unsigned Col) const {
   if (Line == 0) {
     return std::nullopt;
   }
@@ -397,7 +398,7 @@ SrcLoc SrcMgr::getLocFromExternalSource(StringRef Path, unsigned Line,
   if (BufferId == 0u)
     return SrcLoc();
   auto Offset = resolveFromLineCol(BufferId, Line, Col);
-  if (!Offset.hasValue())
+  if (!Offset.has_value())
     return SrcLoc();
   return getLocForOffset(BufferId, *Offset);
 }

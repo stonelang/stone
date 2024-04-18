@@ -82,47 +82,47 @@ static bool isPlatformActiveForTarget(PlatformKind Platform,
   llvm_unreachable("bad PlatformKind");
 }
 
-bool stone::IsPlatformActive(PlatformKind Platform, const LangOptions &LangOpts,
+bool stone::IsPlatformActive(PlatformKind Platform, const LangOptions &langOpts,
                              bool ForTargetVariant) {
-  llvm::Triple TT = LangOpts.Target;
+  llvm::Triple TT = langOpts.DefaultTargetTriple;
 
   if (ForTargetVariant) {
-    assert(LangOpts.TargetVariant && "Must have target variant triple");
-    TT = *LangOpts.TargetVariant;
+    assert(langOpts.TargetVariant && "Must have target variant triple");
+    TT = *langOpts.TargetVariant;
   }
 
   return isPlatformActiveForTarget(Platform, TT,
-                                   LangOpts.EnableAppExtensionRestrictions);
+                                   langOpts.EnableAppExtensionRestrictions);
 }
 
-PlatformKind stone::TargetPlatform(const LangOptions &LangOpts) {
-  if (LangOpts.Target.isMacOSX()) {
-    // return (LangOpts.EnableAppExtensionRestrictions
+PlatformKind stone::TargetPlatform(const LangOptions &langOpts) {
+  if (langOpts.DefaultTargetTriple.isMacOSX()) {
+    // return (langOpts.EnableAppExtensionRestrictions
     //             ? PlatformKind::macOSApplicationExtension
     //             : PlatformKind::macOS);
     return PlatformKind::macOS;
   }
 
-  // if (LangOpts.Target.isTvOS()) {
-  //   return (LangOpts.EnableAppExtensionRestrictions
+  // if (langOpts.DefaultTargetTriple.isTvOS()) {
+  //   return (langOpts.EnableAppExtensionRestrictions
   //           ? PlatformKind::tvOSApplicationExtension
   //           : PlatformKind::tvOS);
   // }
 
-  // if (LangOpts.Target.isWatchOS()) {
-  //   return (LangOpts.EnableAppExtensionRestrictions
+  // if (langOpts.DefaultTargetTriple.isWatchOS()) {
+  //   return (langOpts.EnableAppExtensionRestrictions
   //           ? PlatformKind::watchOSApplicationExtension
   //           : PlatformKind::watchOS);
   // }
 
-  if (LangOpts.Target.isiOS()) {
+  if (langOpts.DefaultTargetTriple.isiOS()) {
 
-    // if (tripleIsMacCatalystEnvironment(LangOpts.Target))
-    //   return (LangOpts.EnableAppExtensionRestrictions
+    // if (tripleIsMacCatalystEnvironment(langOpts.Target))
+    //   return (langOpts.EnableAppExtensionRestrictions
     //               ? PlatformKind::macCatalystApplicationExtension
     //               : PlatformKind::macCatalyst);
 
-    // return (LangOpts.EnableAppExtensionRestrictions
+    // return (langOpts.EnableAppExtensionRestrictions
     //             ? PlatformKind::iOSApplicationExtension
     //             : PlatformKind::iOS);
     return PlatformKind::iOS;

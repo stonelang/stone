@@ -1,15 +1,15 @@
 #ifndef STONE_BASIC_SRCMGR_H
 #define STONE_BASIC_SRCMGR_H
 
-#include <functional>
-#include <map>
-
 #include "stone/Basic/FileSystem.h"
 #include "stone/Basic/SrcLoc.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseMapInfo.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/Support/SourceMgr.h"
+
+#include <functional>
+#include <map>
+#include <optional>
 
 namespace stone {
 
@@ -153,7 +153,8 @@ public:
 
   /// Returns a buffer ID for a previously added buffer with the given
   /// buffer identifier, or None if there is no such buffer.
-  std::optional<unsigned> getIDForBufferIdentifier(StringRef BufIdentifier) const;
+  std::optional<unsigned>
+  getIDForBufferIdentifier(StringRef BufIdentifier) const;
 
   /// Returns the identifier for the buffer with the given ID.
   ///
@@ -229,7 +230,7 @@ public:
   StringRef getEntireTextForBuffer(unsigned BufferID) const;
 
   StringRef extractText(CharSrcRange Range,
-                        std::optional<unsigned> BufferID = None) const;
+                        std::optional<unsigned> BufferID = std::nullopt) const;
 
   llvm::SMDiagnostic GetMessage(stone::SrcLoc loc,
                                 llvm::SourceMgr::DiagKind Kind,
@@ -244,21 +245,20 @@ public:
   /// If the column number is the maximum unsinged int, return the offset of the
   /// end of the line.
   std::optional<unsigned> resolveFromLineCol(unsigned BufferId, unsigned Line,
-                                              unsigned Col) const;
+                                             unsigned Col) const;
 
   /// Translate the end position of the given line to the offset.
   std::optional<unsigned> resolveOffsetForEndOfLine(unsigned BufferId,
-                                                     unsigned Line) const;
+                                                    unsigned Line) const;
 
   /// Get the length of the line
-  std::optional<unsigned> getLineLength(unsigned BufferId,
-                                         unsigned Line) const;
+  std::optional<unsigned> getLineLength(unsigned BufferId, unsigned Line) const;
 
   SrcLoc getLocForLineCol(unsigned BufferId, unsigned Line,
                           unsigned Col) const {
     auto Offset = resolveFromLineCol(BufferId, Line, Col);
-    return Offset.hasValue() ? getLocForOffset(BufferId, Offset.getValue())
-                             : SrcLoc();
+    return Offset.value() ? getLocForOffset(BufferId, Offset.value())
+                          : SrcLoc();
   }
 
   std::string getLineString(unsigned BufferID, unsigned LineNumber);

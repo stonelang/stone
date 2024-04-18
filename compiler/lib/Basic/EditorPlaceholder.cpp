@@ -31,7 +31,7 @@ using namespace llvm;
 
 std::optional<EditorPlaceholderData>
 stone::parseEditorPlaceholder(StringRef PlaceholderText) {
-  if (!PlaceholderText.startswith("<#") || !PlaceholderText.endswith("#>"))
+  if (!PlaceholderText.starts_with("<#") || !PlaceholderText.ends_with("#>"))
     return std::nullopt;
 
   PlaceholderText = PlaceholderText.drop_front(2).drop_back(2);
@@ -39,7 +39,7 @@ stone::parseEditorPlaceholder(StringRef PlaceholderText) {
   PHDataBasic.Kind = EditorPlaceholderKind::Basic;
   PHDataBasic.Display = PlaceholderText;
 
-  if (!PlaceholderText.startswith("T##")) {
+  if (!PlaceholderText.starts_with("T##")) {
     // Basic.
     return PHDataBasic;
   }
@@ -48,7 +48,7 @@ stone::parseEditorPlaceholder(StringRef PlaceholderText) {
   EditorPlaceholderData PHDataTyped;
   PHDataTyped.Kind = EditorPlaceholderKind::Typed;
 
-  assert(PlaceholderText.startswith("T##"));
+  assert(PlaceholderText.starts_with("T##"));
   PlaceholderText = PlaceholderText.drop_front(3);
   size_t Pos = PlaceholderText.find("##");
   if (Pos == StringRef::npos) {
@@ -71,5 +71,5 @@ stone::parseEditorPlaceholder(StringRef PlaceholderText) {
 }
 
 bool stone::isEditorPlaceholder(StringRef IdentifierText) {
-  return IdentifierText.startswith("<#");
+  return IdentifierText.starts_with("<#");
 }

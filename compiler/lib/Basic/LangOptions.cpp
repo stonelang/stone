@@ -1,9 +1,10 @@
 #include "stone/Basic/LangOptions.h"
-#include "llvm/Support/Host.h"
+#include "llvm/TargetParser/Host.h"
 
 using namespace stone;
 
-LangOptions::LangOptions() : Target(llvm::sys::getDefaultTargetTriple()) {}
+LangOptions::LangOptions()
+    : DefaultTargetTriple(llvm::sys::getDefaultTargetTriple()) {}
 
 LangOptions::TargetResult LangOptions::SetTarget(llvm::StringRef triple) {
   return SetTarget(llvm::Triple(triple));
@@ -51,15 +52,15 @@ LangOptions::TargetResult LangOptions::SetTarget(llvm::Triple triple) {
     llvm::VersionTuple OSVersion;
     triple.getMacOSXVersion(OSVersion);
 
-    osx << OSVersion.getMajor() << "." << OSVersion.getMinor().getValueOr(0);
+    osx << OSVersion.getMajor() << "." << OSVersion.getMinor().value_or(0);
     if (auto Subminor = OSVersion.getSubminor())
       osx << "." << *Subminor;
 
     triple.setOSName(osx.str());
   }
-  Target = std::move(triple);
+  DefaultTargetTriple = std::move(triple);
   // Set the "os" platform condition.
-  switch (Target.getOS()) {
+  switch (DefaultTargetTriple.getOS()) {
   case llvm::Triple::Darwin:
   case llvm::Triple::MacOSX:
     AddPlatformConditionValue(PlatformConditionKind::OS, "OSX");
@@ -68,7 +69,7 @@ LangOptions::TargetResult LangOptions::SetTarget(llvm::Triple triple) {
     AddPlatformConditionValue(PlatformConditionKind::OS, "iOS");
     break;
   case llvm::Triple::Linux:
-    if (Target.getEnvironment() == llvm::Triple::Android) {
+    if (DefaultTargetTriple.getEnvironment() == llvm::Triple::Android) {
       AddPlatformConditionValue(PlatformConditionKind::OS, "Android");
     } else {
       AddPlatformConditionValue(PlatformConditionKind::OS, "Linux");
@@ -86,14 +87,14 @@ LangOptions::TargetResult LangOptions::SetTarget(llvm::Triple triple) {
   }
 
   // Set the "arch" platform condition.
-  switch (Target.getArch()) {
+  switch (DefaultTargetTriple.getArch()) {
   case llvm::Triple::ArchType::arm:
   case llvm::Triple::ArchType::thumb:
     AddPlatformConditionValue(PlatformConditionKind::Arch, "arm");
     break;
   case llvm::Triple::ArchType::aarch64:
   case llvm::Triple::ArchType::aarch64_32:
-    if (Target.getArchName() == "arm64_32") {
+    if (DefaultTargetTriple.getArchName() == "arm64_32") {
       AddPlatformConditionValue(PlatformConditionKind::Arch, "arm64_32");
     } else {
       AddPlatformConditionValue(PlatformConditionKind::Arch, "arm64");
@@ -124,7 +125,7 @@ LangOptions::TargetResult LangOptions::SetTarget(llvm::Triple triple) {
     return result;
   }
   // Set the "_endian" platform condition.
-  switch (Target.getArch()) {
+  switch (DefaultTargetTriple.getArch()) {
   default:
     llvm_unreachable("undefined architecture endianness");
   case llvm::Triple::ArchType::arm:
@@ -144,7 +145,7 @@ LangOptions::TargetResult LangOptions::SetTarget(llvm::Triple triple) {
   }
 
   // Set the pointer authentication scheme.
-  if (Target.getArchName() == "arm64e") {
+  if (DefaultTargetTriple.getArchName() == "arm64e") {
     AddPlatformConditionValue(PlatformConditionKind::PtrAuth, "_arm64e");
   } else {
     AddPlatformConditionValue(PlatformConditionKind::PtrAuth, "_none");
