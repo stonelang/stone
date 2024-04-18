@@ -25,7 +25,7 @@
 
 namespace stone {
 
-using llvm::None;
+using std::nullopt;
 
 /// The class template \c OptionSet captures a set of options stored as the
 /// bits in an unsigned integral value.
@@ -52,7 +52,7 @@ public:
   constexpr OptionSet() : Storage() {}
 
   /// Create an empty option set.
-  constexpr OptionSet(llvm::NoneType) : Storage() {}
+  constexpr OptionSet(std::nullopt_t) : Storage() {}
 
   /// Create an option set with only the given option set.
   constexpr OptionSet(Flags flag) : Storage(static_cast<StorageType>(flag)) {}

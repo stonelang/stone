@@ -32,7 +32,7 @@ namespace stone {
 //   /// conformance with the state \c CheckingTypeWitnesses.
 //   GetTentativeTypeWitness getTentativeTypeWitness;
 
-//   SubstitutionOptions(llvm::NoneType) : OptionSet(None) { }
+//   SubstitutionOptions(std::nullopt_t) : OptionSet(None) { }
 
 //   SubstitutionOptions(SubstFlags flags) : OptionSet(flags) { }
 

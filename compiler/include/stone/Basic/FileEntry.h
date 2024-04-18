@@ -104,7 +104,7 @@ public:
     llvm::PointerUnion<FileEntry *, const void *> V;
 
     /// Directory the file was found in. Set if and only if V is a FileEntry.
-    Optional<DirEntryRef> Dir;
+    std::optional<DirEntryRef> Dir;
 
     MapValue() = delete;
     MapValue(FileEntry &FE, DirEntryRef Dir) : V(&FE), Dir(Dir) {}
@@ -200,12 +200,12 @@ public:
   }
 };
 
-static_assert(sizeof(Optional<stone::FileEntryRef>) ==
+static_assert(sizeof(std::optional<stone::FileEntryRef>) ==
                   sizeof(stone::FileEntryRef),
-              "Optional<FileEntryRef> must avoid size overhead");
+              "std::optional<FileEntryRef> must avoid size overhead");
 
-static_assert(std::is_trivially_copyable<Optional<stone::FileEntryRef>>::value,
-              "Optional<FileEntryRef> should be trivially copyable");
+static_assert(std::is_trivially_copyable<std::optional<stone::FileEntryRef>>::value,
+              "std::optional<FileEntryRef> should be trivially copyable");
 
 } // end namespace optional_detail
 
@@ -241,18 +241,18 @@ template <> struct DenseMapInfo<stone::FileEntryRef> {
 
 namespace stone {
 
-/// Wrapper around Optional<FileEntryRef> that degrades to 'const FileEntry*',
+/// Wrapper around std::optional<FileEntryRef> that degrades to 'const FileEntry*',
 /// facilitating incremental patches to propagate FileEntryRef.
 ///
 /// This class can be used as return value or field where it's convenient for
-/// an Optional<FileEntryRef> to degrade to a 'const FileEntry*'. The purpose
+/// an std::optional<FileEntryRef> to degrade to a 'const FileEntry*'. The purpose
 /// is to avoid code churn due to dances like the following:
 /// \code
 /// // Old code.
 /// lvalue = rvalue;
 ///
 /// // Temporary code from an incremental patch.
-/// Optional<FileEntryRef> MaybeF = rvalue;
+/// std::optional<FileEntryRef> MaybeF = rvalue;
 /// lvalue = MaybeF ? &MaybeF.getFileEntry() : nullptr;
 ///
 /// // Final code.
@@ -261,9 +261,9 @@ namespace stone {
 ///
 /// FIXME: Once FileEntryRef is "everywhere" and FileEntry::LastRef and
 /// FileEntry::getName have been deleted, delete this class and replace
-/// instances with Optional<FileEntryRef>.
+/// instances with std::optional<FileEntryRef>.
 class OptionalFileEntryRefDegradesToFileEntryPtr
-    : public Optional<FileEntryRef> {
+    : public std::optional<FileEntryRef> {
 public:
   OptionalFileEntryRefDegradesToFileEntryPtr() = default;
   OptionalFileEntryRefDegradesToFileEntryPtr(
@@ -275,29 +275,29 @@ public:
   OptionalFileEntryRefDegradesToFileEntryPtr &
   operator=(const OptionalFileEntryRefDegradesToFileEntryPtr &) = default;
 
-  OptionalFileEntryRefDegradesToFileEntryPtr(llvm::NoneType) {}
+  OptionalFileEntryRefDegradesToFileEntryPtr(std::nullopt_t) {}
   OptionalFileEntryRefDegradesToFileEntryPtr(FileEntryRef Ref)
-      : Optional<FileEntryRef>(Ref) {}
-  OptionalFileEntryRefDegradesToFileEntryPtr(Optional<FileEntryRef> MaybeRef)
-      : Optional<FileEntryRef>(MaybeRef) {}
+      : std::optional<FileEntryRef>(Ref) {}
+  OptionalFileEntryRefDegradesToFileEntryPtr(std::optional<FileEntryRef> MaybeRef)
+      : std::optional<FileEntryRef>(MaybeRef) {}
 
-  OptionalFileEntryRefDegradesToFileEntryPtr &operator=(llvm::NoneType) {
-    Optional<FileEntryRef>::operator=(None);
+  OptionalFileEntryRefDegradesToFileEntryPtr &operator=(std::nullopt_t) {
+    std::optional<FileEntryRef>::operator=(None);
     return *this;
   }
   OptionalFileEntryRefDegradesToFileEntryPtr &operator=(FileEntryRef Ref) {
-    Optional<FileEntryRef>::operator=(Ref);
+    std::optional<FileEntryRef>::operator=(Ref);
     return *this;
   }
   OptionalFileEntryRefDegradesToFileEntryPtr &
-  operator=(Optional<FileEntryRef> MaybeRef) {
-    Optional<FileEntryRef>::operator=(MaybeRef);
+  operator=(std::optional<FileEntryRef> MaybeRef) {
+    std::optional<FileEntryRef>::operator=(MaybeRef);
     return *this;
   }
 
   /// Degrade to 'const FileEntry *' to allow  FileEntry::LastRef and
   /// FileEntry::getName have been deleted, delete this class and replace
-  /// instances with Optional<FileEntryRef>
+  /// instances with std::optional<FileEntryRef>
   operator const FileEntry *() const {
     return hasValue() ? &getValue().getFileEntry() : nullptr;
   }
@@ -337,7 +337,7 @@ class FileEntry {
   // default constructor). It should always have a value in practice.
   //
   // TODO: remove this once everyone that needs a name uses FileEntryRef.
-  Optional<FileEntryRef> LastRef;
+  std::optional<FileEntryRef> LastRef;
 
 public:
   FileEntry();

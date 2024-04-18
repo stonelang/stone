@@ -245,7 +245,7 @@ bool DiagnosticEngine::EmitCurrentDiagnostic(bool force) {
   EmitDiagnostic(*curDiagnostic);
 }
 
-llvm::Optional<DiagnosticMessage>
+std::optional<DiagnosticMessage>
 DiagnosticEngine::CreateDiagnosticMessage(const Diagnostic &diagnostic) {
   return DiagnosticMessage(
       /*TODO*/ diag::Level::Warn, diagnostic, GetSrcMgr(),

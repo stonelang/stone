@@ -7,7 +7,7 @@
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/StringSwitch.h"
-#include "llvm/ADT/Triple.h"
+#include "llvm/TargetParser/Triple.h"
 #include "llvm/Analysis/StackSafetyAnalysis.h"
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
@@ -93,7 +93,7 @@ bool stone::GenNative(const CodeGenOptions &codeGenOpts,
 //                       llvm::GlobalVariable *hashGlobal,
 //                       CodeGenListener *listener) {
 
-// llvm::Optional<llvm::raw_fd_ostream> rawOS;
+// std::optional<llvm::raw_fd_ostream> rawOS;
 // if (!outputFilename.empty()) {
 //   // Try to open the output file.  Clobbering an existing file is fine.
 //   // Open in binary mode if we're doing binary output.

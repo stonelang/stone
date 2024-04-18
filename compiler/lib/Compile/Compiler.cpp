@@ -85,7 +85,7 @@ Status Compiler::CreateSourceFilesForMainModule(
 
   // Try to pull out the main source file, if any. This ensures that it
   // is at the start of the list of files.
-  llvm::Optional<unsigned> mainBufferID = llvm::None;
+  std::optional<unsigned> mainBufferID = std::nullopt;
   if (SourceFile *mainSourceFile = ComputeMainSourceFileForModule(mod)) {
     mainBufferID = mainSourceFile->GetSrcID();
     resultFiles.push_back(mainSourceFile);
@@ -130,7 +130,7 @@ Status Compiler::SetupCompilerInputFiles() {
 
   // Adds to InputSourceCodeBufferIDs, so may need to happen before the
   // per-input setup.
-  const llvm::Optional<unsigned> codeCompletionBufferID =
+  const std::optional<unsigned> codeCompletionBufferID =
       CreateCodeCompletionBuffer();
 
   assert([&]() -> bool {
@@ -156,7 +156,7 @@ Status Compiler::SetupCompilerInputFiles() {
   bool hasFailed = false;
   for (const CompilerInputFile &input : inputs) {
     bool failed = false;
-    llvm::Optional<unsigned> bufferID =
+    std::optional<unsigned> bufferID =
         GetRecordedBufferID(input, shouldRecover, failed);
     hasFailed |= failed;
 
@@ -171,11 +171,11 @@ Status Compiler::SetupCompilerInputFiles() {
   return Status();
 }
 
-llvm::Optional<unsigned>
+std::optional<unsigned>
 Compiler::GetRecordedBufferID(const CompilerInputFile &input,
                               const bool shouldRecover, bool &failed) {
   if (!input.GetBuffer()) {
-    if (llvm::Optional<unsigned> existingBufferID =
+    if (std::optional<unsigned> existingBufferID =
             GetSrcMgr().getIDForBufferIdentifier(input.GetFileName())) {
       return existingBufferID;
     }
@@ -191,7 +191,7 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
 
   if (!buffers.hasValue()) {
     failed = true;
-    return llvm::None;
+    return std::nullopt;
   }
 
   // FIXME: The fact that this test happens twice, for some cases,
@@ -199,7 +199,7 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
   // TODO:
   // if (serialization::isSerializedAST(buffers->ModuleBuffer->getBuffer())) {
   //   PartialModules.push_back(std::move(*buffers));
-  //   return None;
+  //   return std::nullopt;
   // }
 
   // TODO
@@ -231,7 +231,7 @@ void Compiler::RecordPrimarySourceID(unsigned primarySourceID) {
 }
 
 // TODO:
-llvm::Optional<ModuleBuffers>
+std::optional<ModuleBuffers>
 Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
 
   if (auto b = input.GetBuffer()) {
@@ -249,7 +249,7 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   if (!inputFileOrError) {
     GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
                       diag::LLVMStr(input.GetFileName()));
-    return llvm::None;
+    return std::nullopt;
   }
 
   // Just return the file buffer for now
@@ -274,7 +274,7 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   //   Diagnostics.diagnose(SourceLoc(), diag::error_open_input_file,
   //                        input.getFileName(),
   //                        inputFileOrErr.getError().message());
-  //   return None;
+  //   return std::nullopt;
   // }
   // if (!serialization::isSerializedAST((*inputFileOrErr)->getBuffer()))
   //   return ModuleBuffers(std::move(*inputFileOrErr));
@@ -286,11 +286,11 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   //                      : nullptr, sourceinfo.hasValue() ?
   //                      std::move(sourceinfo.getValue()) : nullptr);
 
-  // return llvm::None;
+  // return std::nullopt;
 }
 
-llvm::Optional<unsigned> Compiler::CreateCodeCompletionBuffer() {
-  llvm::Optional<unsigned> codeCompletionBufferID;
+std::optional<unsigned> Compiler::CreateCodeCompletionBuffer() {
+  std::optional<unsigned> codeCompletionBufferID;
   return codeCompletionBufferID;
 }
 

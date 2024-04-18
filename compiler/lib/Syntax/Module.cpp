@@ -106,7 +106,7 @@ llvm::ArrayRef<SourceFile *> ModuleDecl::GetPrimarySourceFiles() {
 //   return Status();
 // }
 SourceFile::SourceFile(SourceFileKind kind, ModuleDecl &owner,
-                       llvm::Optional<unsigned> srcID, bool isPrimary)
+                       std::optional<unsigned> srcID, bool isPrimary)
     : ModuleFile(ModuleFileKind::Syntax, owner), kind(kind),
       srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
 

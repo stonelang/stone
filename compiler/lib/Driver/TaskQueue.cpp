@@ -17,7 +17,7 @@ TaskQueue::TaskQueue(unsigned numberOfParallelTasks, DriverStatsReporter *stats)
     : NumberOfParallelTasks(numberOfParallelTasks), Stats(stats) {}
 
 // Task(const char *ExecPath, llvm::ArrayRef<const char *> Args,
-//        llvm::ArrayRef<const char *> Env = llvm::None, void *Context =
+//        llvm::ArrayRef<const char *> Env = std::nullopt, void *Context =
 //        nullptr, bool SeparateErrors = false)
 
 // TaskQueue* TaskQueue::Create(Driver& driver, unsigned numberOfParallelTasks){

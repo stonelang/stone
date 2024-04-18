@@ -112,7 +112,7 @@ public:
 
   /// The current curTok hash, or \c None if the parser isn't computing a hash
   /// for the curTok stream.
-  llvm::Optional<StableHasher> currentTokenHash;
+  std::optional<StableHasher> currentTokenHash;
 
 public:
   void RecordTokenHash(const Token Tok) {

@@ -207,7 +207,7 @@ class DiagnosticEngine final {
   llvm::SmallVector<DiagnosticConsumer *, 2> consumers;
 
   /// The current diagnostic, if there is one.
-  llvm::Optional<Diagnostic> curDiagnostic;
+  std::optional<Diagnostic> curDiagnostic;
 
   /// The initial diagnostic state.
   DiagnosticState state;
@@ -337,7 +337,7 @@ public:
 
 public:
   /// Generate DiagnosticMessage for a Diagnostic to be passed to consumers.
-  llvm::Optional<DiagnosticMessage>
+  std::optional<DiagnosticMessage>
   CreateDiagnosticMessage(const Diagnostic &diagnostic);
 
   // Send \c diag to all diagnostic consumers.

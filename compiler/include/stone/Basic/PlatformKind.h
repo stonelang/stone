@@ -24,7 +24,7 @@ StringRef PlatformString(PlatformKind platform);
 
 /// Returns the platform kind corresponding to the passed-in short platform name
 /// or None if such a platform kind does not exist.
-Optional<PlatformKind> PlatformFromString(StringRef Name);
+std::optional<PlatformKind> PlatformFromString(StringRef Name);
 
 /// Returns a human-readable version of the platform name as a string, suitable
 /// for emission in diagnostics (e.g., "macOS").

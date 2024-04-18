@@ -9,7 +9,7 @@
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/StringSwitch.h"
-#include "llvm/ADT/Triple.h"
+#include "llvm/TargetParser/Triple.h"
 #include "llvm/Analysis/StackSafetyAnalysis.h"
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
@@ -166,7 +166,7 @@ stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts) {
   // // On Cygwin 64 bit, dlls are loaded above the max address for 32 bits.
   // // This means that the default CodeModel causes generated code to segfault
   // // when run.
-  llvm::Optional<llvm::CodeModel::Model> codeModel = llvm::None;
+  std::optional<llvm::CodeModel::Model> codeModel = std::nullopt;
   if (effectiveTriple.isArch64Bit() &&
       effectiveTriple.isWindowsCygwinEnvironment()) {
     codeModel = llvm::CodeModel::Large;

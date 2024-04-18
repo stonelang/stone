@@ -38,7 +38,7 @@ public:
 
   /// Try to read an output file list file.
   /// \returns `None` if it could not open the filelist.
-  static Optional<std::vector<std::string>>
+  static std::optional<std::vector<std::string>>
   ReadOutputFileList(StringRef filelistPath, DiagnosticEngine &de);
 };
 
@@ -71,7 +71,7 @@ class CompilerOutputFilesComputer {
                               CompilerOutputOptInfo optInfo);
 
 public:
-  static Optional<CompilerOutputFilesComputer>
+  static std::optional<CompilerOutputFilesComputer>
   Create(const llvm::opt::ArgList &args, DiagnosticEngine &de,
          const CompilerInputsAndOutputs &inputsAndOutputs,
          CompilerOutputOptInfo optInfo, CompilerAction action);
@@ -79,16 +79,16 @@ public:
   /// \return the output filenames on the command line or in the output
   /// filelist. If there
   /// were neither -o's nor an output filelist, returns an empty vector.
-  static Optional<std::vector<std::string>>
+  static std::optional<std::vector<std::string>>
   GetOutputFilenamesFromCommandLineOrFileList(const llvm::opt::ArgList &args,
                                               DiagnosticEngine &de,
                                               opts::OptID singleOpt,
                                               opts::OptID filelistOpt);
 
-  Optional<std::vector<std::string>> ComputeOutputFiles() const;
+  std::optional<std::vector<std::string>> ComputeOutputFiles() const;
 
 private:
-  Optional<std::string> ComputeOutputFile(StringRef outputArg,
+  std::optional<std::string> ComputeOutputFile(StringRef outputArg,
                                           const CompilerInputFile &input) const;
 
   /// \return the correct output filename when none was specified.
@@ -97,7 +97,7 @@ private:
   /// without the driver,
   /// because the driver will always pass -o with an appropriate filename
   /// if output is required for the requested action.
-  Optional<std::string>
+  std::optional<std::string>
   DeriveOutputFileFromInput(const CompilerInputFile &input) const;
 
   /// \return the correct output filename when a directory was specified.
@@ -105,7 +105,7 @@ private:
   /// Such a specification should only occur when invoking the invocation
   /// directly, because the driver will always pass -o with an appropriate
   /// filename if output is required for the requested action.
-  Optional<std::string>
+  std::optional<std::string>
   DeriveOutputFileForDirectory(const CompilerInputFile &input) const;
 
   std::string DetermineBaseNameOfOutput(const CompilerInputFile &input) const;
@@ -128,7 +128,7 @@ public:
       ArrayRef<std::string> outputFiles, StringRef moduleName,
       CompilerAction action);
 
-  Optional<std::vector<SupplementaryOutputPaths>> ComputeOutputPaths() const;
+  std::optional<std::vector<SupplementaryOutputPaths>> ComputeOutputPaths() const;
 
 private:
   /// \Return a set of supplementary output paths for each input that might
@@ -143,21 +143,21 @@ private:
   /// In the future, these will also include those passed in via whatever
   /// filelist scheme gets implemented to handle cases where the command line
   /// arguments become burdensome.
-  Optional<std::vector<SupplementaryOutputPaths>>
+  std::optional<std::vector<SupplementaryOutputPaths>>
   GetSupplementaryOutputPathsFromArguments() const;
 
   /// Read a supplementary output file map file.
   /// \returns `None` if it could not open the file map.
-  Optional<std::vector<SupplementaryOutputPaths>>
+  std::optional<std::vector<SupplementaryOutputPaths>>
   ReadSupplementaryOutputFileMap() const;
 
   /// Given an ID corresponding to supplementary output argument
   /// (e.g. -emit-module-path), collect all such paths, and ensure
   /// there are the right number of them.
-  Optional<std::vector<std::string>>
+  std::optional<std::vector<std::string>>
   GetSupplementaryFilenamesFromArguments(opts::OptID pathID) const;
 
-  llvm::Optional<SupplementaryOutputPaths> ComputeOutputPathsForOneInput(
+  std::optional<SupplementaryOutputPaths> ComputeOutputPathsForOneInput(
       StringRef outputFilename,
       const SupplementaryOutputPaths &pathsFromFilelists,
       const CompilerInputFile &) const;

@@ -90,7 +90,7 @@ public:
 
   /// Returns the narrowest access scope if this and the specified access scope
   /// have common intersection, or None if scopes don't intersect.
-  const llvm::Optional<AccessScope>
+  const std::optional<AccessScope>
   IntersectWith(AccessScope accessScope) const {
     if (HasEqualDeclContextWith(accessScope)) {
       if (IsPrivate()) {
@@ -105,7 +105,7 @@ public:
       return accessScope;
     }
 
-    return llvm::None;
+    return std::nullopt;
   }
 };
 } // namespace stone

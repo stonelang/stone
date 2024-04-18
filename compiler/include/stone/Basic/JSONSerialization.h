@@ -431,8 +431,8 @@ public:
     this->processKey(Key, Val, false);
   }
 
-  template <typename T> void mapOptional(StringRef Key, Optional<T> &Val) {
-    processKeyWithDefault(Key, Val, Optional<T>(), /*Required=*/false);
+  template <typename T> void mapOptional(StringRef Key, std::optional<T> &Val) {
+    processKeyWithDefault(Key, Val, std::optional<T>(), /*Required=*/false);
   }
 
   template <typename T>
@@ -448,9 +448,9 @@ public:
 
 private:
   template <typename T>
-  void processKeyWithDefault(StringRef Key, Optional<T> &Val,
-                             const Optional<T> &DefaultValue, bool Required) {
-    assert(!DefaultValue.hasValue() && "Optional<T> shouldn't have a value!");
+  void processKeyWithDefault(StringRef Key, std::optional<T> &Val,
+                             const std::optional<T> &DefaultValue, bool Required) {
+    assert(!DefaultValue.hasValue() && "std::optional<T> shouldn't have a value!");
     void *SaveInfo;
     bool UseDefault;
     const bool sameAsDefault = !Val.hasValue();

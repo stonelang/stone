@@ -125,7 +125,7 @@ void Compilation::Implementation::CheckForUnfinishedJobs() {}
 void Compilation::Implementation::AddPendingJobToTaskQueue(const Job *job) {
 
   GetTaskQueue()->addTask(compilation->GetDriver(), job->GetExecutable(),
-                          job->GetArgumentsForTaskExecution(), llvm::None,
+                          job->GetArgumentsForTaskExecution(), std::nullopt,
                           (void *)job);
 }
 

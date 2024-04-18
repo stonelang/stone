@@ -8,11 +8,11 @@ namespace stone {
 
 struct OutputFile final {
   llvm::StringRef outputFilename;
-  llvm::Optional<llvm::sys::fs::TempFile> tempFileName;
+  std::optional<llvm::sys::fs::TempFile> tempFileName;
 
 public:
   OutputFile(llvm::StringRef outputFilename,
-             llvm::Optional<llvm::sys::fs::TempFile> tempFileName)
+             std::optional<llvm::sys::fs::TempFile> tempFileName)
       : outputFilename(outputFilename), tempFileName(std::move(tempFileName)) {}
 };
 

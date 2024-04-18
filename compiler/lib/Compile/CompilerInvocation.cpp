@@ -55,7 +55,7 @@ static Status ParseTypeCheckerOptions(llvm::opt::InputArgList &ial,
   return Status();
 }
 
-static Optional<llvm::CodeModel::Model>
+static std::optional<llvm::CodeModel::Model>
 GetCodeModel(const CodeGenOptions &codeGenOpts) {
 
   unsigned codeModel = llvm::StringSwitch<unsigned>(codeGenOpts.codeModel)
@@ -68,7 +68,7 @@ GetCodeModel(const CodeGenOptions &codeGenOpts) {
                            .Default(~0u);
   assert(codeModel != ~0u && "invalid code model!");
   if (codeModel == ~1u) {
-    return llvm::None;
+    return std::nullopt;
   }
   return static_cast<llvm::CodeModel::Model>(codeModel);
 }

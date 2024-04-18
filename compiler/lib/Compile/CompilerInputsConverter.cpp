@@ -26,7 +26,7 @@ CompilerInputsConverter::CompilerInputsConverter(DiagnosticEngine &de,
       badFileDescriptorRetryCountArg(
           args.getLastArg(opts::BadFileDescriptorRetryCount)) {}
 
-llvm::Optional<CompilerInputsAndOutputs> CompilerInputsConverter::Convert(
+std::optional<CompilerInputsAndOutputs> CompilerInputsConverter::Convert(
     llvm::SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers) {
 
   STONE_DEFER {
@@ -40,17 +40,17 @@ llvm::Optional<CompilerInputsAndOutputs> CompilerInputsConverter::Convert(
   };
 
   if (EnforceFilelistExclusion()) {
-    return llvm::None;
+    return std::nullopt;
   }
 
   if (fileListPathArg ? ReadInputFilesFromFilelist()
                       : ReadInputFilesFromCommandLine()) {
-    return llvm::None;
+    return std::nullopt;
   }
 
-  llvm::Optional<std::set<llvm::StringRef>> primaryFiles = ReadPrimaryFiles();
+  std::optional<std::set<llvm::StringRef>> primaryFiles = ReadPrimaryFiles();
   if (!primaryFiles) {
-    return llvm::None;
+    return std::nullopt;
   }
 
   CompilerInputsAndOutputs inputsAndOutputs;
@@ -59,7 +59,7 @@ llvm::Optional<CompilerInputsAndOutputs> CompilerInputsConverter::Convert(
       CreateInputFilesConsumingPrimaries(*primaryFiles);
 
   if (DiagnoseUnusedPrimaryFiles(unusedPrimaryFiles)) {
-    return llvm::None;
+    return std::nullopt;
   }
 
   // Must be set before iterating over inputs needing outputs.
@@ -163,7 +163,7 @@ bool CompilerInputsConverter::AddFile(llvm::StringRef file) {
   return true;
 }
 
-Optional<std::set<StringRef>> CompilerInputsConverter::ReadPrimaryFiles() {
+std::optional<std::set<StringRef>> CompilerInputsConverter::ReadPrimaryFiles() {
   std::set<StringRef> primaryFiles;
   for (const Arg *A : args.filtered(opts::PrimaryFile)) {
     primaryFiles.insert(A->getValue());
@@ -171,7 +171,7 @@ Optional<std::set<StringRef>> CompilerInputsConverter::ReadPrimaryFiles() {
   if (ForAllFilesInFileList(
           primaryFileListPathArg,
           [&](StringRef file) -> void { primaryFiles.insert(file); })) {
-    return None;
+    return std::nullopt;
   }
   return primaryFiles;
 }
@@ -191,7 +191,7 @@ CompilerInputsConverter::CreateInputFilesConsumingPrimaries(
   }
 
   if (!files.empty() && !hasAnyPrimaryFiles) {
-    llvm::Optional<std::vector<std::string>> userSuppliedNamesOrErr =
+    std::optional<std::vector<std::string>> userSuppliedNamesOrErr =
         CompilerOutputFilesComputer::
             GetOutputFilenamesFromCommandLineOrFileList(args, de, opts::o,
                                                         opts::OutputFileList);

@@ -10,7 +10,7 @@
 // #include "stone/Option/SanitizerOptions.h"
 
 #include "llvm/ADT/STLExtras.h"
-#include "llvm/ADT/Triple.h"
+#include "llvm/TargetParser/Triple.h"
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Option/Option.h"
@@ -28,7 +28,7 @@ bool CompilerOutputsConverter::Convert(
     std::vector<SupplementaryOutputPaths> &supplementaryOutputs,
     CompilerAction action) {
 
-  Optional<CompilerOutputFilesComputer> ofc =
+  std::optional<CompilerOutputFilesComputer> ofc =
       CompilerOutputFilesComputer::Create(
           args, de, inputsAndOutputs,
           {"output", opts::o, opts::OutputFileList, "-o"}, action);
@@ -36,16 +36,16 @@ bool CompilerOutputsConverter::Convert(
   if (!ofc) {
     return true;
   }
-  llvm::Optional<std::vector<std::string>> mains = ofc->ComputeOutputFiles();
+  std::optional<std::vector<std::string>> mains = ofc->ComputeOutputFiles();
   if (!mains) {
     return true;
   }
 
-  llvm::Optional<std::vector<std::string>> indexMains;
+  std::optional<std::vector<std::string>> indexMains;
   if (args.hasArg(opts::IndexUnitOutputPath,
                   opts::IndexUnitOutputPathFileList)) {
 
-    llvm::Optional<CompilerOutputFilesComputer> iuofc =
+    std::optional<CompilerOutputFilesComputer> iuofc =
         CompilerOutputFilesComputer::Create(
             args, de, inputsAndOutputs,
             {"index unit output path", opts::IndexUnitOutputPath,
@@ -63,7 +63,7 @@ bool CompilerOutputsConverter::Convert(
     assert(mains->size() == indexMains->size() && "checks not equivalent?");
   }
 
-  llvm::Optional<std::vector<SupplementaryOutputPaths>> supplementaries =
+  std::optional<std::vector<SupplementaryOutputPaths>> supplementaries =
       SupplementaryOutputPathsComputer(args, de, inputsAndOutputs, *mains,
                                        moduleName, action)
           .ComputeOutputPaths();
@@ -80,7 +80,7 @@ bool CompilerOutputsConverter::Convert(
   return false;
 }
 
-llvm::Optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 CompilerOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
                                              DiagnosticEngine &de) {
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer =
@@ -88,7 +88,7 @@ CompilerOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
   if (!buffer) {
     de.PrintD(SrcLoc(), diag::err_cannot_open_file, diag::LLVMStr(fileListPath),
               diag::LLVMStr(buffer.getError().message()));
-    return llvm::None;
+    return std::nullopt;
   }
   std::vector<std::string> outputFiles;
   for (llvm::StringRef line :
@@ -98,7 +98,7 @@ CompilerOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
   return outputFiles;
 }
 
-llvm::Optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 CompilerOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
     const ArgList &args, DiagnosticEngine &de, opts::OptID singleOpt,
     opts::OptID fileListOpt) {
@@ -114,15 +114,15 @@ CompilerOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
   return args.getAllArgValues(singleOpt);
 }
 
-llvm::Optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
+std::optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
     const llvm::opt::ArgList &args, DiagnosticEngine &de,
     const CompilerInputsAndOutputs &inputsAndOutputs,
     CompilerOutputOptInfo optInfo, CompilerAction action) {
-  Optional<std::vector<std::string>> outputArguments =
+  std::optional<std::vector<std::string>> outputArguments =
       GetOutputFilenamesFromCommandLineOrFileList(args, de, optInfo.SingleID,
                                                   optInfo.FilelistID);
   if (!outputArguments)
-    return None;
+    return std::nullopt;
   const StringRef outputDirectoryArgument =
       outputArguments->size() == 1 &&
               llvm::sys::fs::is_directory(outputArguments->front())
@@ -143,7 +143,7 @@ llvm::Optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
     de.PrintD(SrcLoc(),
               diag::err_if_any_output_files_are_specified_they_all_must_be,
               diag::LLVMStr(optInfo.PrettyName));
-    return llvm::None;
+    return std::nullopt;
   }
 
   auto actionOutputFileType = CompilerOptions::GetActionOutputFileType(action);
@@ -168,7 +168,7 @@ CompilerOutputFilesComputer::CompilerOutputFilesComputer(
       action(action), moduleNameArg(moduleNameArg), Suffix(suffix),
       HasTextualOutput(hasTextualOutput), OutputInfo(optInfo) {}
 
-llvm::Optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 CompilerOutputFilesComputer::ComputeOutputFiles() const {
   std::vector<std::string> outputFiles;
   unsigned i = 0;
@@ -178,18 +178,18 @@ CompilerOutputFilesComputer::ComputeOutputFiles() const {
                                   ? llvm::StringRef()
                                   : llvm::StringRef(OutputFileArguments[i++]);
 
-        llvm::Optional<std::string> outputFile =
+        std::optional<std::string> outputFile =
             ComputeOutputFile(outputArg, input);
         if (!outputFile)
           return true;
         outputFiles.push_back(*outputFile);
         return false;
       });
-  return hadError ? llvm::None
-                  : llvm::Optional<std::vector<std::string>>(outputFiles);
+  return hadError ? std::nullopt
+                  : std::optional<std::vector<std::string>>(outputFiles);
 }
 
-llvm::Optional<std::string> CompilerOutputFilesComputer::ComputeOutputFile(
+std::optional<std::string> CompilerOutputFilesComputer::ComputeOutputFile(
     StringRef outputArg, const CompilerInputFile &input) const {
   // Return an empty string to signify no output.
   // The invocation does not currently produce a diagnostic
@@ -209,7 +209,7 @@ llvm::Optional<std::string> CompilerOutputFilesComputer::ComputeOutputFile(
   return DeriveOutputFileFromInput(input);
 }
 
-llvm::Optional<std::string>
+std::optional<std::string>
 CompilerOutputFilesComputer::DeriveOutputFileFromInput(
     const CompilerInputFile &input) const {
 
@@ -222,19 +222,19 @@ CompilerOutputFilesComputer::DeriveOutputFileFromInput(
     // Assuming CompilerOptions::doesJobActionProduceOutput(RequestedJobAction)
     de.PrintD(SrcLoc(), diag::err_no_output_filename_specified,
               diag::LLVMStr(OutputInfo.PrettyName));
-    return llvm::None;
+    return std::nullopt;
   }
   return DeriveOutputFileFromParts("", baseName);
 }
 
-Optional<std::string> CompilerOutputFilesComputer::DeriveOutputFileForDirectory(
+std::optional<std::string> CompilerOutputFilesComputer::DeriveOutputFileForDirectory(
     const CompilerInputFile &input) const {
   std::string baseName = DetermineBaseNameOfOutput(input);
   if (baseName.empty()) {
     de.PrintD(SrcLoc(), diag::err_implicit_output_file_is_directory,
               diag::LLVMStr(OutputDirectoryArgument),
               diag::LLVMStr(OutputInfo.SingleOptSpelling));
-    return None;
+    return std::nullopt;
   }
   return DeriveOutputFileFromParts(OutputDirectoryArgument, baseName);
 }
@@ -265,14 +265,14 @@ SupplementaryOutputPathsComputer::SupplementaryOutputPathsComputer(
     : args(args), de(de), inputsAndOutputs(inputsAndOutputs),
       OutputFiles(outputFiles), moduleName(moduleName), action(action) {}
 
-llvm::Optional<std::vector<SupplementaryOutputPaths>>
+std::optional<std::vector<SupplementaryOutputPaths>>
 SupplementaryOutputPathsComputer::ComputeOutputPaths() const {
-  Optional<std::vector<SupplementaryOutputPaths>> pathsFromUser =
+  std::optional<std::vector<SupplementaryOutputPaths>> pathsFromUser =
       args.hasArg(opts::SupplementaryOutputFileMap)
           ? ReadSupplementaryOutputFileMap()
           : GetSupplementaryOutputPathsFromArguments();
   if (!pathsFromUser)
-    return None;
+    return std::nullopt;
 
   if (inputsAndOutputs.HasPrimaryInputs()) {
     assert(OutputFiles.size() == pathsFromUser->size());
@@ -300,11 +300,11 @@ SupplementaryOutputPathsComputer::ComputeOutputPaths() const {
         return true;
       });
   if (hadError)
-    return None;
+    return std::nullopt;
   return outputPaths;
 }
 
-Optional<std::vector<SupplementaryOutputPaths>>
+std::optional<std::vector<SupplementaryOutputPaths>>
 SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
     const {
 
@@ -361,7 +361,7 @@ SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
   //     !privateModuleInterfaceOutput || !moduleSourceInfoOutput ||
   //     !moduleSummaryOutput || !abiDescriptorOutput ||
   //     !moduleSemanticInfoOutput || !optRecordOutput) {
-  //   return None;
+  //   return std::nullopt;
   // }
   std::vector<SupplementaryOutputPaths> result;
 
@@ -393,7 +393,7 @@ SupplementaryOutputPathsComputer::GetSupplementaryOutputPathsFromArguments()
 
 // // Extend this routine for filelists if/when we have them.
 
-Optional<std::vector<std::string>>
+std::optional<std::vector<std::string>>
 SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
     opts::OptID pathID) const {
   std::vector<std::string> paths = args.getAllArgValues(pathID);
@@ -423,10 +423,10 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
       SrcLoc(), diag::err_wrong_number_of_arguments,
       diag::LLVMStr(args.getLastArg(pathID)->getOption().getPrefixedName()),
       diag::Int(N), diag::Int(paths.size()));
-  return llvm::None;
+  return std::nullopt;
 }
 
-llvm::Optional<SupplementaryOutputPaths>
+std::optional<SupplementaryOutputPaths>
 SupplementaryOutputPathsComputer::ComputeOutputPathsForOneInput(
     StringRef outputFile, const SupplementaryOutputPaths &pathsFromArguments,
     const CompilerInputFile &input) const {
@@ -618,7 +618,7 @@ CreateFromTypeToPathMap(const TypeToPathMap *map) {
   return paths;
 }
 
-Optional<std::vector<SupplementaryOutputPaths>>
+std::optional<std::vector<SupplementaryOutputPaths>>
 SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
 
   // TODO:
@@ -637,7 +637,7 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
   //    de.PrintD(SrcLoc(),
   //                   diag::error_cannot_have_supplementary_outputs,
   //                   A->getSpelling(), "-supplementary-output-file-map");
-  //    return llvm::None;
+  //    return std::nullopt;
   //  }
 
   const StringRef supplementaryFileMapPath =
@@ -650,7 +650,7 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
       de.PrintD(SrcLoc(), diag::err_invalid_arg_value,
                 diag::LLVMStr(A->getAsString(args)),
                 diag::LLVMStr(A->getValue()));
-      return llvm::None;
+      return std::nullopt;
     }
   }
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer = nullptr;
@@ -667,7 +667,7 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
     de.PrintD(SrcLoc(), diag::err_cannot_open_file,
               diag::LLVMStr(supplementaryFileMapPath),
               diag::LLVMStr(buffer.getError().message()));
-    return llvm::None;
+    return std::nullopt;
   }
   llvm::Expected<OutputFileMap> outputFileMap =
       OutputFileMap::LoadFromBuffer(std::move(buffer.get()), "");
@@ -675,7 +675,7 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
     de.PrintD(SrcLoc(), diag::err_unable_to_load_supplementary_output_file_map,
               diag::LLVMStr(supplementaryFileMapPath),
               diag::LLVMStr(llvm::toString(std::move(Err))));
-    return llvm::None;
+    return std::nullopt;
   }
 
   std::vector<SupplementaryOutputPaths> outputPaths;
@@ -695,7 +695,7 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
         return false;
       });
   if (hadError) {
-    return llvm::None;
+    return std::nullopt;
   }
   return outputPaths;
 }

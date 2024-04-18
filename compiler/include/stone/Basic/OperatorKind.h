@@ -30,7 +30,7 @@ GetRewrittenOverloadedOperator(OverloadedOperatorKind Kind) {
   case ExclaimEqual:
     return EqualEqual;
   default:
-    return None;
+    return std::nullopt;
   }
 }
 /// Determine if this is a compound assignment operator.

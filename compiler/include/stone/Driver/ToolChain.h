@@ -291,15 +291,15 @@ public:
 
 public:
   /// Retrieve the target SDK version for the given target triple.
-  llvm::Optional<llvm::VersionTuple>
+  std::optional<llvm::VersionTuple>
   GetTargetSDKVersion(const llvm::Triple &triple) const;
 
   /// Information about the SDK that the application is being built against.
   /// This information is only used by the linker, so it is only populated
   /// when there will be a linker job.
-  mutable llvm::Optional<clang::DarwinSDKInfo> darwinSDKInfo;
+  mutable std::optional<clang::DarwinSDKInfo> darwinSDKInfo;
 
-  const llvm::Optional<llvm::Triple> targetVariant;
+  const std::optional<llvm::Triple> targetVariant;
 
 public:
   static bool classof(const ToolChain *toolChain) {

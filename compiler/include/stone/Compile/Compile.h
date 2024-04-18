@@ -7,7 +7,6 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {
-class Compiler;
 class CompilerObservation;
 
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,

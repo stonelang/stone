@@ -8,7 +8,7 @@
 using namespace stone;
 
 Job::Job(CompilationEntityKind kind, const JobConstruction &constructor)
-    : Job(kind, constructor, llvm::None) {}
+    : Job(kind, constructor, std::nullopt) {}
 
 Job::Job(CompilationEntityKind kind, const JobConstruction &constructor,
          CompilationEntityList inputs)
@@ -31,7 +31,7 @@ Job *Job::Create(const Driver &driver, const JobConstruction &constructor,
 void Job::ClearJobFlags() {}
 
 BatchJob::BatchJob(const JobConstruction &constructor)
-    : BatchJob(constructor, llvm::None) {}
+    : BatchJob(constructor, std::nullopt) {}
 
 BatchJob::BatchJob(const JobConstruction &constructor,
                    CompilationEntityList inputs)

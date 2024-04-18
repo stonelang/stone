@@ -146,11 +146,11 @@ const SrcMgr::VirtualFile *SrcMgr::getVirtualFile(SrcLoc Loc) const {
   return nullptr;
 }
 
-Optional<unsigned>
+std::optional<unsigned>
 SrcMgr::getIDForBufferIdentifier(StringRef BufIdentifier) const {
   auto It = BufIdentIDMap.find(BufIdentifier);
   if (It == BufIdentIDMap.end())
-    return None;
+    return std::nullopt;
   return It->second;
 }
 
@@ -195,7 +195,7 @@ StringRef SrcMgr::getEntireTextForBuffer(unsigned BufferID) const {
 }
 
 StringRef SrcMgr::extractText(CharSrcRange Range,
-                              Optional<unsigned> BufferID) const {
+                              std::optional<unsigned> BufferID) const {
   assert(Range.isValid() && "range should be valid");
 
   if (!BufferID)
@@ -205,7 +205,7 @@ StringRef SrcMgr::extractText(CharSrcRange Range,
                        Range.getByteLength());
 }
 
-Optional<unsigned> SrcMgr::findBufferContainingLocInternal(SrcLoc Loc) const {
+std::optional<unsigned> SrcMgr::findBufferContainingLocInternal(SrcLoc Loc) const {
   assert(Loc.isValid());
   // Search the buffers back-to front, so later alias buffers are
   // visited first.
@@ -218,7 +218,7 @@ Optional<unsigned> SrcMgr::findBufferContainingLocInternal(SrcLoc Loc) const {
         less_equal(Loc.Value.getPointer(), Buf->getBufferEnd()))
       return i;
   }
-  return None;
+  return std::nullopt;
 }
 
 unsigned SrcMgr::findBufferContainingLoc(SrcLoc Loc) const {
@@ -319,26 +319,26 @@ CharSrcRange CharSrcRange::ToCharSrcRange(SrcMgr &sm, SrcLoc start,
 
 void CharSrcRange::dump(const SrcMgr &SM) const { print(llvm::errs(), SM); }
 
-llvm::Optional<unsigned>
+std::optional<unsigned>
 SrcMgr::resolveOffsetForEndOfLine(unsigned BufferId, unsigned Line) const {
   return resolveFromLineCol(BufferId, Line, ~0u);
 }
 
-llvm::Optional<unsigned> SrcMgr::getLineLength(unsigned BufferId,
+std::optional<unsigned> SrcMgr::getLineLength(unsigned BufferId,
                                                unsigned Line) const {
   auto BegOffset = resolveFromLineCol(BufferId, Line, 0);
   auto EndOffset = resolveFromLineCol(BufferId, Line, ~0u);
   if (BegOffset && EndOffset) {
     return EndOffset.getValue() - BegOffset.getValue();
   }
-  return None;
+  return std::nullopt;
 }
 
-llvm::Optional<unsigned> SrcMgr::resolveFromLineCol(unsigned BufferId,
+std::optional<unsigned> SrcMgr::resolveFromLineCol(unsigned BufferId,
                                                     unsigned Line,
                                                     unsigned Col) const {
   if (Line == 0) {
-    return None;
+    return std::nullopt;
   }
   const bool LineEnd = Col == ~0u;
   auto InputBuf = GetLLVMSrcMgr().getMemoryBuffer(BufferId);
@@ -353,7 +353,7 @@ llvm::Optional<unsigned> SrcMgr::resolveFromLineCol(unsigned BufferId,
     }
   }
   if (Line != 0) {
-    return None;
+    return std::nullopt;
   }
   Ptr = LineStart;
   if (Col == 0) {
@@ -372,7 +372,7 @@ llvm::Optional<unsigned> SrcMgr::resolveFromLineCol(unsigned BufferId,
       }
     }
   }
-  return None;
+  return std::nullopt;
 }
 
 unsigned SrcMgr::getExternalSourceBufferId(StringRef Path) {

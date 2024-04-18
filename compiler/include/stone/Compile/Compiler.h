@@ -119,11 +119,11 @@ public:
   }
   void RecordPrimarySourceID(unsigned primarySourceID);
 
-  llvm::Optional<unsigned> CreateCodeCompletionBuffer();
-  llvm::Optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
+  std::optional<unsigned> CreateCodeCompletionBuffer();
+  std::optional<unsigned> GetRecordedBufferID(const CompilerInputFile &input,
                                                const bool shouldRecover,
                                                bool &failed);
-  llvm::Optional<ModuleBuffers>
+  std::optional<ModuleBuffers>
   GetInputBuffersIfPresent(const CompilerInputFile &input);
 
   SourceFile::ParsingOptions GetSourceFileParsingOptions(bool forPrimary) const;

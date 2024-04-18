@@ -115,7 +115,7 @@ class ExportContext final {
   ExportContext(DeclContext *DC, AvailabilityContext runningOSVersion,
                 FragileFunction fragileFunction, bool spi, bool exported,
                 bool implicit, bool deprecated,
-                llvm::Optional<PlatformKind> unavailablePlatformKind);
+                std::optional<PlatformKind> unavailablePlatformKind);
 
 public:
   /// Create an instance describing the types that can be referenced from the
@@ -175,7 +175,7 @@ public:
   /// reference other deprecated declarations without warning.
   bool IsDeprecated() const { return Deprecated; }
 
-  llvm::Optional<PlatformKind> getUnavailablePlatformKind() const;
+  std::optional<PlatformKind> getUnavailablePlatformKind() const;
 
   /// If true, the context can only reference exported declarations, either
   /// because it is the signature context of an exported declaration, or
@@ -184,7 +184,7 @@ public:
 
   /// Get the ExportabilityReason for diagnostics. If this is 'None', there
   /// are no restrictions on referencing unexported declarations.
-  Optional<ExportabilityReason> GetExportabilityReason() const;
+  std::optional<ExportabilityReason> GetExportabilityReason() const;
 };
 
 /// Check if a declaration is exported as part of a module's external interface.

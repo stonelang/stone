@@ -13,7 +13,7 @@
 #include "stone/Compile/Compiler.h"
 
 #include "llvm/ADT/STLExtras.h"
-#include "llvm/ADT/Triple.h"
+#include "llvm/TargetParser/Triple.h"
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Option/Option.h"
@@ -52,7 +52,7 @@ Status CompilerOptionsConverter::Convert(
   // assert(compilerOpts.inputsAndOutputs.HasInputs() &&
   //       "Inputs and Outputs should be empty");
 
-  llvm::Optional<CompilerInputsAndOutputs> inputsAndOutputs =
+  std::optional<CompilerInputsAndOutputs> inputsAndOutputs =
       CompilerInputsConverter(de, args, compilerOpts).Convert(buffers);
 
   if (!inputsAndOutputs) {
@@ -216,7 +216,7 @@ Status CompilerOptionsConverter::ComputeModuleName() {
 
 Status CompilerOptionsConverter::ComputeFallbackModuleName() {
 
-  llvm::Optional<std::vector<std::string>> outputFilenames =
+  std::optional<std::vector<std::string>> outputFilenames =
       CompilerOutputFilesComputer::GetOutputFilenamesFromCommandLineOrFileList(
           args, de, opts::o, opts::OutputFileList);
 

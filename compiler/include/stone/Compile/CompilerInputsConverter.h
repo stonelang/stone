@@ -38,7 +38,7 @@ public:
   /// \param buffers If present, buffers read in the processing of the
   /// invocation inputs will be saved here. These should only be used for
   /// debugging purposes.
-  llvm::Optional<CompilerInputsAndOutputs>
+  std::optional<CompilerInputsAndOutputs>
   Convert(SmallVectorImpl<std::unique_ptr<llvm::MemoryBuffer>> *buffers);
 
 private:
@@ -50,7 +50,7 @@ private:
                              llvm::function_ref<void(StringRef)> caller);
 
   bool AddFile(llvm::StringRef file);
-  llvm::Optional<std::set<StringRef>> ReadPrimaryFiles();
+  std::optional<std::set<StringRef>> ReadPrimaryFiles();
 
   /// Returns the newly set-up CompilerInputsAndOutputs, as well as a set of
   /// any unused primary files (those that do not correspond to an input).

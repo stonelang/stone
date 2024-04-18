@@ -6,7 +6,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "stone/Basic/EditorPlaceholder.h"
-#include "llvm/ADT/Optional.h"
+
+#include <optional>
+
 
 using namespace stone;
 using namespace llvm;
@@ -27,10 +29,10 @@ using namespace llvm;
 // or type-string. If this ends up not the case for some reason, we can consider
 // adding escaping for '##'.
 
-Optional<EditorPlaceholderData>
+std::optional<EditorPlaceholderData>
 stone::parseEditorPlaceholder(StringRef PlaceholderText) {
   if (!PlaceholderText.startswith("<#") || !PlaceholderText.endswith("#>"))
-    return None;
+    return std::nullopt;
 
   PlaceholderText = PlaceholderText.drop_front(2).drop_back(2);
   EditorPlaceholderData PHDataBasic;

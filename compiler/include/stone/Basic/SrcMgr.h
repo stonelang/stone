@@ -32,7 +32,7 @@ class SrcMgr {
     SrcRange Original;
     SrcRange New;
     ReplacedRangeType() {}
-    ReplacedRangeType(llvm::NoneType) {}
+    ReplacedRangeType(std::nullopt_t) {}
     ReplacedRangeType(SrcRange Original, SrcRange New)
         : Original(Original), New(New) {
       assert(Original.isValid() && New.isValid());
@@ -52,7 +52,7 @@ class SrcMgr {
   mutable std::pair<const char *, const VirtualFile *> CachedVFile = {nullptr,
                                                                       nullptr};
 
-  Optional<unsigned> findBufferContainingLocInternal(SrcLoc Loc) const;
+  std::optional<unsigned> findBufferContainingLocInternal(SrcLoc Loc) const;
 
 public:
   SrcMgr(llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> FS =
@@ -153,7 +153,7 @@ public:
 
   /// Returns a buffer ID for a previously added buffer with the given
   /// buffer identifier, or None if there is no such buffer.
-  Optional<unsigned> getIDForBufferIdentifier(StringRef BufIdentifier) const;
+  std::optional<unsigned> getIDForBufferIdentifier(StringRef BufIdentifier) const;
 
   /// Returns the identifier for the buffer with the given ID.
   ///
@@ -229,7 +229,7 @@ public:
   StringRef getEntireTextForBuffer(unsigned BufferID) const;
 
   StringRef extractText(CharSrcRange Range,
-                        Optional<unsigned> BufferID = None) const;
+                        std::optional<unsigned> BufferID = None) const;
 
   llvm::SMDiagnostic GetMessage(stone::SrcLoc loc,
                                 llvm::SourceMgr::DiagKind Kind,
@@ -243,15 +243,15 @@ public:
   /// Translate line and column pair to the offset.
   /// If the column number is the maximum unsinged int, return the offset of the
   /// end of the line.
-  llvm::Optional<unsigned> resolveFromLineCol(unsigned BufferId, unsigned Line,
+  std::optional<unsigned> resolveFromLineCol(unsigned BufferId, unsigned Line,
                                               unsigned Col) const;
 
   /// Translate the end position of the given line to the offset.
-  llvm::Optional<unsigned> resolveOffsetForEndOfLine(unsigned BufferId,
+  std::optional<unsigned> resolveOffsetForEndOfLine(unsigned BufferId,
                                                      unsigned Line) const;
 
   /// Get the length of the line
-  llvm::Optional<unsigned> getLineLength(unsigned BufferId,
+  std::optional<unsigned> getLineLength(unsigned BufferId,
                                          unsigned Line) const;
 
   SrcLoc getLocForLineCol(unsigned BufferId, unsigned Line,

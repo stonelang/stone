@@ -284,7 +284,7 @@ enum class InterfaceConformanceState {
 //   /// Get any additional requirements that are required for this conformance
 //   to
 //   /// be satisfied, if it is possible for them to be computed.
-//   Optional<ArrayRef<Requirement>> getConditionalRequirementsIfAvailable()
+//   std::optional<ArrayRef<Requirement>> getConditionalRequirementsIfAvailable()
 //   const;
 
 //   /// Get any additional requirements that are required for this conformance
@@ -488,7 +488,7 @@ enum class InterfaceConformanceState {
 //   /// to be satisfied.
 //   ArrayRef<Requirement> getConditionalRequirements() const;
 
-//   Optional<ArrayRef<Requirement>> getConditionalRequirementsIfAvailable()
+//   std::optional<ArrayRef<Requirement>> getConditionalRequirementsIfAvailable()
 //   const;
 
 //   /// Retrieve the state of this conformance.
@@ -727,7 +727,7 @@ enum class InterfaceConformanceState {
 //   }
 //   Witness getWitness(ValueDecl *requirement) const;
 
-//   Optional<ArrayRef<Requirement>> getConditionalRequirementsIfAvailable()
+//   std::optional<ArrayRef<Requirement>> getConditionalRequirementsIfAvailable()
 //   const{
 //     return ArrayRef<Requirement>();
 //   }
@@ -778,7 +778,7 @@ enum class InterfaceConformanceState {
 //   /// Any conditional requirements, in substituted form. (E.g. given Foo<T>:
 //   Bar
 //   /// where T: Bar, Foo<Baz<U>> will include Baz<U>: Bar.)
-//   mutable Optional<ArrayRef<Requirement>> ConditionalRequirements;
+//   mutable std::optional<ArrayRef<Requirement>> ConditionalRequirements;
 
 //   friend class ASTContext;
 
@@ -811,14 +811,14 @@ enum class InterfaceConformanceState {
 //   /// getConditionalRequirementsIfAvailable (these are separate because
 //   /// CONFORMANCE_SUBCLASS_DISPATCH does some type checks and a defaulted
 //   /// parameter gets in the way of that).
-//   Optional<ArrayRef<Requirement>>
+//   std::optional<ArrayRef<Requirement>>
 //   getConditionalRequirementsIfAvailableOrCached(bool computeIfPossible) const
 //   {
 //     if (computeIfPossible)
 //       computeConditionalRequirements();
 //     return ConditionalRequirements;
 //   }
-//   Optional<ArrayRef<Requirement>>
+//   std::optional<ArrayRef<Requirement>>
 //   getConditionalRequirementsIfAvailable() const {
 //     return getConditionalRequirementsIfAvailableOrCached(
 //         /*computeIfPossible=*/true);
@@ -933,7 +933,7 @@ enum class InterfaceConformanceState {
 //   }
 
 //   /// Get any requirements that must be satisfied for this conformance to
-//   apply. Optional<ArrayRef<Requirement>>
+//   apply. std::optional<ArrayRef<Requirement>>
 //   getConditionalRequirementsIfAvailable() const {
 //     return InheritedConformance->getConditionalRequirementsIfAvailable();
 //   }
@@ -1063,7 +1063,7 @@ enum class InterfaceConformanceState {
 //   }
 
 //   /// Get any requirements that must be satisfied for this conformance to
-//   apply. Optional<ArrayRef<Requirement>>
+//   apply. std::optional<ArrayRef<Requirement>>
 //   getConditionalRequirementsIfAvailable() const {
 //     return getConditionalRequirements();
 //   }

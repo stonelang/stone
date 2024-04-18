@@ -5,9 +5,9 @@
 // dependencies.
 // Casting.h has complex templates that cannot be easily forward declared.
 #include "llvm/Support/Casting.h"
-// None.h includes an enumerator that is desired & cannot be forward declared
-// without a definition of NoneType.
-#include "llvm/ADT/None.h"
+
+
+#include <optional>
 
 namespace llvm {
 // ADT's.
@@ -46,7 +46,7 @@ using llvm::isa;
 // ADT's.
 using llvm::ArrayRef;
 using llvm::MutableArrayRef;
-using llvm::None;
+using std::nullopt;
 using llvm::Optional;
 using llvm::OwningArrayRef;
 using llvm::SaveAndRestore;

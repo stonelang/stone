@@ -202,7 +202,7 @@ class InterpretJobConstruction : public JobConstruction {
 public:
   explicit InterpretJobConstruction()
       : JobConstruction(CompilationEntityKind::InterpretJobConstruction,
-                        llvm::None, file::FileType::None) {}
+                        std::nullopt, file::FileType::None) {}
 
 public:
   static bool classof(const CompilationEntity *entity) {

@@ -19,7 +19,7 @@ using namespace stone;
 
 class StatsReporter::RecursionSafeTimers {
   struct RecursionSafeTimer {
-    llvm::Optional<llvm::NamedRegionTimer> Timer;
+    std::optional<llvm::NamedRegionTimer> Timer;
     size_t RecursionDepth;
   };
 

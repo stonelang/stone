@@ -169,7 +169,7 @@ public:
   /// If the function returns \c None, the transform operation will
   ///
   /// \param fn A function object with the signature
-  /// \c Optional<Type>(TypeBase *), which accepts a Type
+  /// \c std::optional<Type>(TypeBase *), which accepts a Type
   /// pointer and returns a transformed Type, a null Type (which
   /// will propagate the null Type to the outermost \c transform() call),
   /// or None (to indicate that the transform operation should recursively
@@ -178,7 +178,7 @@ public:
   ///
   /// \returns the result of transforming the Type.
   Type
-  TransformRec(llvm::function_ref<llvm::Optional<Type>(TypeBase *)> fn) const;
+  TransformRec(llvm::function_ref<std::optional<Type>(TypeBase *)> fn) const;
 
   /// Look through the given Type and its children and apply fn to them.
   void Visit(llvm::function_ref<void(Type)> fn) const {

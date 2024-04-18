@@ -10,7 +10,7 @@
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
-#include "llvm/ADT/Triple.h"
+#include "llvm/TargetParser/Triple.h"
 #include "llvm/Support/Regex.h"
 #include "llvm/Support/VersionTuple.h"
 #include "llvm/Support/raw_ostream.h"
@@ -38,7 +38,7 @@ public:
   /// a zippered binary that can be loaded into both macCatalyst and
   /// macOS processes. A value of 'None' means no zippering will be
   /// performed.
-  llvm::Optional<llvm::Triple> TargetVariant;
+  std::optional<llvm::Triple> TargetVariant;
 
   /// This represents the statistics generated
   bool printStatistics = true;

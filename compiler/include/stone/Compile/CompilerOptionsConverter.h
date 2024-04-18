@@ -26,7 +26,7 @@ class CompilerOptionsConverter {
   CompilerOptions &compilerOpts;
 
 private:
-  llvm::Optional<std::vector<std::string>>
+  std::optional<std::vector<std::string>>
       CachedOutputFilenamesFromCommandLineOrFileList;
 
   void HandleDebugCrashGroupArguments();

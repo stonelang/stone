@@ -158,7 +158,7 @@ public:
 
 public:
   SourceFile(SourceFileKind kind, ModuleDecl &owner,
-             llvm::Optional<unsigned> srcID, bool isPrimary = false);
+             std::optional<unsigned> srcID, bool isPrimary = false);
 
   ~SourceFile();
 

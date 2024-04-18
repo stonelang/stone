@@ -11,7 +11,7 @@
 
 #include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/SmallString.h"
-#include "llvm/ADT/Triple.h"
+#include "llvm/TargetParser/Triple.h"
 
 namespace stone {
 
@@ -171,14 +171,14 @@ public:
   /// \param buffers If present, buffers read in the processing of the
   /// invocation inputs will be saved here. These should only be used for
   /// debugging purposes.
-  llvm::Optional<DriverInputsAndOutputs> Convert();
+  std::optional<DriverInputsAndOutputs> Convert();
 
 private:
   Status ReadFilesFromCommandLine();
   Status AddFile(llvm::StringRef file);
 
   /// Returns the newly set-up DriverInputsAndOutputs
-  llvm::Optional<DriverInputsAndOutputs> CreateInputFiles();
+  std::optional<DriverInputsAndOutputs> CreateInputFiles();
 
 public:
 };
@@ -202,7 +202,7 @@ public:
 
   /// Try to read an output file list file.
   /// \returns `None` if it could not open the filelist.
-  // static Optional<std::vector<std::string>>
+  // static std::optional<std::vector<std::string>>
   // ReadOutputFileList(StringRef filelistPath, DiagnosticEngine &de);
 };
 
@@ -243,7 +243,7 @@ class DriverOutputInfo final {
   /// The mode in which the driver should invoke the frontend.
   CompileInvocationMode compileInvocationMode = CompileInvocationMode::Multiple;
 
-  // llvm::Optional<MSVCRuntime> msvRuntimeVariant = llvm::None;
+  // std::optional<MSVCRuntime> msvRuntimeVariant = std::nullopt;
 
   /// The output type which should be used for compile job constructions.
   file::FileType outputFileType = file::FileType::None;
@@ -445,7 +445,7 @@ class DriverOptions final : public StandardOptions {
   llvm::Triple triple;
 
   /// Default target triple.
-  llvm::Optional<llvm::Triple> targetVariant;
+  std::optional<llvm::Triple> targetVariant;
 
   /// The path the executing program
   llvm::StringRef mainExecutablePath;

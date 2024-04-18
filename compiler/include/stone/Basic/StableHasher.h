@@ -137,7 +137,7 @@ public:
       return setBufferLength(bufLen + N);
     }
 
-    constexpr auto endian = llvm::support::endianness::little;
+    constexpr auto endian = llvm::endianness::little;
     compress(llvm::support::endian::read<uint64_t>(byteBuffer, endian));
 
     // Now reseed the buffer with the remaining bytes.
@@ -149,7 +149,7 @@ public:
   template <typename T, typename std::enable_if<
                             std::is_integral<T>::value>::type * = nullptr>
   void combine(T bits) {
-    constexpr auto endian = llvm::support::endianness::little;
+    constexpr auto endian = llvm::endianness::little;
     uint8_t buf[sizeof(T)] = {0};
     bits = llvm::support::endian::byte_swap<T>(bits, endian);
     std::memcpy(buf, &bits, sizeof(T));

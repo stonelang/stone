@@ -128,7 +128,7 @@ protected:
   SrcMgr *SourceMgr;
   clang::SourceManager *ClangSourceMgr;
 
-  llvm::Optional<std::vector<StatsEvent>> statsEvents;
+  std::optional<std::vector<StatsEvent>> statsEvents;
 
   // These are unique_ptr so we can use incomplete types here.
   std::unique_ptr<RecursionSafeTimers> RecursiveTimers;
@@ -174,7 +174,7 @@ public:
 #undef DRIVER_STAT
   };
 
-  llvm::Optional<DriverCounters> driverCounters;
+  std::optional<DriverCounters> driverCounters;
 
 public:
   DriverStatsReporter(llvm::StringRef ModuleName, llvm::StringRef InputName,
@@ -206,8 +206,8 @@ public:
   };
 
   /// Counters that are always on.
-  llvm::Optional<CompilerCounters> compilerCounters;
-  llvm::Optional<CompilerCounters> lastTracedCompilerCounters;
+  std::optional<CompilerCounters> compilerCounters;
+  std::optional<CompilerCounters> lastTracedCompilerCounters;
 
 public:
   CompilerStatsReporter(llvm::StringRef ModuleName, llvm::StringRef InputName,

@@ -31,14 +31,14 @@ StringRef stone::PrettyPlatformString(PlatformKind platform) {
   llvm_unreachable("bad PlatformKind");
 }
 
-Optional<PlatformKind> stone::PlatformFromString(StringRef Name) {
+std::optional<PlatformKind> stone::PlatformFromString(StringRef Name) {
   if (Name == "*")
     return PlatformKind::None;
-  return llvm::StringSwitch<Optional<PlatformKind>>(Name)
+  return llvm::StringSwitch<std::optional<PlatformKind>>(Name)
 #define AVAILABILITY_PLATFORM(X, PrettyName) .Case(#X, PlatformKind::X)
 #include "stone/Basic/PlatformKind.def"
       .Case("OSX", PlatformKind::macOS)
-      .Default(Optional<PlatformKind>());
+      .Default(std::optional<PlatformKind>());
 
   //.Case("OSXApplicationExtension", PlatformKind::macOSApplicationExtension)
 }

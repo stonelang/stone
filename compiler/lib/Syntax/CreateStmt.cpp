@@ -5,7 +5,7 @@ using namespace stone;
 
 BraceStmt *BraceStmt::Create(SrcLoc lbloc, llvm::ArrayRef<ASTNode> elements,
                              SrcLoc rbloc, ASTContext &astContext,
-                             llvm::Optional<bool> implicit) {
+                             std::optional<bool> implicit) {
 
   void *stmtPtr =
       astContext.Allocate(BraceStmt::totalSizeToAlloc<ASTNode>(elements.size()),

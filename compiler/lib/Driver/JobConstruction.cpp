@@ -18,7 +18,7 @@ JobConstruction::JobConstruction(CompilationEntityKind kind,
 
 CompileJobConstruction::CompileJobConstruction(FileType outputFileType)
     : IncrementalJobConstruction(CompilationEntityKind::CompileJobConstruction,
-                                 llvm::None, outputFileType) {
+                                 std::nullopt, outputFileType) {
 
   assert(file::IsOutputFileType(outputFileType));
 }

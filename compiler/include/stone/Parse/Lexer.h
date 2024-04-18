@@ -236,11 +236,11 @@ public:
 
   /// If a lexer cut off point has been set returns the offset in the buffer at
   /// which lexing is being cut off.
-  Optional<size_t> lexingCutOffOffset() const {
+  std::optional<size_t> lexingCutOffOffset() const {
     if (LexerCutOffPoint) {
       return LexerCutOffPoint - BufferStart;
     } else {
-      return None;
+      return std::nullopt;
     }
   }
 

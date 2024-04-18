@@ -70,8 +70,8 @@ static llvm::ErrorOr<bool> canUseTemporaryForWrite(const StringRef outputPath) {
 ///
 /// \returns The path to the temporary file that was opened, or \c None if the
 /// file couldn't be created.
-static Optional<std::string>
-tryToOpenTemporaryFile(Optional<llvm::raw_fd_ostream> &openedStream,
+static std::optional<std::string>
+tryToOpenTemporaryFile(std::optional<llvm::raw_fd_ostream> &openedStream,
                        const StringRef outputPath) {
 
   // Create a temporary file path.
@@ -93,7 +93,7 @@ tryToOpenTemporaryFile(Optional<llvm::raw_fd_ostream> &openedStream,
   if (EC) {
     // Ignore the specific error; the caller has to fall back to not using a
     // temporary anyway.
-    return None;
+    return std::nullopt;
   }
 
   openedStream.emplace(fd, /*shouldClose=*/true);
@@ -116,9 +116,9 @@ std::error_code stone::atomicallyWritingToFile(
   if (std::error_code error = canUseTemporary.getError())
     return error;
 
-  Optional<std::string> temporaryPath;
+  std::optional<std::string> temporaryPath;
   {
-    Optional<llvm::raw_fd_ostream> OS;
+    std::optional<llvm::raw_fd_ostream> OS;
     if (canUseTemporary.get()) {
       temporaryPath = tryToOpenTemporaryFile(OS, outputPath);
 

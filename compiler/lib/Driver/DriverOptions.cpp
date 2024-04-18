@@ -77,11 +77,11 @@ DriverInputsConverter::DriverInputsConverter(const llvm::opt::ArgList &args,
                                              Driver &driver)
     : args(args), driverOpts(driverOpts), driver(driver) {}
 
-llvm::Optional<DriverInputsAndOutputs> DriverInputsConverter::Convert() {
+std::optional<DriverInputsAndOutputs> DriverInputsConverter::Convert() {
 
   // Just read for now
   if (ReadFilesFromCommandLine().IsError()) {
-    return llvm::None;
+    return std::nullopt;
   }
   auto inputsAndOutputs = CreateInputFiles();
   return inputsAndOutputs;
@@ -108,7 +108,7 @@ Status DriverInputsConverter::AddFile(llvm::StringRef file) {
   return Status::MakeHasCompletionAndIsError();
 }
 
-llvm::Optional<DriverInputsAndOutputs>
+std::optional<DriverInputsAndOutputs>
 DriverInputsConverter::CreateInputFiles() {
 
   DriverInputsAndOutputs inputsAndOutputs;
@@ -126,7 +126,7 @@ DriverOptionsConverter::DriverOptionsConverter(const llvm::opt::ArgList &args,
 
 Status DriverOptionsConverter::Convert() {
 
-  llvm::Optional<DriverInputsAndOutputs> inputsAndOutputs =
+  std::optional<DriverInputsAndOutputs> inputsAndOutputs =
       DriverInputsConverter(args, driverOpts, driver).Convert();
 
   if (!inputsAndOutputs) {

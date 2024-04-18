@@ -34,7 +34,7 @@ struct EditorPlaceholderData {
 
 /// Deconstructs a placeholder string and returns info about it.
 /// \returns None if the \c PlaceholderText is not a valid placeholder string.
-Optional<EditorPlaceholderData>
+std::optional<EditorPlaceholderData>
 parseEditorPlaceholder(StringRef PlaceholderText);
 
 /// Checks if an identifier with the given text is an editor placeholder

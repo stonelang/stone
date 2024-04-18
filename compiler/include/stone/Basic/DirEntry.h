@@ -110,7 +110,7 @@ public:
   MapEntryOptionalStorage() : MaybeRef(optional_none_tag()) {}
 
   template <class... ArgTypes>
-  explicit MapEntryOptionalStorage(llvm::in_place_t, ArgTypes &&...Args)
+  explicit MapEntryOptionalStorage(std::in_place_t, ArgTypes &&...Args)
       : MaybeRef(std::forward<ArgTypes>(Args)...) {}
 
   void reset() { MaybeRef = optional_none_tag(); }
@@ -179,13 +179,13 @@ public:
   }
 };
 
-static_assert(sizeof(llvm::Optional<stone::DirEntryRef>) ==
+static_assert(sizeof(std::optional<stone::DirEntryRef>) ==
                   sizeof(stone::DirEntryRef),
-              "llvm::Optional<DirEntryRef> must avoid size overhead");
+              "std::optional<DirEntryRef> must avoid size overhead");
 
 static_assert(
-    std::is_trivially_copyable<llvm::Optional<stone::DirEntryRef>>::value,
-    "llvm::Optional<DirEntryRef> should be trivially copyable");
+    std::is_trivially_copyable<std::optional<stone::DirEntryRef>>::value,
+    "std::optional<DirEntryRef> should be trivially copyable");
 
 } // end namespace optional_detail
 
@@ -221,19 +221,19 @@ template <> struct DenseMapInfo<stone::DirEntryRef> {
 
 namespace stone {
 
-/// Wrapper around llvm::Optional<DirEntryRef> that degrades to 'const
+/// Wrapper around std::optional<DirEntryRef> that degrades to 'const
 /// DirEntry*', facilitating incremental patches to propagate
 /// DirEntryRef.
 ///
 /// This class can be used as return value or field where it's convenient for
-/// an llvm::Optional<DirEntryRef> to degrade to a 'const DirEntry*'. The
+/// an std::optional<DirEntryRef> to degrade to a 'const DirEntry*'. The
 /// purpose is to avoid code churn due to dances like the following:
 /// \code
 /// // Old code.
 /// lvalue = rvalue;
 ///
 /// // Temporary code from an incremental patch.
-/// llvm::Optional<DirEntryRef> MaybeF = rvalue;
+/// std::optional<DirEntryRef> MaybeF = rvalue;
 /// lvalue = MaybeF ? &MaybeF.getDirEntry() : nullptr;
 ///
 /// // Final code.
@@ -242,9 +242,9 @@ namespace stone {
 ///
 /// FIXME: Once DirEntryRef is "everywhere" and DirEntry::LastRef
 /// and DirEntry::getName have been deleted, delete this class and
-/// replace instances with llvm::Optional<DirEntryRef>.
+/// replace instances with std::optional<DirEntryRef>.
 class OptionalDirEntryRefDegradesToDirEntryPtr
-    : public llvm::Optional<DirEntryRef> {
+    : public std::optional<DirEntryRef> {
 public:
   OptionalDirEntryRefDegradesToDirEntryPtr() = default;
   OptionalDirEntryRefDegradesToDirEntryPtr(
@@ -256,29 +256,29 @@ public:
   OptionalDirEntryRefDegradesToDirEntryPtr &
   operator=(const OptionalDirEntryRefDegradesToDirEntryPtr &) = default;
 
-  OptionalDirEntryRefDegradesToDirEntryPtr(llvm::NoneType) {}
+  OptionalDirEntryRefDegradesToDirEntryPtr(std::nullopt_t) {}
   OptionalDirEntryRefDegradesToDirEntryPtr(DirEntryRef Ref)
-      : llvm::Optional<DirEntryRef>(Ref) {}
-  OptionalDirEntryRefDegradesToDirEntryPtr(llvm::Optional<DirEntryRef> MaybeRef)
-      : llvm::Optional<DirEntryRef>(MaybeRef) {}
+      : std::optional<DirEntryRef>(Ref) {}
+  OptionalDirEntryRefDegradesToDirEntryPtr(std::optional<DirEntryRef> MaybeRef)
+      : std::optional<DirEntryRef>(MaybeRef) {}
 
-  OptionalDirEntryRefDegradesToDirEntryPtr &operator=(llvm::NoneType) {
-    llvm::Optional<DirEntryRef>::operator=(None);
+  OptionalDirEntryRefDegradesToDirEntryPtr &operator=(std::nullopt_t) {
+    std::optional<DirEntryRef>::operator=(None);
     return *this;
   }
   OptionalDirEntryRefDegradesToDirEntryPtr &operator=(DirEntryRef Ref) {
-    llvm::Optional<DirEntryRef>::operator=(Ref);
+    std::optional<DirEntryRef>::operator=(Ref);
     return *this;
   }
   OptionalDirEntryRefDegradesToDirEntryPtr &
-  operator=(llvm::Optional<DirEntryRef> MaybeRef) {
-    llvm::Optional<DirEntryRef>::operator=(MaybeRef);
+  operator=(std::optional<DirEntryRef> MaybeRef) {
+    std::optional<DirEntryRef>::operator=(MaybeRef);
     return *this;
   }
 
   /// Degrade to 'const DirEntry *' to allow  DirEntry::LastRef and
   /// DirEntry::getName have been deleted, delete this class and replace
-  /// instances with llvm::Optional<DirEntryRef>
+  /// instances with std::optional<DirEntryRef>
   operator const DirEntry *() const {
     return hasValue() ? &getValue().getDirEntry() : nullptr;
   }
