@@ -16,11 +16,10 @@ namespace stone {
 class CodeGenOptions;
 class LangOptions;
 class DiagnosticEngine;
-class DriverOptions;
 class CompilerOptions;
-class StandardOptions;
-class InFlightDiagnostic;
+class Options;
 class Compiler;
+class CompilerInvocation;
 class ASTContext;
 class ModuleDecl;
 class SourceFile;
@@ -132,10 +131,17 @@ bool WriteNative(CodeGenOptions &codeGenOpts, llvm::raw_pwrite_stream &out,
 void PrintVersion();
 
 /// Print the help for the driver
-void PrintHelp(const StandardOptions &stdOpts);
+void PrintHelp(const Options &options);
 
 /// Print compiler features
 void PrintFeature();
 
+/// Print information about the target
+void PrintTargetInfo(const CompilerInvocation &invocation, ColorStream &out);
+
+/// Print information about the target
+void PrintTripleInfo(const llvm::Triple &triple,
+                     std::optional<llvm::VersionTuple> runtimeVersion,
+                     ColorStream &out);
 } // namespace stone
 #endif

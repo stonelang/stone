@@ -429,6 +429,12 @@ public:
   std::string GetArgsHash() const { return argsHash; }
 };
 
+enum class DriverMode : unsigned {
+#define MODE(M) M,
+#include "stone/Support/Mode.def"
+  MAX
+};
+
 class DriverOptions final : public Options {
 
   friend Driver;

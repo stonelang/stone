@@ -4,6 +4,10 @@
 using namespace stone;
 using namespace stone::file;
 
+CompilerOptions::CompilerOptions() {
+  excludedFlagsBitmask = opts::NoCompilerOption;
+}
+
 bool CompilerOptions::DoesActionNeedProperModuleName(CompilerAction action) {
   switch (action) {
   case CompilerAction::None:

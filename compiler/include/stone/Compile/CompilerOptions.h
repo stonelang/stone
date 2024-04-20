@@ -4,9 +4,6 @@
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Support/Options.h"
-#include "stone/Support/Mode.h"
-
-
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Option/Arg.h"
@@ -22,46 +19,10 @@ class CompilerInputsConverter;
 // using CompilerAction = unsigned;
 
 enum class CompilerAction : unsigned {
-  ///< No action
-  None = 0,
-  /// MARK -- Lang support
-  //< Print language version
-  PrintVersion,
-  ///< Print help
-  PrintHelp,
-  ///< Print help
-  PrintHelpHidden,
-  ///< Print compiler features
-  PrintFeature,
-  /// MARK -- Syntax analysis
-  ///< Parse only
-  Parse,
-  ///< Parse and dump syntax tree
-  PrintASTBefore,
-  ///< Parse and resolve imports only
-  ResolveImports,
-  /// MARK -- Semantic analysis
-  TypeCheck,
-  ///< Parse, type-check, and  pretty print syntax tree
-  PrintASTAfter,
-  /// MARK -- Code generation
-  //</ Parse, type-check, and emit LLVM IR pre optimization
-  EmitIRBefore,
-  //</ Parse, type-check, and emit LLVM IR post optimization
-  EmitIRAfter,
-  //</ Parse, type-check, and pretty print llvm-ir
-  PrintIR,
-  //< Parse, type-check, and emit LLVM BC
-  EmitBC,
-  ///< Parse, type-check, and emit native object code
-  EmitObject,
-  //< Parse, type-check, and emit a module. Ex: 'any.stonemod'
-  EmitModule,
-  ///< Merge modules only
-  MergeModules,
-  //< Parse, type-check, and emit assembly
-  EmitAssembly,
+#define COMPILER_MODE(M) M,
+#include "stone/Support/Mode.def"
 };
+
 class CompilerOptions final : public Options {
 
   friend CompilerInvocation;
@@ -139,6 +100,9 @@ public:
     StoneModuleInterface,
   };
   ParsingInputMode parsingInputMode = ParsingInputMode::Stone;
+
+public:
+  CompilerOptions();
 
 public:
   /// \check that there exist a working directory

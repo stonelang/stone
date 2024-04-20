@@ -129,3 +129,6 @@ public:
 
 Options::Options()
     : optTable(std::unique_ptr<GenericOptTable>(new StoneOptTable())) {}
+
+/// Print the options
+void Options::Print(ColorStream &out) const {}
