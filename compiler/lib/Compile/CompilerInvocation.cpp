@@ -2,9 +2,9 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Core.h"
-#include "stone/Support/Options.h"
 #include "stone/Strings.h"
 #include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Support/Options.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -22,8 +22,7 @@
 using namespace stone;
 
 CompilerInvocation::CompilerInvocation()
-    : clangContext(new ClangContext()), optTable(stone::CreateOptTable()),
-      fileMgr(GetFileSystemOptions()) {
+    : clangContext(new ClangContext()), fileMgr(GetFileSystemOptions()) {
 
   llvm::sys::fs::current_path(GetCompilerOptions().workingDirectory);
   SetTargetTriple(llvm::sys::getDefaultTargetTriple());
@@ -175,8 +174,8 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   unsigned missingArgCount;
 
   inputArgList = std::make_unique<llvm::opt::InputArgList>(
-      optTable->ParseArgs(args, missingArgIndex, missingArgCount,
-                          includedFlagsBitmask, excludedFlagsBitmask));
+      GetOptTable().ParseArgs(args, missingArgIndex, missingArgCount,
+                              includedFlagsBitmask, excludedFlagsBitmask));
 
   assert(inputArgList && "No input argument list.");
 

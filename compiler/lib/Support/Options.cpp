@@ -39,18 +39,6 @@ static constexpr llvm::opt::GenericOptTable::Info InfoTable[] = {
 #undef OPTION
 };
 
-namespace {
-
-class StoneOptTable : public llvm::opt::GenericOptTable {
-public:
-  StoneOptTable() : GenericOptTable(InfoTable) {}
-};
-} // end anonymous namespace
-
-std::unique_ptr<OptTable> stone::CreateOptTable() {
-  return std::unique_ptr<GenericOptTable>(new StoneOptTable());
-}
-
 void opts::PrintArg(ColorStream &outStream, const char *Arg,
                     llvm::StringRef TempDir) {
 
@@ -132,4 +120,12 @@ llvm::StringRef opts::GetArgName(const llvm::opt::Arg *arg) {
 //   return ial;
 // }
 
-Options::Options() : optTable(stone::CreateOptTable()) {}
+namespace {
+class StoneOptTable : public llvm::opt::GenericOptTable {
+public:
+  StoneOptTable() : GenericOptTable(InfoTable) {}
+};
+} // end anonymous namespace
+
+Options::Options()
+    : optTable(std::unique_ptr<GenericOptTable>(new StoneOptTable())) {}

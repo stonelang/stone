@@ -19,6 +19,7 @@ set(stone_support_sources
   TextDiagnosticEmitter.cpp
   TextDiagnosticFormatter.cpp
   TextDiagnosticConsumer.cpp
+  PrimaryAction.cpp
 
   Action.cpp
   Options.cpp

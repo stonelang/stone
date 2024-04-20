@@ -4,8 +4,8 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Support/Options.h"
 #include "stone/Support/DiagnosticOptions.h"
+#include "stone/Support/Options.h"
 #include "stone/Syntax/ASTOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
@@ -100,7 +100,9 @@ public:
   clang::FileManager &GetFileMgr() { return fileMgr; }
 
 public:
-  const llvm::opt::OptTable &GetOptTable() const { return *optTable; }
+  const llvm::opt::OptTable &GetOptTable() const {
+    return GetCompilerOptions().GetOptTable();
+  }
   llvm::opt::InputArgList &GetInputArgList() { return *inputArgList; }
 
   CompilerOptions &GetCompilerOptions() { return compilerOpts; }

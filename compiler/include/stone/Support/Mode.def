@@ -1,0 +1,35 @@
+#ifndef MODE
+#define MODE(M)
+#endif
+
+#ifndef FRONTEND_MODE
+#define FRONTEND_MODE(M) MODE(M)
+#endif
+
+#ifndef DRIVER_MODE
+#define DRIVER_MODE(M) MODE(M)
+#endif
+
+MODE(None)
+FRONTEND_MODE(Parse)
+FRONTEND_MODE(PrintVersion)
+FRONTEND_MODE(PrintHelp)
+FRONTEND_MODE(PrintHelpHidden)
+FRONTEND_MODE(PrintFeature)
+FRONTEND_MODE(PrintASTBefore)
+FRONTEND_MODE(ResolveImports)
+FRONTEND_MODE(TypeCheck)
+FRONTEND_MODE(PrintASTAfter)
+FRONTEND_MODE(EmitIRBefore)
+FRONTEND_MODE(EmitIRAfter)   
+FRONTEND_MODE(PrintIR)
+FRONTEND_MODE(EmitBC)
+FRONTEND_MODE(EmitObject)  
+FRONTEND_MODE(EmitModule)   
+FRONTEND_MODE(MergeModules)
+FRONTEND_MODE(EmitAssembly)
+DRIVER_MODE(EmitExecutable)
+
+#undef MODE
+#undef FRONTEND_MODE
+#undef DRIVER_MODE

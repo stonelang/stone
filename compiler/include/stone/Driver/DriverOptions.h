@@ -429,7 +429,7 @@ public:
   std::string GetArgsHash() const { return argsHash; }
 };
 
-class DriverOptions final : public StandardOptions {
+class DriverOptions final : public Options {
 
   friend Driver;
   friend DriverInputsAndOutputs;
