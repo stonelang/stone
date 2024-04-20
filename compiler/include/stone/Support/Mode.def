@@ -10,7 +10,7 @@
 #define DRIVER_MODE(M) MODE(M)
 #endif
 
-MODE(None)
+FRONTEND_MODE(None)
 FRONTEND_MODE(Parse)
 FRONTEND_MODE(PrintVersion)
 FRONTEND_MODE(PrintHelp)

@@ -155,7 +155,7 @@ unsigned CompilerInputsAndOutputs::NumberOfPrimaryInputsEndingWith(
     StringRef extension) const {
   unsigned n = 0;
   (void)ForEachPrimaryInput([&](const CompilerInputFile &input) -> bool {
-    if (llvm::sys::path::extension(input.GetFileName()).endswith(extension))
+    if (llvm::sys::path::extension(input.GetFileName()).ends_with(extension))
       ++n;
     return false;
   });

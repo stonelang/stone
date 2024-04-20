@@ -76,9 +76,6 @@ class CompilerInvocation final {
 
   std::unique_ptr<ClangContext> clangContext;
 
-  /// The driver options
-  std::unique_ptr<llvm::opt::OptTable> optTable;
-
   /// The parsed input arg list
   std::unique_ptr<llvm::opt::InputArgList> inputArgList;
 
