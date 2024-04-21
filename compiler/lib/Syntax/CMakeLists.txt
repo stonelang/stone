@@ -14,6 +14,7 @@ set(stone_syn_sources
 	DeclGroup.cpp
 	DeclName.cpp
 	Diagnostics.cpp
+	DiagnosticList.cpp
 	Expr.cpp
 	Identifier.cpp
 	Module.cpp
