@@ -29,7 +29,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return (status.IsError() ? status.GetFlag()
                              : invocation.GetDiags().Finish());
   };
-  
+
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   invocation.SetMainExecutablePath(mainExecutablePath);
   assert(invocation.GetCompilerOptions().HasMainExecutablePath() &&
@@ -53,12 +53,10 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishCompile(Status::Error());
   }
 
-
-if (!invocation.GetCompilerOptions().HasMainAction()) {
+  if (!invocation.GetCompilerOptions().HasMainAction()) {
     // compiler.GetDiags().PrintD(diag::err_no_compile_action);
     return FinishCompile(Status::Error());
   }
-
 
   Compiler compiler(invocation);
   compiler.SetObservation(observation);
