@@ -32,6 +32,7 @@ class SrcMgr;
 class SourceFile;
 class StatsReporter;
 class DeclAttribute;
+class LexerBase;
 
 namespace diag {
 class DiagnosticArgument;
@@ -74,6 +75,31 @@ enum class DiagID : uint32_t;
 template <typename... ArgTypes> struct Diag {
   /// The diagnostic ID corresponding to this diagnostic.
   DiagID ID;
+};
+
+enum class DiagnosticOptions {
+  /// No options.
+  none,
+
+  /// The location of this diagnostic points to the beginning of the first
+  /// token that the parser considers invalid.  If this token is located at the
+  /// beginning of the line, then the location is adjusted to point to the end
+  /// of the previous token.
+  ///
+  /// This behavior improves experience for "expected token X" diagnostics.
+  PointsToFirstBadToken,
+
+  /// After a fatal error subsequent diagnostics are suppressed.
+  Fatal,
+
+  /// An API or ABI breakage diagnostic emitted by the API digester.
+  APIDigesterBreakage,
+
+  /// A deprecation warning or error.
+  Deprecation,
+
+  /// A diagnostic warning about an unused element.
+  NoUsage,
 };
 
 namespace detail {
@@ -427,12 +453,14 @@ class InFlightDiagnostic {
 
   DiagnosticEngine *Engine;
   bool IsActive;
+  LexerBase *lexerBase = nullptr;
 
   /// Create a new in-flight diagnostic.
   ///
   /// This constructor is only available to the DiagnosticEngine.
-  InFlightDiagnostic(DiagnosticEngine &Engine)
-      : Engine(&Engine), IsActive(true) {}
+  InFlightDiagnostic(DiagnosticEngine &Engine,
+                     LexerBase *lexerBase = nullptr)
+      : Engine(&Engine), IsActive(true), lexerBase(lexerBase) {}
 
   InFlightDiagnostic(const InFlightDiagnostic &) = delete;
   InFlightDiagnostic &operator=(const InFlightDiagnostic &) = delete;
@@ -878,13 +906,15 @@ public:
 
 /// Class responsible for formatting diagnostics and presenting them
 /// to the user.
-class DiagnosticEngine {
+class DiagnosticEngine final {
 public:
   /// The source manager used to interpret source locations and
   /// display diagnostics.
   SrcMgr &SourceMgr;
 
 private:
+  LexerBase *lexerBase = nullptr;
+
   /// The diagnostic consumer(s) that will be responsible for actually
   /// emitting diagnostics.
   SmallVector<DiagnosticConsumer *, 2> Consumers;
@@ -1001,6 +1031,10 @@ public:
   void setLanguageVersion(stone::Version v) { languageVersion = v; }
 
   void setStatsReporter(StatsReporter *stats) { statsReporter = stats; }
+
+  LexerBase *GetLexerBase() { return lexerBase; }
+  void SetLexerBase(LexerBase *lexer) { lexerBase = lexer; }
+
   // TODO:
   //  void setLocalization(StringRef locale, StringRef path) {
   //    assert(!locale.empty());

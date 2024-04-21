@@ -2,19 +2,20 @@
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ASTPrinter.h"
 #include "stone/Syntax/Decl.h"
-//#include "stone/Syntax/DiagnosticSuppression.h"
+// #include "stone/Syntax/DiagnosticSuppression.h"
 #include "stone/Syntax/DiagnosticsBasic.h"
-//#include "stone/Syntax/Expr.h"
+// #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Module.h"
-//#include "stone/Syntax/Pattern.h"
-//#include "stone/Syntax/PrintOptions.h"
+// #include "stone/Syntax/Pattern.h"
+// #include "stone/Syntax/PrintOptions.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
 
 #include "stone/Basic/SrcMgr.h"
-//#include "stone/Config.h"
-// #include "stone/Localization/LocalizationFormat.h"
-// #include "stone/Parse/Lexer.h" // bad dependency
+#include "stone/Support/LexerBase.h"
+
+// #include "stone/Config.h"
+//  #include "stone/Localization/LocalizationFormat.h"
 
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
@@ -24,8 +25,6 @@
 #include "llvm/Support/Format.h"
 #include "llvm/Support/raw_ostream.h"
 
-
-
 using namespace stone;
 using namespace stone::diag;
 
@@ -33,30 +32,6 @@ using namespace stone::diag;
 //               "ZeroArgDiagnostic is meant to be trivially destructable");
 
 namespace {
-enum class DiagnosticOptions {
-  /// No options.
-  none,
-
-  /// The location of this diagnostic points to the beginning of the first
-  /// token that the parser considers invalid.  If this token is located at the
-  /// beginning of the line, then the location is adjusted to point to the end
-  /// of the previous token.
-  ///
-  /// This behavior improves experience for "expected token X" diagnostics.
-  PointsToFirstBadToken,
-
-  /// After a fatal error subsequent diagnostics are suppressed.
-  Fatal,
-
-  /// An API or ABI breakage diagnostic emitted by the API digester.
-  APIDigesterBreakage,
-
-  /// A deprecation warning or error.
-  Deprecation,
-
-  /// A diagnostic warning about an unused element.
-  NoUsage,
-};
 struct StoredDiagnosticInfo {
   DiagnosticKind kind : 2;
   bool pointsToFirstBadToken : 1;
@@ -69,15 +44,15 @@ struct StoredDiagnosticInfo {
                                  bool fatal, bool isAPIDigesterBreakage,
                                  bool deprecation, bool noUsage)
       : kind(k), pointsToFirstBadToken(firstBadToken), isFatal(fatal),
-        isAPIDigesterBreakage(isAPIDigesterBreakage), isDeprecation(deprecation),
-        isNoUsage(noUsage) {}
-  constexpr StoredDiagnosticInfo(DiagnosticKind k, DiagnosticOptions opts)
-      : StoredDiagnosticInfo(k,
-                             opts == DiagnosticOptions::PointsToFirstBadToken,
-                             opts == DiagnosticOptions::Fatal,
-                             opts == DiagnosticOptions::APIDigesterBreakage,
-                             opts == DiagnosticOptions::Deprecation,
-                             opts == DiagnosticOptions::NoUsage) {}
+        isAPIDigesterBreakage(isAPIDigesterBreakage),
+        isDeprecation(deprecation), isNoUsage(noUsage) {}
+  constexpr StoredDiagnosticInfo(DiagnosticKind k, diag::DiagnosticOptions opts)
+      : StoredDiagnosticInfo(
+            k, opts == diag::DiagnosticOptions::PointsToFirstBadToken,
+            opts == diag::DiagnosticOptions::Fatal,
+            opts == diag::DiagnosticOptions::APIDigesterBreakage,
+            opts == diag::DiagnosticOptions::Deprecation,
+            opts == diag::DiagnosticOptions::NoUsage) {}
 };
 
 // Reproduce the DiagIDs, as we want both the size and access to the raw ids
@@ -88,28 +63,108 @@ enum LocalDiagID : uint32_t {
   NumDiags
 };
 
+} // namespace
+
 // TODO: categorization
 static const constexpr StoredDiagnosticInfo storedDiagnosticInfos[] = {
 #define ERROR(ID, Options, Text, Signature)                                    \
-  StoredDiagnosticInfo(DiagnosticKind::Error, DiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Error, diag::DiagnosticOptions::Options),
 #define WARNING(ID, Options, Text, Signature)                                  \
-  StoredDiagnosticInfo(DiagnosticKind::Warning, DiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Warning,                                \
+                       diag::DiagnosticOptions::Options),
 #define NOTE(ID, Options, Text, Signature)                                     \
-  StoredDiagnosticInfo(DiagnosticKind::Note, DiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Note, diag::DiagnosticOptions::Options),
 #define REMARK(ID, Options, Text, Signature)                                   \
-  StoredDiagnosticInfo(DiagnosticKind::Remark, DiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Remark,                                 \
+                       diag::DiagnosticOptions::Options),
 #include "stone/Syntax/Diagnostics.def"
 };
 static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo) ==
                   LocalDiagID::NumDiags,
               "array size mismatch");
 
-static constexpr const char * const diagnosticStrings[] = {
+static constexpr const char *const diagnosticStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature) Text,
 #include "stone/Syntax/Diagnostics.def"
     "<not a diagnostic>",
 };
 
+static constexpr const char *const debugDiagnosticStrings[] = {
+#define DIAG(KIND, ID, Options, Text, Signature) Text " [" #ID "]",
+#include "stone/Syntax/Diagnostics.def"
+    "<not a diagnostic>",
+};
 
+static constexpr const char *const diagnosticIDStrings[] = {
+#define DIAG(KIND, ID, Options, Text, Signature) #ID,
+#include "stone/Syntax/Diagnostics.def"
+    "<not a diagnostic>",
+};
 
-} // end anonymous namespace
+static constexpr const char *const fixItStrings[] = {
+#define DIAG(KIND, ID, Options, Text, Signature)
+#define FIXIT(ID, Text, Signature) Text,
+#include "stone/Syntax/Diagnostics.def"
+    "<not a fix-it>",
+};
+
+diag::DiagnosticState::DiagnosticState() {
+  // Initialize our ignored diagnostics to default
+  ignoredDiagnostics.resize(LocalDiagID::NumDiags);
+}
+
+// static CharSrcRange toCharSrcRange(SrcMgr &SM, SrcRange SR) {
+//   return CharSrcRange(SM, SR.Start, Lexer::getLocForEndOfToken(SM, SR.End));
+// }
+
+// static CharSrcRange toCharSrcRange(SrcMgr &SM, SrcLoc Start,
+//                                          SrcLoc End) {
+//   return CharSrcRange(SM, Start, End);
+// }
+
+/// Extract a character at \p Loc. If \p Loc is the end of the buffer,
+/// return '\f'.
+static char extractCharAfter(SrcMgr &SM, SrcLoc Loc) {
+  auto chars = SM.extractText({Loc, 1});
+  return chars.empty() ? '\f' : chars[0];
+}
+
+/// Extract a character immediately before \p Loc. If \p Loc is the
+/// start of the buffer, return '\f'.
+static char extractCharBefore(SrcMgr &SM, SrcLoc Loc) {
+  // We have to be careful not to go off the front of the buffer.
+  auto bufferID = SM.findBufferContainingLoc(Loc);
+  auto bufferRange = SM.getRangeForBuffer(bufferID);
+  if (bufferRange.getStart() == Loc)
+    return '\f';
+  auto chars = SM.extractText({Loc.getAdvancedLoc(-1), 1}, bufferID);
+  assert(!chars.empty() && "Couldn't extractText with valid range");
+  return chars[0];
+}
+
+diag::InFlightDiagnostic &diag::InFlightDiagnostic::highlight(SrcRange R) {
+  assert(IsActive && "Cannot modify an inactive diagnostic");
+  if (Engine && R.isValid())
+    Engine->getActiveDiagnostic().addRange(CharSrcRange(
+        Engine->SourceMgr, R.Start, lexerBase->GetLocForEndOfToken(Engine->SourceMgr, R.End)));
+  return *this;
+}
+
+diag::InFlightDiagnostic &diag::InFlightDiagnostic::highlightChars(SrcLoc Start,
+                                                             SrcLoc End) {
+  assert(IsActive && "Cannot modify an inactive diagnostic");
+  if (Engine && Start.isValid())
+    Engine->getActiveDiagnostic().addRange(
+        CharSrcRange(Engine->SourceMgr, Start, End));
+  return *this;
+}
+
+/// Add an insertion fix-it to the currently-active diagnostic.  The
+/// text is inserted immediately *after* the token specified.
+///
+diag::InFlightDiagnostic &
+diag::InFlightDiagnostic::fixItInsertAfter(SrcLoc L, StringRef FormatString,
+                                           ArrayRef<DiagnosticArgument> Args) {
+  L = lexerBase->GetLocForEndOfToken(Engine->SourceMgr, L);
+  return fixItInsert(L, FormatString, Args);
+}
