@@ -21,9 +21,9 @@ namespace stone {
 namespace opts {
 enum OptFlag {
   CompilerOption = (1 << 4),
-  NoCompilerOption = (1 << 5),
+  ExcludeCompilerOption = (1 << 5),
   DriverOption = (1 << 6),
-  NoDriverOption = (1 << 7),
+  ExcludeDriverOption = (1 << 7),
   DebugOption = (1 << 8),
   ArgumentIsPath = (1 << 9),
   ModuleInterfaceOption = (1 << 10),
@@ -31,10 +31,9 @@ enum OptFlag {
   StoneAPIExtractOption = (1 << 12),
   StoneSymbolGraphExtractOption = (1 << 13),
   StoneAPIDigesterOption = (1 << 14),
-  NoBatchOption = (1 << 15),
+  ExcludeBatchOption = (1 << 15),
   DoesNotAffectIncrementalBuild = (1 << 16),
-  NoInteractiveOption = (1 << 17),
-  CacheInvariant = (1 << 18),
+  CacheInvariant = (1 << 17),
 
 };
 
@@ -124,7 +123,7 @@ public:
   llvm::opt::Arg *GetPrimaryModeArg() { return primaryModeArg; }
 
   /// Print the options
-  void PrintHelp(bool showHidden);
+  void PrintHelp(bool showHidden = false);
 };
 
 } // namespace stone

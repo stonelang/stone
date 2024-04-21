@@ -112,7 +112,7 @@ CompilerOptionsConverter::ComputeCompilerAction(const ArgList &args) {
     if (args.hasArg(opts::OPT_PrintVersion)) {
       return CompilerAction::PrintVersion;
     }
-    return CompilerAction::None;
+    return CompilerAction::EmitObject;
   }
   return CompilerOptionsConverter::ComputeCompilerAction(opts::GetArgID(mode));
 }

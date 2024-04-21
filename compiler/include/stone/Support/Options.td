@@ -8,13 +8,13 @@ include "llvm/Option/OptParser.td"
 def CompilerOption : OptionFlag;
 
 // The option should not be accepted by the build.
-def NoCompilerOption : OptionFlag;
+def ExcludeCompilerOption : OptionFlag;
 
 // The option should not be accepted by the build.
 def DriverOption : OptionFlag;
 
 // The option should not be accepted by the build.
-def NoDriverOption : OptionFlag;
+def ExcludeDriverOption : OptionFlag;
 
 // The option should not be accepted by the build.
 def DebugOption : OptionFlag;
@@ -45,12 +45,10 @@ def StoneSymbolGraphExtractOption : OptionFlag;
 // The option should be accepted by stone-api-digester.
 def StoneAPIDigesterOption : OptionFlag;
 
-def NoBatchOption : OptionFlag;
+def ExcludeBatchOption : OptionFlag;
 
 // The option should not force a full rebuild if added, changed, or removed.
 def DoesNotAffectIncrementalBuild : OptionFlag;
-
-def NoInteractiveOption : OptionFlag;
 
 // The option that is cache invariant. Change this option doesn't affect the
 // content of any output file. The candidates are options like: `-o` which only
@@ -306,40 +304,40 @@ def EmitLoadedModuleTracePathEQ : Joined<["-"], "emit-loaded-module-trace-path="
 
 def EmitModuleSummary :
   Flag<["-"], "emit-module-summary">,
-  Flags<[NoInteractiveOption, SupplementaryOutput]>,
+  Flags<[SupplementaryOutput]>,
   HelpText<"Output module summary file">;
 
 def EmitModuleSummaryPath :
   Separate<["-"], "emit-module-summary-path">,
-  Flags<[CompilerOption, NoInteractiveOption, ArgumentIsPath,
+  Flags<[CompilerOption, ArgumentIsPath,
          SupplementaryOutput]>,
   MetaVarName<"<path>">, HelpText<"Output module summary file to <path>">;
 
 def SerializeDiagnostics : Flag<["-"], "serialize-diagnostics">,
-  Flags<[CompilerOption, NoInteractiveOption, SupplementaryOutput]>,
+  Flags<[CompilerOption, SupplementaryOutput]>,
   HelpText<"Serialize diagnostics in a binary format">;
 
 def SerializeDiagnosticsPath : Separate<["-"], "serialize-diagnostics-path">,
-  Flags<[CompilerOption, StoneAPIDigesterOption, NoBatchOption,
+  Flags<[CompilerOption, StoneAPIDigesterOption, ExcludeBatchOption,
          ArgumentIsPath, SupplementaryOutput]>,
   HelpText<"Emit a serialized diagnostics file to <path>">,
   MetaVarName<"<path>">;
 
 def SerializeDiagnosticsPathEQ: Joined<["-"], "serialize-diagnostics-path=">,
-  Flags<[CompilerOption, StoneAPIDigesterOption, NoBatchOption,
+  Flags<[CompilerOption, StoneAPIDigesterOption, ExcludeBatchOption,
          ArgumentIsPath, SupplementaryOutput]>,
   Alias<SerializeDiagnosticsPath>;
 
 def EmitTBD : Flag<["-"], "emit-tbd">,
   HelpText<"Emit a TBD file">,
-  Flags<[CompilerOption, NoInteractiveOption, SupplementaryOutput]>;
+  Flags<[CompilerOption, SupplementaryOutput]>;
 def EmitTBDPath : Separate<["-"], "emit-tbd-path">,
-  Flags<[CompilerOption, NoInteractiveOption, ArgumentIsPath,
+  Flags<[CompilerOption, ArgumentIsPath,
          SupplementaryOutput]>,
   HelpText<"Emit the TBD file to <path>">,
   MetaVarName<"<path>">;
 def EmitTBDPathEQ : Joined<["-"], "emit-tbd-path=">,
-  Flags<[CompilerOption, NoInteractiveOption, ArgumentIsPath,
+  Flags<[CompilerOption, ArgumentIsPath,
          SupplementaryOutput]>,
   Alias<EmitTBDPath>;
 
@@ -376,12 +374,12 @@ def EnableBatchMode : Flag<["-"], "enable-batch-mode">,
   HelpText<"enable batch mod">;
 
 def LTO : Joined<["-"], "lto=">,
-  Flags<[CompilerOption, NoInteractiveOption]>,
+  Flags<[CompilerOption]>,
   HelpText<"Specify the LTO type to either 'llvm-thin' or 'llvm-full'">;
 
 
 def LTOLibrary : Separate<["-"], "lto-library">,
-  Flags<[CompilerOption, ArgumentIsPath, NoInteractiveOption]>,
+  Flags<[CompilerOption, ArgumentIsPath]>,
   HelpText<"Perform LTO with <lto-library>">, MetaVarName<"<lto-library>">;
 
 
@@ -391,9 +389,5 @@ def j : JoinedOrSeparate<["-"], "j">, Flags<[DoesNotAffectIncrementalBuild]>,
 def SkipSubTaskExecution : Flag<["-"], "skip-subtask-execution">,
   InternalDebugOpt,
   HelpText<"Skip execution of subtasks when performing compilation">;
-
-
-
-
 
 include "CompilerOptions.td"

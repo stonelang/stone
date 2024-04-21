@@ -29,12 +29,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return (status.IsError() ? status.GetFlag()
                              : invocation.GetDiags().Finish());
   };
-  // Check for empty args
-  if (args.empty()) {
-    invocation.GetDiags().PrintD(diag::err_no_compile_args);
-    return FinishCompile(Status::Error());
-  }
-
+  
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
   invocation.SetMainExecutablePath(mainExecutablePath);
   assert(invocation.GetCompilerOptions().HasMainExecutablePath() &&
@@ -58,15 +53,18 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishCompile(Status::Error());
   }
 
+
+if (!invocation.GetCompilerOptions().HasMainAction()) {
+    // compiler.GetDiags().PrintD(diag::err_no_compile_action);
+    return FinishCompile(Status::Error());
+  }
+
+
   Compiler compiler(invocation);
   compiler.SetObservation(observation);
 
   if (compiler.HasObservation()) {
     compiler.GetObservation()->CompletedCommandLineParsing(compiler);
-  }
-  if (!compiler.GetInvocation().GetCompilerOptions().HasMainAction()) {
-    // compiler.GetDiags().PrintD(diag::err_no_compile_action);
-    FinishCompile(Status::Error());
   }
 
   // Now, setup the compiler

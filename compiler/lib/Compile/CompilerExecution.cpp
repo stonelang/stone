@@ -86,8 +86,7 @@ PrintHelpExecution::PrintHelpExecution(Compiler &compiler)
 
 Status PrintHelpExecution::ExecuteAction() {
 
-  printf("%s\n", GetSelfActionString().data());
-  compiler.PrintHelp();
+  compiler.GetInvocation().GetCompilerOptions().PrintHelp();
   return Status();
 }
 
@@ -95,7 +94,7 @@ PrintHelpHiddenExecution::PrintHelpHiddenExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
 
 Status PrintHelpHiddenExecution::ExecuteAction() {
-  compiler.PrintHelp(true);
+  compiler.GetInvocation().GetCompilerOptions().PrintHelp(true);
   return Status();
 }
 

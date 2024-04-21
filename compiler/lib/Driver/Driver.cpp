@@ -23,7 +23,7 @@ llvm::opt::InputArgList *
 Driver::ParseArgStrings(llvm::ArrayRef<const char *> args) {
 
   unsigned includedFlagsBitmask = 0;
-  unsigned excludedFlagsBitmask = opts::NoDriverOption;
+  unsigned excludedFlagsBitmask = opts::ExcludeDriverOption;
   unsigned missingArgIndex;
   unsigned missingArgCount;
 
@@ -382,7 +382,7 @@ void *stone::AllocateInDriver(size_t bytes, const stone::Driver &driver,
 void Driver::PrintHelp(bool showHidden) const {
 
   unsigned IncludedFlagsBitmask = 0;
-  unsigned ExcludedFlagsBitmask = opts::NoDriverOption;
+  unsigned ExcludedFlagsBitmask = opts::ExcludeDriverOption;
 
   if (!showHidden) {
     ExcludedFlagsBitmask |= HelpHidden;

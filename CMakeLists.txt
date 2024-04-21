@@ -41,6 +41,6 @@ option(STONE_BUILD_TOOLS
   "Build the stone tools. If OFF, just generate build targets." ON)
 
 add_subdirectory(compiler)
-#add_subdirectory(tools)
+add_subdirectory(tools)
 #add_subdirectory(tests)
 

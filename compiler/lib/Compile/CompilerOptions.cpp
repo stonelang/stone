@@ -5,7 +5,7 @@ using namespace stone;
 using namespace stone::file;
 
 CompilerOptions::CompilerOptions() {
-  excludedFlagsBitmask = opts::NoCompilerOption;
+  excludedFlagsBitmask = opts::ExcludeCompilerOption;
 }
 
 bool CompilerOptions::DoesActionNeedProperModuleName(CompilerAction action) {

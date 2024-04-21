@@ -475,7 +475,7 @@ Compiler::CreateExectution(CompilerAction action) {
 void Compiler::PrintHelp(bool showHidden) const {
 
   unsigned IncludedFlagsBitmask = 0;
-  unsigned ExcludedFlagsBitmask = stone::opts::NoCompilerOption;
+  unsigned ExcludedFlagsBitmask = stone::opts::ExcludeCompilerOption;
 
   if (!showHidden) {
     ExcludedFlagsBitmask |= llvm::opt::HelpHidden;
