@@ -131,4 +131,16 @@ Options::Options()
     : optTable(std::unique_ptr<GenericOptTable>(new StoneOptTable())) {}
 
 /// Print the options
-void Options::PrintHelp(ColorStream &out) const {}
+void Options::PrintHelp(bool showHidden) {
+
+  includedFlagsBitmask = 0;
+  if (!showHidden) {
+    excludedFlagsBitmask |= llvm::opt::HelpHidden;
+  }
+  GetOptTable().printHelp(
+      llvm::outs(), GetMainExecutableName().data(),
+      "Stone is a compiler tool for compiling Stone source code.",
+      includedFlagsBitmask,
+      excludedFlagsBitmask /* must be set -- specific to compiler and driver*/,
+      /*ShowAllAliases*/ false);
+}

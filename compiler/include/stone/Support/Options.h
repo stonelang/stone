@@ -124,7 +124,7 @@ public:
   llvm::opt::Arg *GetPrimaryModeArg() { return primaryModeArg; }
 
   /// Print the options
-  void PrintHelp(ColorStream &out) const;
+  void PrintHelp(bool showHidden);
 };
 
 } // namespace stone
