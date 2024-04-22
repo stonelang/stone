@@ -113,15 +113,6 @@ diag::DiagnosticState::DiagnosticState() {
   ignoredDiagnostics.resize(LocalDiagID::NumDiags);
 }
 
-// static CharSrcRange toCharSrcRange(SrcMgr &SM, SrcRange SR) {
-//   return CharSrcRange(SM, SR.Start, Lexer::getLocForEndOfToken(SM, SR.End));
-// }
-
-// static CharSrcRange toCharSrcRange(SrcMgr &SM, SrcLoc Start,
-//                                          SrcLoc End) {
-//   return CharSrcRange(SM, Start, End);
-// }
-
 /// Extract a character at \p Loc. If \p Loc is the end of the buffer,
 /// return '\f'.
 static char extractCharAfter(SrcMgr &SM, SrcLoc Loc) {
@@ -142,16 +133,21 @@ static char extractCharBefore(SrcMgr &SM, SrcLoc Loc) {
   return chars[0];
 }
 
+CharSrcRange diag::InFlightDiagnostic::toCharSrcRange(SrcMgr &SM, SrcRange SR) {
+  return CharSrcRange(SM, SR.Start,
+                      Engine->GetLexerBase()->GetLocForEndOfToken(SM, SR.End));
+}
+
 diag::InFlightDiagnostic &diag::InFlightDiagnostic::highlight(SrcRange R) {
   assert(IsActive && "Cannot modify an inactive diagnostic");
   if (Engine && R.isValid())
-    Engine->getActiveDiagnostic().addRange(CharSrcRange(
-        Engine->SourceMgr, R.Start, lexerBase->GetLocForEndOfToken(Engine->SourceMgr, R.End)));
+    Engine->getActiveDiagnostic().addRange(
+        toCharSrcRange(Engine->SourceMgr, R));
   return *this;
 }
 
 diag::InFlightDiagnostic &diag::InFlightDiagnostic::highlightChars(SrcLoc Start,
-                                                             SrcLoc End) {
+                                                                   SrcLoc End) {
   assert(IsActive && "Cannot modify an inactive diagnostic");
   if (Engine && Start.isValid())
     Engine->getActiveDiagnostic().addRange(
@@ -165,6 +161,70 @@ diag::InFlightDiagnostic &diag::InFlightDiagnostic::highlightChars(SrcLoc Start,
 diag::InFlightDiagnostic &
 diag::InFlightDiagnostic::fixItInsertAfter(SrcLoc L, StringRef FormatString,
                                            ArrayRef<DiagnosticArgument> Args) {
-  L = lexerBase->GetLocForEndOfToken(Engine->SourceMgr, L);
+  L = Engine->GetLexerBase()->GetLocForEndOfToken(Engine->SourceMgr, L);
   return fixItInsert(L, FormatString, Args);
+}
+
+/// Add a token-based removal fix-it to the currently-active
+/// diagnostic.
+diag::InFlightDiagnostic &diag::InFlightDiagnostic::fixItRemove(SrcRange R) {
+  assert(IsActive && "Cannot modify an inactive diagnostic");
+  if (R.isInvalid() || !Engine)
+    return *this;
+
+  // Convert from a token range to a CharSrcRange, which points to the end of
+  // the token we want to remove.
+  auto &SM = Engine->SourceMgr;
+  auto charRange = toCharSrcRange(SM, R);
+
+  // If we're removing something (e.g. a keyword), do a bit of extra work to
+  // make sure that we leave the code in a good place, without extraneous white
+  // space around its hole.  Specifically, check to see there is whitespace
+  // before and after the end of range.  If so, nuke the space afterward to keep
+  // things consistent.
+  if (extractCharAfter(SM, charRange.getEnd()) == ' ' &&
+      isspace(extractCharBefore(SM, charRange.getStart()))) {
+    charRange =
+        CharSrcRange(charRange.getStart(), charRange.getByteLength() + 1);
+  }
+  Engine->getActiveDiagnostic().addFixIt(Diagnostic::FixIt(charRange, {}, {}));
+  return *this;
+}
+
+diag::InFlightDiagnostic &
+diag::InFlightDiagnostic::fixItReplace(SrcRange R, StringRef FormatString,
+                                       ArrayRef<DiagnosticArgument> Args) {
+  auto &SM = Engine->SourceMgr;
+  auto charRange = toCharSrcRange(SM, R);
+
+  Engine->getActiveDiagnostic().addFixIt(
+      Diagnostic::FixIt(charRange, FormatString, Args));
+  return *this;
+}
+
+diag::InFlightDiagnostic &
+diag::InFlightDiagnostic::fixItReplace(SrcRange R, StringRef Str) {
+  if (Str.empty())
+    return fixItRemove(R);
+
+  assert(IsActive && "Cannot modify an inactive diagnostic");
+  if (R.isInvalid() || !Engine)
+    return *this;
+
+  auto &SM = Engine->SourceMgr;
+  auto charRange = toCharSrcRange(SM, R);
+
+  // If we're replacing with something that wants spaces around it, do a bit of
+  // extra work so that we don't suggest extra spaces.
+  // FIXME: This could probably be applied to structured fix-its as well.
+  if (Str.back() == ' ') {
+    if (isspace(extractCharAfter(SM, charRange.getEnd())))
+      Str = Str.drop_back();
+  }
+  if (!Str.empty() && Str.front() == ' ') {
+    if (isspace(extractCharBefore(SM, charRange.getStart())))
+      Str = Str.drop_front();
+  }
+
+  return fixItReplace(R, "%0", {Str});
 }

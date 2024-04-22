@@ -453,14 +453,12 @@ class InFlightDiagnostic {
 
   DiagnosticEngine *Engine;
   bool IsActive;
-  LexerBase *lexerBase = nullptr;
 
   /// Create a new in-flight diagnostic.
   ///
   /// This constructor is only available to the DiagnosticEngine.
-  InFlightDiagnostic(DiagnosticEngine &Engine,
-                     LexerBase *lexerBase = nullptr)
-      : Engine(&Engine), IsActive(true), lexerBase(lexerBase) {}
+  InFlightDiagnostic(DiagnosticEngine &Engine)
+      : Engine(&Engine), IsActive(true) {}
 
   InFlightDiagnostic(const InFlightDiagnostic &) = delete;
   InFlightDiagnostic &operator=(const InFlightDiagnostic &) = delete;
@@ -484,6 +482,14 @@ public:
   ~InFlightDiagnostic() {
     if (IsActive)
       flush();
+  }
+
+public:
+
+
+  CharSrcRange toCharSrcRange(SrcMgr &SM, SrcRange SR);
+  CharSrcRange toCharSrcRange(SrcMgr &SM, SrcLoc Start, SrcLoc End) {
+    return CharSrcRange(SM, Start, End);
   }
 
   /// Flush the active diagnostic to the diagnostic output engine.
