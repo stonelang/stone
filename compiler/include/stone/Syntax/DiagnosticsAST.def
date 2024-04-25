@@ -1,5 +1,5 @@
 #define DEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
+#include "DiagnosticMacros.h"
 
 
 //==============================================================================
@@ -56,7 +56,7 @@ ERROR(lex_invalid_curly_quote,none,
       "unicode curly quote found, replace with '\"'", ())
 NOTE(lex_confusable_character,none,
       "unicode character '%0' (%1) looks similar to '%2' (%3); did you mean to use '%2' (%3)?",
-      (diag::LLVMStr, diag::LLVMStr, diag::LLVMStr, diag::LLVMStr))
+      (StringRef, StringRef, StringRef, StringRef))
 WARN(lex_nonbreaking_space,none,
         "non-breaking space (U+00A0) used instead of regular space", ())
 
@@ -104,11 +104,11 @@ ERROR(lex_expected_digit_in_fp_exponent,none,
        "expected a digit in floating point exponent", ())
 ERROR(lex_invalid_digit_in_fp_exponent,none,
       "'%0' is not a valid %select{digit|first character}1 in floating point exponent",
-      (diag::LLVMStr, diag::Bool))
+      (StringRef, diag::Bool))
 ERROR(lex_invalid_digit_in_int_literal,none,
       "'%0' is not a valid %select{binary digit (0 or 1)|octal digit (0-7)|"
       "digit|hexadecimal digit (0-9, A-F)}1 in integer literal",
-      (diag::LLVMStr, diag::UInt))
+      (StringRef, diag::UInt))
 ERROR(lex_expected_binary_exponent_in_hex_float_literal,none,
       "hexadecimal floating point literal must end with an exponent", ())
 ERROR(lex_unexpected_block_comment_end,none,
@@ -149,7 +149,7 @@ ERROR(err_invalid_curly_quote,none,
 
 NOTE(note_confusable_character,none,
       "unicode character '%0' (%1) looks similar to '%2' (%3); did you mean to use '%2' (%3)?",
-      (diag::LLVMStr, diag::LLVMStr, diag::LLVMStr, diag::LLVMStr))
+      (StringRef, StringRef, StringRef, StringRef))
 
 WARN(warn_non_breaking_space,none,
         "non-breaking space (U+00A0) used instead of regular space", ())
@@ -191,11 +191,11 @@ ERROR(err_unicode_escape_braces,none,
 //==============================================================================
 
 NOTE(note_prev_decl_def,none,
-     "previous definition of %0 is here", (diag::ASTArgument))
+     "previous definition of %0 is here", (const stone::Decl *))
 
 ERROR(err_case_stmt_without_body,none,
       "%select{'case'|'default'}0 label in a 'match' should have at least one "
-      "executable statement", (diag::Bool))
+      "executable statement", (bool))
 
 
 //==============================================================================
@@ -223,4 +223,4 @@ ERROR(expected_member_name,PointsToFirstBadToken,
       "expected member name following '.'", ())
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
+#include "DiagnosticMacros.h"

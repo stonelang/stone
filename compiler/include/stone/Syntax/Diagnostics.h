@@ -136,6 +136,7 @@ public:
 };
 
 enum class DiagnosticArgumentKind {
+  Bool,
   String,
   Integer,
   Unsigned,
@@ -221,6 +222,7 @@ struct DiagnosticInfo final {
 class DiagnosticArgument final {
   DiagnosticArgumentKind Kind;
   union {
+    bool BoolValue;
     int IntegerVal;
     unsigned UnsignedVal;
     StringRef StringVal;
@@ -233,6 +235,9 @@ class DiagnosticArgument final {
   };
 
 public:
+  DiagnosticArgument(bool B)
+      : Kind(DiagnosticArgumentKind::Bool), BoolValue(B) {}
+
   DiagnosticArgument(StringRef S)
       : Kind(DiagnosticArgumentKind::String), StringVal(S) {}
 
@@ -268,6 +273,12 @@ public:
   }
 
   DiagnosticArgumentKind getKind() const { return Kind; }
+
+
+  StringRef getAsString() const {
+    assert(Kind == DiagnosticArgumentKind::Bool);
+    return BoolVal;
+  }
 
   StringRef getAsString() const {
     assert(Kind == DiagnosticArgumentKind::String);
