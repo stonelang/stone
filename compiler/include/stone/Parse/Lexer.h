@@ -2,8 +2,8 @@
 #define STONE_PARSE_LEXER_H
 
 #include "stone/Basic/Token.h"
-#include "stone/Basic/Tokenable.h"
 #include "stone/Parse/Trivia.h"
+#include "stone/Support/LexerBase.h"
 #include "stone/Support/DiagnosticEngine.h"
 #include "stone/Support/StatsReporter.h"
 
@@ -73,7 +73,7 @@ public:
 };
 
 // TODO: ParsingOptions
-class Lexer final : public Tokenable {
+class Lexer final : public LexerBase {
 
   const unsigned BufferID;
   const SrcMgr &sm;
