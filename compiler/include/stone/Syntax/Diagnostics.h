@@ -17,7 +17,8 @@
 
 namespace clang {
 class NamedDecl;
-}
+class Decl;
+} // namespace clang
 
 namespace stone {
 class Decl;
@@ -227,6 +228,8 @@ class DiagnosticArgument final {
     const Decl *TheDecl;
     Type TypeVal;
     DiagnosticInfo *DiagnosticVal;
+    llvm::VersionTuple VersionVal;
+    const clang::NamedDecl *ClangDecl;
   };
 
 public:
@@ -247,6 +250,12 @@ public:
       : Kind(DiagnosticArgumentKind::Decl), TheDecl(VD) {}
 
   DiagnosticArgument(Type T) : Kind(DiagnosticArgumentKind::Type), TypeVal(T) {}
+
+  DiagnosticArgument(llvm::VersionTuple version)
+      : Kind(DiagnosticArgumentKind::VersionTuple), VersionVal(version) {}
+
+  DiagnosticArgument(DiagnosticInfo *D)
+      : Kind(DiagnosticArgumentKind::Diagnostic), DiagnosticVal(D) {}
 
   /// Initializes a diagnostic argument using the underlying type of the
   /// given enum.
@@ -288,6 +297,20 @@ public:
   Type getAsType() const {
     assert(Kind == DiagnosticArgumentKind::Type);
     return TypeVal;
+  }
+
+  llvm::VersionTuple getAsVersionTuple() const {
+    assert(Kind == DiagnosticArgumentKind::VersionTuple);
+    return VersionVal;
+  }
+
+  DiagnosticInfo *getAsDiagnostic() const {
+    assert(Kind == DiagnosticArgumentKind::Diagnostic);
+    return DiagnosticVal;
+  }
+  const clang::NamedDecl *getAsClangDecl() const {
+    assert(Kind == DiagnosticArgumentKind::ClangDecl);
+    return ClangDecl;
   }
 };
 
