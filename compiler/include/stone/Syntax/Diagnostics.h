@@ -365,7 +365,7 @@ private:
   std::vector<Diagnostic> ChildNotes;
   SrcLoc Loc;
   bool IsChildNote = false;
-  const stone::Decl *Decl = nullptr;
+  const stone::Decl *theDecl = nullptr;
   DiagnosticBehavior BehaviorLimit = DiagnosticBehavior::Unspecified;
 
   friend DiagnosticEngine;
@@ -403,12 +403,13 @@ public:
   ArrayRef<Diagnostic> getChildNotes() const { return ChildNotes; }
   bool isChildNote() const { return IsChildNote; }
   SrcLoc getLoc() const { return Loc; }
-  const stone::Decl *getDecl() const { return Decl; }
+  const stone::Decl *getDecl() const { return theDecl; }
+  bool IsDecl() const { return theDecl != nullptr; }
   DiagnosticBehavior getBehaviorLimit() const { return BehaviorLimit; }
 
   void setLoc(SrcLoc loc) { Loc = loc; }
   void setIsChildNote(bool isChildNote) { IsChildNote = isChildNote; }
-  void setDecl(const class Decl *decl) { Decl = decl; }
+  void setDecl(const class Decl *inputDecl) { theDecl = inputDecl; }
   void setBehaviorLimit(DiagnosticBehavior limit) { BehaviorLimit = limit; }
 
   /// Returns true if this object represents a particular diagnostic.
@@ -1619,6 +1620,22 @@ public:
 /// Retrieve the macro name for a generated source info that represents
 /// a macro expansion.
 DeclName getGeneratedSourceInfoMacroName(const GeneratedSourceInfo &info);
+
+/// RAII class that suppresses diagnostics by temporarily disabling all of
+/// the diagnostic consumers.
+class DiagnosticSuppression {
+  DiagnosticEngine &diags;
+  std::vector<DiagnosticConsumer *> consumers;
+
+  DiagnosticSuppression(const DiagnosticSuppression &) = delete;
+  DiagnosticSuppression &operator=(const DiagnosticSuppression &) = delete;
+
+public:
+  explicit DiagnosticSuppression(DiagnosticEngine &diags);
+  ~DiagnosticSuppression();
+  static bool isEnabled(const DiagnosticEngine &diags);
+};
+
 
 } // namespace diag
 

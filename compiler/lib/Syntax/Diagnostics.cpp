@@ -8,9 +8,9 @@
 #include "stone/Syntax/Module.h"
 // #include "stone/Syntax/Pattern.h"
 // #include "stone/Syntax/PrintOptions.h"
+#include "stone/Basic/Range.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
-#include "stone/Basic/Range.h"
 
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Support/LexerBase.h"
@@ -948,6 +948,30 @@ void diag::DiagnosticEngine::forwardTentativeDiagnosticsTo(
 //   return level;
 // }
 
+static std::optional<diag::DiagnosticInfo>
+CreateDiagnosticInfoForDecl(const diag::Diagnostic &diagnostic) {
+
+  if (!diagnostic.IsDecl()) {
+    return std::nullopt;
+  }
+  SrcLoc loc = diagnostic.getLoc();
+  if (loc.isInvalid()) {
+    const stone::Decl *decl = diagnostic.getDecl();
+
+    // If a declaration was provided instead of a location, and that declaration
+    // has a location we can point to, use that location.
+    loc = decl->GetLoc();
+
+    if (loc.isInvalid()) {
+      // SrcLoc ppLoc = PrettyPrintedDeclarations[decl];
+      // if (ppLoc.isInvalid()) {
+
+      // }
+    }
+  }
+
+  return DiagnosticInfo();
+}
 std::optional<diag::DiagnosticInfo>
 diag::DiagnosticEngine::diagnosticInfoForDiagnostic(
     const Diagnostic &diagnostic) {
@@ -958,8 +982,7 @@ diag::DiagnosticEngine::diagnosticInfoForDiagnostic(
   }
   // Figure out the source location.
   SrcLoc loc = diagnostic.getLoc();
-
-  if (loc.isInvalid() && diagnostic.getDecl()) {
+  if (loc.isInvalid() && diagnostic.IsDecl()) {
     const stone::Decl *decl = diagnostic.getDecl();
     // If a declaration was provided instead of a location, and that declaration
     // has a location we can point to, use that location.
@@ -1027,7 +1050,7 @@ void diag::DiagnosticEngine::emitDiagnostic(const Diagnostic &diagnostic) {
     // }
     // info->EducationalNotePaths = educationalNotePaths;
 
-    // Now, pass it off to the consumers 
+    // Now, pass it off to the consumers
     for (auto &consumer : Consumers) {
       consumer->handleDiagnostic(SourceMgr, *info);
     }
@@ -1069,36 +1092,37 @@ const char *diag::InFlightDiagnostic::fixItStringFor(const FixItID id) {
   return fixItStrings[(unsigned)id];
 }
 
-// void diag::DiagnosticEngine::setBufferIndirectlyCausingDiagnosticToInput(
-//     SrcLoc loc) {
-//   // If in the future, nested BufferIndirectlyCausingDiagnosticRAII need be
-//   // supported, the compiler will need a stack for
-//   // bufferIndirectlyCausingDiagnostic.
-//   assert(bufferIndirectlyCausingDiagnostic.isInvalid() &&
-//          "Buffer should not already be set.");
-//   bufferIndirectlyCausingDiagnostic = loc;
-//   assert(bufferIndirectlyCausingDiagnostic.isValid() &&
-//          "Buffer must be valid for previous assertion to work.");
-// }
+void diag::DiagnosticEngine::setBufferIndirectlyCausingDiagnosticToInput(
+    SrcLoc loc) {
+  // If in the future, nested BufferIndirectlyCausingDiagnosticRAII need be
+  // supported, the compiler will need a stack for
+  // bufferIndirectlyCausingDiagnostic.
+  assert(bufferIndirectlyCausingDiagnostic.isInvalid() &&
+         "Buffer should not already be set.");
+  bufferIndirectlyCausingDiagnostic = loc;
+  assert(bufferIndirectlyCausingDiagnostic.isValid() &&
+         "Buffer must be valid for previous assertion to work.");
+}
 
-// void diag::DiagnosticEngine::resetBufferIndirectlyCausingDiagnostic() {
-//   bufferIndirectlyCausingDiagnostic = SrcLoc();
-// }
+void diag::DiagnosticEngine::resetBufferIndirectlyCausingDiagnostic() {
+  bufferIndirectlyCausingDiagnostic = SrcLoc();
+}
 
-// DiagnosticSuppression::DiagnosticSuppression(diag::DiagnosticEngine &diags)
-//   : diags(diags)
-// {
-//   consumers = diags.takeConsumers();
-// }
+diag::DiagnosticSuppression::DiagnosticSuppression(diag::DiagnosticEngine &diags)
+  : diags(diags)
+{
+  consumers = diags.takeConsumers();
+}
 
-// DiagnosticSuppression::~DiagnosticSuppression() {
-//   for (auto consumer : consumers)
-//     diags.addConsumer(*consumer);
-// }
+diag::DiagnosticSuppression::~DiagnosticSuppression() {
+  for (auto consumer : consumers){
+    diags.addConsumer(*consumer);
+  }
+}
 
-// bool DiagnosticSuppression::isEnabled(const diag::DiagnosticEngine &diags) {
-//   return diags.getConsumers().empty();
-// }
+bool diag::DiagnosticSuppression::isEnabled(const diag::DiagnosticEngine &diags) {
+  return diags.getConsumers().empty();
+}
 
 // BufferIndirectlyCausingDiagnosticRAII::BufferIndirectlyCausingDiagnosticRAII(
 //     const SourceFile &SF)
