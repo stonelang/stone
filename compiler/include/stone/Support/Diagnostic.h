@@ -58,7 +58,8 @@ class DiagnosticFixer final {
   InFlightDiagnostic &inFlightDiag;
 
 public:
-  DiagnosticFixer(InFlightDiagnostic &inFlightDiag) : inFlightDiag(inFlightDiag) {}
+  DiagnosticFixer(InFlightDiagnostic &inFlightDiag)
+      : inFlightDiag(inFlightDiag) {}
 
 public:
   static llvm::StringRef GetFixIDString(const FixID fixID);

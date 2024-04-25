@@ -1,6 +1,6 @@
-#include "stone/Support/LexerBase.h"
 #include "stone/Support/DiagnosticEngine.h"
 #include "stone/Support/CoreDiagnostic.h"
+#include "stone/Support/LexerBase.h"
 
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/Twine.h"

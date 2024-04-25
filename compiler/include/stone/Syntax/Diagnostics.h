@@ -485,8 +485,6 @@ public:
   }
 
 public:
-
-
   CharSrcRange toCharSrcRange(SrcMgr &SM, SrcRange SR);
   CharSrcRange toCharSrcRange(SrcMgr &SM, SrcLoc Start, SrcLoc End) {
     return CharSrcRange(SM, Start, End);
