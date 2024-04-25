@@ -41,24 +41,24 @@ template <typename T> struct PassArgument {
 };
 } // namespace detail
 
-class CodeFix final {
+class DiagnosticFix final {
   CharSrcRange range;
   /// The new code to insert at the insertion location.
   llvm::StringRef code;
 
 public:
-  CodeFix(CharSrcRange range, llvm::StringRef code);
+  DiagnosticFix(CharSrcRange range, llvm::StringRef code);
 
   CharSrcRange GetRange() const { return range; }
   llvm::StringRef GetCode() const { return code; }
 };
 
-class CodeFixer final {
+class DiagnosticFixer final {
   friend class InFlightDiagnostic;
   InFlightDiagnostic &inFlightDiag;
 
 public:
-  CodeFixer(InFlightDiagnostic &inFlightDiag) : inFlightDiag(inFlightDiag) {}
+  DiagnosticFixer(InFlightDiagnostic &inFlightDiag) : inFlightDiag(inFlightDiag) {}
 
 public:
   static llvm::StringRef GetFixIDString(const FixID fixID);
@@ -200,7 +200,7 @@ class Diagnostic {
   diag::Level levelLimit = diag::Level::None;
   llvm::SmallVector<diag::Argument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
-  llvm::SmallVector<CodeFix, 2> fixes;
+  llvm::SmallVector<DiagnosticFix, 2> fixes;
   // llvm::SmallVector<Diagnostic *> deps;
 
 public:
@@ -221,13 +221,13 @@ public:
   DiagID GetID() const { return diagID; }
   llvm::ArrayRef<diag::Argument> GetArgs() const { return args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return ranges; }
-  llvm::ArrayRef<CodeFix> GetFixes() const { return fixes; }
+  llvm::ArrayRef<DiagnosticFix> GetFixes() const { return fixes; }
   // llvm::ArrayRef<Diagnostic *> GetDeps() const { return deps; }
 
 public:
   void AddRange(CharSrcRange range) { ranges.push_back(range); }
   // Avoid copying the fix-it text more than necessary.
-  void AddFix(CodeFix &&fix) { fixes.push_back(std::move(fix)); }
+  void AddFix(DiagnosticFix &&fix) { fixes.push_back(std::move(fix)); }
 
   // void AddDep(Diagnostic *dep) { deps.push_back(dep); }
 

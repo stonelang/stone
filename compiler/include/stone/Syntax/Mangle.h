@@ -20,7 +20,6 @@ class ConstructorDecl;
 class DestructorDecl;
 class FunctionDecl;
 class NameableDecl;
-class StringLiteral;
 class VarDecl;
 
 enum class MangleContextKind : UInt8 { None = 0, Itanium, Microsoft };

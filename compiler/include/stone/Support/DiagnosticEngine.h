@@ -114,10 +114,10 @@ private:
 };
 
 class InFlightDiagnostic {
-  friend class CodeFixer;
+  friend class DiagnosticFixer;
   friend class DiagnosticEngine;
 
-  CodeFixer fixer;
+  DiagnosticFixer fixer;
   DiagnosticEngine *de;
   Tokenable *tokenable;
 
@@ -157,7 +157,7 @@ public:
   }
 
 public:
-  CodeFixer &WithFix() { return fixer; }
+  DiagnosticFixer &WithFix() { return fixer; }
   DiagnosticEngine &GetDiags() { return *de; }
 
   /// Send the diagnostic to the DiagnosticEngine output.

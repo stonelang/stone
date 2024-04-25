@@ -30,12 +30,10 @@
 
 namespace stone {
 class SrcMgr;
-
 class Decl;
 class FunDecl;
 class VarDecl;
 class Expr;
-class StringLiteral;
 class ASTContext;
 
 class Stmt : public MemoryAllocation<Stmt> {

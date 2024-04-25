@@ -88,7 +88,7 @@ static constexpr const char *const DiagnosticIDStrings[] = {
     "<not a diagnostic>",
 };
 
-static constexpr const char *const CodeFixStrings[] = {
+static constexpr const char *const DiagnosticFixStrings[] = {
 #define DIAG(KIND, ID, Options, Text, Signature)
 #define FIX(ID, Text, Signature) Text,
 #include "stone/Support/DiagnosticEngine.def"
