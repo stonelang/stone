@@ -181,14 +181,14 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
 
   if (missingArgCount) {
     GetDiags().PrintD(
-        SrcLoc(), diag::err_missing_arg_value,
+        SrcLoc(), diag::error_missing_arg_value,
         diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
         diag::UInt(missingArgCount));
     return Status::Error();
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::OPT_UNKNOWN)) {
-    GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
+    GetDiags().PrintD(SrcLoc(), diag::error_unknown_arg,
                       diag::LLVMStr(arg->getAsString(*inputArgList)));
 
     // TODO: Good for now. But, you want to print out all and check for diag

@@ -1,5 +1,4 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Support/ASTDiagnostic.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ASTNode.h"
 #include "stone/Syntax/Type.h"
@@ -29,7 +28,7 @@ Type Parser::ParseFunctionType(ParsingDecl &collector, Diag<> diagID) {
   // SyntaxStatus status;
 
   // SyntaxResult<Type> type =
-  //     ParseType(collector, diag::err_expected_type_for_function_result);
+  //     ParseType(collector, diag::error_expected_type_for_function_result);
 
   // if (!collector.GetTypeSpecifierCollector().HasAny()) {
   //   // TODO: log that "Function requires a return type. Try '-> void' if it

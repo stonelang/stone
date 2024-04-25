@@ -3,7 +3,6 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/IDE.h"
-#include "stone/Support/ASTDiagnostic.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Scope.h"
 
@@ -175,10 +174,10 @@ Scope *Parser::CreateScope(ScopeKind kind, ASTContext &ac,
   return new (ac) Scope(kind, diags, parent);
 }
 
-InFlightDiagnostic Parser::PrintD(SrcLoc loc, Diag<> diagID) {
-  return astContext.GetDiags().PrintD(loc, diagID);
+InFlightDiagnostic Parser::Diagnose(SrcLoc loc, Diag<> diagID) {
+  return astContext.GetDiags().diagnose(loc, diagID);
 }
 
-InFlightDiagnostic Parser::PrintD(Token &token, Diag<> diagID) {
-  return PrintD(token.GetLoc(), diagID);
+InFlightDiagnostic Parser::Diagnose(Token &token, Diag<> diagID) {
+  return Diagnose(token.GetLoc(), diagID);
 }

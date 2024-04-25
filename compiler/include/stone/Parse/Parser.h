@@ -14,6 +14,7 @@
 #include "stone/Syntax/PrintOptions.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxResult.h"
+#include "stone/Syntax/DiagnosticsParse.h"
 
 #include "llvm/Support/Timer.h"
 
@@ -239,7 +240,7 @@ public:
   /// Is at end of file.
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
-  bool HasError() { return astContext.GetDiags().HasError(); }
+  bool HasError() { return astContext.GetDiags().hadAnyError(); }
   DiagnosticEngine &GetDiags() { return astContext.GetDiags(); }
 
 public:
@@ -385,8 +386,8 @@ public:
   void PushCurScope(Scope *scope) { scopeCache.push_back(scope); }
 
 public:
-  InFlightDiagnostic PrintD(SrcLoc loc, Diag<> diagID);
-  InFlightDiagnostic PrintD(Token &curTok, Diag<> diagID);
+  InFlightDiagnostic Diagnose(SrcLoc loc, Diag<> diagID);
+  InFlightDiagnostic Diagnose(Token &curTok, Diag<> diagID);
 
 private:
   static Scope *CreateScope(ScopeKind kind, ASTContext &sc,

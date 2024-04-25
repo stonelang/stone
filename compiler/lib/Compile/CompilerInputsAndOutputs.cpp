@@ -194,7 +194,7 @@ bool CompilerInputsAndOutputs::VerifyInputs(DiagnosticEngine &diags,
 
   AssertMustNotBeMoreThanOnePrimaryInput();
   if (!isNoneRequested && !HasInputs()) {
-    // diags.PrintD(SourceLoc(), diag::error_mode_requires_an_input_file);
+    // diags.PrintD(SourceLoc(), diag::erroror_mode_requires_an_input_file);
     return true;
   }
   return false;

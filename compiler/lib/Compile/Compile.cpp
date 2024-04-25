@@ -59,7 +59,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   if (!invocation.GetCompilerOptions().HasMainAction()) {
-    // compiler.GetDiags().PrintD(diag::err_no_compile_action);
+    // compiler.GetDiags().PrintD(diag::error_no_compile_action);
     return FinishCompile(Status::Error());
   }
 

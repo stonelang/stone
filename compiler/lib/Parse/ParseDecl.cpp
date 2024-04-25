@@ -2,7 +2,6 @@
 #include "stone/IDE.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/Parsing.h"
-#include "stone/Support/ASTDiagnostic.h"
 #include "stone/Syntax/Stmt.h"
 // #include "stone/Syntax/Using.h"
 #include "stone/Syntax/ASTContext.h"
@@ -244,7 +243,7 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDecl &collector,
 
     if (!ConsumeIf(tok::arrow, arrowLoc)) {
       // FixIt ':' to '->'.
-      PrintD(curTok, diag::err_expected_arrow_after_function_param)
+      PrintD(curTok, diag::error_expected_arrow_after_function_param)
           .WithFix()
           .Replace(curTok.GetLoc(), llvm::StringRef("->"));
       // arrowLoc = ConsumeToken(tok::colon);
@@ -276,7 +275,7 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDecl &collector,
 
     // Why not just ParseFunctionType
     auto retType = ParseDeclResultType(
-        collector, diag::err_expected_type_for_function_result);
+        collector, diag::error_expected_type_for_function_result);
 
     collector.GetTypeSpecifierCollector().SetType(retType);
 

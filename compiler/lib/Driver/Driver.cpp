@@ -33,14 +33,14 @@ Driver::ParseArgStrings(llvm::ArrayRef<const char *> args) {
 
   assert(inputArgList && "No input argument list.");
   if (missingArgCount) {
-    diags.PrintD(SrcLoc(), diag::err_missing_arg_value,
+    diags.PrintD(SrcLoc(), diag::error_missing_arg_value,
                  diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
                  diag::UInt(missingArgCount));
     return nullptr;
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::UNKNOWN)) {
-    diags.PrintD(SrcLoc(), diag::err_unknown_arg,
+    diags.PrintD(SrcLoc(), diag::error_unknown_arg,
                  diag::LLVMStr(arg->getAsString(*inputArgList)));
     return nullptr;
   }
@@ -250,7 +250,7 @@ Status BuildingJobConstructions::HandleStoneModuleFileType(
     // linker, so that their debug info is available.
     GetLinkerInputs().AddLinkerInput(input);
   } else {
-    // driver.GetDiags(SrcLoc(), diag::error_unexpected_input_file,
+    // driver.GetDiags(SrcLoc(), diag::erroror_unexpected_input_file,
     // input->GetFileName());
     return Status::MakeHasCompletionAndIsError();
   }

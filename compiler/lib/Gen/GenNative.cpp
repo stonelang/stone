@@ -100,7 +100,7 @@ bool stone::GenNative(const CodeGenOptions &codeGenOpts,
 //   rawOS.emplace(outputFilename, ec, osFlags);
 //   // if (rawOS->has_error() || ec) {
 //   //   PrintSync(diags, diagMutex,
-//   //                SrcLoc(), diag::error_opening_output,
+//   //                SrcLoc(), diag::erroror_opening_output,
 //   //                outputFilename, ec.message());
 //   //   rawOS->clear_error();
 //   //   return true;
@@ -146,7 +146,7 @@ bool stone::WriteNative(CodeGenOptions &codeGenOpts,
   //                                                    !cgc.GetCodeGenOptions().VerifyWellFormedIR);
   //     // if (failed) {
   //     //   PrintSync(diags, diagMutex, SourceLoc(),
-  //     //                diag::error_codegen_init_fail);
+  //     //                diag::erroror_codegen_init_fail);
   //     //   return true;
   //     break;
   //   }
