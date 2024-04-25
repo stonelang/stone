@@ -932,6 +932,14 @@ public:
   void handleDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info) override;
 };
 
+
+class DiagnosticLocalizationProducer {
+
+public:
+  DiagnosticLocalizationProducer() {}
+  virtual ~DiagnosticLocalizationProducer() {}
+};
+
 /// Class responsible for formatting diagnostics and presenting them
 /// to the user.
 class DiagnosticEngine final {
@@ -973,7 +981,7 @@ private:
 
   /// Diagnostic producer to handle the logic behind retrieving a localized
   /// diagnostic message.
-  // std::unique_ptr<diag::LocalizationProducer> localization;
+  std::unique_ptr<DiagnosticLocalizationProducer> localization;
 
   /// The number of open diagnostic transactions. Diagnostics are only
   /// emitted once all transactions have closed.
