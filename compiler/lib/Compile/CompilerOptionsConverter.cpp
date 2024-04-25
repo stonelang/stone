@@ -204,7 +204,8 @@ Status CompilerOptionsConverter::ComputeModuleName() {
   //  }
   //  auto DID = (compilerOpts.noduleName == STDLIB_NAME) ?
   //  diag::erroror_stdlib_module_name
-  //                                              : diag::erroror_bad_module_name;
+  //                                              :
+  //                                              diag::erroror_bad_module_name;
   //  Diags.diagnose(SourceLoc(), DID, Opts.ModuleName, A == nullptr);
   //  Opts.ModuleName = "__bad__";
   //  return false; // FIXME: Must continue to run to pass the tests, but should

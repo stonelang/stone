@@ -86,7 +86,8 @@ CompilerOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer =
       llvm::MemoryBuffer::getFile(fileListPath);
   if (!buffer) {
-    de.PrintD(SrcLoc(), diag::error_cannot_open_file, diag::LLVMStr(fileListPath),
+    de.PrintD(SrcLoc(), diag::error_cannot_open_file,
+              diag::LLVMStr(fileListPath),
               diag::LLVMStr(buffer.getError().message()));
     return std::nullopt;
   }
@@ -676,7 +677,8 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
   llvm::Expected<OutputFileMap> outputFileMap =
       OutputFileMap::LoadFromBuffer(std::move(buffer.get()), "");
   if (auto Err = outputFileMap.takeError()) {
-    de.PrintD(SrcLoc(), diag::error_unable_to_load_supplementary_output_file_map,
+    de.PrintD(SrcLoc(),
+              diag::error_unable_to_load_supplementary_output_file_map,
               diag::LLVMStr(supplementaryFileMapPath),
               diag::LLVMStr(llvm::toString(std::move(Err))));
     return std::nullopt;

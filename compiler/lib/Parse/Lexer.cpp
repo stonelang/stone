@@ -230,7 +230,7 @@ Lexer::Lexer(Lexer &Parent, LexerState BeginState, LexerState EndState)
 
 InFlightDiagnostic Lexer::PrintD(const char *loc, Diagnostic diatnostic) {
   if (de) {
-    return de->PrintD(getSrcLoc(loc), diatnostic);
+    return de->diagnose(getSrcLoc(loc), diatnostic);
   }
 }
 
@@ -346,7 +346,7 @@ static void diagnoseEmbeddedNul(stone::DiagnosticEngine *de, const char *Ptr) {
 
   SrcLoc NulLoc = Lexer::getSrcLoc(Ptr);
   SrcLoc NulEndLoc = Lexer::getSrcLoc(Ptr + 1);
-  de->PrintD(NulLoc, diag::lex_null_character)
+  de->diagnose(NulLoc, diag::lex_null_character)
       .WithFix()
       .RemoveChars(NulLoc, NulEndLoc);
 }
@@ -368,7 +368,7 @@ static bool advanceToEndOfLine(const char *&CurPtr, const char *BufferEnd,
         --CurPtr;
         const char *CharStart = CurPtr;
         if (stone::validateUTF8CharacterAndAdvance(CurPtr, BufferEnd) == ~0U)
-          de->PrintD(Lexer::getSrcLoc(CharStart), diag::lex_invalid_utf8);
+          de->diagnose(Lexer::getSrcLoc(CharStart), diag::lex_invalid_utf8);
       }
       break; // Otherwise, eat other characters.
     case 0:
@@ -450,7 +450,7 @@ static bool skipToEndOfSlashStarComment(const char *&CurPtr,
         const char *CharStart = CurPtr;
 
         if (stone::validateUTF8CharacterAndAdvance(CurPtr, BufferEnd) == ~0U) {
-          de->PrintD(Lexer::getSrcLoc(CharStart), diag::lex_invalid_utf8);
+          de->diagnose(Lexer::getSrcLoc(CharStart), diag::lex_invalid_utf8);
         }
       }
 
@@ -474,11 +474,12 @@ static bool skipToEndOfSlashStarComment(const char *&CurPtr,
           Terminator += "*/";
         const char *EOL = (CurPtr[-1] == '\n') ? (CurPtr - 1) : CurPtr;
 
-        de->PrintD(Lexer::getSrcLoc(EOL), diag::lex_unterminated_block_comment)
+        de->diagnose(Lexer::getSrcLoc(EOL),
+                     diag::lex_unterminated_block_comment)
             .WithFix()
             .Insert(Lexer::getSrcLoc(EOL), Terminator);
 
-        de->PrintD(Lexer::getSrcLoc(StartPtr), diag::lex_comment_start);
+        de->diagnose(Lexer::getSrcLoc(StartPtr), diag::lex_comment_start);
       }
       return isMultiline;
     }
@@ -947,9 +948,8 @@ void Lexer::lexHexNumber() {
   };
 
   auto expected_hex_digit = [&](const char *loc) {
-    PrintD(loc, diag::lex_invalid_digit_in_int_literal,
-           diag::LLVMStr(StringRef(loc, 1)),
-           diag::UInt((unsigned)ExpectedDigitKind::Hex));
+    PrintD(loc, diag::lex_invalid_digit_in_int_literal, StringRef(loc, 1),
+           (unsigned)ExpectedDigitKind::Hex);
     return expected_digit();
   };
 
@@ -1025,8 +1025,8 @@ void Lexer::lexHexNumber() {
     auto tmp = CurPtr;
 
     if (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd)) {
-      PrintD(tmp, diag::lex_invalid_digit_in_fp_exponent,
-             diag::LLVMStr(StringRef(tmp, 1)), diag::Bool(*tmp == '_'));
+      PrintD(tmp, diag::lex_invalid_digit_in_fp_exponent, StringRef(tmp, 1),
+             *tmp == '_');
     } else {
       PrintD(CurPtr, diag::lex_expected_digit_in_fp_exponent);
     }
@@ -1040,8 +1040,8 @@ void Lexer::lexHexNumber() {
 
   auto tmp = CurPtr;
   if (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd)) {
-    PrintD(tmp, diag::lex_invalid_digit_in_fp_exponent,
-           diag::LLVMStr(StringRef(tmp, 1)), diag::Bool(false));
+    PrintD(tmp, diag::lex_invalid_digit_in_fp_exponent, StringRef(tmp, 1),
+           false);
     return expected_digit();
   }
 
@@ -1069,8 +1069,8 @@ void Lexer::lexNumber() {
   };
 
   auto expected_int_digit = [&](const char *loc, ExpectedDigitKind kind) {
-    PrintD(loc, diag::lex_invalid_digit_in_int_literal,
-           diag::LLVMStr(StringRef(loc, 1)), diag::UInt((unsigned)kind));
+    PrintD(loc, diag::lex_invalid_digit_in_int_literal, StringRef(loc, 1),
+           (unsigned)kind);
     return expected_digit();
   };
 
@@ -1161,8 +1161,8 @@ void Lexer::lexNumber() {
       // non-identifier (empty exponent)
       auto tmp = CurPtr;
       if (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd))
-        PrintD(tmp, diag::lex_invalid_digit_in_fp_exponent,
-               diag::LLVMStr(StringRef(tmp, 1)), diag::Bool(*tmp == '_'));
+        PrintD(tmp, diag::lex_invalid_digit_in_fp_exponent, StringRef(tmp, 1),
+               *tmp == '_');
       else
         PrintD(CurPtr, diag::lex_expected_digit_in_fp_exponent);
 
@@ -1174,8 +1174,8 @@ void Lexer::lexNumber() {
 
     auto tmp = CurPtr;
     if (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd)) {
-      PrintD(tmp, diag::lex_invalid_digit_in_fp_exponent,
-             diag::LLVMStr(StringRef(tmp, 1)), diag::Bool(false));
+      PrintD(tmp, diag::lex_invalid_digit_in_fp_exponent, StringRef(tmp, 1),
+             false);
       return expected_digit();
     }
   }
@@ -1198,7 +1198,7 @@ unsigned Lexer::lexUnicodeEscape(const char *&CurPtr, Lexer *de) {
 
   if (CurPtr[0] != '}') {
     if (de) {
-      de->PrintD(CurPtr, diag::lex_invalid_u_escape_rbrace);
+      de->diagnose(CurPtr, diag::lex_invalid_u_escape_rbrace);
     }
     return ~1U;
   }
@@ -1206,7 +1206,7 @@ unsigned Lexer::lexUnicodeEscape(const char *&CurPtr, Lexer *de) {
 
   if (NumDigits < 1 || NumDigits > 8) {
     if (de) {
-      de->PrintD(CurPtr, diag::lex_invalid_u_escape);
+      de->diagnose(CurPtr, diag::lex_invalid_u_escape);
     }
     return ~1U;
   }
@@ -1290,7 +1290,7 @@ static bool delimiterMatches(unsigned CustomDelimiterLen, const char *&BytesPtr,
   if (de && TmpPtr > BytesPtr) {
     Diag<> message = IsClosing ? diag::lex_invalid_closing_delimiter
                                : diag::lex_invalid_escape_delimiter;
-    de->PrintD(Lexer::getSrcLoc(BytesPtr), message)
+    de->diagnose(Lexer::getSrcLoc(BytesPtr), message)
         .WithFix()
         .RemoveChars(Lexer::getSrcLoc(BytesPtr), Lexer::getSrcLoc(TmpPtr));
   }
@@ -1687,7 +1687,7 @@ StringRef getMultilineTrailingIndent(StringRef Bytes,
           while (*--Ptr == '\\')
             invalid = !invalid;
           if (invalid)
-            de->PrintD(escapeLoc, diag::lex_escaped_newline_at_lastline)
+            de->diagnose(escapeLoc, diag::lex_escaped_newline_at_lastline)
                 .WithFix()
                 .RemoveChars(escapeLoc, Lexer::getSrcLoc(LineEnd));
         }
@@ -1702,7 +1702,7 @@ StringRef getMultilineTrailingIndent(StringRef Bytes,
 
   if (sawNonWhitespace && de) {
     auto loc = Lexer::getSrcLoc(start + 1);
-    de->PrintD(loc, diag::lex_illegal_multiline_string_end)
+    de->diagnose(loc, diag::lex_illegal_multiline_string_end)
         // FIXME: Should try to suggest indentation.
         .WithFix()
         .Insert(loc, "\n");
@@ -1742,18 +1742,18 @@ static void diagnoseInvalidMultilineIndents(stone::DiagnosticEngine *de,
     }
   };
 
-  de->PrintD(getLoc(LineStarts[0] + MistakeOffset),
-             diag::lex_multiline_string_indent_inconsistent,
-             diag::Bool(LineStarts.size() != 1), diag::UInt(LineStarts.size()),
-             diag::UInt(classify(Bytes[LineStarts[0] + MistakeOffset])));
+  de->diagnose(getLoc(LineStarts[0] + MistakeOffset),
+               diag::lex_multiline_string_indent_inconsistent,
+               LineStarts.size() != 1, (unsigned)LineStarts.size(),
+               (unsigned)classify(Bytes[LineStarts[0] + MistakeOffset]));
 
-  de->PrintD(IndentLoc.getAdvancedLoc(MistakeOffset),
-             diag::lex_multiline_string_indent_should_match_here,
-             diag::UInt(classify(ExpectedIndent[MistakeOffset])));
+  de->diagnose(IndentLoc.getAdvancedLoc(MistakeOffset),
+               diag::lex_multiline_string_indent_should_match_here,
+               (unsigned)classify(ExpectedIndent[MistakeOffset]));
 
-  auto fix = de->PrintD(getLoc(LineStarts[0] + MistakeOffset),
-                        diag::lex_multiline_string_indent_change_line,
-                        diag::Bool(LineStarts.size() != 1));
+  auto fix = de->diagnose(getLoc(LineStarts[0] + MistakeOffset),
+                          diag::lex_multiline_string_indent_change_line,
+                          LineStarts.size() != 1);
 
   assert(MistakeOffset <= ActualIndent.size());
   assert(ExpectedIndent.substr(0, MistakeOffset) ==
@@ -1874,7 +1874,7 @@ void Lexer::diagnoseSingleQuoteStringLiteral(const char *TokStart,
   replacement.push_back('"');
 
   assert(de);
-  de->PrintD(startLoc, diag::lex_single_quote_string)
+  de->diagnose(startLoc, diag::lex_single_quote_string)
       .WithFix()
       .ReplaceChars(startLoc, endLoc, replacement);
 }
@@ -2199,9 +2199,9 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
     llvm::SmallString<1> ExpectedChar;
     ExpectedChar += ExpectedCodepoint;
     auto charNames = GetConfusableAndBaseCodepointNames(Codepoint);
-    PrintD(CurPtr - 1, diag::lex_confusable_character,
-           diag::LLVMStr(ConfusedChar), diag::LLVMStr(charNames.first),
-           diag::LLVMStr(ExpectedChar), diag::LLVMStr(charNames.second))
+    PrintD(CurPtr - 1, diag::lex_confusable_character, StringRef(ConfusedChar),
+           StringRef(charNames.first), StringRef(ExpectedChar),
+           StringRef(charNames.second))
         .WithFix()
         .ReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(Tmp), ExpectedChar);
   }
