@@ -6,7 +6,7 @@
 // #include "stone/Config.h"
 
 namespace stone {
-namespace diag {
+
 template <typename... ArgTypes> struct Diag;
 namespace detail {
 // These templates are used to help extract the type arguments of the
@@ -27,6 +27,7 @@ struct StructuredFixItWithArguments<void(ArgTypes...)> {
 
 enum class StaticSpellingKind : uint8_t;
 
+namespace diag {
 enum class RequirementKind : uint8_t;
 
 using DeclAttribute = const DeclAttribute *;
@@ -37,7 +38,9 @@ using DeclAttribute = const DeclAttribute *;
 #define FIXIT(ID, Text, Signature)                                             \
   extern detail::StructuredFixItWithArguments<void Signature>::type ID;
 #include "DiagnosticsBasic.def"
-} // end namespace diag
+
+} // namespace diag
+
 } // end namespace stone
 
 #endif

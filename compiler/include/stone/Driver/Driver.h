@@ -12,8 +12,8 @@
 #include "stone/Driver/TaskQueue.h"
 #include "stone/Driver/ToolChain.h"
 #include "stone/Stats/Stats.h"
-#include "stone/Support/DiagnosticEngine.h"
 #include "stone/Support/DriverDiagnostic.h"
+#include "stone/Syntax/Diagnostics.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/StringRef.h"

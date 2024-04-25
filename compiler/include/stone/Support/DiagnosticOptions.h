@@ -4,19 +4,6 @@
 #include "llvm/ADT/Hashing.h"
 
 namespace stone {
-namespace diag {
-enum class Level : uint8_t {
-  None = 0,
-  // Highest
-  Fatal,
-  Error,
-  Warn,
-  Remark,
-  Note,
-  // Lowest
-  Ignore,
-};
-}
 /// Options for controlling diagnostics.
 class DiagnosticOptions final {
 public:

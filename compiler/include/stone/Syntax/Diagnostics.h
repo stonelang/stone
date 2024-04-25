@@ -21,6 +21,7 @@ class Decl;
 } // namespace clang
 
 namespace stone {
+
 class Decl;
 class ConstructorDecl;
 class FuncDecl;
@@ -35,7 +36,6 @@ class StatsReporter;
 class DeclAttribute;
 class LexerBase;
 
-namespace diag {
 class DiagnosticArgument;
 class DiagnosticEngine;
 class DiagnosticConsumer;
@@ -47,7 +47,6 @@ enum class ReferenceOwnership : uint8_t;
 enum class StaticSpellingKind : uint8_t;
 enum class DescriptiveDeclKind : uint8_t;
 enum class DeclAttrKind : unsigned;
-enum class StmtKind;
 
 /// Describes the current behavior to take with a diagnostic.
 /// Ordered from most severe to least.
@@ -76,31 +75,6 @@ enum class DiagID : uint32_t;
 template <typename... ArgTypes> struct Diag {
   /// The diagnostic ID corresponding to this diagnostic.
   DiagID ID;
-};
-
-enum class DiagnosticOptions {
-  /// No options.
-  none,
-
-  /// The location of this diagnostic points to the beginning of the first
-  /// token that the parser considers invalid.  If this token is located at the
-  /// beginning of the line, then the location is adjusted to point to the end
-  /// of the previous token.
-  ///
-  /// This behavior improves experience for "expected token X" diagnostics.
-  PointsToFirstBadToken,
-
-  /// After a fatal error subsequent diagnostics are suppressed.
-  Fatal,
-
-  /// An API or ABI breakage diagnostic emitted by the API digester.
-  APIDigesterBreakage,
-
-  /// A deprecation warning or error.
-  Deprecation,
-
-  /// A diagnostic warning about an unused element.
-  NoUsage,
 };
 
 namespace detail {
@@ -222,7 +196,7 @@ struct DiagnosticInfo final {
 class DiagnosticArgument final {
   DiagnosticArgumentKind Kind;
   union {
-    bool BoolValue;
+    bool BoolVal;
     int IntegerVal;
     unsigned UnsignedVal;
     StringRef StringVal;
@@ -235,8 +209,7 @@ class DiagnosticArgument final {
   };
 
 public:
-  DiagnosticArgument(bool B)
-      : Kind(DiagnosticArgumentKind::Bool), BoolValue(B) {}
+  DiagnosticArgument(bool B) : Kind(DiagnosticArgumentKind::Bool), BoolVal(B) {}
 
   DiagnosticArgument(StringRef S)
       : Kind(DiagnosticArgumentKind::String), StringVal(S) {}
@@ -274,8 +247,7 @@ public:
 
   DiagnosticArgumentKind getKind() const { return Kind; }
 
-
-  StringRef getAsString() const {
+  bool getAsBool() const {
     assert(Kind == DiagnosticArgumentKind::Bool);
     return BoolVal;
   }
@@ -943,7 +915,6 @@ public:
   void handleDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info) override;
 };
 
-
 class DiagnosticLocalizationProducer {
 
 public:
@@ -1115,6 +1086,7 @@ public:
   /// Return all \c DiagnosticConsumers.
   ArrayRef<DiagnosticConsumer *> getConsumers() const { return Consumers; }
 
+  SrcMgr &GetSrcMgr() { return SourceMgr; }
   /// Emit a diagnostic using a preformatted array of diagnostic
   /// arguments.
   ///
@@ -1654,8 +1626,6 @@ public:
   ~DiagnosticSuppression();
   static bool isEnabled(const DiagnosticEngine &diags);
 };
-
-} // namespace diag
 
 } // namespace stone
 

@@ -5,7 +5,7 @@
 #include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/Job.h"
 #include "stone/Driver/JobConstruction.h"
-#include "stone/Support/DiagnosticEngine.h"
+#include "stone/Syntax/Diagnostics.h"
 
 #include "clang/Basic/DarwinSDKInfo.h"
 

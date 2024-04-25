@@ -12,32 +12,32 @@ ERROR(error_invalid_mode,none,
 
 ERROR(error_no_input_files, none, "no input files", ())
 
-ERROR(err_unknown_arg, none, "unknown argument:", (StringRef))
+ERROR(error_unknown_arg, none, "unknown argument:", (StringRef))
 
-ERROR(err_missing_arg_value,none,
+ERROR(error_missing_arg_value,none,
       "missing argument value for '%0', expected %1 argument(s)",(StringRef, unsigned))
 
-ERROR(err_unable_to_open_output, none, "could not open output", (StringRef, StringRef))
+ERROR(error_unable_to_open_output, none, "could not open output", (StringRef, StringRef))
 
-ERROR(err_unable_to_open_buffer_for_file, none, "could not open file buffer for", (StringRef))
+ERROR(error_unable_to_open_buffer_for_file, none, "could not open file buffer for", (StringRef))
 
 
-ERROR(err_duplicate_input_file,none,
+ERROR(error_duplicate_input_file,none,
       "duplicate input file '%0'", (StringRef))
 
-ERROR(err_cannot_open_file,none,
+ERROR(error_cannot_open_file,none,
       "cannot open file '%0' (%1)", (StringRef, StringRef))
 
 
-ERROR(err_open_input_file,none,
+ERROR(error_open_input_file,none,
       "error opening input file '%0' (%1)", (StringRef, StringRef))
 
 
-ERROR(err_invalid_arg_value,none,
+ERROR(error_invalid_arg_value,none,
       "invalid value '%1' in '%0'", (StringRef, StringRef))
 
 // Usually, but not always, emitted from the driver
-ERROR(err_two_files_same_name,none,
+ERROR(error_two_files_same_name,none,
       "filename \"%0\" used twice: '%1' and '%2'",
       (StringRef, StringRef, StringRef))
 

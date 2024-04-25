@@ -3,8 +3,8 @@
 
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/Support/DiagnosticEngine.h"
 #include "stone/Syntax/Decl.h"
+#include "stone/Syntax/Diagnostics.h"
 
 #include "llvm/ADT/SmallPtrSet.h"
 

@@ -14,9 +14,8 @@
 #include "stone/Syntax/Types.h"
 
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Support/DiagnosticEngine.h"
-#include "stone/Syntax/ASTDiagnosticArgument.h"
 #include "stone/Syntax/ClangContext.h"
+#include "stone/Syntax/Diagnostics.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
 #include "stone/Syntax/SyntaxResult.h"
@@ -226,21 +225,21 @@ public:
   // }
 
 public:
-  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetDiags().PrintD(
-        loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
-  }
-  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
-                                   llvm::ArrayRef<diag::Argument> args) {
-    return GetDiags().PrintD(loc, ASTDiagnostic(diagID, args));
-  }
+  // stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
+  //   return GetDiags().PrintD(
+  //       loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
+  // }
+  // stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
+  //                                  llvm::ArrayRef<diag::Argument> args) {
+  //   return GetDiags().PrintD(loc, ASTDiagnostic(diagID, args));
+  // }
 
-  template <typename... ArgTypes>
-  stone::InFlightDiagnostic
-  PrintD(SrcLoc loc, Diag<ArgTypes...> id,
-         typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetDiags().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
-  }
+  // template <typename... ArgTypes>
+  // stone::InFlightDiagnostic
+  // PrintD(SrcLoc loc, Diag<ArgTypes...> id,
+  //        typename stone::detail::PassArgument<ArgTypes>::type... args) {
+  //   return GetDiags().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
+  // }
 
 public:
   template <typename T>

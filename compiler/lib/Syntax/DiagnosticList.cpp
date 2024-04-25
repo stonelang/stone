@@ -2,15 +2,14 @@
 
 using namespace stone;
 
-enum class stone::diag::DiagID : uint32_t {
+enum class stone::DiagID : uint32_t {
 #define DIAG(KIND, ID, Options, Text, Signature) ID,
 #include "stone/Syntax/Diagnostics.def"
 };
-static_assert(static_cast<uint32_t>(stone::diag::DiagID::invalid_diagnostic) ==
-                  0,
+static_assert(static_cast<uint32_t>(stone::DiagID::invalid_diagnostic) == 0,
               "0 is not the invalid diagnostic ID");
 
-enum class stone::diag::FixItID : uint32_t {
+enum class stone::FixItID : uint32_t {
 #define DIAG(KIND, ID, Options, Text, Signature)
 #define FIXIT(ID, Text, Signature) ID,
 #include "stone/Syntax/Diagnostics.def"

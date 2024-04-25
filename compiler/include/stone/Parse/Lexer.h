@@ -3,11 +3,11 @@
 
 #include "stone/Basic/Token.h"
 #include "stone/Parse/Trivia.h"
-#include "stone/Support/DiagnosticEngine.h"
 #include "stone/Support/LexerBase.h"
 #include "stone/Support/Statistics.h"
+#include "stone/Syntax/Diagnostics.h"
 
-//TODO: Move to support 
+// TODO: Move to support
 namespace stone {
 class SrcMgr;
 class Token;

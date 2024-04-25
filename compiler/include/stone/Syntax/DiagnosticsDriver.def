@@ -1,7 +1,7 @@
 #define DEFINE_DIAGNOSTIC_MACROS
 #include "DiagnosticMacros.h"
 
-ERROR(err_unknown_target,none, "unknown target '%0'", (StringRef))
+ERROR(error_unknown_target,none, "unknown target '%0'", (StringRef))
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DiagnosticMacros.h"

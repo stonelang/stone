@@ -5,7 +5,6 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Support/DiagnosticArgument.h"
 #include "stone/Syntax/Access.h"
 #include "stone/Syntax/DeclContext.h"
 #include "stone/Syntax/DeclKind.h"

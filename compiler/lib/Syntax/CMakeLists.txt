@@ -28,7 +28,6 @@ set(stone_syn_sources
 	Stmt.cpp
 	Substituion.cpp
 	ASTContext.cpp
-	ASTDiagnostic.cpp
 	Scope.cpp
 	ASTVisitor.cpp
 	ASTWalker.cpp

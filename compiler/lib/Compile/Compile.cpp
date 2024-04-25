@@ -12,7 +12,6 @@
 
 #include "stone/Syntax/Diagnostics.h"
 
-
 using namespace stone;
 
 int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
@@ -21,15 +20,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-
-
-
   SrcMgr srcMgr;
   diag::DiagnosticEngine diags{srcMgr};
-
-
-
-
 
   ASTDiagnosticFormatter formatter;
   ASTDiagnosticEmitter emitter(formatter);
