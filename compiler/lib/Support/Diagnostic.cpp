@@ -1,3 +1,4 @@
+#include "stone/Support/LexerBase.h"
 #include "stone/Support/DiagnosticEngine.h"
 
 using stone::DiagnosticFix;
@@ -136,9 +137,9 @@ InFlightDiagnostic &DiagnosticFixer::ReplaceChars(SrcLoc start, SrcLoc end,
 InFlightDiagnostic &
 DiagnosticFixer::InsertAfter(SrcLoc loc, llvm::StringRef formatString,
                        llvm::ArrayRef<diag::Argument> args) {
-  assert(inFlightDiag.tokenable && "InsertAfter requires a Tokenable");
+  assert(inFlightDiag.lexerBase && "InsertAfter requires a Tokenable");
 
-  loc = inFlightDiag.tokenable->GetLocForEndOfToken(
+  loc = inFlightDiag.lexerBase->GetLocForEndOfToken(
       inFlightDiag.GetDiags().GetSrcMgr(), loc);
 
   return Insert(loc, formatString, args);

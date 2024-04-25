@@ -1,3 +1,4 @@
+#include "stone/Support/LexerBase.h"
 #include "stone/Support/DiagnosticEngine.h"
 #include "stone/Support/CoreDiagnostic.h"
 
@@ -181,12 +182,12 @@ diag::Level DiagnosticState::DetermineLevel(const Diagnostic &diag) {
 }
 
 InFlightDiagnostic::InFlightDiagnostic()
-    : de(0), tokenable(0), isActive(true), fixer(*this) {}
+    : de(0), lexerBase(0), isActive(true), fixer(*this) {}
 
 InFlightDiagnostic::InFlightDiagnostic(DiagnosticEngine &de,
-                                       Tokenable *tokenable)
+                                       LexerBase *lexerBase)
     : de(&de), fixer(*this), isActive(true), isForceFlush(false),
-      tokenable(tokenable) {}
+      lexerBase(lexerBase) {}
 
 DiagnosticEngine::DiagnosticEngine(SrcMgr &sm) : sm(sm), curDiagnostic() {}
 

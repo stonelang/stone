@@ -26,9 +26,9 @@ class InFlightDiagnostic;
 class DiagnosticConsumer;
 class LangOptions;
 class Version;
+class LexerBase;
 class SavedDiagnostic;
 class DiagnosticState;
-class Tokenable;
 
 class PrintingPolicy {
 public:
@@ -119,7 +119,7 @@ class InFlightDiagnostic {
 
   DiagnosticFixer fixer;
   DiagnosticEngine *de;
-  Tokenable *tokenable;
+  LexerBase *lexerBase;
 
   /// Status variable indicating if this diagnostic is still active.
   ///
@@ -139,13 +139,13 @@ class InFlightDiagnostic {
 public:
   InFlightDiagnostic();
 
-  InFlightDiagnostic(DiagnosticEngine &de, Tokenable *tokenable = nullptr);
+  InFlightDiagnostic(DiagnosticEngine &de, LexerBase *lexerBase = nullptr);
 
   /// Transfer an in-flight diagnostic to a new object, which is
   /// typically used when returning in-flight diagnostics.
   InFlightDiagnostic(InFlightDiagnostic &&other)
       : de(other.de), fixer(*this), isActive(other.isActive),
-        isForceFlush(other.isForceFlush), tokenable(other.tokenable) {
+        isForceFlush(other.isForceFlush), lexerBase(other.lexerBase) {
     other.isActive = false;
     other.isForceFlush = false;
   }
@@ -369,34 +369,34 @@ public:
 private:
   InFlightDiagnostic CreateInFlightDiagnostic(SrcLoc loc,
                                               const Diagnostic &diagnostic,
-                                              Tokenable *tokenable = nullptr) {
+                                              LexerBase *lexerBase = nullptr) {
     assert(!curDiagnostic && "Already have an active diagnostic");
     curDiagnostic = diagnostic;
     curDiagnostic->SetLoc(loc);
-    return InFlightDiagnostic(*this, tokenable);
+    return InFlightDiagnostic(*this, lexerBase);
   }
 
 public:
   InFlightDiagnostic PrintD(SrcLoc loc, const Diagnostic diagnostic,
-                            Tokenable *tokenable = nullptr) {
-    return CreateInFlightDiagnostic(loc, diagnostic, tokenable);
+                            LexerBase *lexerBase = nullptr) {
+    return CreateInFlightDiagnostic(loc, diagnostic, lexerBase);
   }
 
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             llvm::ArrayRef<diag::Argument> args,
-                            Tokenable *tokenable = nullptr) {
-    return PrintD(loc, Diagnostic(Diagnostic(diagID, args)), tokenable);
+                            LexerBase *lexerBase = nullptr) {
+    return PrintD(loc, Diagnostic(Diagnostic(diagID, args)), lexerBase);
   }
 
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
-                            Tokenable *tokenable = nullptr) {
+                            LexerBase *lexerBase = nullptr) {
     return PrintD(loc, Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
-                  tokenable);
+                  lexerBase);
   }
-  InFlightDiagnostic PrintD(DiagID diagID, Tokenable *tokenable = nullptr) {
+  InFlightDiagnostic PrintD(DiagID diagID, LexerBase *lexerBase = nullptr) {
     return PrintD(SrcLoc(),
                   Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
-                  tokenable);
+                  lexerBase);
   }
 
   template <typename... ArgTypes>
@@ -415,9 +415,9 @@ public:
 
   template <typename... ArgTypes>
   InFlightDiagnostic
-  PrintD(SrcLoc loc, Tokenable *tokenable, Diag<ArgTypes...> id,
+  PrintD(SrcLoc loc, LexerBase *lexerBase, Diag<ArgTypes...> id,
          typename detail::PassArgument<ArgTypes>::type... args) {
-    return PrintD(loc, Diagnostic(id, std::move(args)...), tokenable);
+    return PrintD(loc, Diagnostic(id, std::move(args)...), lexerBase);
   }
 };
 class DiagnosticStateRAII final {
