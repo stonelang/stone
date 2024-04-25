@@ -337,11 +337,11 @@ diag::InFlightDiagnostic::limitBehavior(DiagnosticBehavior limit) {
 }
 
 // InFlightDiagnostic &
-// diag::InFlightDiagnostic::limitBehaviorUntilSwiftVersion(
+// diag::InFlightDiagnostic::limitBehaviorUntilStoneVersion(
 //     DiagnosticBehavior limit, unsigned majorVersion) {
 //   if (!Engine->languageVersion.isVersionAtLeast(majorVersion)) {
 //     // If the behavior limit is a warning or less, wrap the diagnostic
-//     // in a message that this will become an error in a later Swift
+//     // in a message that this will become an error in a later Stone
 //     // version. We do this before limiting the behavior, because
 //     // wrapIn will result in the behavior of the wrapping diagnostic.
 //     if (limit >= DiagnosticBehavior::Warning)
@@ -352,7 +352,7 @@ diag::InFlightDiagnostic::limitBehavior(DiagnosticBehavior limit) {
 
 //   if (majorVersion == 6) {
 //     if (auto stats = Engine->statsReporter) {
-//       ++stats->getFrontendCounters().NumSwift6Errors;
+//       ++stats->getFrontendCounters().NumStone6Errors;
 //     }
 //   }
 
@@ -360,13 +360,13 @@ diag::InFlightDiagnostic::limitBehavior(DiagnosticBehavior limit) {
 // }
 
 // diag::InFlightDiagnostic &
-// diag::InFlightDiagnostic::warnUntilSwiftVersion(unsigned majorVersion) {
-//   return limitBehaviorUntilSwiftVersion(DiagnosticBehavior::Warning,
+// diag::InFlightDiagnostic::warnUntilStoneVersion(unsigned majorVersion) {
+//   return limitBehaviorUntilStoneVersion(DiagnosticBehavior::Warning,
 //                                         majorVersion);
 // }
 
 // diag::InFlightDiagnostic &
-// diag::InFlightDiagnostic::warnInSwiftInterface(const DeclContext *context) {
+// diag::InFlightDiagnostic::warnInStoneInterface(const DeclContext *context) {
 //   auto sourceFile = context->getParentSourceFile();
 //   if (sourceFile && sourceFile->Kind == SourceFileKind::Interface) {
 //     return limitBehavior(DiagnosticBehavior::Warning);
@@ -528,7 +528,7 @@ static void formatSelectionArgument(StringRef ModifierArguments,
 //   if (type->isVoid())
 //     return false;
 
-//   // The 'Swift.AnyObject' typealias is not 'interesting'.
+//   // The 'Stone.AnyObject' typealias is not 'interesting'.
 //   if (aliasDecl->getName() ==
 //         aliasDecl->getASTContext().getIdentifier("AnyObject") &&
 //       (aliasDecl->getParentModule()->isStdlibModule() ||
@@ -932,3 +932,166 @@ void diag::DiagnosticEngine::forwardTentativeDiagnosticsTo(
   }
   clearTentativeDiagnostics();
 }
+
+/// Returns the access level of the least accessible PrettyPrintedDeclarations
+/// buffer that \p decl should appear in.
+///
+/// This is always \c Public unless \p decl is a \c ValueDecl and its
+/// access level is below \c Public. (That can happen with @testable and
+/// @_private imports.)
+// static AccessLevel getBufferAccessLevel(const Decl *decl) {
+//   AccessLevel level = AccessLevel::Public;
+//   if (auto *VD = dyn_cast<ValueDecl>(decl))
+//     level = VD->getFormalAccessScope().accessLevelForDiagnostics();
+//   if (level > AccessLevel::Public) level = AccessLevel::Public;
+//   return level;
+// }
+
+
+void diag::DiagnosticEngine::emitDiagnostic(const Diagnostic &diagnostic) {
+
+  // ArrayRef<Diagnostic> childNotes = diagnostic.getChildNotes();
+  // std::vector<Diagnostic> extendedChildNotes;
+
+  // if (auto info = diagnosticInfoForDiagnostic(diagnostic)) {
+  //   // If the diagnostic location is within a buffer containing generated
+  //   // source code, add child notes showing where the generation occurred.
+  //   // We need to avoid doing this if this is itself a child note, as otherwise
+  //   // we'd end up doubling up on notes.
+  //   // if (!info->IsChildNote) {
+  //   //   extendedChildNotes = getGeneratedSourceBufferNotes(info->Loc);
+  //   // }
+  //   if (!extendedChildNotes.empty()) {
+  //     extendedChildNotes.insert(extendedChildNotes.end(),
+  //                               childNotes.begin(), childNotes.end());
+  //     childNotes = extendedChildNotes;
+  //   }
+
+  //   SmallVector<DiagnosticInfo, 1> childInfo;
+  //   for (unsigned i : indices(childNotes)) {
+  //     auto child = diagnosticInfoForDiagnostic(childNotes[i]);
+  //     assert(child);
+  //     assert(child->Kind == DiagnosticKind::Note &&
+  //            "Expected child diagnostics to all be notes?!");
+  //     childInfo.push_back(*child);
+  //   }
+  //   TinyPtrVector<DiagnosticInfo *> childInfoPtrs;
+  //   for (unsigned i : indices(childInfo)) {
+  //     childInfoPtrs.push_back(&childInfo[i]);
+  //   }
+  //   info->ChildDiagnosticInfo = childInfoPtrs;
+
+  //   SmallVector<std::string, 1> educationalNotePaths;
+  //   auto associatedNotes = educationalNotes[(uint32_t)diagnostic.getID()];
+  //   while (associatedNotes && *associatedNotes) {
+  //     SmallString<128> notePath(getDiagnosticDocumentationPath());
+  //     llvm::sys::path::append(notePath, *associatedNotes);
+  //     educationalNotePaths.push_back(notePath.str().str());
+  //     ++associatedNotes;
+  //   }
+  //   info->EducationalNotePaths = educationalNotePaths;
+
+  //   for (auto &consumer : Consumers) {
+  //     consumer->handleDiagnostic(SourceMgr, *info);
+  //   }
+  // }
+
+  // // For compatibility with DiagnosticConsumers which don't know about child
+  // // notes. These can be ignored by consumers which do take advantage of the
+  // // grouping.
+  // for (auto &childNote : childNotes)
+  //   emitDiagnostic(childNote);
+}
+
+DiagnosticKind diag::DiagnosticEngine::declaredDiagnosticKindFor(const DiagID id) {
+  return storedDiagnosticInfos[(unsigned)id].kind;
+}
+
+llvm::StringRef
+diag::DiagnosticEngine::diagnosticStringFor(const DiagID id,
+                                      bool printDiagnosticNames) {
+  auto defaultMessage = printDiagnosticNames
+                            ? debugDiagnosticStrings[(unsigned)id]
+                            : diagnosticStrings[(unsigned)id];
+
+  /// todo: 
+  // if (auto producer = localization.get()) {
+  //   auto localizedMessage = producer->getMessageOr(id, defaultMessage);
+  //   return localizedMessage;
+  // }
+  return defaultMessage;
+}
+
+llvm::StringRef
+diag::DiagnosticEngine::diagnosticIDStringFor(const DiagID id) {
+  return diagnosticIDStrings[(unsigned)id];
+}
+
+const char *diag::InFlightDiagnostic::fixItStringFor(const FixItID id) {
+  return fixItStrings[(unsigned)id];
+}
+
+
+// void diag::DiagnosticEngine::setBufferIndirectlyCausingDiagnosticToInput(
+//     SourceLoc loc) {
+//   // If in the future, nested BufferIndirectlyCausingDiagnosticRAII need be
+//   // supported, the compiler will need a stack for
+//   // bufferIndirectlyCausingDiagnostic.
+//   assert(bufferIndirectlyCausingDiagnostic.isInvalid() &&
+//          "Buffer should not already be set.");
+//   bufferIndirectlyCausingDiagnostic = loc;
+//   assert(bufferIndirectlyCausingDiagnostic.isValid() &&
+//          "Buffer must be valid for previous assertion to work.");
+// }
+
+
+// void diag::DiagnosticEngine::resetBufferIndirectlyCausingDiagnostic() {
+//   bufferIndirectlyCausingDiagnostic = SourceLoc();
+// }
+
+// DiagnosticSuppression::DiagnosticSuppression(diag::DiagnosticEngine &diags)
+//   : diags(diags)
+// {
+//   consumers = diags.takeConsumers();
+// }
+
+// DiagnosticSuppression::~DiagnosticSuppression() {
+//   for (auto consumer : consumers)
+//     diags.addConsumer(*consumer);
+// }
+
+// bool DiagnosticSuppression::isEnabled(const diag::DiagnosticEngine &diags) {
+//   return diags.getConsumers().empty();
+// }
+
+// BufferIndirectlyCausingDiagnosticRAII::BufferIndirectlyCausingDiagnosticRAII(
+//     const SourceFile &SF)
+//     : Diags(SF.getASTContext().Diags) {
+//   auto id = SF.getBufferID();
+//   if (!id)
+//     return;
+//   auto loc = SF.getASTContext().SourceMgr.getLocForBufferStart(*id);
+//   if (loc.isValid())
+//     Diags.setBufferIndirectlyCausingDiagnosticToInput(loc);
+// }
+
+void diag::DiagnosticEngine::onTentativeDiagnosticFlush(Diagnostic &diagnostic) {
+  for (auto &argument : diagnostic.Args) {
+    if (argument.getKind() != DiagnosticArgumentKind::String)
+      continue;
+
+    auto content = argument.getAsString();
+    if (content.empty())
+      continue;
+
+    auto I = TransactionStrings.insert(content).first;
+    argument = DiagnosticArgument(StringRef(I->getKeyData()));
+  }
+}
+
+
+
+
+
+
+

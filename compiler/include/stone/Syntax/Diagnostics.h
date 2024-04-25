@@ -18,7 +18,7 @@
 namespace clang {
 class NamedDecl;
 class Decl;
-} // namespace clang
+}
 
 namespace stone {
 class Decl;
@@ -309,9 +309,9 @@ public:
     return DiagnosticVal;
   }
   const clang::NamedDecl *getAsClangDecl() const {
-    assert(Kind == DiagnosticArgumentKind::ClangDecl);
-    return ClangDecl;
-  }
+      assert(Kind == DiagnosticArgumentKind::ClangDecl);
+      return ClangDecl;
+    }
 };
 
 struct DiagnosticFormatOptions {
@@ -546,14 +546,14 @@ public:
   ///
   /// This helps stage in fixes for stricter diagnostics as warnings
   /// until the next major language version.
-  InFlightDiagnostic &limitBehaviorUntilSwiftVersion(DiagnosticBehavior limit,
+  InFlightDiagnostic &limitBehaviorUntilStoneVersion(DiagnosticBehavior limit,
                                                      unsigned majorVersion);
 
   /// Limit the diagnostic behavior to warning until the specified version.
   ///
   /// This helps stage in fixes for stricter diagnostics as warnings
   /// until the next major language version.
-  InFlightDiagnostic &warnUntilSwiftVersion(unsigned majorVersion);
+  InFlightDiagnostic &warnUntilStoneVersion(unsigned majorVersion);
 
   /// Limit the diagnostic behavior to warning if the context is a
   /// swiftinterface.
@@ -562,7 +562,7 @@ public:
   /// future version of the compiler. In such cases, it may be helpful to
   /// avoid failing to build a module from its interface if the interface was
   /// emitted using a compiler that no longer has the restriction.
-  InFlightDiagnostic &warnInSwiftInterface(const DeclContext *context);
+  InFlightDiagnostic &warnInStoneInterface(const DeclContext *context);
 
   /// Conditionally limit the diagnostic behavior to warning until
   /// the specified version.  If the condition is false, no limit is
@@ -570,11 +570,11 @@ public:
   ///
   /// This helps stage in fixes for stricter diagnostics as warnings
   /// until the next major language version.
-  InFlightDiagnostic &warnUntilSwiftVersionIf(bool shouldLimit,
+  InFlightDiagnostic &warnUntilStoneVersionIf(bool shouldLimit,
                                               unsigned majorVersion) {
     if (!shouldLimit)
       return *this;
-    return warnUntilSwiftVersion(majorVersion);
+    return warnUntilStoneVersion(majorVersion);
   }
 
   /// Wraps this diagnostic in another diagnostic. That is, \p wrapper will be
@@ -990,12 +990,12 @@ private:
   /// Path to diagnostic documentation directory.
   std::string diagnosticDocumentationPath = "";
 
-  /// The Swift language version. This is used to limit diagnostic behavior
-  /// until a specific language version, e.g. Swift 6.
+  /// The Stone language version. This is used to limit diagnostic behavior
+  /// until a specific language version, e.g. Stone 6.
   stone::Version languageVersion;
 
-  /// The stats reporter used to keep track of Swift 6 errors
-  /// diagnosed via \c warnUntilSwiftVersion(6).
+  /// The stats reporter used to keep track of Stone 6 errors
+  /// diagnosed via \c warnUntilStoneVersion(6).
   StatsReporter *statsReporter = nullptr;
 
   /// Whether we are actively pretty-printing a declaration as part of
