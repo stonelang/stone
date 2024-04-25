@@ -1027,6 +1027,7 @@ void diag::DiagnosticEngine::emitDiagnostic(const Diagnostic &diagnostic) {
     // }
     // info->EducationalNotePaths = educationalNotePaths;
 
+    // Now, pass it off to the consumers 
     for (auto &consumer : Consumers) {
       consumer->handleDiagnostic(SourceMgr, *info);
     }

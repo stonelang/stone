@@ -1,6 +1,6 @@
 #include "stone/Syntax/Attribute.h"
 
-StringRef stone::getAccessLevelSpelling(AccessLevel value) {
+llvm::StringRef stone::getAccessLevelSpelling(AccessLevel value) {
   switch (value) {
   case AccessLevel::Private:
     return "private";

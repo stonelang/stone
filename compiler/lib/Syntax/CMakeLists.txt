@@ -6,6 +6,7 @@ set(LLVM_LINK_COMPONENTS
 
 set(stone_syn_sources
 	Availability.cpp
+	Attribute.cpp
 	Builtin.cpp
 	Comment.cpp
 	Decl.cpp

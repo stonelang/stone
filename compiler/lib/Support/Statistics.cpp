@@ -1,5 +1,5 @@
 
-#include "stone/Support/StatsReporter.h"
+#include "stone/Support/Statistics.h"
 
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/SourceManager.h"
@@ -272,7 +272,7 @@ struct StatsReporter::StatsProfilers {
 
   // Then one profiler for each frontend statistic.
 #define FRONTEND_STATISTIC(TY, NAME) StatsProfiler NAME;
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef FRONTEND_STATISTIC
 
   StatsProfilers() : LastUpdated(llvm::TimeRecord::getCurrentTime()) {}
@@ -371,7 +371,7 @@ void StatsReporter::publishAlwaysOnStatsToLLVM() {
     Stat = 0;                                                                  \
     Stat += (C).NAME;                                                          \
   } while (0);
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef FRONTEND_STATISTIC
   }
   if (DriverCounters) {
@@ -382,7 +382,7 @@ void StatsReporter::publishAlwaysOnStatsToLLVM() {
     Stat = 0;                                                                  \
     Stat += (C).NAME;                                                          \
   } while (0);
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef DRIVER_STATISTIC
   }
 }
@@ -398,7 +398,7 @@ void StatsReporter::printAlwaysOnStatsAndTimers(raw_ostream &OS) {
     OS << delim << "\t\"" #TY "." #NAME "\": " << C.NAME;                      \
     delim = ",\n";                                                             \
   } while (0);
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef FRONTEND_STATISTIC
   }
   if (DriverCounters) {
@@ -408,7 +408,7 @@ void StatsReporter::printAlwaysOnStatsAndTimers(raw_ostream &OS) {
     OS << delim << "\t\"Driver." #NAME "\": " << C.NAME;                       \
     delim = ",\n";                                                             \
   } while (0);
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef DRIVER_STATISTIC
   }
   // Print timers.
@@ -531,7 +531,7 @@ void StatsReporter::saveAnyFrontendStatsEvents(FrontendStatsTracer const &T,
                                           IsEntry);
 #define FRONTEND_STATISTIC(TY, N)                                              \
   EventProfilers->N.profileEvent(T.EventName, Curr.N - Last.N, IsEntry);
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef FRONTEND_STATISTIC
     EventProfilers->LastUpdated = Now;
   }
@@ -551,7 +551,7 @@ void StatsReporter::saveAnyFrontendStatsEvents(FrontendStatsTracer const &T,
 #define FRONTEND_STATISTIC(TY, N)                                              \
   EntityProfilers->N.profileEvent(T.EventName, Curr.N - Last.N, IsEntry,       \
                                   T.Entity, T.Formatter);
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef FRONTEND_STATISTIC
     EntityProfilers->LastUpdated = Now;
   }
@@ -563,7 +563,7 @@ void StatsReporter::saveAnyFrontendStatsEvents(FrontendStatsTracer const &T,
     auto &Events = *FrontendStatsEvents;
 #define FRONTEND_STATISTIC(TY, N)                                              \
   saveEvent(#TY "." #N, Curr.N, Last.N, NowUS, LiveUS, Events, T, IsEntry);
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef FRONTEND_STATISTIC
   }
 
@@ -692,7 +692,7 @@ void StatsReporter::flushTracesAndProfiles() {
       EventProfilers->WallTime.printToFile(D, "Time.Wall.events");
 #define FRONTEND_STATISTIC(TY, NAME)                                           \
   EventProfilers->NAME.printToFile(ProfileDirname, #TY "." #NAME ".events");
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef FRONTEND_STATISTIC
     }
     if (EntityProfilers) {
@@ -704,7 +704,7 @@ void StatsReporter::flushTracesAndProfiles() {
 #define FRONTEND_STATISTIC(TY, NAME)                                           \
   EntityProfilers->NAME.printToFile(ProfileDirname, #TY "." #NAME ".entitie"   \
                                                         "s");
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef FRONTEND_STATISTIC
     }
   }

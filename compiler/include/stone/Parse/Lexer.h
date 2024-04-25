@@ -5,7 +5,7 @@
 #include "stone/Parse/Trivia.h"
 #include "stone/Support/DiagnosticEngine.h"
 #include "stone/Support/LexerBase.h"
-#include "stone/Support/StatsReporter.h"
+#include "stone/Support/Statistics.h"
 
 namespace stone {
 class SrcID;

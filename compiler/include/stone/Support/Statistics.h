@@ -49,13 +49,13 @@ class StatsReporter final {
 public:
   struct AlwaysOnDriverCounters {
 #define DRIVER_STATISTIC(ID) int64_t ID;
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef DRIVER_STATISTIC
   };
 
   struct AlwaysOnFrontendCounters {
 #define FRONTEND_STATISTIC(NAME, ID) int64_t ID;
-#include "stone/Support/StatsReporter.def"
+#include "stone/Support/Statistics.def"
 #undef FRONTEND_STATISTIC
   };
 

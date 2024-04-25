@@ -11,7 +11,7 @@
 #include "stone/Basic/EditorPlaceholder.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/TokenKind.h"
-#include "stone/Support/StatsReporter.h"
+#include "stone/Support/Statistics.h"
 
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/SmallString.h"

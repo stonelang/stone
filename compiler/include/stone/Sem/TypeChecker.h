@@ -1,7 +1,7 @@
 #ifndef STONE_SEM_TYPECHECKER_H
 #define STONE_SEM_TYPECHECKER_H
 
-#include "stone/Support/StatsReporter.h"
+#include "stone/Support/Statistics.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Module.h"
 
