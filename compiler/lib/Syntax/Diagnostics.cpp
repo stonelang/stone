@@ -10,6 +10,7 @@
 // #include "stone/Syntax/PrintOptions.h"
 #include "stone/Syntax/Module.h"
 #include "stone/Syntax/Stmt.h"
+#include "stone/Basic/Range.h"
 
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Support/LexerBase.h"
@@ -958,8 +959,6 @@ diag::DiagnosticEngine::diagnosticInfoForDiagnostic(
   // Figure out the source location.
   SrcLoc loc = diagnostic.getLoc();
 
-  DiagnosticInfo result;
-
   if (loc.isInvalid() && diagnostic.getDecl()) {
     const stone::Decl *decl = diagnostic.getDecl();
     // If a declaration was provided instead of a location, and that declaration
@@ -970,16 +969,13 @@ diag::DiagnosticEngine::diagnosticInfoForDiagnostic(
   if (loc.isInvalid()) {
   }
 
-
-auto fixIts = diagnostic.getFixIts();
+  auto fixIts = diagnostic.getFixIts();
   if (loc.isValid()) {
-
-
   }
 
- StringRef Category;
+  StringRef Category;
 
-return DiagnosticInfo(
+  return DiagnosticInfo(
       diagnostic.getID(), loc, toDiagnosticKind(behavior),
       diagnosticStringFor(diagnostic.getID(), getPrintDiagnosticNames()),
       diagnostic.getArgs(), Category, getDefaultDiagnosticLoc(),
@@ -989,58 +985,59 @@ return DiagnosticInfo(
 
 void diag::DiagnosticEngine::emitDiagnostic(const Diagnostic &diagnostic) {
 
-  // ArrayRef<Diagnostic> childNotes = diagnostic.getChildNotes();
-  // std::vector<Diagnostic> extendedChildNotes;
+  ArrayRef<Diagnostic> childNotes = diagnostic.getChildNotes();
+  std::vector<Diagnostic> extendedChildNotes;
 
-  // if (auto info = diagnosticInfoForDiagnostic(diagnostic)) {
-  //   // If the diagnostic location is within a buffer containing generated
-  //   // source code, add child notes showing where the generation occurred.
-  //   // We need to avoid doing this if this is itself a child note, as
-  //   otherwise
-  //   // we'd end up doubling up on notes.
-  //   // if (!info->IsChildNote) {
-  //   //   extendedChildNotes = getGeneratedSourceBufferNotes(info->Loc);
-  //   // }
-  //   if (!extendedChildNotes.empty()) {
-  //     extendedChildNotes.insert(extendedChildNotes.end(),
-  //                               childNotes.begin(), childNotes.end());
-  //     childNotes = extendedChildNotes;
-  //   }
+  if (auto info = diagnosticInfoForDiagnostic(diagnostic)) {
+    // If the diagnostic location is within a buffer containing generated
+    // source code, add child notes showing where the generation occurred.
+    // We need to avoid doing this if this is itself a child note, as otherwise
+    // we'd end up doubling up on notes.
+    // if (!info->IsChildNote) {
+    //    extendedChildNotes = getGeneratedSourceBufferNotes(info->Loc);
+    // }
 
-  //   SmallVector<DiagnosticInfo, 1> childInfo;
-  //   for (unsigned i : indices(childNotes)) {
-  //     auto child = diagnosticInfoForDiagnostic(childNotes[i]);
-  //     assert(child);
-  //     assert(child->Kind == DiagnosticKind::Note &&
-  //            "Expected child diagnostics to all be notes?!");
-  //     childInfo.push_back(*child);
-  //   }
-  //   TinyPtrVector<DiagnosticInfo *> childInfoPtrs;
-  //   for (unsigned i : indices(childInfo)) {
-  //     childInfoPtrs.push_back(&childInfo[i]);
-  //   }
-  //   info->ChildDiagnosticInfo = childInfoPtrs;
+    if (!extendedChildNotes.empty()) {
+      extendedChildNotes.insert(extendedChildNotes.end(), childNotes.begin(),
+                                childNotes.end());
+      childNotes = extendedChildNotes;
+    }
 
-  //   SmallVector<std::string, 1> educationalNotePaths;
-  //   auto associatedNotes = educationalNotes[(uint32_t)diagnostic.getID()];
-  //   while (associatedNotes && *associatedNotes) {
-  //     SmallString<128> notePath(getDiagnosticDocumentationPath());
-  //     llvm::sys::path::append(notePath, *associatedNotes);
-  //     educationalNotePaths.push_back(notePath.str().str());
-  //     ++associatedNotes;
-  //   }
-  //   info->EducationalNotePaths = educationalNotePaths;
+    SmallVector<DiagnosticInfo, 1> childInfo;
+    for (unsigned i : stone::indices(childNotes)) {
+      auto child = diagnosticInfoForDiagnostic(childNotes[i]);
+      assert(child);
+      assert(child->Kind == DiagnosticKind::Note &&
+             "Expected child diagnostics to all be notes?!");
+      childInfo.push_back(*child);
+    }
+    TinyPtrVector<DiagnosticInfo *> childInfoPtrs;
+    for (unsigned i : stone::indices(childInfo)) {
+      childInfoPtrs.push_back(&childInfo[i]);
+    }
+    info->ChildDiagnosticInfo = childInfoPtrs;
 
-  //   for (auto &consumer : Consumers) {
-  //     consumer->handleDiagnostic(SourceMgr, *info);
-  //   }
-  // }
+    // SmallVector<std::string, 1> educationalNotePaths;
+    // auto associatedNotes = educationalNotes[(uint32_t)diagnostic.getID()];
+    // while (associatedNotes && *associatedNotes) {
+    //   SmallString<128> notePath(getDiagnosticDocumentationPath());
+    //   llvm::sys::path::append(notePath, *associatedNotes);
+    //   educationalNotePaths.push_back(notePath.str().str());
+    //   ++associatedNotes;
+    // }
+    // info->EducationalNotePaths = educationalNotePaths;
 
-  // // For compatibility with DiagnosticConsumers which don't know about child
-  // // notes. These can be ignored by consumers which do take advantage of the
-  // // grouping.
-  // for (auto &childNote : childNotes)
-  //   emitDiagnostic(childNote);
+    for (auto &consumer : Consumers) {
+      consumer->handleDiagnostic(SourceMgr, *info);
+    }
+  }
+
+  // For compatibility with DiagnosticConsumers which don't know about child
+  // notes. These can be ignored by consumers which do take advantage of the
+  // grouping.
+  for (auto &childNote : childNotes) {
+    emitDiagnostic(childNote);
+  }
 }
 
 DiagnosticKind
