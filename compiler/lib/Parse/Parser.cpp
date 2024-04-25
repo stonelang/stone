@@ -174,10 +174,10 @@ Scope *Parser::CreateScope(ScopeKind kind, ASTContext &ac,
   return new (ac) Scope(kind, diags, parent);
 }
 
-InFlightDiagnostic Parser::Diagnose(SrcLoc loc, Diag<> diagID) {
+InFlightDiagnostic Parser::diagnose(SrcLoc loc, Diag<> diagID) {
   return astContext.GetDiags().diagnose(loc, diagID);
 }
 
-InFlightDiagnostic Parser::Diagnose(Token &token, Diag<> diagID) {
-  return Diagnose(token.GetLoc(), diagID);
+InFlightDiagnostic Parser::diagnose(Token &token, Diag<> diagID) {
+  return diagnose(token.GetLoc(), diagID);
 }

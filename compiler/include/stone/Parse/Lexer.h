@@ -517,13 +517,12 @@ private:
     return BufferStart + sm.getLocOffsetInBuffer(Loc, BufferID);
   }
 
-  InFlightDiagnostic PrintD(const char *loc, Diagnostic diagnostic);
+  InFlightDiagnostic diagnose(const char *loc, Diagnostic diagnostic);
 
   template <typename... DiagArgTypes, typename... ArgTypes>
-  InFlightDiagnostic PrintD(const char *loc, Diag<DiagArgTypes...> DiagID,
+  InFlightDiagnostic diagnose(const char *loc, Diag<DiagArgTypes...> DiagID,
                             ArgTypes &&...Args) {
-    return PrintD(
-        loc, Diagnostic(Diagnostic(DiagID, std::forward<ArgTypes>(Args)...)));
+    return diagnose(loc, Diagnostic(DiagID, std::forward<ArgTypes>(Args)...));
   }
 
   void formToken(tok Kind, const char *TokStart);

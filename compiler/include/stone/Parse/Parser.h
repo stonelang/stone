@@ -386,8 +386,8 @@ public:
   void PushCurScope(Scope *scope) { scopeCache.push_back(scope); }
 
 public:
-  InFlightDiagnostic Diagnose(SrcLoc loc, Diag<> diagID);
-  InFlightDiagnostic Diagnose(Token &curTok, Diag<> diagID);
+  InFlightDiagnostic diagnose(SrcLoc loc, Diag<> diagID);
+  InFlightDiagnostic diagnose(Token &curTok, Diag<> diagID);
 
 private:
   static Scope *CreateScope(ScopeKind kind, ASTContext &sc,

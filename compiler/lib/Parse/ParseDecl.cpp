@@ -243,9 +243,8 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDecl &collector,
 
     if (!ConsumeIf(tok::arrow, arrowLoc)) {
       // FixIt ':' to '->'.
-      PrintD(curTok, diag::error_expected_arrow_after_function_param)
-          .WithFix()
-          .Replace(curTok.GetLoc(), llvm::StringRef("->"));
+      diagnose(curTok, diag::error_expected_arrow_after_function_param)
+          .fixItReplace(curTok.GetLoc(), llvm::StringRef("->"));
       // arrowLoc = ConsumeToken(tok::colon);
     } else {
       collector.GetFunctionSpecifierCollector().AddArrowLoc(arrowLoc);
