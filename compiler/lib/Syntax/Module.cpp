@@ -106,9 +106,9 @@ llvm::ArrayRef<SourceFile *> ModuleDecl::GetPrimarySourceFiles() {
 //   return Status();
 // }
 SourceFile::SourceFile(SourceFileKind kind, ModuleDecl &owner,
-                       std::optional<unsigned> srcID, bool isPrimary)
+                       std::optional<unsigned> buffID, bool isPrimary)
     : ModuleFile(ModuleFileKind::Syntax, owner), kind(kind),
-      srcID(srcID ? *srcID : -1), isPrimary(isPrimary) {}
+      bufferID(buffID ? *buffID : -1), isPrimary(isPrimary) {}
 
 SourceFile::ParsingOptions
 SourceFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
@@ -124,23 +124,23 @@ SourceFile::GetDefaultParsingOptions(const LangOptions &langOpts) {
 }
 
 llvm::StringRef SourceFile::GetFilename() const {
-  if (srcID == -1) {
+  if (bufferID == -1) {
     return llvm::StringRef();
   }
   SrcMgr &sm = GetASTContext().GetSrcMgr();
-  return sm.getIdentifierForBuffer(srcID);
+  return sm.getIdentifierForBuffer(bufferID);
 }
 
-SourceFile *SourceFile::Create(SourceFileKind kind, unsigned srcID,
+SourceFile *SourceFile::Create(SourceFileKind kind, unsigned bufferID,
                                ModuleDecl &owner, ASTContext &astContext) {
-  return new (astContext) SourceFile(kind, owner, srcID, false);
+  return new (astContext) SourceFile(kind, owner, bufferID, false);
 }
 
 SourceFile *SourceFile::CreatePrimarySourceFile(SourceFileKind kind,
-                                                unsigned srcID,
+                                                unsigned bufferID,
                                                 ModuleDecl &owner,
                                                 ASTContext &astContext) {
-  return new (astContext) SourceFile(kind, owner, srcID, true);
+  return new (astContext) SourceFile(kind, owner, bufferID, true);
 }
 
 SourceFile::~SourceFile() {}

@@ -12,7 +12,7 @@ using namespace stone;
 Parser::Parser(SourceFile &sf, ASTContext &astContext)
     : Parser(sf, astContext,
              std::unique_ptr<Lexer>(
-                 new Lexer(sf.GetSrcID(), astContext.GetSrcMgr(),
+                 new Lexer(sf.GetBufferID(), astContext.GetSrcMgr(),
                            &astContext.GetDiags(), astContext.GetStats()))) {}
 
 Parser::Parser(SourceFile &sf, ASTContext &astContext,

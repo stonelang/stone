@@ -8,7 +8,6 @@
 #include "stone/Support/Statistics.h"
 
 namespace stone {
-class SrcID;
 class SrcMgr;
 class Token;
 /// Given a pointer to the starting byte of a UTF8 character, validate it and

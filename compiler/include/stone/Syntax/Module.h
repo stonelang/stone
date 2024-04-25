@@ -98,7 +98,7 @@ private:
   ///
   /// May be -1, to indicate no association with a buffer.
 
-  int srcID;
+  int bufferID;
 
   /// Whether this is a primary source file which we'll be generating code for.
   bool isPrimary;
@@ -158,13 +158,14 @@ public:
 
 public:
   SourceFile(SourceFileKind kind, ModuleDecl &owner,
-             std::optional<unsigned> srcID, bool isPrimary = false);
+             std::optional<unsigned> buffID, bool isPrimary = false);
 
   ~SourceFile();
 
 public:
   bool IsPrimary() const { return isPrimary; }
-  unsigned GetSrcID() { return srcID; }
+  unsigned GetBufferID() const { return bufferID; }
+  bool HasBufferID() const { return bufferID != -1; }
 
   bool HasMainFun() { return hasMainFun; }
   void SetHasMainFun(bool status = false) { status = hasMainFun; }
@@ -197,11 +198,12 @@ public:
   // void Print(raw_ostream &stream, const SyntaxPrintOptions &PO);
 
 public:
-  static SourceFile *Create(SourceFileKind kind, unsigned srcID,
+  static SourceFile *Create(SourceFileKind kind, unsigned bufferID,
                             ModuleDecl &owner, ASTContext &astContext);
 
   static SourceFile *CreatePrimarySourceFile(SourceFileKind kind,
-                                             unsigned srcID, ModuleDecl &owner,
+                                             unsigned bufferID,
+                                             ModuleDecl &owner,
                                              ASTContext &astContext);
 
   static bool classof(const ModuleFile *file) {

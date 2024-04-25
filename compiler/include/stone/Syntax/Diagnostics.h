@@ -1636,7 +1636,6 @@ public:
   static bool isEnabled(const DiagnosticEngine &diags);
 };
 
-
 } // namespace diag
 
 } // namespace stone

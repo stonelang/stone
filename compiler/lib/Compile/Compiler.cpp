@@ -81,7 +81,7 @@ Status Compiler::CreateSourceFilesForMainModule(
   // is at the start of the list of files.
   std::optional<unsigned> mainBufferID = std::nullopt;
   if (SourceFile *mainSourceFile = ComputeMainSourceFileForModule(mod)) {
-    mainBufferID = mainSourceFile->GetSrcID();
+    mainBufferID = mainSourceFile->GetBufferID();
     resultFiles.push_back(mainSourceFile);
   }
 
@@ -216,9 +216,9 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
 //     GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
 //                       diag::LLVMStr(input.GetFileName()));
 //   }
-//   auto srcID = astContext->GetSrcMgr().addNewSourceBuffer(std::move(*fb));
-//   assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
-//   return srcID;
+//   auto bufferID = astContext->GetSrcMgr().addNewSourceBuffer(std::move(*fb));
+//   assert((bufferID > 0) && "Input file buffer ID must be greater than
+//   zero."); return bufferID;
 // }
 
 void Compiler::RecordPrimarySourceID(unsigned primarySourceID) {
@@ -255,9 +255,9 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   //   diag::err_unable_to_open_buffer_for_file,
   //                            diag::LLVMStr(input.GetFileName()));
   // }
-  // auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
-  // assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
-  // return srcID;
+  // auto bufferID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
+  // assert((bufferID > 0) && "Input file buffer ID must be greater than
+  // zero."); return bufferID;
 
   // FileOrError inputFileOrErr =
   //   swift::vfs::getFileOrSTDIN(getFileSystem(), input.getFileName(),

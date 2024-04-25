@@ -1108,31 +1108,34 @@ void diag::DiagnosticEngine::resetBufferIndirectlyCausingDiagnostic() {
   bufferIndirectlyCausingDiagnostic = SrcLoc();
 }
 
-diag::DiagnosticSuppression::DiagnosticSuppression(diag::DiagnosticEngine &diags)
-  : diags(diags)
-{
+diag::DiagnosticSuppression::DiagnosticSuppression(
+    diag::DiagnosticEngine &diags)
+    : diags(diags) {
   consumers = diags.takeConsumers();
 }
 
 diag::DiagnosticSuppression::~DiagnosticSuppression() {
-  for (auto consumer : consumers){
+  for (auto consumer : consumers) {
     diags.addConsumer(*consumer);
   }
 }
 
-bool diag::DiagnosticSuppression::isEnabled(const diag::DiagnosticEngine &diags) {
+bool diag::DiagnosticSuppression::isEnabled(
+    const diag::DiagnosticEngine &diags) {
   return diags.getConsumers().empty();
 }
 
 // BufferIndirectlyCausingDiagnosticRAII::BufferIndirectlyCausingDiagnosticRAII(
 //     const SourceFile &SF)
-//     : Diags(SF.getASTContext().Diags) {
-//   auto id = SF.getBufferID();
-//   if (!id)
-//     return;
-//   auto loc = SF.getASTContext().SourceMgr.getLocForBufferStart(*id);
-//   if (loc.isValid())
-//     Diags.setBufferIndirectlyCausingDiagnosticToInput(loc);
+//     : Diags(SF.GetASTContext().GetDiags()) {
+
+//   if (SF.HasBufferID()) {
+//     auto loc =
+//         SF.GetASTContext().GetSrcMgr().getLocForBufferStart(SF.GetBufferID());
+//     if (loc.isValid()) {
+//       Diags.setBufferIndirectlyCausingDiagnosticToInput(loc);
+//     }
+//   }
 // }
 
 void diag::DiagnosticEngine::onTentativeDiagnosticFlush(
