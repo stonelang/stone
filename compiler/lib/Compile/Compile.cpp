@@ -4,12 +4,8 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Core.h"
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Syntax/DiagnosticsCompile.h"
 #include "stone/Support/Statistics.h"
-#include "stone/Support/TextDiagnosticConsumer.h"
-#include "stone/Support/TextDiagnosticFormatter.h"
-#include "stone/Syntax/ASTDiagnosticArgument.h"
-
 #include "stone/Syntax/Diagnostics.h"
 
 using namespace stone;
@@ -20,19 +16,15 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-  SrcMgr srcMgr;
-  diag::DiagnosticEngine diags{srcMgr};
-
-  ASTDiagnosticFormatter formatter;
-  ASTDiagnosticEmitter emitter(formatter);
-  TextDiagnosticConsumer consumer(emitter);
+ 
+  TextDiagnosticPrinter diagPrinter;
 
   CompilerInvocation invocation;
-  invocation.AddDiagnosticConsumer(consumer);
+  invocation.AddDiagnosticConsumer(diagPrinter);
 
   auto FinishCompile = [&](Status status = Status::Success()) -> int {
     return (status.IsError() ? status.GetFlag()
-                             : invocation.GetDiags().Finish());
+                             : invocation.GetDiags().finishProcessing());
   };
 
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);

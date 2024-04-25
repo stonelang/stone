@@ -3,7 +3,7 @@
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Core.h"
 #include "stone/Strings.h"
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Syntax/DiagnosticsCompile.h"
 #include "stone/Support/Options.h"
 
 #include "llvm/Support/BuryPointer.h"
@@ -180,22 +180,22 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   assert(inputArgList && "No input argument list.");
 
   if (missingArgCount) {
-    GetDiags().PrintD(
+    GetDiags().diagnose(
         SrcLoc(), diag::error_missing_arg_value,
-        diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
-        diag::UInt(missingArgCount));
+        StringRef(inputArgList->getArgString(missingArgIndex)),
+        (unsigned)missingArgCount);
     return Status::Error();
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::OPT_UNKNOWN)) {
-    GetDiags().PrintD(SrcLoc(), diag::error_unknown_arg,
-                      diag::LLVMStr(arg->getAsString(*inputArgList)));
+    GetDiags().diagnose(SrcLoc(), diag::error_unknown_arg,
+                      StringRef(arg->getAsString(*inputArgList)));
 
     // TODO: Good for now. But, you want to print out all and check for diag
     // errors
     return Status::Error();
   }
-  if (GetDiags().HasError()) {
+  if (GetDiags().hadAnyError()) {
     return Status::Error();
   }
   // TODO: Pass MemoryBuffers in ParseCommandLine

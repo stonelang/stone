@@ -4,6 +4,20 @@
 #include "llvm/ADT/Hashing.h"
 
 namespace stone {
+
+
+  /// Describes the current behavior to take with a diagnostic.
+/// Ordered from most severe to least.
+enum class DiagnosticBehavior : uint8_t {
+  Unspecified = 0,
+  Fatal,
+  Error,
+  Warning,
+  Remark,
+  Note,
+  Ignore,
+};
+
 /// Options for controlling diagnostics.
 class DiagnosticOptions final {
 public:
@@ -16,7 +30,8 @@ public:
   // diagnostics.
   FormattingStyle formattingStyle = FormattingStyle::LLVM;
 
-  diag::Level diagnosticLevel = diag::Level::None;
+  DiagnosticBehavior diagnosticLevel = DiagnosticBehavior::Unspecified;
+
 
   /// TODO: This is a copy of what is in DiagnosticEngine -- may live here.
   // Treat fatal errors like errors.

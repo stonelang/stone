@@ -1,6 +1,6 @@
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Strings.h"
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Syntax/DiagnosticsCompile.h"
 // #include "stone/Basic/Platform.h"
 #include "stone/Compile/CompilerInputsConverter.h"
 #include "stone/Compile/CompilerOutputsConverter.h"

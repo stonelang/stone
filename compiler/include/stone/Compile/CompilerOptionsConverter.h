@@ -3,7 +3,6 @@
 
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Support/DiagnosticConsumer.h"
 #include "stone/Support/Options.h"
 #include "stone/Syntax/Diagnostics.h"
 

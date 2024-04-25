@@ -7,7 +7,7 @@
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Syntax/DiagnosticsCompile.h"
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
 
@@ -242,9 +242,9 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
       invocation.GetFileMgr().getBufferForFile(input.GetFileName());
 
   if (!inputFileOrError) {
-    invocation.GetDiags().PrintD(SrcLoc(),
+    invocation.GetDiags().diagnose(SrcLoc(),
                                  diag::error_unable_to_open_buffer_for_file,
-                                 diag::LLVMStr(input.GetFileName()));
+                                 input.GetFileName());
     return std::nullopt;
   }
 

@@ -84,14 +84,14 @@ public:
 
 public:
   void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
-    diags.AddConsumer(consumer);
+    diags.addConsumer(consumer);
   }
   void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
-    diags.RemoveConsumer(consumer);
+    diags.removeConsumer(consumer);
   }
 
   DiagnosticEngine &GetDiags() { return diags; }
-  bool HasError() { return diags.HasError(); }
+  bool HasError() { return diags.hadAnyError(); }
 
   SrcMgr &GetSrcMgr() { return srcMgr; }
   clang::FileManager &GetFileMgr() { return fileMgr; }

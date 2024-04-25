@@ -5,6 +5,7 @@
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/TypeLoc.h"
+#include "stone/Support/DiagnosticOptions.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/StringRef.h"
@@ -14,6 +15,7 @@
 #include "llvm/Support/Path.h"
 #include "llvm/Support/SaveAndRestore.h"
 #include "llvm/Support/VersionTuple.h"
+#include "llvm/Support/Process.h"
 
 namespace clang {
 class NamedDecl;
@@ -47,18 +49,6 @@ enum class ReferenceOwnership : uint8_t;
 enum class StaticSpellingKind : uint8_t;
 enum class DescriptiveDeclKind : uint8_t;
 enum class DeclAttrKind : unsigned;
-
-/// Describes the current behavior to take with a diagnostic.
-/// Ordered from most severe to least.
-enum class DiagnosticBehavior : uint8_t {
-  Unspecified = 0,
-  Fatal,
-  Error,
-  Warning,
-  Remark,
-  Note,
-  Ignore,
-};
 
 // Enumeration describing all of possible diagnostics.
 ///
@@ -1626,6 +1616,81 @@ public:
   ~DiagnosticSuppression();
   static bool isEnabled(const DiagnosticEngine &diags);
 };
+
+
+/// Diagnostic consumer that displays diagnostics to standard error.
+class TextDiagnosticPrinter final : public DiagnosticConsumer {
+  llvm::raw_ostream &Stream;
+  bool ForceColors = false;
+  bool PrintEducationalNotes = false;
+  bool EmitMacroExpansionFiles = false;
+  bool DidErrorOccur = false;
+  DiagnosticOptions::FormattingStyle FormattingStyle =
+      DiagnosticOptions::FormattingStyle::LLVM;
+  // Educational notes which are buffered until the consumer is finished
+  // constructing a snippet.
+  SmallVector<std::string, 1> BufferedEducationalNotes;
+  bool SuppressOutput = false;
+
+  /// swift-syntax rendering
+
+  /// A queued up source file known to the queued diagnostics.
+  using QueuedBuffer = void *;
+
+  /// The queued diagnostics structure.
+  void *queuedDiagnostics = nullptr;
+  llvm::DenseMap<unsigned, QueuedBuffer> queuedBuffers;
+
+  /// Source file syntax nodes cached by { source manager, buffer ID }.
+  llvm::DenseMap<std::pair<SrcMgr *, unsigned>, void *> sourceFileSyntax;
+
+public:
+  TextDiagnosticPrinter(llvm::raw_ostream &stream = llvm::errs());
+  ~TextDiagnosticPrinter();
+
+  virtual void handleDiagnostic(SrcMgr &SM,
+                                const DiagnosticInfo &Info) override;
+
+  virtual bool finishProcessing() override;
+
+  void flush(bool includeTrailingBreak);
+
+  virtual void flush() override { flush(false); }
+
+  void forceColors() {
+    ForceColors = true;
+    llvm::sys::Process::UseANSIEscapeCodes(true);
+  }
+
+  void setPrintEducationalNotes(bool ShouldPrint) {
+    PrintEducationalNotes = ShouldPrint;
+  }
+
+  void setFormattingStyle(DiagnosticOptions::FormattingStyle style) {
+    FormattingStyle = style;
+  }
+
+  void setEmitMacroExpansionFiles(bool ShouldEmit) {
+    EmitMacroExpansionFiles = ShouldEmit;
+  }
+
+  bool didErrorOccur() {
+    return DidErrorOccur;
+  }
+
+  void setSuppressOutput(bool suppressOutput) {
+    SuppressOutput = suppressOutput;
+  }
+
+private:
+  /// Retrieve the SourceFileSyntax for the given buffer.
+  void *getSourceFileSyntax(SrcMgr &SM, unsigned bufferID,
+                            StringRef displayName);
+
+  void queueBuffer(SrcMgr &sourceMgr, unsigned bufferID);
+  void printDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info);
+};
+
 
 } // namespace stone
 

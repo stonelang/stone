@@ -1,6 +1,6 @@
 #include "stone/Basic/OutputFileMap.h"
 #include "stone/Strings.h"
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Syntax/DiagnosticsCompile.h"
 // #include "stone/Basic/Platform.h"
 #include "stone/Compile/CompilerInputsConverter.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
@@ -86,9 +86,9 @@ CompilerOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer =
       llvm::MemoryBuffer::getFile(fileListPath);
   if (!buffer) {
-    de.PrintD(SrcLoc(), diag::error_cannot_open_file,
-              diag::LLVMStr(fileListPath),
-              diag::LLVMStr(buffer.getError().message()));
+    de.diagnose(SrcLoc(), diag::error_cannot_open_file,
+              StringRef(fileListPath),
+              StringRef(buffer.getError().message()));
     return std::nullopt;
   }
   std::vector<std::string> outputFiles;
@@ -141,9 +141,9 @@ std::optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
   if (!outputFileArguments.empty() &&
       outputFileArguments.size() !=
           inputsAndOutputs.CountOfInputsProducingMainOutputs()) {
-    de.PrintD(SrcLoc(),
+    de.diagnose(SrcLoc(),
               diag::error_if_any_output_files_are_specified_they_all_must_be,
-              diag::LLVMStr(optInfo.PrettyName));
+              StringRef(optInfo.PrettyName));
     return std::nullopt;
   }
 
@@ -222,8 +222,8 @@ CompilerOutputFilesComputer::DeriveOutputFileFromInput(
   std::string baseName = DetermineBaseNameOfOutput(input);
   if (baseName.empty()) {
     // Assuming CompilerOptions::doesJobActionProduceOutput(RequestedJobAction)
-    de.PrintD(SrcLoc(), diag::error_no_output_filename_specified,
-              diag::LLVMStr(OutputInfo.PrettyName));
+    de.diagnose(SrcLoc(), diag::error_no_output_filename_specified,
+              StringRef(OutputInfo.PrettyName));
     return std::nullopt;
   }
   return DeriveOutputFileFromParts("", baseName);
@@ -234,9 +234,9 @@ CompilerOutputFilesComputer::DeriveOutputFileForDirectory(
     const CompilerInputFile &input) const {
   std::string baseName = DetermineBaseNameOfOutput(input);
   if (baseName.empty()) {
-    de.PrintD(SrcLoc(), diag::error_implicit_output_file_is_directory,
-              diag::LLVMStr(OutputDirectoryArgument),
-              diag::LLVMStr(OutputInfo.SingleOptSpelling));
+    de.diagnose(SrcLoc(), diag::error_implicit_output_file_is_directory,
+              StringRef(OutputDirectoryArgument),
+              StringRef(OutputInfo.SingleOptSpelling));
     return std::nullopt;
   }
   return DeriveOutputFileFromParts(OutputDirectoryArgument, baseName);
@@ -423,10 +423,10 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
     return std::vector<std::string>(N, std::string());
   }
 
-  de.PrintD(
+  de.diagnose(
       SrcLoc(), diag::error_wrong_number_of_arguments,
-      diag::LLVMStr(args.getLastArg(pathID)->getOption().getPrefixedName()),
-      diag::Int(N), diag::Int(paths.size()));
+      StringRef(args.getLastArg(pathID)->getOption().getPrefixedName()),
+      (unsigned)N, (unsigned)paths.size());
   return std::nullopt;
 }
 
@@ -639,7 +639,7 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
   //        opts::OPT_emit_private_module_interface_path,
   //        opts::OPT_emit_module_source_info_path,
   //        opts::OPT_emit_tbd_path)) {
-  //    de.PrintD(SrcLoc(),
+  //    de.diagnose(SrcLoc(),
   //                   diag::erroror_cannot_have_supplementary_outputs,
   //                   A->getSpelling(), "-supplementary-output-file-map");
   //    return std::nullopt;
@@ -652,9 +652,9 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
   if (const Arg *A = args.getLastArg(opts::OPT_BadFileDescriptorRetryCount)) {
     if (StringRef(A->getValue())
             .getAsInteger(10, BadFileDescriptorRetryCount)) {
-      de.PrintD(SrcLoc(), diag::error_invalid_arg_value,
-                diag::LLVMStr(A->getAsString(args)),
-                diag::LLVMStr(A->getValue()));
+      de.diagnose(SrcLoc(), diag::error_invalid_arg_value,
+                StringRef(A->getAsString(args)),
+                StringRef(A->getValue()));
       return std::nullopt;
     }
   }
@@ -669,18 +669,18 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
     }
   }
   if (!buffer) {
-    de.PrintD(SrcLoc(), diag::error_cannot_open_file,
-              diag::LLVMStr(supplementaryFileMapPath),
-              diag::LLVMStr(buffer.getError().message()));
+    de.diagnose(SrcLoc(), diag::error_cannot_open_file,
+              StringRef(supplementaryFileMapPath),
+              StringRef(buffer.getError().message()));
     return std::nullopt;
   }
   llvm::Expected<OutputFileMap> outputFileMap =
       OutputFileMap::LoadFromBuffer(std::move(buffer.get()), "");
   if (auto Err = outputFileMap.takeError()) {
-    de.PrintD(SrcLoc(),
+    de.diagnose(SrcLoc(),
               diag::error_unable_to_load_supplementary_output_file_map,
-              diag::LLVMStr(supplementaryFileMapPath),
-              diag::LLVMStr(llvm::toString(std::move(Err))));
+              StringRef(supplementaryFileMapPath),
+              StringRef(llvm::toString(std::move(Err))));
     return std::nullopt;
   }
 
@@ -691,10 +691,10 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
         const TypeToPathMap *mapForInput =
             outputFileMap->GetOutputMapForInput(input.GetFileName());
         if (!mapForInput) {
-          de.PrintD(SrcLoc(),
+          de.diagnose(SrcLoc(),
                     diag::error_missing_entry_in_supplementary_output_file_map,
-                    diag::LLVMStr(supplementaryFileMapPath),
-                    diag::LLVMStr(input.GetFileName()));
+                    StringRef(supplementaryFileMapPath),
+                    StringRef(input.GetFileName()));
           hadError = true;
         }
         outputPaths.push_back(CreateFromTypeToPathMap(mapForInput));

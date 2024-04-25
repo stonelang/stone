@@ -33,7 +33,7 @@ using namespace stone;
 
 namespace {
 
-enum class DiagnosticOptions {
+enum class LocalDiagnosticOptions {
   /// No options.
   none,
 
@@ -72,13 +72,13 @@ struct StoredDiagnosticInfo {
       : kind(k), pointsToFirstBadToken(firstBadToken), isFatal(fatal),
         isAPIDigesterBreakage(isAPIDigesterBreakage),
         isDeprecation(deprecation), isNoUsage(noUsage) {}
-  constexpr StoredDiagnosticInfo(DiagnosticKind k, DiagnosticOptions opts)
+  constexpr StoredDiagnosticInfo(DiagnosticKind k, LocalDiagnosticOptions opts)
       : StoredDiagnosticInfo(k,
-                             opts == DiagnosticOptions::PointsToFirstBadToken,
-                             opts == DiagnosticOptions::Fatal,
-                             opts == DiagnosticOptions::APIDigesterBreakage,
-                             opts == DiagnosticOptions::Deprecation,
-                             opts == DiagnosticOptions::NoUsage) {}
+                             opts == LocalDiagnosticOptions::PointsToFirstBadToken,
+                             opts == LocalDiagnosticOptions::Fatal,
+                             opts == LocalDiagnosticOptions::APIDigesterBreakage,
+                             opts == LocalDiagnosticOptions::Deprecation,
+                             opts == LocalDiagnosticOptions::NoUsage) {}
 };
 
 // Reproduce the DiagIDs, as we want both the size and access to the raw ids
@@ -94,13 +94,13 @@ enum LocalDiagID : uint32_t {
 // TODO: categorization
 static const constexpr StoredDiagnosticInfo storedDiagnosticInfos[] = {
 #define ERROR(ID, Options, Text, Signature)                                    \
-  StoredDiagnosticInfo(DiagnosticKind::Error, DiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Error, LocalDiagnosticOptions::Options),
 #define WARNING(ID, Options, Text, Signature)                                  \
-  StoredDiagnosticInfo(DiagnosticKind::Warning, DiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Warning, LocalDiagnosticOptions::Options),
 #define NOTE(ID, Options, Text, Signature)                                     \
-  StoredDiagnosticInfo(DiagnosticKind::Note, DiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Note, LocalDiagnosticOptions::Options),
 #define REMARK(ID, Options, Text, Signature)                                   \
-  StoredDiagnosticInfo(DiagnosticKind::Remark, DiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Remark, LocalDiagnosticOptions::Options),
 #include "stone/Syntax/Diagnostics.def"
 };
 static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo) ==
@@ -1170,3 +1170,15 @@ void DiagnosticEngine::onTentativeDiagnosticFlush(Diagnostic &diagnostic) {
 //     : Message(Lexer::getEncodedStringSegment(S, Buf, /*IsFirstSegment=*/true,
 //                                              /*IsLastSegment=*/true,
 //                                              /*IndentToStrip=*/~0U)) {}
+
+
+
+// These must come after the declaration of AnnotatedSourceSnippet due to the
+// `currentSnippet` member.
+TextDiagnosticPrinter::TextDiagnosticPrinter(
+    llvm::raw_ostream &stream)
+    : Stream(stream) {}
+
+
+
+
