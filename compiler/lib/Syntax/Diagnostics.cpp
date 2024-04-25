@@ -955,13 +955,36 @@ diag::DiagnosticEngine::diagnosticInfoForDiagnostic(
   if (behavior == DiagnosticBehavior::Ignore) {
     return std::nullopt;
   }
-
   // Figure out the source location.
   SrcLoc loc = diagnostic.getLoc();
 
   DiagnosticInfo result;
 
-  return result;
+  if (loc.isInvalid() && diagnostic.getDecl()) {
+    const stone::Decl *decl = diagnostic.getDecl();
+    // If a declaration was provided instead of a location, and that declaration
+    // has a location we can point to, use that location.
+    loc = decl->GetLoc();
+  }
+
+  if (loc.isInvalid()) {
+  }
+
+
+auto fixIts = diagnostic.getFixIts();
+  if (loc.isValid()) {
+
+
+  }
+
+ StringRef Category;
+
+return DiagnosticInfo(
+      diagnostic.getID(), loc, toDiagnosticKind(behavior),
+      diagnosticStringFor(diagnostic.getID(), getPrintDiagnosticNames()),
+      diagnostic.getArgs(), Category, getDefaultDiagnosticLoc(),
+      /*child note info*/ {}, diagnostic.getRanges(), fixIts,
+      diagnostic.isChildNote());
 }
 
 void diag::DiagnosticEngine::emitDiagnostic(const Diagnostic &diagnostic) {

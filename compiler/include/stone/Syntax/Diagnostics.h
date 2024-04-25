@@ -403,7 +403,7 @@ public:
   ArrayRef<Diagnostic> getChildNotes() const { return ChildNotes; }
   bool isChildNote() const { return IsChildNote; }
   SrcLoc getLoc() const { return Loc; }
-  const class Decl *getDecl() const { return Decl; }
+  const stone::Decl *getDecl() const { return Decl; }
   DiagnosticBehavior getBehaviorLimit() const { return BehaviorLimit; }
 
   void setLoc(SrcLoc loc) { Loc = loc; }
