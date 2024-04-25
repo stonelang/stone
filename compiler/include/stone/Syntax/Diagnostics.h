@@ -409,7 +409,7 @@ public:
 
   void setLoc(SrcLoc loc) { Loc = loc; }
   void setIsChildNote(bool isChildNote) { IsChildNote = isChildNote; }
-  void setDecl(const class Decl *inputDecl) { theDecl = inputDecl; }
+  void setDecl(const stone::Decl *inputDecl) { theDecl = inputDecl; }
   void setBehaviorLimit(DiagnosticBehavior limit) { BehaviorLimit = limit; }
 
   /// Returns true if this object represents a particular diagnostic.
