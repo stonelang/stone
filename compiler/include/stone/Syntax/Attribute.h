@@ -3,6 +3,7 @@
 
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/Syntax/Access.h"
 #include "stone/Syntax/AttributeKind.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/TypeAlignment.h"
@@ -53,6 +54,9 @@ class AttributeSpecifierCollector {
 public:
   AttributeSpecifierCollector() {}
 };
+
+/// Returns the in-source spelling of the given access level.
+StringRef getAccessLevelSpelling(AccessLevel value);
 
 } // namespace stone
 

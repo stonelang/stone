@@ -51,6 +51,7 @@ enum class DeclContextKind : UInt8 {
   ClosureExpr,
   SerializedLocal,
   Initializer,
+
 };
 
 /// Used in diagnostic %selects.

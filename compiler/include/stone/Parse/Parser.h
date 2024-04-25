@@ -7,11 +7,11 @@
 #include "stone/Support/StatsReporter.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ASTNode.h"
-#include "stone/Syntax/ASTOptions.h"
 #include "stone/Syntax/Attribute.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/Module.h"
+#include "stone/Syntax/PrintOptions.h"
 #include "stone/Syntax/Stmt.h"
 #include "stone/Syntax/SyntaxResult.h"
 

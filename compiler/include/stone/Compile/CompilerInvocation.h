@@ -6,7 +6,7 @@
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Support/DiagnosticOptions.h"
 #include "stone/Support/Options.h"
-#include "stone/Syntax/ASTOptions.h"
+#include "stone/Syntax/PrintOptions.h"
 #include "stone/Syntax/TypeCheckerOptions.h"
 
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
@@ -66,7 +66,7 @@ class CompilerInvocation final {
 
   LangOptions langOpts;
 
-  ASTOptions astOpts;
+  PrintOptions printOpts;
 
   DiagnosticOptions diagOpts;
 
@@ -114,8 +114,8 @@ public:
   stone::TargetOptions &GetTargetOptions() { return targetOptions; }
   const stone::TargetOptions &GetTargetContext() const { return targetOptions; }
 
-  ASTOptions &GetASTOptions() { return astOpts; }
-  const ASTOptions &GetASTOptions() const { return astOpts; }
+  PrintOptions &GetPrintOptions() { return printOpts; }
+  const PrintOptions &GetPrintOptions() const { return printOpts; }
 
   TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
   const TypeCheckerOptions &GetTypeCheckerOptions() const {

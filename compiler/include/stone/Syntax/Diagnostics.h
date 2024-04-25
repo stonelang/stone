@@ -18,7 +18,7 @@
 namespace clang {
 class NamedDecl;
 class Decl;
-}
+} // namespace clang
 
 namespace stone {
 class Decl;
@@ -309,9 +309,9 @@ public:
     return DiagnosticVal;
   }
   const clang::NamedDecl *getAsClangDecl() const {
-      assert(Kind == DiagnosticArgumentKind::ClangDecl);
-      return ClangDecl;
-    }
+    assert(Kind == DiagnosticArgumentKind::ClangDecl);
+    return ClangDecl;
+  }
 };
 
 struct DiagnosticFormatOptions {

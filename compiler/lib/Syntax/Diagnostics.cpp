@@ -375,38 +375,38 @@ diag::InFlightDiagnostic::limitBehavior(DiagnosticBehavior limit) {
 //   return *this;
 // }
 
-// diag::InFlightDiagnostic &
-// diag::InFlightDiagnostic::wrapIn(const Diagnostic &wrapper) {
-//   // Save current active diagnostic into WrappedDiagnostics, ignoring state
-//   // so we don't get a None return or influence future diagnostics.
-//   DiagnosticState tempState;
-//   Engine->state.swap(tempState);
-//   llvm::SaveAndRestore<DiagnosticBehavior>
-//       limit(Engine->getActiveDiagnostic().BehaviorLimit,
-//             DiagnosticBehavior::Unspecified);
+diag::InFlightDiagnostic &
+diag::InFlightDiagnostic::wrapIn(const Diagnostic &wrapper) {
+  // Save current active diagnostic into WrappedDiagnostics, ignoring state
+  // so we don't get a None return or influence future diagnostics.
+  DiagnosticState tempState;
+  Engine->state.swap(tempState);
+  llvm::SaveAndRestore<DiagnosticBehavior> limit(
+      Engine->getActiveDiagnostic().BehaviorLimit,
+      DiagnosticBehavior::Unspecified);
 
-//   Engine->WrappedDiagnostics.push_back(
-//        *Engine->diagnosticInfoForDiagnostic(Engine->getActiveDiagnostic()));
+  Engine->WrappedDiagnostics.push_back(
+      *Engine->diagnosticInfoForDiagnostic(Engine->getActiveDiagnostic()));
 
-//   Engine->state.swap(tempState);
+  Engine->state.swap(tempState);
 
-//   auto &wrapped = Engine->WrappedDiagnostics.back();
+  auto &wrapped = Engine->WrappedDiagnostics.back();
 
-//   // Copy and update its arg list.
-//   Engine->WrappedDiagnosticArgs.emplace_back(wrapped.FormatArgs);
-//   wrapped.FormatArgs = Engine->WrappedDiagnosticArgs.back();
+  // Copy and update its arg list.
+  Engine->WrappedDiagnosticArgs.emplace_back(wrapped.FormatArgs);
+  wrapped.FormatArgs = Engine->WrappedDiagnosticArgs.back();
 
-//   // Overwrite the ID and argument with those from the wrapper.
-//   Engine->getActiveDiagnostic().ID = wrapper.ID;
-//   Engine->getActiveDiagnostic().Args = wrapper.Args;
+  // Overwrite the ID and argument with those from the wrapper.
+  Engine->getActiveDiagnostic().ID = wrapper.ID;
+  Engine->getActiveDiagnostic().Args = wrapper.Args;
 
-//   // Set the argument to the diagnostic being wrapped.
-//   assert(wrapper.getArgs().front().getKind() ==
-//   DiagnosticArgumentKind::Diagnostic);
-//   Engine->getActiveDiagnostic().Args.front() = &wrapped;
+  // Set the argument to the diagnostic being wrapped.
+  assert(wrapper.getArgs().front().getKind() ==
+         DiagnosticArgumentKind::Diagnostic);
+  Engine->getActiveDiagnostic().Args.front() = &wrapped;
 
-//   return *this;
-// }
+  return *this;
+}
 
 void diag::InFlightDiagnostic::flush() {
   if (!IsActive)
@@ -947,6 +947,22 @@ void diag::DiagnosticEngine::forwardTentativeDiagnosticsTo(
 //   return level;
 // }
 
+std::optional<diag::DiagnosticInfo>
+diag::DiagnosticEngine::diagnosticInfoForDiagnostic(
+    const Diagnostic &diagnostic) {
+
+  auto behavior = state.determineBehavior(diagnostic);
+  if (behavior == DiagnosticBehavior::Ignore) {
+    return std::nullopt;
+  }
+
+  // Figure out the source location.
+  SrcLoc loc = diagnostic.getLoc();
+
+  DiagnosticInfo result;
+
+  return result;
+}
 
 void diag::DiagnosticEngine::emitDiagnostic(const Diagnostic &diagnostic) {
 
@@ -956,7 +972,8 @@ void diag::DiagnosticEngine::emitDiagnostic(const Diagnostic &diagnostic) {
   // if (auto info = diagnosticInfoForDiagnostic(diagnostic)) {
   //   // If the diagnostic location is within a buffer containing generated
   //   // source code, add child notes showing where the generation occurred.
-  //   // We need to avoid doing this if this is itself a child note, as otherwise
+  //   // We need to avoid doing this if this is itself a child note, as
+  //   otherwise
   //   // we'd end up doubling up on notes.
   //   // if (!info->IsChildNote) {
   //   //   extendedChildNotes = getGeneratedSourceBufferNotes(info->Loc);
@@ -1003,18 +1020,19 @@ void diag::DiagnosticEngine::emitDiagnostic(const Diagnostic &diagnostic) {
   //   emitDiagnostic(childNote);
 }
 
-DiagnosticKind diag::DiagnosticEngine::declaredDiagnosticKindFor(const DiagID id) {
+DiagnosticKind
+diag::DiagnosticEngine::declaredDiagnosticKindFor(const DiagID id) {
   return storedDiagnosticInfos[(unsigned)id].kind;
 }
 
 llvm::StringRef
 diag::DiagnosticEngine::diagnosticStringFor(const DiagID id,
-                                      bool printDiagnosticNames) {
+                                            bool printDiagnosticNames) {
   auto defaultMessage = printDiagnosticNames
                             ? debugDiagnosticStrings[(unsigned)id]
                             : diagnosticStrings[(unsigned)id];
 
-  /// todo: 
+  /// todo:
   // if (auto producer = localization.get()) {
   //   auto localizedMessage = producer->getMessageOr(id, defaultMessage);
   //   return localizedMessage;
@@ -1022,8 +1040,7 @@ diag::DiagnosticEngine::diagnosticStringFor(const DiagID id,
   return defaultMessage;
 }
 
-llvm::StringRef
-diag::DiagnosticEngine::diagnosticIDStringFor(const DiagID id) {
+llvm::StringRef diag::DiagnosticEngine::diagnosticIDStringFor(const DiagID id) {
   return diagnosticIDStrings[(unsigned)id];
 }
 
@@ -1031,9 +1048,8 @@ const char *diag::InFlightDiagnostic::fixItStringFor(const FixItID id) {
   return fixItStrings[(unsigned)id];
 }
 
-
 // void diag::DiagnosticEngine::setBufferIndirectlyCausingDiagnosticToInput(
-//     SourceLoc loc) {
+//     SrcLoc loc) {
 //   // If in the future, nested BufferIndirectlyCausingDiagnosticRAII need be
 //   // supported, the compiler will need a stack for
 //   // bufferIndirectlyCausingDiagnostic.
@@ -1044,9 +1060,8 @@ const char *diag::InFlightDiagnostic::fixItStringFor(const FixItID id) {
 //          "Buffer must be valid for previous assertion to work.");
 // }
 
-
 // void diag::DiagnosticEngine::resetBufferIndirectlyCausingDiagnostic() {
-//   bufferIndirectlyCausingDiagnostic = SourceLoc();
+//   bufferIndirectlyCausingDiagnostic = SrcLoc();
 // }
 
 // DiagnosticSuppression::DiagnosticSuppression(diag::DiagnosticEngine &diags)
@@ -1075,7 +1090,8 @@ const char *diag::InFlightDiagnostic::fixItStringFor(const FixItID id) {
 //     Diags.setBufferIndirectlyCausingDiagnosticToInput(loc);
 // }
 
-void diag::DiagnosticEngine::onTentativeDiagnosticFlush(Diagnostic &diagnostic) {
+void diag::DiagnosticEngine::onTentativeDiagnosticFlush(
+    Diagnostic &diagnostic) {
   for (auto &argument : diagnostic.Args) {
     if (argument.getKind() != DiagnosticArgumentKind::String)
       continue;
@@ -1088,10 +1104,3 @@ void diag::DiagnosticEngine::onTentativeDiagnosticFlush(Diagnostic &diagnostic) 
     argument = DiagnosticArgument(StringRef(I->getKeyData()));
   }
 }
-
-
-
-
-
-
-
