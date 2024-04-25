@@ -15,6 +15,7 @@ set(stone_support_sources
   DiagnosticFormatter.cpp
   DiagnosticEngine.cpp
   DiagnosticConsumer.cpp
+  LexerSupport.cpp
   Statistics.cpp
   TextDiagnosticEmitter.cpp
   TextDiagnosticFormatter.cpp

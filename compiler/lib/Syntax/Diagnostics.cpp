@@ -1152,3 +1152,8 @@ void diag::DiagnosticEngine::onTentativeDiagnosticFlush(
     argument = DiagnosticArgument(StringRef(I->getKeyData()));
   }
 }
+
+// EncodedDiagnosticMessage::EncodedDiagnosticMessage(StringRef S)
+//     : Message(Lexer::getEncodedStringSegment(S, Buf, /*IsFirstSegment=*/true,
+//                                              /*IsLastSegment=*/true,
+//                                              /*IndentToStrip=*/~0U)) {}
