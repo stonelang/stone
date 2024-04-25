@@ -8,7 +8,6 @@
 namespace stone {
 namespace diag {
 template <typename... ArgTypes> struct Diag;
-
 namespace detail {
 // These templates are used to help extract the type arguments of the
 // DIAG/ERROR/WARNING/NOTE/REMARK/FIXIT macros.
