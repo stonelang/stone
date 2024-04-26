@@ -5,9 +5,9 @@
 #include "stone/Basic/SupplementaryOutputPaths.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Syntax/DiagnosticsCompile.h"
 #include "stone/Support/Options.h"
 #include "stone/Syntax/Diagnostics.h"
+#include "stone/Syntax/DiagnosticsCompile.h"
 #include "llvm/Option/ArgList.h"
 
 #include <vector>

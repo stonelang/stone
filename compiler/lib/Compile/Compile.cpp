@@ -4,9 +4,9 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Core.h"
-#include "stone/Syntax/DiagnosticsCompile.h"
 #include "stone/Support/Statistics.h"
 #include "stone/Syntax/Diagnostics.h"
+#include "stone/Syntax/DiagnosticsCompile.h"
 
 using namespace stone;
 
@@ -16,13 +16,16 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
- 
-  TextDiagnosticPrinter diagPrinter;
+  TextDiagnosticPrinter TDP;
 
   CompilerInvocation invocation;
-  invocation.AddDiagnosticConsumer(diagPrinter);
+  invocation.AddDiagnosticConsumer(TDP);
 
   auto FinishCompile = [&](Status status = Status::Success()) -> int {
+    TDP.setSuppressOutput(false);
+
+    bool diagnosticsError = invocation.GetDiags().finishProcessing();
+
     return (status.IsError() ? status.GetFlag()
                              : invocation.GetDiags().finishProcessing());
   };

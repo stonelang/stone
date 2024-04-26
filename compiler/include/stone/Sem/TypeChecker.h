@@ -2,8 +2,8 @@
 #define STONE_SEM_TYPECHECKER_H
 
 #include "stone/Support/Statistics.h"
-#include "stone/Syntax/Diagnostics.h"
 #include "stone/Syntax/ASTContext.h"
+#include "stone/Syntax/Diagnostics.h"
 #include "stone/Syntax/Module.h"
 
 #include <memory>

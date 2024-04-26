@@ -5,8 +5,7 @@
 
 namespace stone {
 
-
-  /// Describes the current behavior to take with a diagnostic.
+/// Describes the current behavior to take with a diagnostic.
 /// Ordered from most severe to least.
 enum class DiagnosticBehavior : uint8_t {
   Unspecified = 0,
@@ -31,7 +30,6 @@ public:
   FormattingStyle formattingStyle = FormattingStyle::LLVM;
 
   DiagnosticBehavior diagnosticLevel = DiagnosticBehavior::Unspecified;
-
 
   /// TODO: This is a copy of what is in DiagnosticEngine -- may live here.
   // Treat fatal errors like errors.

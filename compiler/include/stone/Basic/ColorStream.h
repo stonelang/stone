@@ -8,7 +8,7 @@ namespace stone {
 /// RAII class for setting a color for a raw_ostream and resetting when it goes
 /// out-of-scope.
 class ColorStream final {
-  bool hasColors;
+  bool hasColors = false;
   llvm::raw_ostream &os;
 
 public:
@@ -21,8 +21,10 @@ public:
     }
   }
   ~ColorStream() {
-    if (hasColors)
+    if (hasColors) {
       os.resetColor();
+    }
+    os.flush();
   }
 
 public:
@@ -66,6 +68,7 @@ public:
     }
   }
 
+  void WithColors() { hasColors = false; }
   ColorStream &operator<<(char *str) {
     os << str;
     return *this;

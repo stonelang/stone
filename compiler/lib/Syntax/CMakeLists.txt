@@ -34,6 +34,7 @@ set(stone_syn_sources
 	Generics.cpp
 	Type.cpp
 	TypeCollector.cpp
+	TextDiagnosticPrinter.cpp
 	TypeSpecifier.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp

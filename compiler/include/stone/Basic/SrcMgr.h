@@ -236,7 +236,7 @@ public:
                                 llvm::SourceMgr::DiagKind Kind,
                                 const Twine &msg,
                                 ArrayRef<llvm::SMRange> ranges,
-                                ArrayRef<llvm::SMFixIt> fixIts) const;
+                                ArrayRef<llvm::SMFixIt> fixIts, bool EmitMacroExpansionFiles) const;
 
   /// Verifies that all buffers are still valid.
   void verifyAllBuffers() const;

@@ -2,10 +2,10 @@
 #define STONE_SYNTAX_DIAGNOSTICS_H
 
 #include "stone/Basic/Version.h"
+#include "stone/Support/DiagnosticOptions.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
 #include "stone/Syntax/TypeLoc.h"
-#include "stone/Support/DiagnosticOptions.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/StringRef.h"
@@ -13,9 +13,9 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Path.h"
+#include "llvm/Support/Process.h"
 #include "llvm/Support/SaveAndRestore.h"
 #include "llvm/Support/VersionTuple.h"
-#include "llvm/Support/Process.h"
 
 namespace clang {
 class NamedDecl;
@@ -1617,7 +1617,6 @@ public:
   static bool isEnabled(const DiagnosticEngine &diags);
 };
 
-
 /// Diagnostic consumer that displays diagnostics to standard error.
 class TextDiagnosticPrinter final : public DiagnosticConsumer {
   llvm::raw_ostream &Stream;
@@ -1674,9 +1673,7 @@ public:
     EmitMacroExpansionFiles = ShouldEmit;
   }
 
-  bool didErrorOccur() {
-    return DidErrorOccur;
-  }
+  bool didErrorOccur() { return DidErrorOccur; }
 
   void setSuppressOutput(bool suppressOutput) {
     SuppressOutput = suppressOutput;
@@ -1690,7 +1687,6 @@ private:
   void queueBuffer(SrcMgr &sourceMgr, unsigned bufferID);
   void printDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info);
 };
-
 
 } // namespace stone
 

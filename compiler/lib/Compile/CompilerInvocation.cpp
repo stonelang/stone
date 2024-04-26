@@ -3,8 +3,8 @@
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Core.h"
 #include "stone/Strings.h"
-#include "stone/Syntax/DiagnosticsCompile.h"
 #include "stone/Support/Options.h"
+#include "stone/Syntax/DiagnosticsCompile.h"
 
 #include "llvm/Support/BuryPointer.h"
 #include "llvm/Support/CrashRecoveryContext.h"
@@ -180,16 +180,15 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   assert(inputArgList && "No input argument list.");
 
   if (missingArgCount) {
-    GetDiags().diagnose(
-        SrcLoc(), diag::error_missing_arg_value,
-        StringRef(inputArgList->getArgString(missingArgIndex)),
-        (unsigned)missingArgCount);
+    GetDiags().diagnose(SrcLoc(), diag::error_missing_arg_value,
+                        StringRef(inputArgList->getArgString(missingArgIndex)),
+                        (unsigned)missingArgCount);
     return Status::Error();
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::OPT_UNKNOWN)) {
     GetDiags().diagnose(SrcLoc(), diag::error_unknown_arg,
-                      StringRef(arg->getAsString(*inputArgList)));
+                        StringRef(arg->getAsString(*inputArgList)));
 
     // TODO: Good for now. But, you want to print out all and check for diag
     // errors

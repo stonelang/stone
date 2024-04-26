@@ -521,7 +521,7 @@ private:
 
   template <typename... DiagArgTypes, typename... ArgTypes>
   InFlightDiagnostic diagnose(const char *loc, Diag<DiagArgTypes...> DiagID,
-                            ArgTypes &&...Args) {
+                              ArgTypes &&...Args) {
     return diagnose(loc, Diagnostic(DiagID, std::forward<ArgTypes>(Args)...));
   }
 

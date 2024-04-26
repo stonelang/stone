@@ -79,7 +79,7 @@ bool CompilerInputsConverter::EnforceFilelistExclusion() {
   // it easier to understand a given command line:
   if (args.hasArg(opts::OPT_PrimaryFile) && primaryFileListPathArg) {
     de.diagnose(SrcLoc(),
-              diag::error_cannot_have_primary_files_with_primary_file_list);
+                diag::error_cannot_have_primary_files_with_primary_file_list);
     return true;
   }
   return false;
@@ -126,8 +126,8 @@ bool CompilerInputsConverter::ForAllFilesInFileList(
       llvm::StringRef(badFileDescriptorRetryCountArg->getValue())
           .getAsInteger(10, RetryCount)) {
     de.diagnose(SrcLoc(), diag::error_invalid_arg_value,
-              StringRef(badFileDescriptorRetryCountArg->getAsString(args)),
-              StringRef(badFileDescriptorRetryCountArg->getValue()));
+                StringRef(badFileDescriptorRetryCountArg->getAsString(args)),
+                StringRef(badFileDescriptorRetryCountArg->getValue()));
     return true;
   }
 
@@ -144,7 +144,7 @@ bool CompilerInputsConverter::ForAllFilesInFileList(
   }
   if (!filelistBufferOrError) {
     de.diagnose(SrcLoc(), diag::error_cannot_open_file, StringRef(path),
-              StringRef(filelistBufferOrError.getError().message()));
+                StringRef(filelistBufferOrError.getError().message()));
     return true;
   }
   for (auto file :
@@ -211,7 +211,7 @@ bool CompilerInputsConverter::DiagnoseUnusedPrimaryFiles(
     // some-file-not-in-foo".
     assert(fileListPathArg && "Unused primary with no filelist");
     de.diagnose(SrcLoc(), diag::error_primary_file_not_found, StringRef(file),
-              StringRef(fileListPathArg->getValue()));
+                StringRef(fileListPathArg->getValue()));
   }
   return !primaryFiles.empty();
 }

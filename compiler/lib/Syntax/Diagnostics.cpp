@@ -73,12 +73,12 @@ struct StoredDiagnosticInfo {
         isAPIDigesterBreakage(isAPIDigesterBreakage),
         isDeprecation(deprecation), isNoUsage(noUsage) {}
   constexpr StoredDiagnosticInfo(DiagnosticKind k, LocalDiagnosticOptions opts)
-      : StoredDiagnosticInfo(k,
-                             opts == LocalDiagnosticOptions::PointsToFirstBadToken,
-                             opts == LocalDiagnosticOptions::Fatal,
-                             opts == LocalDiagnosticOptions::APIDigesterBreakage,
-                             opts == LocalDiagnosticOptions::Deprecation,
-                             opts == LocalDiagnosticOptions::NoUsage) {}
+      : StoredDiagnosticInfo(
+            k, opts == LocalDiagnosticOptions::PointsToFirstBadToken,
+            opts == LocalDiagnosticOptions::Fatal,
+            opts == LocalDiagnosticOptions::APIDigesterBreakage,
+            opts == LocalDiagnosticOptions::Deprecation,
+            opts == LocalDiagnosticOptions::NoUsage) {}
 };
 
 // Reproduce the DiagIDs, as we want both the size and access to the raw ids
@@ -96,7 +96,8 @@ static const constexpr StoredDiagnosticInfo storedDiagnosticInfos[] = {
 #define ERROR(ID, Options, Text, Signature)                                    \
   StoredDiagnosticInfo(DiagnosticKind::Error, LocalDiagnosticOptions::Options),
 #define WARNING(ID, Options, Text, Signature)                                  \
-  StoredDiagnosticInfo(DiagnosticKind::Warning, LocalDiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Warning,                                \
+                       LocalDiagnosticOptions::Options),
 #define NOTE(ID, Options, Text, Signature)                                     \
   StoredDiagnosticInfo(DiagnosticKind::Note, LocalDiagnosticOptions::Options),
 #define REMARK(ID, Options, Text, Signature)                                   \
@@ -1171,14 +1172,22 @@ void DiagnosticEngine::onTentativeDiagnosticFlush(Diagnostic &diagnostic) {
 //                                              /*IsLastSegment=*/true,
 //                                              /*IndentToStrip=*/~0U)) {}
 
+void stone::printClangDeclName(const clang::NamedDecl *namedDecl,
+                               llvm::raw_ostream &os) {
+  // TODO:
+  // namedDecl->getNameForDiagnostic(os,
+  // namedDecl->getASTContext().getPrintingPolicy(), false);
+}
 
+DiagnosticConsumer::~DiagnosticConsumer() = default;
 
-// These must come after the declaration of AnnotatedSourceSnippet due to the
-// `currentSnippet` member.
-TextDiagnosticPrinter::TextDiagnosticPrinter(
-    llvm::raw_ostream &stream)
-    : Stream(stream) {}
+llvm::SMLoc DiagnosticConsumer::getRawLoc(SrcLoc loc) { return loc.Value; }
 
-
-
-
+DiagnosticInfo::FixIt::FixIt(CharSrcRange R, StringRef Str,
+                             ArrayRef<DiagnosticArgument> Args)
+    : Range(R) {
+  // FIXME: Defer text formatting to later in the pipeline.
+  llvm::raw_string_ostream OS(Text);
+  DiagnosticEngine::formatDiagnosticText(
+      OS, Str, Args, DiagnosticFormatOptions::formatForFixIts());
+}

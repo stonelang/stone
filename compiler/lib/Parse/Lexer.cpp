@@ -860,7 +860,8 @@ void Lexer::lexOperatorIdentifier() {
           // expected-error lines.
           *AfterHorzWhitespace != '/') {
         diagnose(TokStart, diag::extra_whitespace_period)
-            .fixItRemoveChars(getSrcLoc(CurPtr), getSrcLoc(AfterHorzWhitespace));
+            .fixItRemoveChars(getSrcLoc(CurPtr),
+                              getSrcLoc(AfterHorzWhitespace));
         return formToken(tok::period, TokStart);
       }
 
@@ -946,7 +947,7 @@ void Lexer::lexHexNumber() {
 
   auto expected_hex_digit = [&](const char *loc) {
     diagnose(loc, diag::lex_invalid_digit_in_int_literal, StringRef(loc, 1),
-           (unsigned)ExpectedDigitKind::Hex);
+             (unsigned)ExpectedDigitKind::Hex);
     return expected_digit();
   };
 
@@ -1023,7 +1024,7 @@ void Lexer::lexHexNumber() {
 
     if (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd)) {
       diagnose(tmp, diag::lex_invalid_digit_in_fp_exponent, StringRef(tmp, 1),
-             *tmp == '_');
+               *tmp == '_');
     } else {
       diagnose(CurPtr, diag::lex_expected_digit_in_fp_exponent);
     }
@@ -1038,7 +1039,7 @@ void Lexer::lexHexNumber() {
   auto tmp = CurPtr;
   if (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd)) {
     diagnose(tmp, diag::lex_invalid_digit_in_fp_exponent, StringRef(tmp, 1),
-           false);
+             false);
     return expected_digit();
   }
 
@@ -1067,7 +1068,7 @@ void Lexer::lexNumber() {
 
   auto expected_int_digit = [&](const char *loc, ExpectedDigitKind kind) {
     diagnose(loc, diag::lex_invalid_digit_in_int_literal, StringRef(loc, 1),
-           (unsigned)kind);
+             (unsigned)kind);
     return expected_digit();
   };
 
@@ -1159,7 +1160,7 @@ void Lexer::lexNumber() {
       auto tmp = CurPtr;
       if (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd))
         diagnose(tmp, diag::lex_invalid_digit_in_fp_exponent, StringRef(tmp, 1),
-               *tmp == '_');
+                 *tmp == '_');
       else
         diagnose(CurPtr, diag::lex_expected_digit_in_fp_exponent);
 
@@ -1172,7 +1173,7 @@ void Lexer::lexNumber() {
     auto tmp = CurPtr;
     if (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd)) {
       diagnose(tmp, diag::lex_invalid_digit_in_fp_exponent, StringRef(tmp, 1),
-             false);
+               false);
       return expected_digit();
     }
   }
@@ -1755,8 +1756,8 @@ static void diagnoseInvalidMultilineIndents(stone::DiagnosticEngine *de,
 
   for (auto line : LineStarts) {
     fix.fixItReplaceChars(getLoc(line + MistakeOffset),
-                               getLoc(line + ActualIndent.size()),
-                               ExpectedIndent.substr(MistakeOffset));
+                          getLoc(line + ActualIndent.size()),
+                          ExpectedIndent.substr(MistakeOffset));
   }
 }
 
@@ -2185,9 +2186,9 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
     llvm::SmallString<1> ExpectedChar;
     ExpectedChar += ExpectedCodepoint;
     auto charNames = GetConfusableAndBaseCodepointNames(Codepoint);
-    diagnose(CurPtr - 1, diag::lex_confusable_character, StringRef(ConfusedChar),
-           StringRef(charNames.first), StringRef(ExpectedChar),
-           StringRef(charNames.second))
+    diagnose(CurPtr - 1, diag::lex_confusable_character,
+             StringRef(ConfusedChar), StringRef(charNames.first),
+             StringRef(ExpectedChar), StringRef(charNames.second))
         .fixItReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(Tmp), ExpectedChar);
   }
 

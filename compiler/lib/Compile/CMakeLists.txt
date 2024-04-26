@@ -10,6 +10,7 @@ set(stone_compile_sources
   CompilerOutputsConverter.cpp
   
   LINK_LIBS
+  StoneSyntax
   StoneGen
   StoneParse
   StoneSem
