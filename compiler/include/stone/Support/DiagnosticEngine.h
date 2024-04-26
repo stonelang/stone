@@ -51,7 +51,7 @@ class DiagnosticState {
   bool anyErrorOccurred = false;
 
   /// Track the previous emitted Behavior, useful for notes
-  diag::Level prevLevel = diag::Level::None;
+  DiagnosticLevel prevLevel = DiagnosticLevel::None;
 
   /// Track which diagnostics should be ignored.
   llvm::BitVector ignoredDiagnostics;
@@ -63,7 +63,7 @@ public:
 
   /// Figure out the Behavior for the given diagnostic, taking current
   /// state such as fatality into account.
-  diag::Level DetermineLevel(const Diagnostic &diag);
+  DiagnosticLevel DetermineLevel(const Diagnostic &diag);
 
   bool HadAnyError() const { return anyErrorOccurred; }
   bool HasFatalErrorOccurred() const { return fatalErrorOccurred; }
@@ -248,7 +248,7 @@ class DiagnosticEngine final {
   ///
   /// This is used to emit continuation diagnostics with the same level as the
   /// diagnostic that they follow.
-  diag::Level lastLevel;
+  DiagnosticLevel lastLevel;
 
   /// Number of warnings reported
   unsigned numWarnings;
@@ -421,7 +421,7 @@ public:
   }
 };
 class DiagnosticStateRAII final {
-  llvm::SaveAndRestore<diag::Level> prevLevel;
+  llvm::SaveAndRestore<DiagnosticLevel> prevLevel;
 
 public:
   DiagnosticStateRAII(DiagnosticEngine &de) : prevLevel(de.state.prevLevel) {}
@@ -518,7 +518,7 @@ public:
 // };
 class SavedDiagnostic final {
   // unsigned diagIdentifier;
-  // diag::Level level;
+  // DiagnosticLevel level;
   // FullSourceLoc loc;
   // std::string message;
   // std::vector<CharSrcRange> ranges;

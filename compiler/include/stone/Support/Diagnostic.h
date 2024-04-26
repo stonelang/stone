@@ -66,7 +66,7 @@ public:
   /// Prevent the diagnostic from behaving more severely than \p limit. For
   /// instance, if \c DiagnosticBehavior::Warning is passed, an error will be
   /// emitted as a warning, but a note will still be emitted as a note.
-  InFlightDiagnostic &CapDiagLevel(diag::Level level);
+  InFlightDiagnostic &CapDiagLevel(DiagnosticLevel level);
 
   /// Add a token-based range to the currently-active diagnostic.
   InFlightDiagnostic &Highlight(SrcRange R);
@@ -198,7 +198,7 @@ class Diagnostic {
   DiagID diagID;
 
   SrcLoc loc;
-  diag::Level levelLimit = diag::Level::None;
+  DiagnosticLevel levelLimit = DiagnosticLevel::None;
   llvm::SmallVector<DiagnosticArgument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<DiagnosticFix, 2> fixes;
@@ -237,8 +237,8 @@ public:
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }
 
-  void SetLevelLimit(diag::Level limit) { levelLimit = limit; }
-  diag::Level GetLevelLimit() const { return levelLimit; }
+  void SetLevelLimit(DiagnosticLevel limit) { levelLimit = limit; }
+  DiagnosticLevel GetLevelLimit() const { return levelLimit; }
 
 public:
   template <typename... otherArgTypes>
@@ -254,15 +254,16 @@ public:
 };
 
 class DiagnosticMessage final {
-  diag::Level level;
+  DiagnosticLevel level;
   llvm::StringRef category;
   llvm::StringRef formatMessage;
   const Diagnostic &diagnostic;
   SrcMgr &sm;
 
 public:
-  DiagnosticMessage(diag::Level level, const Diagnostic &diagnostic, SrcMgr &sm,
-                    llvm::StringRef formatMessage, llvm::StringRef category)
+  DiagnosticMessage(DiagnosticLevel level, const Diagnostic &diagnostic,
+                    SrcMgr &sm, llvm::StringRef formatMessage,
+                    llvm::StringRef category)
       : level(level), diagnostic(diagnostic), sm(sm),
         formatMessage(formatMessage), category(category) {}
 
@@ -271,7 +272,7 @@ public:
   llvm::StringRef GetFormatMessage() { return formatMessage; }
   const Diagnostic &GetDiagnostic() const { return diagnostic; }
   SrcMgr &GetSrcMgr() { return sm; }
-  diag::Level GetLevel() { return level; }
+  DiagnosticLevel GetLevel() { return level; }
 
   // public:
   //   // TODO: Think about

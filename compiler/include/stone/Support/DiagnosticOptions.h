@@ -4,8 +4,8 @@
 #include "llvm/ADT/Hashing.h"
 
 namespace stone {
-namespace diag {
-enum class Level : uint8_t {
+
+enum class DiagnosticLevel : uint8_t {
   None = 0,
   // Highest
   Fatal,
@@ -16,7 +16,7 @@ enum class Level : uint8_t {
   // Lowest
   Ignore,
 };
-}
+
 /// Options for controlling diagnostics.
 class DiagnosticOptions final {
 public:
@@ -29,7 +29,7 @@ public:
   // diagnostics.
   FormattingStyle formattingStyle = FormattingStyle::LLVM;
 
-  diag::Level diagnosticLevel = diag::Level::None;
+  DiagnosticLevel diagnosticLevel = DiagnosticLevel::None;
 
   /// TODO: This is a copy of what is in DiagnosticEngine -- may live here.
   // Treat fatal errors like errors.
