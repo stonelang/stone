@@ -1,5 +1,5 @@
 #include "stone/Support/DiagnosticEngine.h"
-#include "stone/Support/CoreDiagnostic.h"
+#include "stone/Support/DiagnosticsCore.h"
 #include "stone/Support/LexerBase.h"
 
 #include "llvm/ADT/SmallString.h"

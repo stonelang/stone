@@ -1,4 +1,4 @@
-#include "stone/Support/CoreDiagnostic.h"
+#include "stone/Support/DiagnosticsCore.h"
 
 using namespace stone;
 

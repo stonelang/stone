@@ -1,5 +1,5 @@
 #define DEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
+#include "DiagnosticsDefs.h"
 
 
 
@@ -17,4 +17,4 @@ ERROR(err_type_to_verify_ambiguous,none, "type to verify '%0' is ambiguous",
 
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
+#include "DiagnosticsDefs.h"

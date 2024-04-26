@@ -9,7 +9,7 @@ set( LLVM_LINK_COMPONENTS
   Option
  )
 set(stone_support_sources
-  DiagIDList.cpp
+  DiagnosticList.cpp
   Diagnostic.cpp
   DiagnosticEmitter.cpp
   DiagnosticFormatter.cpp

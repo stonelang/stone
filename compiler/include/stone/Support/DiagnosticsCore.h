@@ -31,7 +31,7 @@ enum class RequirementKind : uint8_t;
 // Declare common diagnostics objects with their appropriate types.
 #define DIAG(KIND, ID, Options, Text, Signature)                               \
   extern detail::DiagWithArguments<void Signature>::type ID;
-#include "CoreDiagnostic.def"
+#include "DiagnosticsCore.def"
 
 } // end namespace diag
 } // end namespace stone

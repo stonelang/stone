@@ -1,5 +1,5 @@
 #define DEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
+#include "DiagnosticsDefs.h"
 
 
 ERROR(err_no_compile_args, none, "no arguments provided to the compiler", ())
@@ -50,4 +50,4 @@ ERROR(err_missing_entry_in_supplementary_output_file_map, none,
 
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
+#include "DiagnosticsDefs.h"

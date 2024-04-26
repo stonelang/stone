@@ -1,5 +1,5 @@
 #define DEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
+#include "DiagnosticsDefs.h"
 
 
 //==============================================================================
@@ -223,4 +223,4 @@ ERROR(expected_member_name,PointsToFirstBadToken,
       "expected member name following '.'", ())
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
+#include "DiagnosticsDefs.h"
