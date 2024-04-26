@@ -3,7 +3,8 @@
 
 #include <assert.h>
 
-#include "stone/Basic/TokenKind.h"
+#include "stone/Basic/LLVM.h"
+
 #include "llvm/ADT/StringRef.h"
 
 namespace stone {

@@ -1,7 +1,7 @@
 #include "stone/Support/TextDiagnosticEmitter.h"
 #include "stone/Support/Diagnostic.h"
 
-using stone::TextDiagnosticEmitter;
+using namespace stone;
 
 llvm::SMDiagnostic
 stone::SrcMgr::GetMessage(stone::SrcLoc loc, llvm::SourceMgr::DiagKind kind,
@@ -11,8 +11,7 @@ stone::SrcMgr::GetMessage(stone::SrcLoc loc, llvm::SourceMgr::DiagKind kind,
   return llvm::SMDiagnostic();
 }
 
-TextDiagnosticEmitter::TextDiagnosticEmitter(TextDiagnosticFormatter &formatter)
-    : DiagnosticEmitter(formatter) {}
+TextDiagnosticEmitter::TextDiagnosticEmitter() {}
 
 TextDiagnosticEmitter::~TextDiagnosticEmitter() {}
 
@@ -24,7 +23,7 @@ void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticMessage &de) {
   // printf("%s\n", ed.GetFormatMessage().data());
 
   ColorStream cs;
-  GetFormatter().Format(cs, de.GetDiagnostic());
+  Format(cs, de.GetDiagnostic());
 
   // formatter.FormatText()
 
@@ -46,3 +45,16 @@ void TextDiagnosticEmitter::EmitDiagnostic(const DiagnosticMessage &de) {
 }
 
 void TextDiagnosticEmitter::EmitLoc() {}
+
+void TextDiagnosticEmitter::Format(ColorStream &out,
+                                   const Diagnostic &diagnostic,
+                                   DiagnosticFormatOptions fmtOpts) {}
+
+void TextDiagnosticEmitter::Format(ColorStream &out, llvm::StringRef text,
+                                   llvm::ArrayRef<DiagnosticArgument> args,
+                                   DiagnosticFormatOptions fmtOpts) {}
+
+void TextDiagnosticEmitter::FormatArgument(
+    ColorStream &out, llvm::StringRef modifier,
+    llvm::StringRef modifierArguments, llvm::ArrayRef<DiagnosticArgument> args,
+    unsigned argIndex, DiagnosticFormatOptions fmtOpts) {}

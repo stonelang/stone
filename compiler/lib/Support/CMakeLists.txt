@@ -12,12 +12,10 @@ set(stone_support_sources
   DiagnosticList.cpp
   Diagnostic.cpp
   DiagnosticEmitter.cpp
-  DiagnosticFormatter.cpp
   DiagnosticEngine.cpp
   DiagnosticConsumer.cpp
   StatsReporter.cpp
   TextDiagnosticEmitter.cpp
-  TextDiagnosticFormatter.cpp
   TextDiagnosticConsumer.cpp
   PrimaryAction.cpp
 

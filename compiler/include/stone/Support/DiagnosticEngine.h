@@ -4,9 +4,10 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/Version.h"
+
 #include "stone/Support/Diagnostic.h"
+#include "stone/Support/DiagnosticArgument.h"
 #include "stone/Support/DiagnosticConsumer.h"
-#include "stone/Support/DiagnosticFormatter.h"
 #include "stone/Support/DiagnosticLocalization.h"
 
 #include "llvm/ADT/BitVector.h"

@@ -7,6 +7,7 @@
 namespace stone {
 
 class DiagnosticMessage;
+class DiagnosticFormatter;
 
 class DiagnosticConsumer {
 
@@ -41,7 +42,8 @@ public:
   /// The default implementation returns true.
   virtual bool IncludeInDiagnosticCounts() const;
 
-  // TODO: May consider pasing source manager -- or pass Context in Diagnostics
+  // TODO: May consider pasing source manager -- or pass Context in
+  // Diagnostics
   /// Handle this diagnostic, reporting it to the user or
   /// capturing it to a log as needed.
   ///

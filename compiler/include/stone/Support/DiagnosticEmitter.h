@@ -2,23 +2,20 @@
 #define STONE_DIAG_DIAGNOSTICEMITTER_H
 
 #include "stone/Basic/ColorStream.h"
-#include "stone/Support/DiagnosticFormatter.h"
+#include "stone/Support/DiagnosticArgument.h"
+#include "stone/Support/DiagnosticOptions.h"
 
 #include <assert.h>
 
 namespace stone {
 
+class Diagnostic;
 class DiagnosticMessage;
 class DiagnosticFormatter;
 
 class DiagnosticEmitter {
-
-  DiagnosticFormatter &formatter;
-
 public:
-  DiagnosticEmitter() = delete;
-
-  DiagnosticEmitter(DiagnosticFormatter &formatter);
+  DiagnosticEmitter();
   virtual ~DiagnosticEmitter();
 
 public:
@@ -27,7 +24,20 @@ public:
   virtual void EmitLoc();
 
 public:
-  DiagnosticFormatter &GetFormatter() { return formatter; }
+  virtual void
+  Format(ColorStream &out, const Diagnostic &diagnostic,
+         DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions());
+
+  virtual void
+  Format(ColorStream &out, llvm::StringRef text,
+         llvm::ArrayRef<DiagnosticArgument> args,
+         DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions());
+
+  virtual void FormatArgument(ColorStream &out, llvm::StringRef modifier,
+                              llvm::StringRef modifierArguments,
+                              ArrayRef<DiagnosticArgument> args,
+                              unsigned argIndex,
+                              DiagnosticFormatOptions fmtOpts);
 };
 
 } // namespace stone

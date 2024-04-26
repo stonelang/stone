@@ -2,10 +2,9 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Support/DiagnosticEngine.h"
 
-using stone::Diagnostic;
-using stone::TextDiagnosticConsumer;
+using namespace stone;
 
-TextDiagnosticConsumer::TextDiagnosticConsumer(TextDiagnosticEmitter &emitter)
+TextDiagnosticConsumer::TextDiagnosticConsumer()
     : DiagnosticConsumer(emitter) {}
 
 TextDiagnosticConsumer::~TextDiagnosticConsumer() {}

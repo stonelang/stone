@@ -11,10 +11,10 @@ class DiagnosticMessage;
 
 class TextDiagnosticConsumer : public DiagnosticConsumer {
 
-public:
-  TextDiagnosticConsumer() = delete;
-  TextDiagnosticConsumer(TextDiagnosticEmitter &emitter);
+  TextDiagnosticEmitter emitter;
 
+public:
+  TextDiagnosticConsumer();
   ~TextDiagnosticConsumer();
 
 public:
