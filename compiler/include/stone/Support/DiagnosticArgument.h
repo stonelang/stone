@@ -13,7 +13,7 @@ namespace stone {
 /// Each of the diagnostics described in DiagnosticEngine.def has an entry in
 /// this enumeration type that uniquely identifies it.
 enum class DiagID : uint32_t;
-enum class FixID : uint32_t;
+enum class FixItID : uint32_t;
 
 class Decl;
 class DeclContext;
@@ -34,7 +34,7 @@ template <typename... ArgTypes> struct Diag {
 
 template <typename... ArgTypes> struct Fix {
   /// The code fix ID corresponding to this fix.
-  FixID fixID;
+  FixItID fixItID;
 };
 
 enum class DiagnosticArgumentKind : unsigned {

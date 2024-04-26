@@ -114,13 +114,10 @@ private:
   DiagnosticState &operator=(DiagnosticState &&) = default;
 };
 
-class InFlightDiagnostic {
-  friend class DiagnosticFixer;
+class InFlightDiagnostic final {
   friend class DiagnosticEngine;
 
-  DiagnosticFixer fixer;
   DiagnosticEngine *de;
-  LexerBase *lexerBase;
 
   /// Status variable indicating if this diagnostic is still active.
   ///
@@ -140,13 +137,13 @@ class InFlightDiagnostic {
 public:
   InFlightDiagnostic();
 
-  InFlightDiagnostic(DiagnosticEngine &de, LexerBase *lexerBase = nullptr);
+  InFlightDiagnostic(DiagnosticEngine &de);
 
   /// Transfer an in-flight diagnostic to a new object, which is
   /// typically used when returning in-flight diagnostics.
   InFlightDiagnostic(InFlightDiagnostic &&other)
-      : de(other.de), fixer(*this), isActive(other.isActive),
-        isForceFlush(other.isForceFlush), lexerBase(other.lexerBase) {
+      : de(other.de), isActive(other.isActive),
+        isForceFlush(other.isForceFlush) {
     other.isActive = false;
     other.isForceFlush = false;
   }
@@ -158,8 +155,7 @@ public:
   }
 
 public:
-  DiagnosticFixer &WithFix() { return fixer; }
-  DiagnosticEngine &GetDiags() { return *de; }
+  DiagnosticEngine *GetDiags() { return de; }
 
   /// Send the diagnostic to the DiagnosticEngine output.
   void Flush();
@@ -168,6 +164,106 @@ public:
   bool IsActive() const { return isActive; }
 
   bool IsForceFlush() const { return isForceFlush; }
+
+public:
+  static llvm::StringRef GetFixItIDString(const FixItID fixItID);
+  /// Prevent the diagnostic from behaving more severely than \p limit. For
+  /// instance, if \c DiagnosticBehavior::Warning is passed, an error will be
+  /// emitted as a warning, but a note will still be emitted as a note.
+  InFlightDiagnostic &CapDiagLevel(DiagnosticLevel level);
+
+  /// Add a token-based range to the currently-active diagnostic.
+  InFlightDiagnostic &Highlight(SrcRange R);
+
+  /// Add a character-based range to the currently-active diagnostic.
+  InFlightDiagnostic &HighlightChars(SrcLoc Start, SrcLoc End);
+
+  template <typename... ArgTypes>
+  InFlightDiagnostic &
+  Replace(SrcRange R, Fix<ArgTypes...> fixIt,
+          typename detail::PassArgument<ArgTypes>::type... VArgs) {
+    DiagnosticArgument DiagArgs[] = {std::move(VArgs)...};
+    return Replace(R, GetFixItIDString(fixIt.ID), DiagArgs);
+  }
+
+  /// Add a character-based replacement fix-it to the currently-active
+  /// diagnostic.
+  template <typename... ArgTypes>
+  InFlightDiagnostic &
+  ReplaceChars(SrcLoc Start, SrcLoc End, Fix<ArgTypes...> fixIt,
+               typename detail::PassArgument<ArgTypes>::type... VArgs) {
+    DiagnosticArgument DiagArgs[] = {std::move(VArgs)...};
+    return ReplaceChars(Start, End, GetFixItIDString(fixIt.ID), DiagArgs);
+  }
+
+  /// Add an insertion fix-it to the currently-active diagnostic.
+  template <typename... ArgTypes>
+  InFlightDiagnostic &
+  Insert(SrcLoc L, Fix<ArgTypes...> fixIt,
+         typename detail::PassArgument<ArgTypes>::type... VArgs) {
+    DiagnosticArgument DiagArgs[] = {std::move(VArgs)...};
+    return ReplaceChars(L, L, GetFixItIDString(fixIt.ID), DiagArgs);
+  }
+
+  /// Add an insertion fix-it to the currently-active diagnostic.  The
+  /// text is inserted immediately *after* the token specified.
+  template <typename... ArgTypes>
+  InFlightDiagnostic &
+  InsertAfter(SrcLoc L, Fix<ArgTypes...> fixIt,
+              typename detail::PassArgument<ArgTypes>::type... VArgs) {
+    DiagnosticArgument DiagArgs[] = {std::move(VArgs)...};
+    return InsertAfter(L, GetFixItIDString(fixIt.ID), DiagArgs);
+  }
+
+  /// Add a token-based replacement fix-it to the currently-active
+  /// diagnostic.
+  InFlightDiagnostic &Replace(SrcRange R, StringRef Str);
+
+  /// Add a character-based replacement fix-it to the currently-active
+  /// diagnostic.
+  InFlightDiagnostic &ReplaceChars(SrcLoc Start, SrcLoc End, StringRef Str) {
+    return ReplaceChars(Start, End, "%0", DiagnosticArgument(Str));
+  }
+
+  /// Add an insertion fix-it to the currently-active diagnostic.
+  InFlightDiagnostic &Insert(SrcLoc L, StringRef Str) {
+    return ReplaceChars(L, L, "%0", DiagnosticArgument(Str));
+  }
+
+  /// Add an insertion fix-it to the currently-active diagnostic. The
+  /// text is inserted immediately *after* the token specified.
+  InFlightDiagnostic &InsertAfter(SrcLoc L, StringRef Str) {
+    return InsertAfter(L, "%0", DiagnosticArgument(Str));
+  }
+
+  /// Add a token-based removal fix-it to the currently-active
+  /// diagnostic.
+  InFlightDiagnostic &Remove(SrcRange R);
+
+  /// Add a character-based removal fix-it to the currently-active
+  /// diagnostic.
+  InFlightDiagnostic &RemoveChars(SrcLoc Start, SrcLoc End) {
+    return ReplaceChars(Start, End, {});
+  }
+  /// Add two replacement fix-it exchanging source ranges to the
+  /// currently-active diagnostic.
+  InFlightDiagnostic &Exchange(SrcRange R1, SrcRange R2);
+
+private:
+  InFlightDiagnostic &Replace(SrcRange R, StringRef FormatString,
+                              ArrayRef<DiagnosticArgument> Args);
+
+  InFlightDiagnostic &ReplaceChars(SrcLoc Start, SrcLoc End,
+                                   StringRef FormatString,
+                                   ArrayRef<DiagnosticArgument> Args);
+
+  InFlightDiagnostic &Insert(SrcLoc L, StringRef FormatString,
+                             ArrayRef<DiagnosticArgument> Args) {
+    return ReplaceChars(L, L, FormatString, Args);
+  }
+
+  InFlightDiagnostic &InsertAfter(SrcLoc L, StringRef FormatString,
+                                  ArrayRef<DiagnosticArgument> Args);
 };
 
 class DiagnosticConsumer;
@@ -196,7 +292,7 @@ public:
 class DiagnosticEngine final {
   friend class InFlightDiagnostic;
   friend class DiagnosticTransaction;
-  friend struct DiagnosticArgument;
+  friend class DiagnosticArgument;
 
   SrcMgr &sm;
 
@@ -264,6 +360,8 @@ class DiagnosticEngine final {
   // friend class CompoundDiagnosticTransaction;
   friend class DiagnosticStateRAII;
 
+  LexerBase *lexerBase = nullptr;
+
 public:
   explicit DiagnosticEngine(SrcMgr &sm);
 
@@ -307,6 +405,9 @@ public:
 
   /// Grab the most-recently-added state point.
   DiagnosticState &GetDiagState() { return state; }
+
+  LexerBase *GetLexerBase() { return lexerBase; }
+  void SetLexerBase(LexerBase *lexer) { lexerBase = lexer; }
 
 public:
   /// Get the actual string in the ".def" for the diagnostic
@@ -374,7 +475,8 @@ private:
     assert(!curDiagnostic && "Already have an active diagnostic");
     curDiagnostic = diagnostic;
     curDiagnostic->SetLoc(loc);
-    return InFlightDiagnostic(*this, lexerBase);
+    
+    return InFlightDiagnostic(*this);
   }
 
 public:

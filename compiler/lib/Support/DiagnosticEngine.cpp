@@ -182,13 +182,10 @@ DiagnosticLevel DiagnosticState::DetermineLevel(const Diagnostic &diag) {
   return lvl;
 }
 
-InFlightDiagnostic::InFlightDiagnostic()
-    : de(0), lexerBase(0), isActive(true), fixer(*this) {}
+InFlightDiagnostic::InFlightDiagnostic() : de(0), isActive(true) {}
 
-InFlightDiagnostic::InFlightDiagnostic(DiagnosticEngine &de,
-                                       LexerBase *lexerBase)
-    : de(&de), fixer(*this), isActive(true), isForceFlush(false),
-      lexerBase(lexerBase) {}
+InFlightDiagnostic::InFlightDiagnostic(DiagnosticEngine &de)
+    : de(&de), isActive(true), isForceFlush(false) {}
 
 DiagnosticEngine::DiagnosticEngine(SrcMgr &sm) : sm(sm), curDiagnostic() {}
 

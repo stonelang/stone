@@ -9,7 +9,7 @@ enum class stone::DiagID : uint32_t {
 static_assert(static_cast<uint32_t>(stone::DiagID::invalid_diagnostic) == 0,
               "0 is not the invalid diagnostic ID");
 
-enum class stone::FixID : uint32_t {
+enum class stone::FixItID : uint32_t {
 #define DIAG(KIND, ID, Options, Text, Signature)
 #define FIX(ID, Text, Signature) ID,
 #include "stone/Support/DiagnosticEngine.def"
@@ -25,7 +25,7 @@ namespace diag {
 
 // TODO:
 //  #d efine FIX(ID, Text, Signature) \
-//   detail::FixWithArguments<void Signature>::type ID = {FixID::ID};
+//   detail::FixWithArguments<void Signature>::type ID = {FixItID::ID};
 //  #include "stone/Support/DiagnosticEngine.def"
 
 } // end namespace diag
