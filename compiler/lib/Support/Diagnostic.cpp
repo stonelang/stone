@@ -9,19 +9,19 @@ using stone::InFlightDiagnostic;
 
 // void Diagnostic::Format(llvm::SmallVectorImpl<char> &outStr,
 //                         const DiagnosticFormatOptions &fmtOptions) const {
-//   diag::ArgumentKind kind = diag::ArgumentKind::None;
+//   DiagnosticArgumentKind kind = DiagnosticArgumentKind::None;
 //   switch (kind) {
-//   case diag::ArgumentKind::STDStr:
+//   case DiagnosticArgumentKind::STDStr:
 //     break;
-//   case diag::ArgumentKind::LLVMStr:
+//   case DiagnosticArgumentKind::LLVMStr:
 //     break;
-//   case diag::ArgumentKind::SInt:
+//   case DiagnosticArgumentKind::SInt:
 //     break;
-//   case diag::ArgumentKind::UInt:
+//   case DiagnosticArgumentKind::UInt:
 //     break;
-//   case diag::ArgumentKind::TokenType:
+//   case DiagnosticArgumentKind::TokenType:
 //     break;
-//   case diag::ArgumentKind::Syntax:
+//   case DiagnosticArgumentKind::Syntax:
 //     // Ignore and handle elswhere
 //     break;
 //   default:
@@ -40,11 +40,11 @@ DiagnosticFix::DiagnosticFix(CharSrcRange range, llvm::StringRef code)
     : range(range), code(code) {}
 
 // DiagnosticFix::DiagnosticFix(CharSrcRange R, llvm::StringRef code)
-//     : DiagnosticFix(R, code, llvm::ArrayRef<diag::Argument>()) {}
+//     : DiagnosticFix(R, code, llvm::ArrayRef<DiagnosticArgument>()) {}
 
 // DiagnosticFix::DiagnosticFix(DiagnosticFixer& fixer, CharSrcRange R,
 // llvm::StringRef code,
-//           llvm::ArrayRef<diag::Argument> arguments) :
+//           llvm::ArrayRef<DiagnosticArgument> arguments) :
 // range(R), code(code), args(arguments.begin(), arguments.end()){}
 
 llvm::StringRef DiagnosticFixer::GetFixIDString(const FixID fixID) {
@@ -126,21 +126,21 @@ InFlightDiagnostic &DiagnosticFixer::Replace(SrcRange range,
   return inFlightDiag;
 }
 
-InFlightDiagnostic &DiagnosticFixer::Replace(SrcRange range,
-                                             StringRef formatString,
-                                             ArrayRef<diag::Argument> args) {
+InFlightDiagnostic &
+DiagnosticFixer::Replace(SrcRange range, StringRef formatString,
+                         ArrayRef<DiagnosticArgument> args) {
   return inFlightDiag;
 }
 
 InFlightDiagnostic &
 DiagnosticFixer::ReplaceChars(SrcLoc start, SrcLoc end, StringRef formatString,
-                              ArrayRef<diag::Argument> args) {
+                              ArrayRef<DiagnosticArgument> args) {
   return inFlightDiag;
 }
 
 InFlightDiagnostic &
 DiagnosticFixer::InsertAfter(SrcLoc loc, llvm::StringRef formatString,
-                             llvm::ArrayRef<diag::Argument> args) {
+                             llvm::ArrayRef<DiagnosticArgument> args) {
   assert(inFlightDiag.lexerBase && "InsertAfter requires a Tokenable");
 
   loc = inFlightDiag.lexerBase->GetLocForEndOfToken(

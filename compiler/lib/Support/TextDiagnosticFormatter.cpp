@@ -11,10 +11,10 @@ void TextDiagnosticFormatter::Format(ColorStream &out,
                                      DiagnosticFormatOptions fmtOpts) {}
 
 void TextDiagnosticFormatter::Format(ColorStream &out, llvm::StringRef text,
-                                     llvm::ArrayRef<diag::Argument> args,
+                                     llvm::ArrayRef<DiagnosticArgument> args,
                                      DiagnosticFormatOptions fmtOpts) {}
 
 void TextDiagnosticFormatter::FormatArgument(
     ColorStream &out, llvm::StringRef modifier,
-    llvm::StringRef modifierArguments, llvm::ArrayRef<diag::Argument> args,
+    llvm::StringRef modifierArguments, llvm::ArrayRef<DiagnosticArgument> args,
     unsigned argIndex, DiagnosticFormatOptions fmtOpts) {}

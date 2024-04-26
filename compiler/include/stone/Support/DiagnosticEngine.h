@@ -195,7 +195,7 @@ public:
 class DiagnosticEngine final {
   friend class InFlightDiagnostic;
   friend class DiagnosticTransaction;
-  friend struct diag::Argument;
+  friend struct DiagnosticArgument;
 
   SrcMgr &sm;
 
@@ -383,19 +383,19 @@ public:
   }
 
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
-                            llvm::ArrayRef<diag::Argument> args,
+                            llvm::ArrayRef<DiagnosticArgument> args,
                             LexerBase *lexerBase = nullptr) {
     return PrintD(loc, Diagnostic(Diagnostic(diagID, args)), lexerBase);
   }
 
   InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
                             LexerBase *lexerBase = nullptr) {
-    return PrintD(loc, Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
+    return PrintD(loc, Diagnostic(diagID, llvm::ArrayRef<DiagnosticArgument>()),
                   lexerBase);
   }
   InFlightDiagnostic PrintD(DiagID diagID, LexerBase *lexerBase = nullptr) {
     return PrintD(SrcLoc(),
-                  Diagnostic(diagID, llvm::ArrayRef<diag::Argument>()),
+                  Diagnostic(diagID, llvm::ArrayRef<DiagnosticArgument>()),
                   lexerBase);
   }
 

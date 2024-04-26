@@ -29,9 +29,9 @@ ERROR(err_extra_rbrace,none,
 
 
 NOTE(lex_multiline_string_indent_should_match_here,none,
-      "should match %select{space|tab}0 here", (diag::UInt))
+      "should match %select{space|tab}0 here", (unsigned))
 NOTE(lex_multiline_string_indent_change_line,none,
-      "change indentation of %select{this line|these lines}0 to match closing delimiter", (diag::Bool))
+      "change indentation of %select{this line|these lines}0 to match closing delimiter", (bool))
 
 ERROR(lex_escaped_newline_at_lastline,none,
       "escaped newline at the last line is not allowed", ())
@@ -56,7 +56,7 @@ ERROR(lex_invalid_curly_quote,none,
       "unicode curly quote found, replace with '\"'", ())
 NOTE(lex_confusable_character,none,
       "unicode character '%0' (%1) looks similar to '%2' (%3); did you mean to use '%2' (%3)?",
-      (diag::LLVMStr, diag::LLVMStr, diag::LLVMStr, diag::LLVMStr))
+      (StringRef, StringRef, StringRef, StringRef))
 WARN(lex_nonbreaking_space,none,
         "non-breaking space (U+00A0) used instead of regular space", ())
 
@@ -93,7 +93,7 @@ ERROR(lex_illegal_multiline_string_end,none,
 ERROR(lex_multiline_string_indent_inconsistent,none,
       "%select{unexpected space in|unexpected tab in|insufficient}2 indentation of "
       "%select{line|next %1 lines}0 in multi-line string literal",
-      (diag::Bool, diag::UInt, diag::UInt))
+      (bool, unsigned, unsigned))
 
 
 ERROR(lex_invalid_character,none,
@@ -104,11 +104,11 @@ ERROR(lex_expected_digit_in_fp_exponent,none,
        "expected a digit in floating point exponent", ())
 ERROR(lex_invalid_digit_in_fp_exponent,none,
       "'%0' is not a valid %select{digit|first character}1 in floating point exponent",
-      (diag::LLVMStr, diag::Bool))
+      (StringRef, bool))
 ERROR(lex_invalid_digit_in_int_literal,none,
       "'%0' is not a valid %select{binary digit (0 or 1)|octal digit (0-7)|"
       "digit|hexadecimal digit (0-9, A-F)}1 in integer literal",
-      (diag::LLVMStr, diag::UInt))
+      (StringRef, unsigned))
 ERROR(lex_expected_binary_exponent_in_hex_float_literal,none,
       "hexadecimal floating point literal must end with an exponent", ())
 ERROR(lex_unexpected_block_comment_end,none,
@@ -149,7 +149,7 @@ ERROR(err_invalid_curly_quote,none,
 
 NOTE(note_confusable_character,none,
       "unicode character '%0' (%1) looks similar to '%2' (%3); did you mean to use '%2' (%3)?",
-      (diag::LLVMStr, diag::LLVMStr, diag::LLVMStr, diag::LLVMStr))
+      (StringRef, StringRef, StringRef, StringRef))
 
 WARN(warn_non_breaking_space,none,
         "non-breaking space (U+00A0) used instead of regular space", ())
@@ -191,11 +191,11 @@ ERROR(err_unicode_escape_braces,none,
 //==============================================================================
 
 NOTE(note_prev_decl_def,none,
-     "previous definition of %0 is here", (diag::ASTArgument))
+     "previous definition of %0 is here", (const Decl*))
 
 ERROR(err_case_stmt_without_body,none,
       "%select{'case'|'default'}0 label in a 'match' should have at least one "
-      "executable statement", (diag::Bool))
+      "executable statement", (bool))
 
 
 //==============================================================================

@@ -78,7 +78,7 @@ public:
   InFlightDiagnostic &
   Replace(SrcRange R, Fix<ArgTypes...> fixIt,
           typename detail::PassArgument<ArgTypes>::type... VArgs) {
-    diag::Argument DiagArgs[] = {std::move(VArgs)...};
+    DiagnosticArgument DiagArgs[] = {std::move(VArgs)...};
     return Replace(R, GetFixIDString(fixIt.ID), DiagArgs);
   }
 
@@ -88,7 +88,7 @@ public:
   InFlightDiagnostic &
   ReplaceChars(SrcLoc Start, SrcLoc End, Fix<ArgTypes...> fixIt,
                typename detail::PassArgument<ArgTypes>::type... VArgs) {
-    diag::Argument DiagArgs[] = {std::move(VArgs)...};
+    DiagnosticArgument DiagArgs[] = {std::move(VArgs)...};
     return ReplaceChars(Start, End, GetFixIDString(fixIt.ID), DiagArgs);
   }
 
@@ -97,7 +97,7 @@ public:
   InFlightDiagnostic &
   Insert(SrcLoc L, Fix<ArgTypes...> fixIt,
          typename detail::PassArgument<ArgTypes>::type... VArgs) {
-    diag::Argument DiagArgs[] = {std::move(VArgs)...};
+    DiagnosticArgument DiagArgs[] = {std::move(VArgs)...};
     return ReplaceChars(L, L, GetFixIDString(fixIt.ID), DiagArgs);
   }
 
@@ -107,7 +107,7 @@ public:
   InFlightDiagnostic &
   InsertAfter(SrcLoc L, Fix<ArgTypes...> fixIt,
               typename detail::PassArgument<ArgTypes>::type... VArgs) {
-    diag::Argument DiagArgs[] = {std::move(VArgs)...};
+    DiagnosticArgument DiagArgs[] = {std::move(VArgs)...};
     return InsertAfter(L, GetFixIDString(fixIt.ID), DiagArgs);
   }
 
@@ -118,18 +118,18 @@ public:
   /// Add a character-based replacement fix-it to the currently-active
   /// diagnostic.
   InFlightDiagnostic &ReplaceChars(SrcLoc Start, SrcLoc End, StringRef Str) {
-    return ReplaceChars(Start, End, "%0", diag::LLVMStr{Str});
+    return ReplaceChars(Start, End, "%0", DiagnosticArgument(Str));
   }
 
   /// Add an insertion fix-it to the currently-active diagnostic.
   InFlightDiagnostic &Insert(SrcLoc L, StringRef Str) {
-    return ReplaceChars(L, L, "%0", diag::LLVMStr{Str});
+    return ReplaceChars(L, L, "%0", DiagnosticArgument(Str));
   }
 
   /// Add an insertion fix-it to the currently-active diagnostic. The
   /// text is inserted immediately *after* the token specified.
   InFlightDiagnostic &InsertAfter(SrcLoc L, StringRef Str) {
-    return InsertAfter(L, "%0", diag::LLVMStr{Str});
+    return InsertAfter(L, "%0", DiagnosticArgument(Str));
   }
 
   /// Add a token-based removal fix-it to the currently-active
@@ -148,19 +148,19 @@ public:
 
 private:
   InFlightDiagnostic &Replace(SrcRange R, StringRef FormatString,
-                              ArrayRef<diag::Argument> Args);
+                              ArrayRef<DiagnosticArgument> Args);
 
   InFlightDiagnostic &ReplaceChars(SrcLoc Start, SrcLoc End,
                                    StringRef FormatString,
-                                   ArrayRef<diag::Argument> Args);
+                                   ArrayRef<DiagnosticArgument> Args);
 
   InFlightDiagnostic &Insert(SrcLoc L, StringRef FormatString,
-                             ArrayRef<diag::Argument> Args) {
+                             ArrayRef<DiagnosticArgument> Args) {
     return ReplaceChars(L, L, FormatString, Args);
   }
 
   InFlightDiagnostic &InsertAfter(SrcLoc L, StringRef FormatString,
-                                  ArrayRef<diag::Argument> Args);
+                                  ArrayRef<DiagnosticArgument> Args);
 };
 
 struct DiagnosticFormatOptions {
@@ -199,7 +199,7 @@ class Diagnostic {
 
   SrcLoc loc;
   diag::Level levelLimit = diag::Level::None;
-  llvm::SmallVector<diag::Argument, 3> args;
+  llvm::SmallVector<DiagnosticArgument, 3> args;
   llvm::SmallVector<CharSrcRange, 2> ranges;
   llvm::SmallVector<DiagnosticFix, 2> fixes;
   // llvm::SmallVector<Diagnostic *> deps;
@@ -209,18 +209,18 @@ public:
   Diagnostic(Diag<ArgTypes...> d,
              typename detail::PassArgument<ArgTypes>::type... vArgs)
       : diagID(d.diagID) {
-    diag::Argument diagArgs[] = {std::forward<ArgTypes>(vArgs)...};
+    DiagnosticArgument diagArgs[] = {std::forward<ArgTypes>(vArgs)...};
 
     args.append(diagArgs + 1, diagArgs + 1 + sizeof...(vArgs));
   }
 
 public:
-  Diagnostic(DiagID diagID, llvm::ArrayRef<diag::Argument> args)
+  Diagnostic(DiagID diagID, llvm::ArrayRef<DiagnosticArgument> args)
       : diagID(diagID), args(args.begin(), args.end()) {}
 
 public:
   DiagID GetID() const { return diagID; }
-  llvm::ArrayRef<diag::Argument> GetArgs() const { return args; }
+  llvm::ArrayRef<DiagnosticArgument> GetArgs() const { return args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return ranges; }
   llvm::ArrayRef<DiagnosticFix> GetFixes() const { return fixes; }
   // llvm::ArrayRef<Diagnostic *> GetDeps() const { return deps; }
@@ -232,7 +232,7 @@ public:
 
   // void AddDep(Diagnostic *dep) { deps.push_back(dep); }
 
-  void AddArgument(diag::Argument &&arg) { args.push_back(std::move(arg)); }
+  void AddArgument(DiagnosticArgument &&arg) { args.push_back(std::move(arg)); }
 
   void SetLoc(SrcLoc sl) { loc = sl; }
   SrcLoc GetLoc() { return loc; }

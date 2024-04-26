@@ -59,7 +59,6 @@ enum class DiagnosticArgumentKind : unsigned {
 
 constexpr size_t DiagnosticArgumentAlignment = 8;
 class alignas(DiagnosticArgumentAlignment) DiagnosticArgument final {
-
   int integerValue;
   unsigned unsignedValue;
   bool boolValue;
@@ -69,12 +68,7 @@ class alignas(DiagnosticArgumentAlignment) DiagnosticArgument final {
   const Identifier *identifierValue = nullptr;
   const DeclContext *declContextValue = nullptr;
   const Type *typeValue = nullptr;
-
   DiagnosticArgumentKind kind;
-
-public:
-  DiagnosticArgument() = delete;
-  ~DiagnosticArgument() = delete;
 
 public:
   DiagnosticArgument(int val)
@@ -124,131 +118,6 @@ public:
 public:
   DiagnosticArgumentKind GetKind() { return kind; }
 };
-
-namespace diag {
-enum class ArgumentKind : unsigned {
-  /// No argument
-  None = 0,
-  /// bool
-  Bool,
-  /// std::string
-  STDStr,
-  /// const char *
-  CStr,
-  /// llvm::StringRef
-  LLVMStr,
-  /// int
-  Int,
-  /// unsigned
-  UInt,
-  ///
-  Tok,
-  /// custom AST argument
-  AST,
-};
-
-enum { ArgumentAlignment = 8 };
-
-struct alignas(ArgumentAlignment) Argument {
-private:
-  ArgumentKind kind = ArgumentKind::None;
-
-public:
-  Argument() = delete;
-  explicit Argument(ArgumentKind kind) : kind(kind) {}
-  ArgumentKind GetKind() { return kind; }
-};
-
-struct Bool final : public Argument {
-private:
-  const bool val;
-
-public:
-  Bool() = delete;
-  explicit Bool(bool val) : Argument(ArgumentKind::Bool), val(val) {}
-};
-
-struct STDStr final : public Argument {
-private:
-  const std::string val;
-
-public:
-  STDStr() = delete;
-
-  explicit STDStr(const std::string val)
-      : Argument(ArgumentKind::STDStr), val(val) {}
-
-public:
-  std::string GetVal() const { return val; }
-};
-
-struct LLVMStr final : public Argument {
-private:
-  const llvm::StringRef val;
-
-public:
-  LLVMStr() = delete;
-
-  explicit LLVMStr(const llvm::StringRef val)
-      : Argument(ArgumentKind::LLVMStr), val(val) {}
-
-public:
-  llvm::StringRef GetVal() const { return val; }
-};
-
-struct CStr final : public Argument {
-  const char *val;
-
-public:
-  CStr() = delete;
-
-  explicit CStr(const char *val) : Argument(ArgumentKind::CStr), val(val) {}
-  const char *GetVal() const { return val; }
-};
-
-struct Int final : public Argument {
-  const int val;
-
-public:
-  Int() = delete;
-
-  explicit Int(const int val) : Argument(ArgumentKind::Int), val(val) {}
-
-  int GetVal() const { return val; }
-};
-
-struct UInt final : public Argument {
-  unsigned val;
-
-public:
-  UInt() = delete;
-  explicit UInt(const unsigned val) : Argument(ArgumentKind::UInt), val(val) {}
-  unsigned GetVal() const { return val; }
-};
-
-struct Tok final : public Argument {
-  tok val;
-
-public:
-  Tok() = delete;
-
-  explicit Tok(const tok val) : Argument(ArgumentKind::Tok), val(val) {}
-  tok GetVal() const { return val; }
-};
-
-enum class ASTArgumentKind { None, Decl, DeclContext, Type, Identifier, Token };
-
-struct ASTArgument : public Argument {
-  ASTArgumentKind kind = ASTArgumentKind::None;
-
-public:
-  ASTArgument() = delete;
-  explicit ASTArgument(ASTArgumentKind kind)
-      : Argument(ArgumentKind::AST), kind(kind) {}
-  ASTArgumentKind GetASTArgumentKind() const { return kind; }
-};
-
-} // namespace diag
 
 } // namespace stone
 
