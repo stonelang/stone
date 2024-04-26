@@ -7,7 +7,7 @@
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Support/DiagnosticsCompile.h"
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Module.h"
 
@@ -214,7 +214,7 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
 //   auto fb = GetFileMgr().getBufferForFile(input.GetFileName());
 //   if (!fb) {
 //     GetDiags().PrintD(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
-//                       diag::LLVMStr(input.GetFileName()));
+//                       StringRef(input.GetFileName()));
 //   }
 //   auto srcID = astContext->GetSrcMgr().addNewSourceBuffer(std::move(*fb));
 //   assert((srcID > 0) && "Input file buffer ID must be greater than zero.");
@@ -244,7 +244,7 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   if (!inputFileOrError) {
     invocation.GetDiags().PrintD(SrcLoc(),
                                  diag::err_unable_to_open_buffer_for_file,
-                                 diag::LLVMStr(input.GetFileName()));
+                                 StringRef(input.GetFileName()));
     return std::nullopt;
   }
 
@@ -253,7 +253,7 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   // if (!fb) {
   //   ctx.GetDiagUnit().PrintD(SrcLoc(),
   //   diag::err_unable_to_open_buffer_for_file,
-  //                            diag::LLVMStr(input.GetFileName()));
+  //                            StringRef(input.GetFileName()));
   // }
   // auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));
   // assert((srcID > 0) && "Input file buffer ID must be greater than zero.");

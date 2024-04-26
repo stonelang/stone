@@ -2,7 +2,7 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Support/DiagnosticsCompile.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
@@ -126,8 +126,8 @@ bool CompilerInputsConverter::ForAllFilesInFileList(
       llvm::StringRef(badFileDescriptorRetryCountArg->getValue())
           .getAsInteger(10, RetryCount)) {
     de.PrintD(SrcLoc(), diag::err_invalid_arg_value,
-              diag::LLVMStr(badFileDescriptorRetryCountArg->getAsString(args)),
-              diag::LLVMStr(badFileDescriptorRetryCountArg->getValue()));
+              StringRef(badFileDescriptorRetryCountArg->getAsString(args)),
+              StringRef(badFileDescriptorRetryCountArg->getValue()));
     return true;
   }
 
@@ -143,8 +143,8 @@ bool CompilerInputsConverter::ForAllFilesInFileList(
     }
   }
   if (!filelistBufferOrError) {
-    de.PrintD(SrcLoc(), diag::err_cannot_open_file, diag::LLVMStr(path),
-              diag::LLVMStr(filelistBufferOrError.getError().message()));
+    de.PrintD(SrcLoc(), diag::err_cannot_open_file, StringRef(path),
+              StringRef(filelistBufferOrError.getError().message()));
     return true;
   }
   for (auto file :
@@ -160,7 +160,7 @@ bool CompilerInputsConverter::AddFile(llvm::StringRef file) {
   if (files.insert(file)) {
     return false;
   }
-  de.PrintD(SrcLoc(), diag::err_duplicate_input_file, diag::LLVMStr(file));
+  de.PrintD(SrcLoc(), diag::err_duplicate_input_file, StringRef(file));
   return true;
 }
 
@@ -210,8 +210,8 @@ bool CompilerInputsConverter::DiagnoseUnusedPrimaryFiles(
     // Catch "stone-compile  -c -filelist foo -primary-file
     // some-file-not-in-foo".
     assert(fileListPathArg && "Unused primary with no filelist");
-    de.PrintD(SrcLoc(), diag::err_primary_file_not_found, diag::LLVMStr(file),
-              diag::LLVMStr(fileListPathArg->getValue()));
+    de.PrintD(SrcLoc(), diag::err_primary_file_not_found, StringRef(file),
+              StringRef(fileListPathArg->getValue()));
   }
   return !primaryFiles.empty();
 }

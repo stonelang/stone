@@ -3,7 +3,7 @@
 #include "stone/Compile/CompilerOptionsConverter.h"
 #include "stone/Core.h"
 #include "stone/Strings.h"
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Support/DiagnosticsCompile.h"
 #include "stone/Support/Options.h"
 
 #include "llvm/Support/BuryPointer.h"
@@ -182,14 +182,14 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   if (missingArgCount) {
     GetDiags().PrintD(
         SrcLoc(), diag::err_missing_arg_value,
-        diag::LLVMStr(inputArgList->getArgString(missingArgIndex)),
-        diag::UInt(missingArgCount));
+        StringRef(inputArgList->getArgString(missingArgIndex)),
+        (unsigned)missingArgCount);
     return Status::Error();
   }
   // Check for unknown arguments.
   for (const llvm::opt::Arg *arg : inputArgList->filtered(opts::OPT_UNKNOWN)) {
     GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
-                      diag::LLVMStr(arg->getAsString(*inputArgList)));
+                      StringRef(arg->getAsString(*inputArgList)));
 
     // TODO: Good for now. But, you want to print out all and check for diag
     // errors

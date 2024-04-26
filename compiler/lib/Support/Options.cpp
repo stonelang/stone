@@ -107,14 +107,14 @@ llvm::StringRef opts::GetArgName(const llvm::opt::Arg *arg) {
 //   if (missingArgCount) {
 //     diags.PrintD(
 //         SrcLoc(), diag::err_missing_arg_value,
-//         diag::LLVMStr(ial->getArgString(missingArgIndex)),
+//         StringRef(ial->getArgString(missingArgIndex)),
 //         diag::UInt(missingArgCount));
 //     return nullptr;
 //   }
 //   // Check for unknown arguments.
 //   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
 //     GetLangContext().GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
-//                                        diag::LLVMStr(arg->getAsString(*ial)));
+//                                        StringRef(arg->getAsString(*ial)));
 //     return nullptr;
 //   }
 //   return ial;
