@@ -180,10 +180,9 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
   assert(inputArgList && "No input argument list.");
 
   if (missingArgCount) {
-    GetDiags().PrintD(
-        SrcLoc(), diag::err_missing_arg_value,
-        StringRef(inputArgList->getArgString(missingArgIndex)),
-        (unsigned)missingArgCount);
+    GetDiags().PrintD(SrcLoc(), diag::err_missing_arg_value,
+                      StringRef(inputArgList->getArgString(missingArgIndex)),
+                      (unsigned)missingArgCount);
     return Status::Error();
   }
   // Check for unknown arguments.

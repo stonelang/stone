@@ -422,10 +422,9 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
     return std::vector<std::string>(N, std::string());
   }
 
-  de.PrintD(
-      SrcLoc(), diag::err_wrong_number_of_arguments,
-      StringRef(args.getLastArg(pathID)->getOption().getPrefixedName()),
-      N, paths.size());
+  de.PrintD(SrcLoc(), diag::err_wrong_number_of_arguments,
+            StringRef(args.getLastArg(pathID)->getOption().getPrefixedName()),
+            N, paths.size());
   return std::nullopt;
 }
 
@@ -652,8 +651,7 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
     if (StringRef(A->getValue())
             .getAsInteger(10, BadFileDescriptorRetryCount)) {
       de.PrintD(SrcLoc(), diag::err_invalid_arg_value,
-                StringRef(A->getAsString(args)),
-                StringRef(A->getValue()));
+                StringRef(A->getAsString(args)), StringRef(A->getValue()));
       return std::nullopt;
     }
   }

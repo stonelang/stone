@@ -1172,8 +1172,8 @@ void Lexer::lexNumber() {
 
     auto tmp = CurPtr;
     if (advanceIfValidContinuationOfIdentifier(CurPtr, BufferEnd)) {
-      PrintD(tmp, diag::lex_invalid_digit_in_fp_exponent,
-             StringRef(tmp, 1), false);
+      PrintD(tmp, diag::lex_invalid_digit_in_fp_exponent, StringRef(tmp, 1),
+             false);
       return expected_digit();
     }
   }
@@ -2153,7 +2153,8 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
   } else if (Codepoint == 0x0000201D) {
     // If this is an end curly quote, just diagnose it with a fixit hint.
     if (EmitDiagnosticsIfToken) {
-      PrintD(CurPtr - 1, diag::lex_invalid_curly_quote).ReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(Tmp), "\"");
+      PrintD(CurPtr - 1, diag::lex_invalid_curly_quote)
+          .ReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(Tmp), "\"");
     }
     CurPtr = Tmp;
     return true;
@@ -2171,7 +2172,8 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
     // diagnose an end curly quote in the middle of a straight quoted
     // literal.
     if (EmitDiagnosticsIfToken) {
-      PrintD(CurPtr - 1, diag::lex_invalid_curly_quote).ReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(EndPtr), "\"");
+      PrintD(CurPtr - 1, diag::lex_invalid_curly_quote)
+          .ReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(EndPtr), "\"");
     }
     CurPtr = Tmp;
     return true;
@@ -2188,9 +2190,9 @@ bool Lexer::lexUnknown(bool EmitDiagnosticsIfToken) {
     llvm::SmallString<1> ExpectedChar;
     ExpectedChar += ExpectedCodepoint;
     auto charNames = GetConfusableAndBaseCodepointNames(Codepoint);
-    PrintD(CurPtr - 1, diag::lex_confusable_character,
-           StringRef(ConfusedChar), StringRef(charNames.first),
-           StringRef(ExpectedChar), StringRef(charNames.second))
+    PrintD(CurPtr - 1, diag::lex_confusable_character, StringRef(ConfusedChar),
+           StringRef(charNames.first), StringRef(ExpectedChar),
+           StringRef(charNames.second))
         .ReplaceChars(getSrcLoc(CurPtr - 1), getSrcLoc(Tmp), ExpectedChar);
   }
 

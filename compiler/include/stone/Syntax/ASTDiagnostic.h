@@ -3,8 +3,8 @@
 
 #include "stone/Support/DiagnosticArgument.h"
 #include "stone/Support/DiagnosticEngine.h"
-#include "stone/Support/TextDiagnosticEmitter.h"
 #include "stone/Support/TextDiagnosticConsumer.h"
+#include "stone/Support/TextDiagnosticEmitter.h"
 #include "stone/Syntax/Decl.h"
 #include "stone/Syntax/Identifier.h"
 
@@ -29,11 +29,28 @@ public:
 
 public:
   void EmitDeclLoc();
+
+  void
+  Format(ColorStream &out, const Diagnostic &diagnostic,
+         DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
+
+  void
+  Format(ColorStream &out, llvm::StringRef text,
+         llvm::ArrayRef<DiagnosticArgument> args,
+         DiagnosticFormatOptions fmtOpts = DiagnosticFormatOptions()) override;
+
+  void FormatArgument(ColorStream &out, llvm::StringRef modifier,
+                      llvm::StringRef modifierArguments,
+                      ArrayRef<DiagnosticArgument> args, unsigned argIndex,
+                      DiagnosticFormatOptions fmtOpts) override;
 };
 
 class ASTTextDiagnosticConsumer final : public TextDiagnosticConsumer {
-  public:
-    ASTTextDiagnosticConsumer() : TextDiagnosticConsumer(ASTTextDiagnosticEmitter()){}
+public:
+  ASTTextDiagnosticConsumer()
+      : TextDiagnosticConsumer(ASTTextDiagnosticEmitter()) {}
+
+public:
 };
 
 } // namespace stone

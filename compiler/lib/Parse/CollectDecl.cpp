@@ -1,8 +1,8 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/Parsing.h"
-#include "stone/Syntax/ASTDiagnostic.h"
 #include "stone/Syntax/ASTContext.h"
+#include "stone/Syntax/ASTDiagnostic.h"
 #include "stone/Syntax/ASTNode.h"
 #include "stone/Syntax/Stmt.h"
 

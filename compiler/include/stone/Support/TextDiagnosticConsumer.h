@@ -11,7 +11,8 @@ class DiagnosticMessage;
 
 class TextDiagnosticConsumer : public DiagnosticConsumer {
 public:
-  TextDiagnosticConsumer(TextDiagnosticEmitter emitter = TextDiagnosticEmitter());
+  TextDiagnosticConsumer(
+      TextDiagnosticEmitter emitter = TextDiagnosticEmitter());
   ~TextDiagnosticConsumer();
 
 public:
