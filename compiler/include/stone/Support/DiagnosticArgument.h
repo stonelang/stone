@@ -31,32 +31,25 @@ template <typename... ArgTypes> struct Fix {
 };
 
 namespace diag {
-enum class ArgumentKind {
+enum class ArgumentKind : unsigned {
   /// No argument
   None = 0,
-
   /// bool
   Bool,
   /// std::string
   STDStr,
-
   /// const char *
   CStr,
-
   /// llvm::StringRef
   LLVMStr,
-
   /// int
   Int,
-
   /// unsigned
   UInt,
-
-  TokenKind,
-
+  /// 
+  Tok,
   /// custom AST argument
   AST,
-
 };
 
 enum { ArgumentAlignment = 8 };
@@ -96,7 +89,7 @@ public:
 
 struct LLVMStr final : public Argument {
 private:
-  const std::string val;
+  const llvm::StringRef val;
 
 public:
   LLVMStr() = delete;
@@ -105,7 +98,7 @@ public:
       : Argument(ArgumentKind::LLVMStr), val(val) {}
 
 public:
-  std::string GetVal() const { return val; }
+  llvm::StringRef GetVal() const { return val; }
 };
 
 struct CStr final : public Argument {
@@ -138,17 +131,18 @@ public:
   unsigned GetVal() const { return val; }
 };
 
-struct Token final : public Argument {
+struct Tok final : public Argument {
   tok val;
 
 public:
-  Token() = delete;
+  Tok() = delete;
 
-  explicit Token(const tok val) : Argument(ArgumentKind::TokenKind), val(val) {}
+  explicit Tok(const tok val) : Argument(ArgumentKind::Tok), val(val) {}
   tok GetVal() const { return val; }
 };
 
 enum class ASTArgumentKind { None, Decl, DeclContext, Type, Identifier, Token };
+
 struct ASTArgument : public Argument {
   ASTArgumentKind kind = ASTArgumentKind::None;
 
