@@ -17,6 +17,7 @@ enum class FixID : uint32_t;
 class Decl;
 class DeclContext;
 class Type;
+class Token;
 class Identifier;
 
 /// Describes a diagnostic along with its argument types.
@@ -45,7 +46,7 @@ enum class DiagnosticArgumentKind : unsigned {
   /// unsigned
   Unsigned,
   ///
-  Tok,
+  Token,
   ///
   Decl,
   ///
@@ -57,104 +58,71 @@ enum class DiagnosticArgumentKind : unsigned {
 };
 
 constexpr size_t DiagnosticArgumentAlignment = 8;
+class alignas(DiagnosticArgumentAlignment) DiagnosticArgument final {
 
-template <typename T>
-class alignas(DiagnosticArgumentAlignment) DiagnosticArgument {
-  T val;
+  int integerValue;
+  unsigned unsignedValue;
+  bool boolValue;
+  StringRef stringValue;
+  const Token *tokenValue = nullptr;
+  const Decl *declValue = nullptr;
+  const Identifier *identifierValue = nullptr;
+  const DeclContext *declContextValue = nullptr;
+  const Type *typeValue = nullptr;
+
+  DiagnosticArgumentKind kind;
+
+public:
   DiagnosticArgument() = delete;
+  ~DiagnosticArgument() = delete;
 
 public:
-  DiagnosticArgument(T val) : val(val) {}
-public:
-  T GetValue() { return val; }
-  virtual DiagnosticArgumentKind GetKind() = 0;
-};
-
-class IntegerDiagnosticArgument final : public DiagnosticArgument<int> {
-  IntegerDiagnosticArgument() = delete;
+  DiagnosticArgument(int val)
+      : integerValue(val), kind(DiagnosticArgumentKind::Integer) {}
+  int GetIntegerValue() { return integerValue; }
 
 public:
-  IntegerDiagnosticArgument(int val) : DiagnosticArgument(val) {}
+  DiagnosticArgument(unsigned val)
+      : unsignedValue(val), kind(DiagnosticArgumentKind::Unsigned) {}
+  unsigned GetUnsignedValue() { return unsignedValue; }
 
 public:
-  DiagnosticArgumentKind GetKind() override {
-    return DiagnosticArgumentKind::Integer;
-  }
-};
-
-class UnsignedDiagnosticArgument final : public DiagnosticArgument<unsigned> {
-  UnsignedDiagnosticArgument() = delete;
-public:
-  UnsignedDiagnosticArgument(unsigned val) : DiagnosticArgument(val) {}
+  DiagnosticArgument(bool val)
+      : boolValue(val), kind(DiagnosticArgumentKind::Bool) {}
+  bool GetBoolValue() { return boolValue; }
 
 public:
-  DiagnosticArgumentKind GetKind() override {
-    return DiagnosticArgumentKind::Unsigned;
-  }
-};
+  DiagnosticArgument(StringRef val)
+      : stringValue(val), kind(DiagnosticArgumentKind::String) {}
+  StringRef GetstringValue() { return stringValue; }
 
-class BoolDiagnosticArgument final : public DiagnosticArgument<bool> {
-  BoolDiagnosticArgument() = delete;
 public:
-  BoolDiagnosticArgument(bool val) : DiagnosticArgument(val) {}
+  DiagnosticArgument(const Token *val)
+      : tokenValue(val), kind(DiagnosticArgumentKind::Token) {}
+  const Token *GetTokenValue() { return tokenValue; }
 
-  DiagnosticArgumentKind GetKind() override {
-    return DiagnosticArgumentKind::Bool;
-  }
-};
-
-class StringDiagnosticArgument final : public DiagnosticArgument<StringRef> {
-  StringDiagnosticArgument() = delete;
 public:
-  StringDiagnosticArgument(StringRef val) : DiagnosticArgument(val) {}
+  DiagnosticArgument(const Decl *val)
+      : declValue(val), kind(DiagnosticArgumentKind::Decl) {}
+  const Decl *GetDeclValue() { return declValue; }
 
-  DiagnosticArgumentKind GetKind() override {
-    return DiagnosticArgumentKind::String;
-  }
-};
-
-class DeclDiagnosticArgument final : public DiagnosticArgument<const Decl *> {
-  DeclDiagnosticArgument() = delete;
 public:
-  DeclDiagnosticArgument(const Decl *val) : DiagnosticArgument(val) {}
+  DiagnosticArgument(const Identifier *val)
+      : identifierValue(val), kind(DiagnosticArgumentKind::Identifier) {}
+  const Identifier *GetIdentifierValue() { return identifierValue; }
 
-  DiagnosticArgumentKind GetKind() override {
-    return DiagnosticArgumentKind::Decl;
-  }
-};
-
-class DeclContextDiagnosticArgument final
-    : public DiagnosticArgument<const DeclContext *> {
-  DeclContextDiagnosticArgument() = delete;
 public:
-  DeclContextDiagnosticArgument(const DeclContext *val)
-      : DiagnosticArgument(val) {}
+  DiagnosticArgument(const DeclContext *val)
+      : declContextValue(val), kind(DiagnosticArgumentKind::DeclContext) {}
+  const DeclContext *GetDeclContext() { return declContextValue; }
 
-  DiagnosticArgumentKind GetKind() override {
-    return DiagnosticArgumentKind::DeclContext;
-  }
-};
-
-class TypeDiagnosticArgument final : public DiagnosticArgument<const Type *> {
-  TypeDiagnosticArgument() = delete;
 public:
-  TypeDiagnosticArgument(const Type *val) : DiagnosticArgument(val) {}
+  DiagnosticArgument(const Type *val)
+      : typeValue(val), kind(DiagnosticArgumentKind::Type) {}
+  const Type *GetTypeValue() { return typeValue; }
 
-  DiagnosticArgumentKind GetKind() override {
-    return DiagnosticArgumentKind::Type;
-  }
-};
-
-class IdentifierDiagnosticArgument final
-    : public DiagnosticArgument<const Identifier *> {
-      IdentifierDiagnosticArgument() = delete;
 public:
-  IdentifierDiagnosticArgument(const Identifier *val)
-      : DiagnosticArgument(val) {}
-
-  DiagnosticArgumentKind GetKind() override {
-    return DiagnosticArgumentKind::Identifier;
-  }
+  DiagnosticArgumentKind GetKind() { return kind; }
 };
 
 namespace diag {
