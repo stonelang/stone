@@ -12,7 +12,7 @@ class DiagnosticFormatter;
 class DiagnosticConsumer {
 
 protected:
-  DiagnosticEmitter &emitter;
+  DiagnosticEmitter emitter;
 
   unsigned numWarnings = 0; ///< Number of warnings reported
   unsigned numErrors = 0;   ///< Number of errors reported
@@ -22,7 +22,7 @@ protected:
 
 public:
   // TODO: May just waht to pass by value
-  DiagnosticConsumer(DiagnosticEmitter &emitter);
+  DiagnosticConsumer(DiagnosticEmitter emitter);
   virtual ~DiagnosticConsumer();
 
   unsigned GetNumErrors() const { return numErrors; }

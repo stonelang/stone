@@ -4,7 +4,7 @@
 
 using namespace stone;
 
-TextDiagnosticConsumer::TextDiagnosticConsumer()
+TextDiagnosticConsumer::TextDiagnosticConsumer(TextDiagnosticEmitter emitter)
     : DiagnosticConsumer(emitter) {}
 
 TextDiagnosticConsumer::~TextDiagnosticConsumer() {}

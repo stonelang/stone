@@ -10,11 +10,8 @@ namespace stone {
 class DiagnosticMessage;
 
 class TextDiagnosticConsumer : public DiagnosticConsumer {
-
-  TextDiagnosticEmitter emitter;
-
 public:
-  TextDiagnosticConsumer();
+  TextDiagnosticConsumer(TextDiagnosticEmitter emitter = TextDiagnosticEmitter());
   ~TextDiagnosticConsumer();
 
 public:

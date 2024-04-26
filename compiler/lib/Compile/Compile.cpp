@@ -6,7 +6,7 @@
 #include "stone/Core.h"
 #include "stone/Support/DiagnosticsCompile.h"
 #include "stone/Support/StatsReporter.h"
-#include "stone/Support/TextDiagnosticConsumer.h"
+#include "stone/Syntax/ASTDiagnostic.h"
 
 using namespace stone;
 
@@ -17,7 +17,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   FINISH_LLVM_INIT();
 
 
-  TextDiagnosticConsumer consumer;
+  ASTTextDiagnosticConsumer consumer;
   CompilerInvocation invocation;
   invocation.AddDiagnosticConsumer(consumer);
 

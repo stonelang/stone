@@ -2,7 +2,7 @@
 
 using stone::DiagnosticConsumer;
 
-DiagnosticConsumer::DiagnosticConsumer(DiagnosticEmitter &emitter)
+DiagnosticConsumer::DiagnosticConsumer(DiagnosticEmitter emitter)
     : emitter(emitter) {}
 
 DiagnosticConsumer::~DiagnosticConsumer() {}

@@ -32,8 +32,8 @@ public:
 };
 
 class ASTTextDiagnosticConsumer final : public TextDiagnosticConsumer {
-
-  
+  public:
+    ASTTextDiagnosticConsumer() : TextDiagnosticConsumer(ASTTextDiagnosticEmitter()){}
 };
 
 } // namespace stone
