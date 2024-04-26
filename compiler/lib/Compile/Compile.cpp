@@ -4,11 +4,9 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Core.h"
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/Support/DiagnosticsCompile.h"
 #include "stone/Support/StatsReporter.h"
 #include "stone/Support/TextDiagnosticConsumer.h"
-#include "stone/Support/TextDiagnosticFormatter.h"
-#include "stone/Syntax/ASTDiagnosticArgument.h"
 
 using namespace stone;
 
@@ -18,10 +16,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-  ASTDiagnosticFormatter formatter;
-  ASTDiagnosticEmitter emitter(formatter);
-  TextDiagnosticConsumer consumer(emitter);
 
+  TextDiagnosticConsumer consumer;
   CompilerInvocation invocation;
   invocation.AddDiagnosticConsumer(consumer);
 

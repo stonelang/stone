@@ -5,7 +5,7 @@
 
 #include "DiagnosticsCore.def"
 #include "DiagnosticsCodeGen.def"
-#include "DiagnosticsCompiler.def"
+#include "DiagnosticsCompile.def"
 #include "DiagnosticsDriver.def"
 #include "DiagnosticsSem.def"
 #include "DiagnosticsParse.def"

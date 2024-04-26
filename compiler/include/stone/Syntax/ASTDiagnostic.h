@@ -31,7 +31,10 @@ public:
   void EmitDeclLoc();
 };
 
-class ASTTextDiagnosticConsumer final : public TextDiagnosticConsumer {};
+class ASTTextDiagnosticConsumer final : public TextDiagnosticConsumer {
+
+  
+};
 
 } // namespace stone
 
