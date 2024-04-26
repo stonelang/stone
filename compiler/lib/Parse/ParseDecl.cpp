@@ -2,7 +2,7 @@
 #include "stone/IDE.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/Parsing.h"
-#include "stone/Support/ASTDiagnostic.h"
+#include "stone/Syntax/ASTDiagnostic.h"
 #include "stone/Syntax/Stmt.h"
 // #include "stone/Syntax/Using.h"
 #include "stone/Syntax/ASTContext.h"
@@ -245,7 +245,6 @@ SyntaxStatus Parser::ParseFunctionSignature(ParsingDecl &collector,
     if (!ConsumeIf(tok::arrow, arrowLoc)) {
       // FixIt ':' to '->'.
       PrintD(curTok, diag::err_expected_arrow_after_function_param)
-          .WithFix()
           .Replace(curTok.GetLoc(), llvm::StringRef("->"));
       // arrowLoc = ConsumeToken(tok::colon);
     } else {

@@ -3,7 +3,7 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/IDE.h"
-#include "stone/Support/ASTDiagnostic.h"
+#include "stone/Syntax/ASTDiagnostic.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/Scope.h"
 

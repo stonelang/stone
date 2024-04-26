@@ -475,7 +475,7 @@ private:
     assert(!curDiagnostic && "Already have an active diagnostic");
     curDiagnostic = diagnostic;
     curDiagnostic->SetLoc(loc);
-    
+
     return InFlightDiagnostic(*this);
   }
 

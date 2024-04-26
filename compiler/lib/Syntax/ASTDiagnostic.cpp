@@ -1,5 +1,5 @@
+#include "stone/Syntax/ASTDiagnostic.h"
 #include "stone/Support/DiagnosticEngine.h"
-#include "stone/Syntax/ASTDiagnosticArgument.h"
 
 using namespace stone;
 
@@ -46,27 +46,30 @@ ASTDiagnostic::~ASTDiagnostic() {}
 //   auto arg = static_cast<const Identifier *>(val);
 // }
 
-ASTDiagnosticFormatter::ASTDiagnosticFormatter() {}
+// ASTDiagnosticFormatter::ASTDiagnosticFormatter() {}
 
-void ASTDiagnosticFormatter::Format(ColorStream &out, const Diagnostic &detail,
-                                    DiagnosticFormatOptions fmtOpts) {
+// void ASTDiagnosticFormatter::Format(ColorStream &out, const Diagnostic
+// &detail,
+//                                     DiagnosticFormatOptions fmtOpts) {
 
-  // printf("%s\n", "Hello syntax formatting");
-}
+//   // printf("%s\n", "Hello syntax formatting");
+// }
 
-void ASTDiagnosticFormatter::Format(ColorStream &out, llvm::StringRef text,
-                                    llvm::ArrayRef<diag::Argument> args,
-                                    DiagnosticFormatOptions fmtOpts) {}
+// void ASTDiagnosticFormatter::Format(ColorStream &out, llvm::StringRef text,
+//                                     llvm::ArrayRef<diag::Argument> args,
+//                                     DiagnosticFormatOptions fmtOpts) {}
 
-void ASTDiagnosticFormatter::FormatArgument(ColorStream &out,
-                                            llvm::StringRef modifier,
-                                            llvm::StringRef modifierArguments,
-                                            ArrayRef<diag::Argument> args,
-                                            unsigned argIndex,
-                                            DiagnosticFormatOptions fmtOpts) {}
+// void ASTDiagnosticFormatter::FormatArgument(ColorStream &out,
+//                                             llvm::StringRef modifier,
+//                                             llvm::StringRef
+//                                             modifierArguments,
+//                                             ArrayRef<diag::Argument> args,
+//                                             unsigned argIndex,
+//                                             DiagnosticFormatOptions fmtOpts)
+//                                             {}
 
-ASTDiagnosticEmitter::ASTDiagnosticEmitter(ASTDiagnosticFormatter &formatter)
-    : TextDiagnosticEmitter(formatter) {}
+// ASTDiagnosticEmitter::ASTDiagnosticEmitter(ASTDiagnosticFormatter &formatter)
+//     : TextDiagnosticEmitter(formatter) {}
 
 // ASTDiagnosticEmitter::ASTDiagnosticEmitter() {}
 

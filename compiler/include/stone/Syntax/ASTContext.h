@@ -5,6 +5,8 @@
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Support/StatsReporter.h"
+#include "stone/Support/DiagnosticArgument.h"
+#include "stone/Syntax/ASTDiagnostic.h"
 #include "stone/Syntax/Builtin.h"
 #include "stone/Syntax/DeclName.h"
 #include "stone/Syntax/Identifier.h"
@@ -15,7 +17,6 @@
 
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Support/DiagnosticEngine.h"
-#include "stone/Syntax/ASTDiagnosticArgument.h"
 #include "stone/Syntax/ClangContext.h"
 #include "stone/Syntax/Expr.h"
 #include "stone/Syntax/Ownership.h"
@@ -228,10 +229,10 @@ public:
 public:
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
     return GetDiags().PrintD(
-        loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
+        loc, ASTDiagnostic(diagID, llvm::ArrayRef<DiagnosticArgument>()));
   }
   stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
-                                   llvm::ArrayRef<diag::Argument> args) {
+                                   llvm::ArrayRef<DiagnosticArgument> args) {
     return GetDiags().PrintD(loc, ASTDiagnostic(diagID, args));
   }
 

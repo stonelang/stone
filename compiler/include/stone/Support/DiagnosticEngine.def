@@ -8,7 +8,7 @@
 #include "DiagnosticsCompiler.def"
 #include "DiagnosticsDriver.def"
 #include "DiagnosticsSem.def"
-#include "DiagnosticsAST.def"
+#include "DiagnosticsParse.def"
 
 #undef DIAG_NO_UNDEF
 

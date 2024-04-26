@@ -1,5 +1,5 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Support/ASTDiagnostic.h"
+#include "stone/Syntax/ASTDiagnostic.h"
 #include "stone/Syntax/ASTContext.h"
 #include "stone/Syntax/ASTNode.h"
 #include "stone/Syntax/Type.h"
