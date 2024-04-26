@@ -14,6 +14,11 @@ namespace stone {
 enum class DiagID : uint32_t;
 enum class FixID : uint32_t;
 
+class Decl;
+class DeclContext;
+class Type;
+class Identifier;
+
 /// Describes a diagnostic along with its argument types.
 ///
 /// The diagnostics header introduces instances of this type for each
@@ -28,6 +33,128 @@ template <typename... ArgTypes> struct Diag {
 template <typename... ArgTypes> struct Fix {
   /// The code fix ID corresponding to this fix.
   FixID fixID;
+};
+
+enum class DiagnosticArgumentKind : unsigned {
+  /// bool
+  Bool = 0,
+  /// StringRef
+  String,
+  /// int
+  Integer,
+  /// unsigned
+  Unsigned,
+  ///
+  Tok,
+  ///
+  Decl,
+  ///
+  DeclContext,
+  ///
+  Type,
+  ///
+  Identifier,
+};
+
+constexpr size_t DiagnosticArgumentAlignment = 8;
+
+template <typename T>
+class alignas(DiagnosticArgumentAlignment) DiagnosticArgument {
+  T val;
+  DiagnosticArgument() = delete;
+
+public:
+  DiagnosticArgument(T val) : val(val) {}
+public:
+  T GetValue() { return val; }
+  virtual DiagnosticArgumentKind GetKind() = 0;
+};
+
+class IntegerDiagnosticArgument final : public DiagnosticArgument<int> {
+  IntegerDiagnosticArgument() = delete;
+
+public:
+  IntegerDiagnosticArgument(int val) : DiagnosticArgument(val) {}
+
+public:
+  DiagnosticArgumentKind GetKind() override {
+    return DiagnosticArgumentKind::Integer;
+  }
+};
+
+class UnsignedDiagnosticArgument final : public DiagnosticArgument<unsigned> {
+  UnsignedDiagnosticArgument() = delete;
+public:
+  UnsignedDiagnosticArgument(unsigned val) : DiagnosticArgument(val) {}
+
+public:
+  DiagnosticArgumentKind GetKind() override {
+    return DiagnosticArgumentKind::Unsigned;
+  }
+};
+
+class BoolDiagnosticArgument final : public DiagnosticArgument<bool> {
+  BoolDiagnosticArgument() = delete;
+public:
+  BoolDiagnosticArgument(bool val) : DiagnosticArgument(val) {}
+
+  DiagnosticArgumentKind GetKind() override {
+    return DiagnosticArgumentKind::Bool;
+  }
+};
+
+class StringDiagnosticArgument final : public DiagnosticArgument<StringRef> {
+  StringDiagnosticArgument() = delete;
+public:
+  StringDiagnosticArgument(StringRef val) : DiagnosticArgument(val) {}
+
+  DiagnosticArgumentKind GetKind() override {
+    return DiagnosticArgumentKind::String;
+  }
+};
+
+class DeclDiagnosticArgument final : public DiagnosticArgument<const Decl *> {
+  DeclDiagnosticArgument() = delete;
+public:
+  DeclDiagnosticArgument(const Decl *val) : DiagnosticArgument(val) {}
+
+  DiagnosticArgumentKind GetKind() override {
+    return DiagnosticArgumentKind::Decl;
+  }
+};
+
+class DeclContextDiagnosticArgument final
+    : public DiagnosticArgument<const DeclContext *> {
+  DeclContextDiagnosticArgument() = delete;
+public:
+  DeclContextDiagnosticArgument(const DeclContext *val)
+      : DiagnosticArgument(val) {}
+
+  DiagnosticArgumentKind GetKind() override {
+    return DiagnosticArgumentKind::DeclContext;
+  }
+};
+
+class TypeDiagnosticArgument final : public DiagnosticArgument<const Type *> {
+  TypeDiagnosticArgument() = delete;
+public:
+  TypeDiagnosticArgument(const Type *val) : DiagnosticArgument(val) {}
+
+  DiagnosticArgumentKind GetKind() override {
+    return DiagnosticArgumentKind::Type;
+  }
+};
+
+class IdentifierDiagnosticArgument final
+    : public DiagnosticArgument<const Identifier *> {
+      IdentifierDiagnosticArgument() = delete;
+public:
+  IdentifierDiagnosticArgument(const Identifier *val)
+      : DiagnosticArgument(val) {}
+
+  DiagnosticArgumentKind GetKind() override {
+    return DiagnosticArgumentKind::Identifier;
+  }
 };
 
 namespace diag {
@@ -46,7 +173,7 @@ enum class ArgumentKind : unsigned {
   Int,
   /// unsigned
   UInt,
-  /// 
+  ///
   Tok,
   /// custom AST argument
   AST,

@@ -15,7 +15,7 @@ class StringLiteral;
 class Twine;
 class VersionTuple;
 
-  // Other common classes.
+// Other common classes.
 class raw_ostream;
 class raw_ostream;
 class raw_pwrite_stream;
@@ -36,23 +36,21 @@ template <typename T> class IntrusiveRefCntPtr;
 template <typename T> struct IntrusiveRefCntPtrInfo;
 template <class Derived> class RefCountedBase;
 
-template <typename ...PTs> class PointerUnion;
+template <typename... PTs> class PointerUnion;
 template <typename IteratorT> class iterator_range;
 class SmallBitVector;
-
 
 // TODO: DenseMap, ...
 } // namespace llvm
 
 namespace stone {
 // Casting operators.
-using llvm::isa;
-using llvm::isa_and_nonnull;
 using llvm::cast;
+using llvm::cast_or_null;
 using llvm::dyn_cast;
 using llvm::dyn_cast_or_null;
-using llvm::cast_or_null;
-
+using llvm::isa;
+using llvm::isa_and_nonnull;
 
 // ADT's.
 using llvm::ArrayRef;
@@ -61,12 +59,11 @@ using llvm::SaveAndRestore;
 using llvm::SmallString;
 using llvm::SmallVector;
 using llvm::SmallVectorImpl;
-using llvm::StringRef;
-using llvm::Twine;
-using llvm::VersionTuple;
 using llvm::StringLiteral;
+using llvm::StringRef;
 using llvm::TinyPtrVector;
 using llvm::Twine;
+using llvm::VersionTuple;
 
 using std::nullopt;
 
@@ -79,8 +76,8 @@ using llvm::raw_ostream;
 using llvm::raw_pwrite_stream;
 
 // Other common classes.
- using llvm::APFloat;
- using llvm::APInt;
+using llvm::APFloat;
+using llvm::APInt;
 
 } // namespace stone
 
