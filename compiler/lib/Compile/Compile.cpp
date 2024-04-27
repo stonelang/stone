@@ -16,7 +16,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-  ASTTextDiagnosticConsumer consumer;
+  ASTDiagnosticConsumer consumer;
   CompilerInvocation invocation;
   invocation.AddDiagnosticConsumer(consumer);
 

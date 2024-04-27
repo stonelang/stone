@@ -23,9 +23,9 @@ public:
 public:
 };
 
-class ASTTextDiagnosticEmitter final : public TextDiagnosticEmitter {
+class ASTDiagnosticEmitter final : public TextDiagnosticEmitter {
 public:
-  ASTTextDiagnosticEmitter();
+  ASTDiagnosticEmitter();
 
 public:
   void EmitDeclLoc();
@@ -45,10 +45,10 @@ public:
                       DiagnosticFormatOptions fmtOpts) override;
 };
 
-class ASTTextDiagnosticConsumer final : public TextDiagnosticConsumer {
+class ASTDiagnosticConsumer final : public TextDiagnosticConsumer {
 public:
-  ASTTextDiagnosticConsumer()
-      : TextDiagnosticConsumer(ASTTextDiagnosticEmitter()) {}
+  ASTDiagnosticConsumer()
+      : TextDiagnosticConsumer(ASTDiagnosticEmitter()) {}
 
 public:
 };

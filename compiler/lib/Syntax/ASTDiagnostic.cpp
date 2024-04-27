@@ -77,15 +77,15 @@ ASTDiagnostic::~ASTDiagnostic() {}
 
 // }
 
-void ASTTextDiagnosticEmitter::Format(ColorStream &out,
+void ASTDiagnosticEmitter::Format(ColorStream &out,
                                       const Diagnostic &diagnostic,
                                       DiagnosticFormatOptions fmtOpts) {}
 
-void ASTTextDiagnosticEmitter::Format(ColorStream &out, llvm::StringRef text,
+void ASTDiagnosticEmitter::Format(ColorStream &out, llvm::StringRef text,
                                       llvm::ArrayRef<DiagnosticArgument> args,
                                       DiagnosticFormatOptions fmtOpts) {}
 
-void ASTTextDiagnosticEmitter::FormatArgument(ColorStream &out,
+void ASTDiagnosticEmitter::FormatArgument(ColorStream &out,
                                               llvm::StringRef modifier,
                                               llvm::StringRef modifierArguments,
                                               ArrayRef<DiagnosticArgument> args,
