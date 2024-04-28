@@ -20,7 +20,6 @@
 #include "stone/AST/ClangContext.h"
 #include "stone/AST/Expr.h"
 #include "stone/AST/Ownership.h"
-#include "stone/AST/SyntaxResult.h"
 #include "stone/AST/TypeSpecifier.h"
 #include "stone/AST/Types.h"
 

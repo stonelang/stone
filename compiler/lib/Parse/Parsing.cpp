@@ -27,8 +27,8 @@ ParsingPositionRAII::~ParsingPositionRAII() {
   parser.RestoreParsingPosition(parsingPos);
 }
 
-SyntaxStatus ParsingDecl::Verify() {
-  SyntaxStatus status;
+ParserStatus ParsingDecl::Verify() {
+  ParserStatus status;
   return status;
 }
 

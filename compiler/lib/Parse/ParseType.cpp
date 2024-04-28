@@ -26,9 +26,9 @@ Type Parser::ParseFunctionType(ParsingDecl &collector, Diag<> diagID) {
   //          "Function can have only 'pure' type-specifier at this point");
   // }
 
-  // SyntaxStatus status;
+  // ParserStatus status;
 
-  // SyntaxResult<Type> type =
+  // ParserResult<Type> type =
   //     ParseType(collector, diag::err_expected_type_for_function_result);
 
   // if (!collector.GetTypeSpecifierCollector().HasAny()) {
