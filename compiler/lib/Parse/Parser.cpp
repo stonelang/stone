@@ -107,8 +107,8 @@ SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
   SrcLoc();
 }
 
-SyntaxStatus Parser::ParseIdentifier(Identifier &result, SrcLoc &resultLoc) {
-  SyntaxStatus status;
+ParserStatus Parser::ParseIdentifier(Identifier &result, SrcLoc &resultLoc) {
+  ParserStatus status;
 
   assert(GetTok().IsIdentifierOrUnderscore());
   resultLoc = ConsumeIdentifier(result);

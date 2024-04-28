@@ -13,7 +13,7 @@
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
-#include "stone/AST/SyntaxResult.h"
+#include "stone/Parse/ParserResult.h"
 
 #include "llvm/Support/Timer.h"
 
@@ -111,52 +111,52 @@ public:
 
 public:
   bool IsTopLevelDeclSpecifier();
-  void ParseTopLevelDecls(llvm::SmallVector<SyntaxResult<Decl>> &results);
-  SyntaxResult<Decl> ParseTopLevelDecl(ParsingDecl &collector);
-  SyntaxResult<Decl> ParseDecl(ParsingDecl &parsingDecl);
+  void ParseTopLevelDecls(llvm::SmallVector<ParserResult<Decl>> &results);
+  ParserResult<Decl> ParseTopLevelDecl(ParsingDecl &collector);
+  ParserResult<Decl> ParseDecl(ParsingDecl &parsingDecl);
 
 public:
   void ParseDeclName();
   // TODO: Param should be constant
-  SyntaxResult<Decl> ParseVarDecl(ParsingDecl &parsingDecl);
-  SyntaxResult<Decl> ParseAutoDecl(ParsingDecl &parsingDecl);
+  ParserResult<Decl> ParseVarDecl(ParsingDecl &parsingDecl);
+  ParserResult<Decl> ParseAutoDecl(ParsingDecl &parsingDecl);
 
 public:
   // === Collectors === ///
 
   /// Decl
-  SyntaxStatus CollectDeclSpecifier(ParsingDecl &parsingDecl);
+  ParserStatus CollectDeclSpecifier(ParsingDecl &parsingDecl);
 
   /// using
-  SyntaxStatus CollectImportSpecifier(ParsingDecl &parsingDecl);
+  ParserStatus CollectImportSpecifier(ParsingDecl &parsingDecl);
 
   /// private, internal, public
-  SyntaxStatus CollectAccessSpecifier(ParsingDecl &parsingDecl);
+  ParserStatus CollectAccessSpecifier(ParsingDecl &parsingDecl);
 
   bool IsTypeChunk(const Token &tk);
 
   /// T*, T&
-  SyntaxStatus CollectTypeChunk(ParsingDecl &parsingDecl);
-  SyntaxStatus CollectTypeChunks(ParsingDecl &parsingDecl);
+  ParserStatus CollectTypeChunk(ParsingDecl &parsingDecl);
+  ParserStatus CollectTypeChunks(ParsingDecl &parsingDecl);
 
   /// Basic types: int, uint, etc.
-  SyntaxStatus CollectBasicTypeSpecifier(ParsingDecl &parsingDecl);
+  ParserStatus CollectBasicTypeSpecifier(ParsingDecl &parsingDecl);
 
   /// struct, class, and enum
-  SyntaxStatus CollectNominalTypeSpecifier(ParsingDecl &parsingDecl);
+  ParserStatus CollectNominalTypeSpecifier(ParsingDecl &parsingDecl);
 
   /// const, mutable, immutable, and pure.
-  SyntaxStatus CollectTypeQualifiers(ParsingDecl &parsingDecl);
-  SyntaxStatus CollectTypeQualifier(ParsingDecl &parsingDecl);
+  ParserStatus CollectTypeQualifiers(ParsingDecl &parsingDecl);
+  ParserStatus CollectTypeQualifier(ParsingDecl &parsingDecl);
 
   /// new, and delete
-  SyntaxStatus CollectTypeOperator(ParsingDecl &parsingDecl);
+  ParserStatus CollectTypeOperator(ParsingDecl &parsingDecl);
 
   /// extern, static
-  SyntaxStatus CollectStorageSpecifier(ParsingDecl &parsingDecl);
+  ParserStatus CollectStorageSpecifier(ParsingDecl &parsingDecl);
 
   /// fun
-  SyntaxStatus CollectFunctionSpecifier(ParsingDecl &parsingDecl);
+  ParserStatus CollectFunctionSpecifier(ParsingDecl &parsingDecl);
 
 public:
   // === Type Parsing ===//
@@ -176,10 +176,10 @@ public:
 
 public:
   //== fun ==//
-  SyntaxResult<Decl> ParseFunDecl(ParsingDecl &parsingDecl);
+  ParserResult<Decl> ParseFunDecl(ParsingDecl &parsingDecl);
 
 private:
-  SyntaxStatus ParseFunctionSignature(ParsingDecl &parsingDecl,
+  ParserStatus ParseFunctionSignature(ParsingDecl &parsingDecl,
                                       Identifier basicName, DeclName &fullName);
 
   // Identifier functionName,
@@ -192,8 +192,8 @@ private:
   //                                       bool &rethrows,
   //                                       Typer *&retType);
 
-  SyntaxStatus ParseFunctionArguments(ParsingDecl &parsingDecl);
-  SyntaxStatus ParseFunctionBody(ParsingDecl &parsingDecl,
+  ParserStatus ParseFunctionArguments(ParsingDecl &parsingDecl);
+  ParserStatus ParseFunctionBody(ParsingDecl &parsingDecl,
                                  FunctionDecl &functionDecl);
 
   BraceStmt *ParseFunctionBodyImpl(ParsingDecl &parsingDecl,
@@ -201,19 +201,19 @@ private:
 
 public:
   //== using ==//
-  SyntaxResult<Decl> ParseImportDecl(ParsingDecl &parsingDecl);
+  ParserResult<Decl> ParseImportDecl(ParsingDecl &parsingDecl);
 
 public:
   //== struct ==//
-  SyntaxResult<Decl> ParseStructDecl(ParsingDecl &parsingDecl);
+  ParserResult<Decl> ParseStructDecl(ParsingDecl &parsingDecl);
 
 public:
   //== enum== //
-  SyntaxResult<Decl> ParseEnumDecl(ParsingDecl &parsingDecl);
+  ParserResult<Decl> ParseEnumDecl(ParsingDecl &parsingDecl);
 
 public:
   //== interface ==//
-  SyntaxResult<Decl> ParseInterfaceDecl(ParsingDecl &parsingDecl);
+  ParserResult<Decl> ParseInterfaceDecl(ParsingDecl &parsingDecl);
 
 private:
   void Lex(Token &result) { lexer->Lex(result); }
@@ -222,16 +222,16 @@ private:
   }
 
 public:
-  SyntaxResult<Decl> ParseSpaceDecl();
+  ParserResult<Decl> ParseSpaceDecl();
 
 public:
   bool IsStartOfStmt();
   /// Stmt
-  SyntaxResult<Stmt> ParseStmt();
+  ParserResult<Stmt> ParseStmt();
 
 public:
   /// Expr
-  SyntaxResult<Expr> ParseExpr();
+  ParserResult<Expr> ParseExpr();
 
 public:
   /// Stop parsing now.
@@ -308,13 +308,13 @@ public:
   SrcLoc ConsumeStartingCharOfCurToken(tok Kind = tok::oper_binary_unspaced,
                                        size_t len = 1);
 
-  SyntaxStatus ParseIdentifier(Identifier &result, SrcLoc &resultLoc);
+  ParserStatus ParseIdentifier(Identifier &result, SrcLoc &resultLoc);
   SrcLoc ConsumeIdentifier(Identifier &result);
 
 public:
   // == Skipping ==/
 
-  SyntaxStatus SkipUntil(tok T1, tok T2 = tok::MAX);
+  ParserStatus SkipUntil(tok T1, tok T2 = tok::MAX);
   void SkipUntilAnyOperator();
 
   /// Skip until a curTok that starts with '>', and consume it if found.
@@ -339,7 +339,7 @@ public:
   ///
   /// Returns a parser status that can capture whether a code completion curTok
   /// was returned.
-  SyntaxStatus SkipSingle();
+  ParserStatus SkipSingle();
   /// Skip until the next '#else', '#endif' or until eof.
   void SkipUntilConditionalBlockClose();
 

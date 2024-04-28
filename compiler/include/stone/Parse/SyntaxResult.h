@@ -6,7 +6,7 @@
 
 namespace stone {
 
-class SyntaxStatus;
+class ParserStatus;
 /// A wrapper for a parser AST node result (Decl, Stmt, Expr,
 /// etc.)
 ///
@@ -16,34 +16,34 @@ class SyntaxStatus;
 /// \li if there was a code completion token.
 ///
 /// If you want to return an AST node pointer in the Syntax, consider using
-/// SyntaxResult instead.
-template <typename T> class SyntaxResult {
+/// ParserResult instead.
+template <typename T> class ParserResult {
   llvm::PointerIntPair<T *, 2> ptrAndBits;
   enum {
     isError = 0x1,
     IsCodeCompletion = 0x2,
   };
-  template <typename U> friend class SyntaxResult;
+  template <typename U> friend class ParserResult;
 
   template <typename U>
-  friend inline SyntaxResult<U> MakeSyntaxResult(SyntaxStatus Status,
+  friend inline ParserResult<U> MakeParserResult(ParserStatus Status,
                                                  U *Result);
 
 public:
   /// Construct a null result with error bit set.
-  SyntaxResult(std::nullptr_t = nullptr) { SetIsError(); }
+  ParserResult(std::nullptr_t = nullptr) { SetIsError(); }
 
   /// Construct a null result with specified error bits set.
-  SyntaxResult(SyntaxStatus Status);
+  ParserResult(ParserStatus Status);
 
   /// Construct a successful parser result.
-  explicit SyntaxResult(T *Result) : ptrAndBits(Result) {
+  explicit ParserResult(T *Result) : ptrAndBits(Result) {
     assert(Result && "a successful parser result cannot be null");
   }
   /// Convert from a different but compatible parser result.
   template <typename U, typename Enabler = typename std::enable_if<
                             std::is_base_of<T, U>::value>::type>
-  SyntaxResult(SyntaxResult<U> Other)
+  ParserResult(ParserResult<U> Other)
       : ptrAndBits(Other.ptrAndBits.getPointer(), Other.ptrAndBits.getInt()) {}
 
   /// Return true if this result does not have an AST node.
@@ -100,46 +100,46 @@ private:
 
 /// Create a successful parser result.
 template <typename T>
-static inline SyntaxResult<T> MakeSyntaxResult(T *Result) {
-  return SyntaxResult<T>(Result);
+static inline ParserResult<T> MakeParserResult(T *Result) {
+  return ParserResult<T>(Result);
 }
 
 /// Create a result (null or non-null) with error bit set.
 template <typename T>
-static inline SyntaxResult<T> MakeSyntaxErrorResult(T *Result = nullptr) {
-  SyntaxResult<T> PR;
+static inline ParserResult<T> MakeSyntaxErrorResult(T *Result = nullptr) {
+  ParserResult<T> PR;
   if (Result) {
-    PR = SyntaxResult<T>(Result);
+    PR = ParserResult<T>(Result);
   }
   PR.SetIsError();
   return PR;
 }
 
-template <typename T> static inline SyntaxResult<T> MakeNullSyntaxResult() {
-  return SyntaxResult<T>(nullptr);
+template <typename T> static inline ParserResult<T> MakeNullParserResult() {
+  return ParserResult<T>(nullptr);
 }
 
 /// Create a result (null or non-null) with error and code completion bits set.
 template <typename T>
-static inline SyntaxResult<T>
+static inline ParserResult<T>
 MakeSyntaxCodeCompletionResult(T *Result = nullptr) {
-  SyntaxResult<T> PR;
+  ParserResult<T> PR;
   if (Result) {
-    PR = SyntaxResult<T>(Result);
+    PR = ParserResult<T>(Result);
   }
   PR.SetHasCodeCompletionAndIsError();
   return PR;
 }
 
-/// Same as \c SyntaxResult, but just the status bits without the AST
+/// Same as \c ParserResult, but just the status bits without the AST
 /// node.
 ///
 /// Useful when the AST node is returned by some other means (for example, in
 /// a vector out parameter).
 ///
 /// If you want to use 'bool' as a result type in the Syntax, consider using
-/// SyntaxStatus instead.
-class SyntaxStatus {
+/// ParserStatus instead.
+class ParserStatus {
 
   // 1 = false
   unsigned isError : 1;
@@ -147,11 +147,11 @@ class SyntaxStatus {
 
 public:
   /// Construct a successful parser status by setting values to true = 0
-  SyntaxStatus() : isError(0), IsCodeCompletion(0) {}
+  ParserStatus() : isError(0), IsCodeCompletion(0) {}
 
   /// Construct a parser status with specified bits.
   template <typename T>
-  SyntaxStatus(SyntaxResult<T> Result) : isError(0), IsCodeCompletion(0) {
+  ParserStatus(ParserResult<T> Result) : isError(0), IsCodeCompletion(0) {
     if (Result.IsError()) {
       SetIsError();
     }
@@ -182,40 +182,40 @@ public:
     IsCodeCompletion = true;
   }
 
-  SyntaxStatus &operator|=(SyntaxStatus RHS) {
+  ParserStatus &operator|=(ParserStatus RHS) {
     isError |= RHS.isError;
     IsCodeCompletion |= RHS.IsCodeCompletion;
     return *this;
   }
 
-  friend SyntaxStatus operator|(SyntaxStatus LHS, SyntaxStatus RHS) {
-    SyntaxStatus Result = LHS;
+  friend ParserStatus operator|(ParserStatus LHS, ParserStatus RHS) {
+    ParserStatus Result = LHS;
     Result |= RHS;
     return Result;
   }
 };
 
 /// Create a successful parser status.
-static inline SyntaxStatus MakeSyntaxSuccess() { return SyntaxStatus(); }
+static inline ParserStatus MakeSyntaxSuccess() { return ParserStatus(); }
 
 /// Create a status with error bit set.
-static inline SyntaxStatus MakeSyntaxError() {
-  SyntaxStatus Status;
+static inline ParserStatus MakeSyntaxError() {
+  ParserStatus Status;
   Status.SetIsError();
   return Status;
 }
 
 /// Create a status with error and code completion bits set.
-static inline SyntaxStatus MakeSyntaxCodeCompletionStatus() {
-  SyntaxStatus Status;
+static inline ParserStatus MakeSyntaxCodeCompletionStatus() {
+  ParserStatus Status;
   Status.SetHasCodeCompletionAndIsError();
   return Status;
 }
 /// Create a parser result with specified bits.
 template <typename T>
-static inline SyntaxResult<T> MakeSyntaxResult(SyntaxStatus Status, T *Result) {
-  SyntaxResult<T> PR = Status.IsError() ? MakeSyntaxErrorResult(Result)
-                                        : MakeSyntaxResult(Result);
+static inline ParserResult<T> MakeParserResult(ParserStatus Status, T *Result) {
+  ParserResult<T> PR = Status.IsError() ? MakeSyntaxErrorResult(Result)
+                                        : MakeParserResult(Result);
 
   if (Status.HasCodeCompletion()) {
     PR.SetHasCodeCompletion();
@@ -223,7 +223,7 @@ static inline SyntaxResult<T> MakeSyntaxResult(SyntaxStatus Status, T *Result) {
   return PR;
 }
 
-template <typename T> SyntaxResult<T>::SyntaxResult(SyntaxStatus Status) {
+template <typename T> ParserResult<T>::ParserResult(ParserStatus Status) {
   assert(Status.IsError());
   SetIsError();
   if (Status.HasCodeCompletion()) {

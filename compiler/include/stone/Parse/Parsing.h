@@ -6,7 +6,7 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/AST/DeclSpecifier.h"
 #include "stone/AST/Scope.h"
-#include "stone/AST/SyntaxResult.h"
+#include "stone/Parse/ParserResult.h"
 
 #include "llvm/ADT/ArrayRef.h"
 
@@ -152,7 +152,7 @@ public:
   Parser &GetParser() { return parser; }
 
 public:
-  SyntaxStatus Verify();
+  ParserStatus Verify();
 };
 
 enum class ParsingContextKind : UInt8 {

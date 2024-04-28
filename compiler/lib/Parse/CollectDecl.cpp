@@ -8,9 +8,9 @@
 
 using namespace stone;
 
-SyntaxStatus Parser::CollectDeclSpecifier(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectDeclSpecifier(ParsingDecl &parsingDecl) {
 
-  SyntaxStatus status;
+  ParserStatus status;
   status = CollectImportSpecifier(parsingDecl);
   if (status.IsSuccess()) {
     return status;
@@ -44,7 +44,7 @@ SyntaxStatus Parser::CollectDeclSpecifier(ParsingDecl &parsingDecl) {
   return status;
 }
 
-SyntaxStatus Parser::CollectImportSpecifier(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectImportSpecifier(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::kw_import:
     parsingDecl.GetImportSpecifierCollector().AddImport(ConsumeToken());
@@ -55,7 +55,7 @@ SyntaxStatus Parser::CollectImportSpecifier(ParsingDecl &parsingDecl) {
   return stone::MakeSyntaxSuccess();
 }
 
-SyntaxStatus Parser::CollectTypeOperator(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectTypeOperator(ParsingDecl &parsingDecl) {
   // if(parsingDecl.GetTypeOperatorCollector().HasAny()){
   // }
   switch (GetTok().GetKind()) {
@@ -71,7 +71,7 @@ SyntaxStatus Parser::CollectTypeOperator(ParsingDecl &parsingDecl) {
   return stone::MakeSyntaxSuccess();
 }
 
-SyntaxStatus Parser::CollectAccessSpecifier(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectAccessSpecifier(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::kw_public: {
     if (parsingDecl.GetAccessSpecifierCollector().HasPublic()) {
@@ -100,8 +100,8 @@ SyntaxStatus Parser::CollectAccessSpecifier(ParsingDecl &parsingDecl) {
 }
 
 // TODO: Dulicate check
-SyntaxStatus Parser::CollectTypeQualifiers(ParsingDecl &parsingDecl) {
-  SyntaxStatus status;
+ParserStatus Parser::CollectTypeQualifiers(ParsingDecl &parsingDecl) {
+  ParserStatus status;
   while (GetTok().IsQualifier()) {
     status = CollectTypeQualifier(parsingDecl);
     if (status.HasCodeCompletion()) {
@@ -111,7 +111,7 @@ SyntaxStatus Parser::CollectTypeQualifiers(ParsingDecl &parsingDecl) {
   return status;
 }
 // TODO: Dulicate check
-SyntaxStatus Parser::CollectTypeQualifier(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectTypeQualifier(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::kw_const: {
     if (parsingDecl.GetTypeQualifierCollector().HasConst()) {
@@ -157,7 +157,7 @@ bool Parser::IsTypeChunk(const Token &tk) {
   }
 }
 
-SyntaxStatus Parser::CollectTypeChunk(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectTypeChunk(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::star:
     parsingDecl.GetTypeChunkCollector().AddPointer(ConsumeToken());
@@ -170,7 +170,7 @@ SyntaxStatus Parser::CollectTypeChunk(ParsingDecl &parsingDecl) {
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectTypeChunks(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectTypeChunks(ParsingDecl &parsingDecl) {
 
   assert(parsingDecl.GetTypeSpecifierCollector().HasAny() &&
          "Attemping to collect type-patterns without a type");
@@ -180,7 +180,7 @@ SyntaxStatus Parser::CollectTypeChunks(ParsingDecl &parsingDecl) {
     return MakeSyntaxSuccess();
   }
   // TODO: Simple for now but this will be greatly expanded
-  SyntaxStatus status;
+  ParserStatus status;
   while (GetTok().IsTypeChunk()) {
     status = CollectTypeChunk(parsingDecl);
     if (status.HasCodeCompletion()) {
@@ -189,7 +189,7 @@ SyntaxStatus Parser::CollectTypeChunks(ParsingDecl &parsingDecl) {
   }
   return status;
 }
-SyntaxStatus Parser::CollectBasicTypeSpecifier(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectBasicTypeSpecifier(ParsingDecl &parsingDecl) {
 
   if (!GetTok().IsBasicType()) {
     return MakeSyntaxCodeCompletionStatus();
@@ -269,7 +269,7 @@ SyntaxStatus Parser::CollectBasicTypeSpecifier(ParsingDecl &parsingDecl) {
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectNominalTypeSpecifier(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectNominalTypeSpecifier(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::kw_enum:
     parsingDecl.GetTypeSpecifierCollector().AddEnum(ConsumeToken());
@@ -285,7 +285,7 @@ SyntaxStatus Parser::CollectNominalTypeSpecifier(ParsingDecl &parsingDecl) {
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectStorageSpecifier(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectStorageSpecifier(ParsingDecl &parsingDecl) {
   switch (GetTok().GetKind()) {
   case tok::kw_static:
     parsingDecl.GetStorageSpecifierCollector().AddStatic(ConsumeToken());
@@ -298,7 +298,7 @@ SyntaxStatus Parser::CollectStorageSpecifier(ParsingDecl &parsingDecl) {
   }
   return MakeSyntaxSuccess();
 }
-SyntaxStatus Parser::CollectFunctionSpecifier(ParsingDecl &parsingDecl) {
+ParserStatus Parser::CollectFunctionSpecifier(ParsingDecl &parsingDecl) {
 
   switch (GetTok().GetKind()) {
   case tok::kw_fun: {

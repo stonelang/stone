@@ -2,7 +2,7 @@
 #include "stone/AST/ASTContext.h"
 
 using namespace stone;
-// SyntaxResult<Stmt *> Syntax::CreateIfStmt() { return StmtEmpty(); }
+// ParserResult<Stmt *> Syntax::CreateIfStmt() { return StmtEmpty(); }
 
 //== Statements ==/
 
