@@ -14,7 +14,7 @@
 #include "stone/AST/Types.h"
 
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Support/DiagnosticEngine.h"
+#include "stone/AST/Diagnostics.h"
 #include "stone/AST/ASTDiagnosticArgument.h"
 #include "stone/AST/ClangContext.h"
 #include "stone/AST/Expr.h"
