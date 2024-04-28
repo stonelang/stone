@@ -1,4 +1,6 @@
 #include "stone/Compile/Compiler.h"
+#include "stone/AST/ClangContext.h"
+#include "stone/AST/Module.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
@@ -8,8 +10,6 @@
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
 #include "stone/Support/CompilerDiagnostic.h"
-#include "stone/AST/ClangContext.h"
-#include "stone/AST/Module.h"
 
 using namespace stone;
 using namespace stone::file;

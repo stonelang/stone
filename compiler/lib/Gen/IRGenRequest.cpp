@@ -1,9 +1,9 @@
 #include "stone/Gen/IRGenRequest.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/ClangContext.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/ModuleOptions.h"
 #include "stone/Gen/IRGenTypeCache.h"
-#include "stone/AST/ASTContext.h"
-#include "stone/AST/ClangContext.h"
 
 using namespace stone;
 

@@ -1,8 +1,8 @@
 #ifndef STONE_GEN_IRCODEGENADDRESS_H
 #define STONE_GEN_IRCODEGENADDRESS_H
 
-#include "stone/Basic/Memory.h"
 #include "stone/AST/CodeGenAlignment.h"
+#include "stone/Basic/Memory.h"
 
 #include "clang/AST/CharUnits.h"
 #include "llvm/ADT/PointerIntPair.h"

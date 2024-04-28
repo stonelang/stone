@@ -1,11 +1,11 @@
 #include "stone/Parse/Parser.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/Scope.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/IDE.h"
 #include "stone/Support/ASTDiagnostic.h"
-#include "stone/AST/ASTContext.h"
-#include "stone/AST/Scope.h"
 
 using namespace stone;
 

@@ -1,7 +1,7 @@
-#include "stone/Gen/IRGenFunction.h"
-#include "stone/Gen/IRGenModule.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/Global.h"
+#include "stone/Gen/IRGenFunction.h"
+#include "stone/Gen/IRGenModule.h"
 
 using namespace stone;
 

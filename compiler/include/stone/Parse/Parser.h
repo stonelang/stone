@@ -1,10 +1,6 @@
 #ifndef STONE_PARSE_PARSER_H
 #define STONE_PARSE_PARSER_H
 
-#include "stone/Basic/StableHasher.h"
-#include "stone/Parse/Lexer.h"
-#include "stone/Parse/Parsing.h"
-#include "stone/Support/StatsReporter.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/ASTNode.h"
 #include "stone/AST/ASTOptions.h"
@@ -13,7 +9,11 @@
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
+#include "stone/Basic/StableHasher.h"
+#include "stone/Parse/Lexer.h"
 #include "stone/Parse/ParserResult.h"
+#include "stone/Parse/Parsing.h"
+#include "stone/Support/StatsReporter.h"
 
 #include "llvm/Support/Timer.h"
 

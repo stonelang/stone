@@ -65,6 +65,7 @@ class alignas(DiagnosticArgumentAlignment) DiagnosticArgument {
 
 public:
   DiagnosticArgument(T val) : val(val) {}
+
 public:
   T GetValue() { return val; }
   virtual DiagnosticArgumentKind GetKind() = 0;
@@ -84,6 +85,7 @@ public:
 
 class UnsignedDiagnosticArgument final : public DiagnosticArgument<unsigned> {
   UnsignedDiagnosticArgument() = delete;
+
 public:
   UnsignedDiagnosticArgument(unsigned val) : DiagnosticArgument(val) {}
 
@@ -95,6 +97,7 @@ public:
 
 class BoolDiagnosticArgument final : public DiagnosticArgument<bool> {
   BoolDiagnosticArgument() = delete;
+
 public:
   BoolDiagnosticArgument(bool val) : DiagnosticArgument(val) {}
 
@@ -105,6 +108,7 @@ public:
 
 class StringDiagnosticArgument final : public DiagnosticArgument<StringRef> {
   StringDiagnosticArgument() = delete;
+
 public:
   StringDiagnosticArgument(StringRef val) : DiagnosticArgument(val) {}
 
@@ -115,6 +119,7 @@ public:
 
 class DeclDiagnosticArgument final : public DiagnosticArgument<const Decl *> {
   DeclDiagnosticArgument() = delete;
+
 public:
   DeclDiagnosticArgument(const Decl *val) : DiagnosticArgument(val) {}
 
@@ -126,6 +131,7 @@ public:
 class DeclContextDiagnosticArgument final
     : public DiagnosticArgument<const DeclContext *> {
   DeclContextDiagnosticArgument() = delete;
+
 public:
   DeclContextDiagnosticArgument(const DeclContext *val)
       : DiagnosticArgument(val) {}
@@ -137,6 +143,7 @@ public:
 
 class TypeDiagnosticArgument final : public DiagnosticArgument<const Type *> {
   TypeDiagnosticArgument() = delete;
+
 public:
   TypeDiagnosticArgument(const Type *val) : DiagnosticArgument(val) {}
 
@@ -147,7 +154,8 @@ public:
 
 class IdentifierDiagnosticArgument final
     : public DiagnosticArgument<const Identifier *> {
-      IdentifierDiagnosticArgument() = delete;
+  IdentifierDiagnosticArgument() = delete;
+
 public:
   IdentifierDiagnosticArgument(const Identifier *val)
       : DiagnosticArgument(val) {}

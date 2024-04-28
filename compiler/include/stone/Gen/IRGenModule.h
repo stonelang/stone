@@ -1,6 +1,8 @@
 #ifndef STONE_GEN_IRCODEGENMODULE_H
 #define STONE_GEN_IRCODEGENMODULE_H
 
+#include "stone/AST/ASTVisitor.h"
+#include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/OutputFile.h"
@@ -8,8 +10,6 @@
 #include "stone/Gen/IRGenMetadata.h"
 #include "stone/Gen/IRGenTypeCache.h"
 #include "stone/Gen/IRGenTypeResolver.h"
-#include "stone/AST/ASTVisitor.h"
-#include "stone/AST/Module.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"

@@ -1,7 +1,7 @@
-#include "stone/Core.h"
-#include "stone/Parse/Parser.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
+#include "stone/Core.h"
+#include "stone/Parse/Parser.h"
 
 using namespace stone;
 

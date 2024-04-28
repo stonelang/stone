@@ -3,14 +3,6 @@
 
 using stone::TextDiagnosticEmitter;
 
-llvm::SMDiagnostic
-stone::SrcMgr::GetMessage(stone::SrcLoc loc, llvm::SourceMgr::DiagKind kind,
-                          const Twine &msg,
-                          llvm::ArrayRef<llvm::SMRange> ranges,
-                          llvm::ArrayRef<llvm::SMFixIt> fixIts) const {
-  return llvm::SMDiagnostic();
-}
-
 TextDiagnosticEmitter::TextDiagnosticEmitter(TextDiagnosticFormatter &formatter)
     : DiagnosticEmitter(formatter) {}
 

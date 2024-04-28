@@ -1,5 +1,5 @@
-#include "stone/Sem/TypeChecker.h"
 #include "stone/AST/ASTVisitor.h"
+#include "stone/Sem/TypeChecker.h"
 
 using namespace stone;
 

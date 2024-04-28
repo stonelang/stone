@@ -1,6 +1,7 @@
 #ifndef STONE_GEN_CODEGEN_INVOCATION_H
 #define STONE_GEN_CODEGEN_INVOCATION_H
 
+#include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
@@ -8,7 +9,6 @@
 #include "stone/Basic/Status.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Core.h"
-#include "stone/AST/Module.h"
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {

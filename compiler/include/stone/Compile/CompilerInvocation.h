@@ -1,20 +1,20 @@
 #ifndef STONE_COMPILE_COMPILERINVOCATION_H
 #define STONE_COMPILE_COMPILERINVOCATION_H
 
+#include "stone/AST/ASTOptions.h"
+#include "stone/AST/TypeCheckerOptions.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Support/DiagnosticOptions.h"
 #include "stone/Support/Options.h"
-#include "stone/AST/ASTOptions.h"
-#include "stone/AST/TypeCheckerOptions.h"
 
-#include "stone/Basic/PrimaryFileSpecificPaths.h"
-#include "stone/Basic/Status.h"
-#include "stone/Basic/TargetOptions.h"
 #include "stone/AST/ClangContext.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/SearchPath.h"
+#include "stone/Basic/PrimaryFileSpecificPaths.h"
+#include "stone/Basic/Status.h"
+#include "stone/Basic/TargetOptions.h"
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/FileSystemOptions.h"

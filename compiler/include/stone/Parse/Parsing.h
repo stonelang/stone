@@ -1,11 +1,11 @@
 #ifndef STONE_PARSE_PARSINGSUPPORT_H
 #define STONE_PARSE_PARSINGSUPPORT_H
 
+#include "stone/AST/DeclSpecifier.h"
+#include "stone/AST/Scope.h"
 #include "stone/Basic/OptionSet.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Parse/Lexer.h"
-#include "stone/AST/DeclSpecifier.h"
-#include "stone/AST/Scope.h"
 #include "stone/Parse/ParserResult.h"
 
 #include "llvm/ADT/ArrayRef.h"

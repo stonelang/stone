@@ -1,4 +1,5 @@
 #include "stone/Compile/Compile.h"
+#include "stone/AST/ASTDiagnosticArgument.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Compile/Compiler.h"
@@ -8,7 +9,6 @@
 #include "stone/Support/StatsReporter.h"
 #include "stone/Support/TextDiagnosticConsumer.h"
 #include "stone/Support/TextDiagnosticFormatter.h"
-#include "stone/AST/ASTDiagnosticArgument.h"
 
 using namespace stone;
 

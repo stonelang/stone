@@ -1,9 +1,9 @@
 #ifndef STONE_GEN_IRCODEGDEBUG_H
 #define STONE_GEN_IRCODEGDEBUG_H
 
+#include "stone/AST/Module.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Gen/IRGenModule.h"
-#include "stone/AST/Module.h"
 
 #include "llvm/IR/PassManager.h"
 
