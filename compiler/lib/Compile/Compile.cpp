@@ -22,7 +22,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   auto FinishCompile = [&](Status status = Status::Success()) -> int {
     return (status.IsError() ? status.GetFlag()
-                             : invocation.GetDiags().Finish());
+                             : invocation.GetDiags().FinishProcessing());
   };
 
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);

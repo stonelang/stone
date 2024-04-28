@@ -25,6 +25,8 @@ public:
   DiagnosticConsumer(DiagnosticEmitter emitter);
   virtual ~DiagnosticConsumer();
 
+public:
+
   unsigned GetNumErrors() const { return numErrors; }
   unsigned GetNumWarnings() const { return numWarnings; }
 
@@ -33,7 +35,7 @@ public:
 
   /// Callback to inform the diagnostic client that processing of all
   /// source files has ended.
-  virtual bool Finish();
+  virtual bool FinishProcessing();
 
   /// Indicates whether the diagnostics handled by this
   /// DiagnosticConsumer should be included in the number of diagnostics
@@ -49,7 +51,7 @@ public:
   ///
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
-  virtual void Consume(const DiagnosticMessage &msg,
+  virtual void ConsumeDiagnostic(const DiagnosticMessage &msg,
                        DiagnosticFormatter *formatter = nullptr) = 0;
 
   // virtual void Consume(const DiagnosticEmitter &emiiter,
@@ -59,6 +61,10 @@ public:
   //   assert(diagFormatter);
   //   formatter = diagFormatter;
   // }
+
+   /// Flush any in-flight diagnostics.
+  virtual void FlushDiagnostics() {}
+
 
   DiagnosticEmitter &GetEmitter() { return emitter; }
 

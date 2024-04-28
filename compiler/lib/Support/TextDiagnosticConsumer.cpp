@@ -9,7 +9,7 @@ TextDiagnosticConsumer::TextDiagnosticConsumer(TextDiagnosticEmitter emitter)
 
 TextDiagnosticConsumer::~TextDiagnosticConsumer() {}
 
-void TextDiagnosticConsumer::Consume(const DiagnosticMessage &msg,
+void TextDiagnosticConsumer::ConsumeDiagnostic(const DiagnosticMessage &msg,
                                      DiagnosticFormatter *formatter) {
   if (formatter) {
     // use this one else use DiagnosticEngine::Format(msg)
@@ -20,4 +20,4 @@ void TextDiagnosticConsumer::Consume(const DiagnosticMessage &msg,
   // GetEmitter().EmitDiagnostic(msg);
 }
 
-bool TextDiagnosticConsumer::Finish() { return false; }
+bool TextDiagnosticConsumer::FinishProcessing() { return false; }

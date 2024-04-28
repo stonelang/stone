@@ -368,7 +368,7 @@ public:
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
 
-  bool Finish();
+  bool FinishProcessing();
 
 public:
   bool HasError();

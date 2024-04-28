@@ -230,7 +230,7 @@ void DiagnosticEngine::EmitDiagnostic(const Diagnostic &diagnostic) {
 
   auto diagnosticEvent = CreateDiagnosticMessage(diagnostic);
   for (auto &consumer : consumers) {
-    consumer->Consume(*diagnosticEvent);
+    consumer->ConsumeDiagnostic(*diagnosticEvent);
   }
 }
 
@@ -248,10 +248,10 @@ DiagnosticEngine::CreateDiagnosticMessage(const Diagnostic &diagnostic) {
       /*TODO*/ llvm::StringRef());
 }
 
-bool DiagnosticEngine::Finish() {
+bool DiagnosticEngine::FinishProcessing() {
   bool hadError = false;
   for (auto &consumer : consumers) {
-    hadError |= consumer->Finish();
+    hadError |= consumer->FinishProcessing();
   }
   return hadError;
 }

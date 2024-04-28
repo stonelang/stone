@@ -11,4 +11,4 @@ bool DiagnosticConsumer::IncludeInDiagnosticCounts() const {}
 
 /// Callback to inform the diagnostic client that processing of all
 /// source files has ended.
-bool DiagnosticConsumer::Finish() { return false; }
+bool DiagnosticConsumer::FinishProcessing() { return false; }

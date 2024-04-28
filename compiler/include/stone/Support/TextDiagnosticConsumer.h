@@ -16,9 +16,9 @@ public:
   ~TextDiagnosticConsumer();
 
 public:
-  void Consume(const DiagnosticMessage &msg,
+  void ConsumeDiagnostic(const DiagnosticMessage &msg,
                DiagnosticFormatter *formatter = nullptr) override;
-  bool Finish() override;
+  bool FinishProcessing() override;
 
   // void ForceColors() {
   //   ForceColors = true;

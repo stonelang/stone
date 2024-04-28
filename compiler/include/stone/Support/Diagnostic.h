@@ -137,9 +137,6 @@ public:
   SrcMgr &GetSrcMgr() { return sm; }
   DiagnosticLevel GetLevel() { return level; }
 
-  // public:
-  //   // TODO: Think about
-  //   void Format();
 };
 
 } // namespace stone
