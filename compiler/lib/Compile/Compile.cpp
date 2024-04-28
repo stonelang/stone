@@ -8,7 +8,7 @@
 #include "stone/Support/StatsReporter.h"
 #include "stone/Support/TextDiagnosticConsumer.h"
 #include "stone/Support/TextDiagnosticFormatter.h"
-#include "stone/Syntax/ASTDiagnosticArgument.h"
+#include "stone/AST/ASTDiagnosticArgument.h"
 
 using namespace stone;
 

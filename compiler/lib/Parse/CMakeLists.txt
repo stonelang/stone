@@ -11,7 +11,7 @@ set(stone_parse_sources
 	Parsing.cpp
 
 	LINK_LIBS
-	StoneSyntax
+	StoneAST
 
 	DEPENDS
 	StoneOptions

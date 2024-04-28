@@ -33,7 +33,7 @@ set(stone_gen_sources
 		OptimizeIR.cpp
 
 		LINK_LIBS
-		StoneSyntax
+		StoneAST
 		clangCodeGen;
 )
 add_stone_library(StoneGen

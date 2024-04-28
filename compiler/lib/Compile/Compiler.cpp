@@ -8,8 +8,8 @@
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
 #include "stone/Support/CompilerDiagnostic.h"
-#include "stone/Syntax/ClangContext.h"
-#include "stone/Syntax/Module.h"
+#include "stone/AST/ClangContext.h"
+#include "stone/AST/Module.h"
 
 using namespace stone;
 using namespace stone::file;

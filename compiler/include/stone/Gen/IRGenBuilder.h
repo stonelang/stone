@@ -2,7 +2,7 @@
 #define STONE_GEN_IRCODEGENBUILDER_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Syntax/Module.h"
+#include "stone/AST/Module.h"
 
 #include "IRGenModule.h"
 #include "llvm/IR/DataLayout.h"

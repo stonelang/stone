@@ -1,6 +1,6 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Syntax/ASTContext.h"
-#include "stone/Syntax/SyntaxResult.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/SyntaxResult.h"
 
 using namespace stone;
 

@@ -2,7 +2,7 @@
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Parse/Confusable.h"
 #include "stone/Support/ASTDiagnostic.h"
-#include "stone/Syntax/Identifier.h"
+#include "stone/AST/Identifier.h"
 
 #include "clang/Basic/CharInfo.h"
 

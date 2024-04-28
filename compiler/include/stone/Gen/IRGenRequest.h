@@ -8,7 +8,7 @@
 #include "stone/Basic/Status.h"
 #include "stone/Basic/TargetOptions.h"
 #include "stone/Core.h"
-#include "stone/Syntax/Module.h"
+#include "stone/AST/Module.h"
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {

@@ -5,7 +5,7 @@ namespace stone {
 
 struct CodeGenSections final {
 
-  // constexpr static const char *StoneSyntax = "__Stone_Syntax";
+  // constexpr static const char *StoneAST = "__Stone_Syntax";
   // constexpr static const char *LLVMBitCode = "__LLVM,__bitcode";
   // constexpr static const char *LLVMStoneCmdLine = "__LLVM,__stone_cmdline";
 };
