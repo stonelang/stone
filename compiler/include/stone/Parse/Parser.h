@@ -13,6 +13,7 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/ParserResult.h"
 #include "stone/Parse/Parsing.h"
+#include "stone/AST/DiagnosticsParse.h"
 #include "stone/Support/Statistics.h"
 
 #include "llvm/Support/Timer.h"

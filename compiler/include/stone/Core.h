@@ -4,7 +4,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/IDE.h"
-#include "stone/Support/DiagnosticEngine.h"
+#include "stone/AST/Diagnostics.h"
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSet.h"
@@ -15,7 +15,6 @@
 namespace stone {
 class CodeGenOptions;
 class LangOptions;
-class DiagnosticEngine;
 class CompilerOptions;
 class Options;
 class Compiler;

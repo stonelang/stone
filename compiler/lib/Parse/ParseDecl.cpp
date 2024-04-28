@@ -136,18 +136,18 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDecl &collector) {
   if (collector.GetTypeQualifierCollector().HasAny() &&
       !collector.GetTypeQualifierCollector().IsPure()) {
     // Do some logging
-    return MakeSyntaxError();
+    return MakeParserError();
   }
 
   if (collector.GetTypeSpecifierCollector().HasAny()) {
     // TODO: Log a message -- not allowed to have type specs here
-    return MakeSyntaxError();
+    return MakeParserError();
   }
 
   // Make sure we have a valid identifier
   if (!GetTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
-    return MakeSyntaxError();
+    return MakeParserError();
   }
 
   ParserStatus status;
@@ -164,14 +164,14 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDecl &collector) {
   if (GetTok().IsDoubleColon()) {
     if (collector.GetStorageSpecifierCollector().HasStatic()) {
       // TODO: Log
-      return MakeSyntaxError();
+      return MakeParserError();
     }
     // TODO: You are consuming the double colon
     collector.GetFunctionSpecifierCollector().AddIsMember(ConsumeToken());
 
     if (!GetTok().IsIdentifierOrUnderscore()) {
       // Do some logging  "Expecting Parent identifier");
-      return MakeSyntaxError();
+      return MakeParserError();
     }
     // TODO: That identifier should already exist
     // status = ParseIdentifier(parentName, parentNameLoc);
@@ -180,7 +180,7 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDecl &collector) {
   if (collector.GetStorageSpecifierCollector().HasStatic() &&
       collector.GetFunctionSpecifierCollector().HasIsMember()) {
     // Log only member functions can be status
-    return MakeSyntaxError();
+    return MakeParserError();
   }
 
   DeclName fullName;
@@ -309,7 +309,7 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDecl &collector) {
   } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-    return MakeSyntaxError();
+    return MakeParserError();
   }
 
   if (GetTok().IsRParen()) {
@@ -317,9 +317,9 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDecl &collector) {
   } else {
     // If we don't have the leading '(', complain.
     // auto diag = PrintD(Tok, diagID);
-    return MakeSyntaxError();
+    return MakeParserError();
   }
-  return MakeSyntaxSuccess();
+  return MakeParserSuccess();
 }
 
 ParserStatus Parser::ParseFunctionBody(ParsingDecl &collector,
@@ -367,7 +367,7 @@ ParserResult<Decl> Parser::ParseStructDecl(ParsingDecl &collector) {
   if (collector.GetTypeQualifierCollector().HasAny() &&
       !collector.GetTypeQualifierCollector().IsPure()) {
     // Do some logging
-    return MakeSyntaxError();
+    return MakeParserError();
   }
 
   auto structLoc = collector.GetTypeSpecifierCollector().GetLoc();

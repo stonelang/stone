@@ -106,7 +106,7 @@ static inline ParserResult<T> MakeParserResult(T *Result) {
 
 /// Create a result (null or non-null) with error bit set.
 template <typename T>
-static inline ParserResult<T> MakeSyntaxErrorResult(T *Result = nullptr) {
+static inline ParserResult<T> MakeParserErrorResult(T *Result = nullptr) {
   ParserResult<T> PR;
   if (Result) {
     PR = ParserResult<T>(Result);
@@ -122,7 +122,7 @@ template <typename T> static inline ParserResult<T> MakeNullParserResult() {
 /// Create a result (null or non-null) with error and code completion bits set.
 template <typename T>
 static inline ParserResult<T>
-MakeSyntaxCodeCompletionResult(T *Result = nullptr) {
+MakeParserCodeCompletionResult(T *Result = nullptr) {
   ParserResult<T> PR;
   if (Result) {
     PR = ParserResult<T>(Result);
@@ -196,17 +196,17 @@ public:
 };
 
 /// Create a successful parser status.
-static inline ParserStatus MakeSyntaxSuccess() { return ParserStatus(); }
+static inline ParserStatus MakeParserSuccess() { return ParserStatus(); }
 
 /// Create a status with error bit set.
-static inline ParserStatus MakeSyntaxError() {
+static inline ParserStatus MakeParserError() {
   ParserStatus Status;
   Status.SetIsError();
   return Status;
 }
 
 /// Create a status with error and code completion bits set.
-static inline ParserStatus MakeSyntaxCodeCompletionStatus() {
+static inline ParserStatus MakeParserCodeCompletionStatus() {
   ParserStatus Status;
   Status.SetHasCodeCompletionAndIsError();
   return Status;
@@ -214,7 +214,7 @@ static inline ParserStatus MakeSyntaxCodeCompletionStatus() {
 /// Create a parser result with specified bits.
 template <typename T>
 static inline ParserResult<T> MakeParserResult(ParserStatus Status, T *Result) {
-  ParserResult<T> PR = Status.IsError() ? MakeSyntaxErrorResult(Result)
+  ParserResult<T> PR = Status.IsError() ? MakeParserErrorResult(Result)
                                         : MakeParserResult(Result);
 
   if (Status.HasCodeCompletion()) {
