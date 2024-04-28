@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_STORAGE_SPECIFIER_H
 #define STONE_SYNTAX_STORAGE_SPECIFIER_H
 
-#include "stone/Basic/OptionSet.h"
 #include "stone/AST/Attribute.h"
+#include "stone/Basic/OptionSet.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

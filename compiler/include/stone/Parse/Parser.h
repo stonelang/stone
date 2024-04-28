@@ -5,6 +5,7 @@
 #include "stone/AST/ASTNode.h"
 #include "stone/AST/ASTOptions.h"
 #include "stone/AST/Attribute.h"
+#include "stone/AST/DiagnosticsParse.h"
 #include "stone/AST/Expr.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
@@ -13,7 +14,6 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/ParserResult.h"
 #include "stone/Parse/Parsing.h"
-#include "stone/AST/DiagnosticsParse.h"
 #include "stone/Support/Statistics.h"
 
 #include "llvm/Support/Timer.h"

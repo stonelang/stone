@@ -1,6 +1,7 @@
 #ifndef STONE_SYNTAX_IFCONFIG_H
 #define STONE_SYNTAX_IFCONFIG_H
 
+#include "stone/Basic/SrcLoc.h"
 #include "llvm/ADT/ArrayRef.h"
 
 namespace stone {

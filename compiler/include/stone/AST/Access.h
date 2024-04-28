@@ -1,10 +1,10 @@
 #ifndef STONE_SYNTAX_ACCESS_H
 #define STONE_SYNTAX_ACCESS_H
 
+#include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/AST/TypeAlignment.h"
 
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/SmallVector.h"

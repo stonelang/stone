@@ -1,9 +1,9 @@
 #ifndef STONE_SYNTAX_SYNTAXSCOPE_H
 #define STONE_SYNTAX_SYNTAXSCOPE_H
 
+#include "stone/AST/Decl.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/STDAlias.h"
-#include "stone/AST/Decl.h"
 
 #include "llvm/ADT/SmallPtrSet.h"
 

@@ -1,9 +1,9 @@
 #ifndef STONE_FOREIGN_CLANG_H
 #define STONE_FOREIGN_CLANG_H
 
+#include "stone/AST/ClangModuleImporter.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
-#include "stone/AST/ClangModuleImporter.h"
 
 #include "clang/Basic/TargetInfo.h"
 #include "clang/CodeGen/ModuleBuilder.h"

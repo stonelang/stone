@@ -1,10 +1,10 @@
 #ifndef STONE_CORE_H
 #define STONE_CORE_H
 
+#include "stone/AST/Diagnostics.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/IDE.h"
-#include "stone/AST/Diagnostics.h"
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSet.h"

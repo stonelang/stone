@@ -1,7 +1,6 @@
 #ifndef STONE_SYNTAX_DECL_SPECIFIER_H
 #define STONE_SYNTAX_DECL_SPECIFIER_H
 
-#include "stone/Basic/OptionSet.h"
 #include "stone/AST/Attribute.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/FunctionSpecifier.h"
@@ -12,6 +11,7 @@
 #include "stone/AST/TypeQualifier.h"
 #include "stone/AST/TypeSpecifier.h"
 #include "stone/AST/Types.h"
+#include "stone/Basic/OptionSet.h"
 
 #include "llvm/ADT/ArrayRef.h"
 

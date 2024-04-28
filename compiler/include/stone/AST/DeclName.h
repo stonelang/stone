@@ -1,10 +1,10 @@
 #ifndef STONE_SYNTAX_DECLNAME_H
 #define STONE_SYNTAX_DECLNAME_H
 
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/OperatorKind.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Type.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/OperatorKind.h"
 
 #include "llvm/ADT/FoldingSet.h"
 

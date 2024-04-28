@@ -1,8 +1,8 @@
 #ifndef STONE_DIAGNOSTICSCOMMON_H
 #define STONE_DIAGNOSTICSCOMMON_H
 
-#include "stone/Basic/LLVM.h"
 #include "stone/AST/Diagnostics.h"
+#include "stone/Basic/LLVM.h"
 // #include "stone/Config.h"
 
 namespace stone {

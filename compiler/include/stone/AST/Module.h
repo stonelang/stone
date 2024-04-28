@@ -1,16 +1,16 @@
 #ifndef STONE_SYNTAX_MODULE_H
 #define STONE_SYNTAX_MODULE_H
 
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/List.h"
-#include "stone/Basic/OptionSet.h"
-#include "stone/Basic/STDAlias.h"
-#include "stone/Basic/Status.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/ASTWalker.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Scope.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/List.h"
+#include "stone/Basic/OptionSet.h"
+#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Status.h"
 
 #include "llvm/ADT/SmallVector.h"
 

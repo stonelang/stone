@@ -1,11 +1,11 @@
 #ifndef STONE_SYNTAX_ATTRIBUTE_H
 #define STONE_SYNTAX_ATTRIBUTE_H
 
-#include "stone/Basic/Memory.h"
-#include "stone/Basic/SrcLoc.h"
 #include "stone/AST/AttributeKind.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/TypeAlignment.h"
+#include "stone/Basic/Memory.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"

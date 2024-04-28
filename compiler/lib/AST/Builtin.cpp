@@ -1,6 +1,6 @@
 #include "stone/AST/Builtin.h"
-#include "stone/Basic/Memory.h"
 #include "stone/AST/ASTContext.h"
+#include "stone/Basic/Memory.h"
 
 using namespace stone;
 

@@ -1,8 +1,8 @@
 #ifndef STONE_SYNTAX_TYPEKIND_H
 #define STONE_SYNTAX_TYPEKIND_H
 
-#include "stone/Basic/STDAlias.h"
 #include "stone/AST/InlineBitfield.h"
+#include "stone/Basic/STDAlias.h"
 
 namespace stone {
 

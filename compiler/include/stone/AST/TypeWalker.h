@@ -1,9 +1,9 @@
 #ifndef STONE_SYNTAX_TYPEWALKER_H
 #define STONE_SYNTAX_TYPEWALKER_H
 
-#include "stone/Basic/Memory.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeKind.h"
+#include "stone/Basic/Memory.h"
 
 #include <string>
 

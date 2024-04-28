@@ -9,13 +9,13 @@
 #include <type_traits>
 #include <utility>
 
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/Memory.h"
-#include "stone/Basic/SrcLoc.h"
 #include "stone/AST/ASTNode.h"
 #include "stone/AST/IfConfig.h"
 #include "stone/AST/StmtBits.h"
 #include "stone/AST/StmtKind.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/Memory.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

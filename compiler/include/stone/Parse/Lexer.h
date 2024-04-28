@@ -1,11 +1,11 @@
 #ifndef STONE_PARSE_LEXER_H
 #define STONE_PARSE_LEXER_H
 
+#include "stone/AST/Diagnostics.h"
 #include "stone/Basic/Token.h"
 #include "stone/Parse/Trivia.h"
 #include "stone/Support/LexerBase.h"
 #include "stone/Support/Statistics.h"
-#include "stone/AST/Diagnostics.h"
 
 // TODO: Move to support
 namespace stone {

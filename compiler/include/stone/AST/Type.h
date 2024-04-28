@@ -1,14 +1,14 @@
 #ifndef STONE_SYNTAX_TYPE_H
 #define STONE_SYNTAX_TYPE_H
 
-#include "stone/Basic/Memory.h"
-#include "stone/Basic/SrcLoc.h"
 #include "stone/AST/Foreign.h"
 #include "stone/AST/Ownership.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeChunk.h"
 #include "stone/AST/TypeKind.h"
 #include "stone/AST/TypeQualifier.h"
+#include "stone/Basic/Memory.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"

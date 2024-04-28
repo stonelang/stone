@@ -1,10 +1,6 @@
 #ifndef STONE_SYNTAX_DECL_H
 #define STONE_SYNTAX_DECL_H
 
-#include "stone/Basic/AddressSpace.h"
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/Memory.h"
-#include "stone/Basic/SrcLoc.h"
 #include "stone/AST/Access.h"
 #include "stone/AST/DeclContext.h"
 #include "stone/AST/DeclKind.h"
@@ -18,6 +14,10 @@
 #include "stone/AST/StorageSpecifier.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeLoc.h"
+#include "stone/Basic/AddressSpace.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/Memory.h"
+#include "stone/Basic/SrcLoc.h"
 
 // #include "stone/AST/Redeclarable.h"
 

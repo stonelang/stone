@@ -8,9 +8,9 @@
 #include "stone/AST/Module.h"
 // #include "stone/AST/Pattern.h"
 // #include "stone/AST/PrintOptions.h"
-#include "stone/Basic/Range.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
+#include "stone/Basic/Range.h"
 
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Support/LexerBase.h"
@@ -473,19 +473,17 @@ bool DiagnosticEngine::finishProcessing() {
   return hadError;
 }
 
-
 StringRef stone::GetDiagnosticModifierString(DiagnosticModifier modifier) {
-  switch(modifier){
-  case DiagnosticModifier::Error: 
+  switch (modifier) {
+  case DiagnosticModifier::Error:
     return "error";
-  case DiagnosticModifier::Select: 
+  case DiagnosticModifier::Select:
     return "select";
-  case DiagnosticModifier::S: 
+  case DiagnosticModifier::S:
     return "s";
   }
   llvm_unreachable("Unknown diagnostic modifier");
 }
-
 
 /// Skip forward to one of the given delimiters.
 ///
@@ -1204,4 +1202,40 @@ DiagnosticInfo::FixIt::FixIt(CharSrcRange R, StringRef Str,
   llvm::raw_string_ostream OS(Text);
   DiagnosticEngine::formatDiagnosticText(
       OS, Str, Args, DiagnosticFormatOptions::formatForFixIts());
+}
+
+// These must come after the declaration of AnnotatedSourceSnippet due to the
+// `currentSnippet` member.
+TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &stream)
+    : Stream(stream) {}
+
+bool TextDiagnosticPrinter::finishProcessing() {
+  // If there's an in-flight snippet, flush it.
+  flush();
+  return false;
+}
+
+void TextDiagnosticPrinter::printDiagnostic(SrcMgr &SM,
+                                            const DiagnosticInfo &Info) {}
+
+void TextDiagnosticPrinter::handleDiagnostic(SrcMgr &SM,
+                                             const DiagnosticInfo &Info) {
+  if (Info.Kind == DiagnosticKind::Error) {
+    DidErrorOccur = true;
+  }
+
+  if (SuppressOutput) {
+    return;
+  }
+
+  if (Info.IsChildNote) {
+    return;
+  }
+
+  switch (FormattingStyle) {
+  case DiagnosticOptions::FormattingStyle::Stone: {
+  }
+  case DiagnosticOptions::FormattingStyle::LLVM: {
+  }
+  }
 }

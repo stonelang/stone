@@ -1,10 +1,10 @@
 #include "stone/AST/DeclContext.h"
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/LangOptions.h"
-#include "stone/Basic/SrcLoc.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Access.h"
 #include "stone/AST/Module.h"
+#include "stone/Basic/LLVM.h"
+#include "stone/Basic/LangOptions.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/PointerIntPair.h"

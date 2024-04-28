@@ -1,7 +1,7 @@
 #include "stone/AST/Type.h"
-#include "stone/Basic/Memory.h"
 #include "stone/AST/TypeLoc.h"
 #include "stone/AST/TypeQualifier.h"
+#include "stone/Basic/Memory.h"
 
 using namespace stone;
 

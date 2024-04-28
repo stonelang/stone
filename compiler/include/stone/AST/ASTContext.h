@@ -1,10 +1,6 @@
 #ifndef STONE_SYNTAX_ASTCONTEXT_H
 #define STONE_SYNTAX_ASTCONTEXT_H
 
-#include "stone/Basic/LangOptions.h"
-#include "stone/Basic/Memory.h"
-#include "stone/Basic/SrcMgr.h"
-#include "stone/Support/Statistics.h"
 #include "stone/AST/Builtin.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"
@@ -12,14 +8,18 @@
 #include "stone/AST/LangABI.h"
 #include "stone/AST/SearchPath.h"
 #include "stone/AST/Types.h"
+#include "stone/Basic/LangOptions.h"
+#include "stone/Basic/Memory.h"
+#include "stone/Basic/SrcMgr.h"
+#include "stone/Support/Statistics.h"
 
-#include "stone/Basic/SrcLoc.h"
-#include "stone/AST/Diagnostics.h"
 #include "stone/AST/ClangContext.h"
+#include "stone/AST/Diagnostics.h"
 #include "stone/AST/Expr.h"
 #include "stone/AST/Ownership.h"
 #include "stone/AST/TypeSpecifier.h"
 #include "stone/AST/Types.h"
+#include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/APSInt.h"
 #include "llvm/ADT/ArrayRef.h"
@@ -222,7 +222,6 @@ public:
   //     llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outBackend) {
   //   outputBackend = std::move(outBackend);
   // }
-
 
 public:
   template <typename T>

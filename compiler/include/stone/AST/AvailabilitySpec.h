@@ -1,10 +1,10 @@
 #ifndef STONE_SYNTAX_AVAILABILITYSPEC_H
 #define STONE_SYNTAX_AVAILABILITYSPEC_H
 
+#include "stone/AST/Identifier.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/PlatformKind.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/AST/Identifier.h"
 
 #include "llvm/Support/VersionTuple.h"
 

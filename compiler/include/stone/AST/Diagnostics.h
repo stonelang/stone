@@ -1,11 +1,11 @@
 #ifndef STONE_SYNTAX_DIAGNOSTICS_H
 #define STONE_SYNTAX_DIAGNOSTICS_H
 
-#include "stone/Basic/Version.h"
-#include "stone/Support/DiagnosticOptions.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/TypeLoc.h"
+#include "stone/Basic/Version.h"
+#include "stone/Support/DiagnosticOptions.h"
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/StringRef.h"
@@ -112,19 +112,17 @@ enum class DiagnosticArgumentKind {
   ClangDecl
 };
 
-
 /// Describes the current behavior to take with a diagnostic.
-  /// Ordered from most severe to least.
-  enum class DiagnosticBehavior : uint8_t {
-    Unspecified = 0,
-    Fatal,
-    Error,
-    Warning,
-    Remark,
-    Note,
-    Ignore,
-  };
-
+/// Ordered from most severe to least.
+enum class DiagnosticBehavior : uint8_t {
+  Unspecified = 0,
+  Fatal,
+  Error,
+  Warning,
+  Remark,
+  Note,
+  Ignore,
+};
 
 enum class DiagnosticModifier {
   Error = 0,
@@ -1647,8 +1645,10 @@ class TextDiagnosticPrinter final : public DiagnosticConsumer {
   bool PrintEducationalNotes = false;
   bool EmitMacroExpansionFiles = false;
   bool DidErrorOccur = false;
+
   DiagnosticOptions::FormattingStyle FormattingStyle =
       DiagnosticOptions::FormattingStyle::LLVM;
+
   // Educational notes which are buffered until the consumer is finished
   // constructing a snippet.
   SmallVector<std::string, 1> BufferedEducationalNotes;
