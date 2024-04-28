@@ -1,7 +1,0 @@
-#define DEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
-
-ERROR(err_unknown_target,none, "unknown target '%0'", (diag::LLVMStr))
-
-#define UNDEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"

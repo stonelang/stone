@@ -1,7 +1,6 @@
 #define DEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
-
+#include "DiagnosticMacros.h"
 
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
-#include "DefineDiagnostic.h"
+#include "DiagnosticMacros.h"

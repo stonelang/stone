@@ -1,4 +1,4 @@
-
+#include "stone/Basic/Macros.h"
 
 // Define macros
 #ifdef DEFINE_DIAGNOSTIC_MACROS

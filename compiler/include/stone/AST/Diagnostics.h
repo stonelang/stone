@@ -2,6 +2,7 @@
 #define STONE_SYNTAX_DIAGNOSTICS_H
 
 #include "stone/Basic/Version.h"
+#include "stone/Support/DiagnosticOptions.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/TypeLoc.h"
@@ -12,14 +13,17 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Path.h"
+#include "llvm/Support/Process.h"
 #include "llvm/Support/SaveAndRestore.h"
 #include "llvm/Support/VersionTuple.h"
 
 namespace clang {
 class NamedDecl;
-}
+class Decl;
+} // namespace clang
 
 namespace stone {
+
 class Decl;
 class ConstructorDecl;
 class FuncDecl;
@@ -34,7 +38,6 @@ class StatsReporter;
 class DeclAttribute;
 class LexerBase;
 
-namespace diag {
 class DiagnosticArgument;
 class DiagnosticEngine;
 class DiagnosticConsumer;
@@ -46,19 +49,6 @@ enum class ReferenceOwnership : uint8_t;
 enum class StaticSpellingKind : uint8_t;
 enum class DescriptiveDeclKind : uint8_t;
 enum class DeclAttrKind : unsigned;
-enum class StmtKind;
-
-/// Describes the current behavior to take with a diagnostic.
-/// Ordered from most severe to least.
-enum class DiagnosticBehavior : uint8_t {
-  Unspecified = 0,
-  Fatal,
-  Error,
-  Warning,
-  Remark,
-  Note,
-  Ignore,
-};
 
 // Enumeration describing all of possible diagnostics.
 ///
@@ -75,31 +65,6 @@ enum class DiagID : uint32_t;
 template <typename... ArgTypes> struct Diag {
   /// The diagnostic ID corresponding to this diagnostic.
   DiagID ID;
-};
-
-enum class DiagnosticOptions {
-  /// No options.
-  none,
-
-  /// The location of this diagnostic points to the beginning of the first
-  /// token that the parser considers invalid.  If this token is located at the
-  /// beginning of the line, then the location is adjusted to point to the end
-  /// of the previous token.
-  ///
-  /// This behavior improves experience for "expected token X" diagnostics.
-  PointsToFirstBadToken,
-
-  /// After a fatal error subsequent diagnostics are suppressed.
-  Fatal,
-
-  /// An API or ABI breakage diagnostic emitted by the API digester.
-  APIDigesterBreakage,
-
-  /// A deprecation warning or error.
-  Deprecation,
-
-  /// A diagnostic warning about an unused element.
-  NoUsage,
 };
 
 namespace detail {
@@ -135,6 +100,7 @@ public:
 };
 
 enum class DiagnosticArgumentKind {
+  Bool,
   String,
   Integer,
   Unsigned,
@@ -145,6 +111,29 @@ enum class DiagnosticArgumentKind {
   Diagnostic,
   ClangDecl
 };
+
+
+/// Describes the current behavior to take with a diagnostic.
+  /// Ordered from most severe to least.
+  enum class DiagnosticBehavior : uint8_t {
+    Unspecified = 0,
+    Fatal,
+    Error,
+    Warning,
+    Remark,
+    Note,
+    Ignore,
+  };
+
+
+enum class DiagnosticModifier {
+  Error = 0,
+  Select,
+  S,
+};
+
+StringRef GetDiagnosticModifierString(DiagnosticModifier modifier);
+
 enum class RequirementKind : uint8_t;
 
 /// Describes the kind of diagnostic.
@@ -220,6 +209,7 @@ struct DiagnosticInfo final {
 class DiagnosticArgument final {
   DiagnosticArgumentKind Kind;
   union {
+    bool BoolVal;
     int IntegerVal;
     unsigned UnsignedVal;
     StringRef StringVal;
@@ -227,9 +217,13 @@ class DiagnosticArgument final {
     const Decl *TheDecl;
     Type TypeVal;
     DiagnosticInfo *DiagnosticVal;
+    llvm::VersionTuple VersionVal;
+    const clang::NamedDecl *ClangDecl;
   };
 
 public:
+  DiagnosticArgument(bool B) : Kind(DiagnosticArgumentKind::Bool), BoolVal(B) {}
+
   DiagnosticArgument(StringRef S)
       : Kind(DiagnosticArgumentKind::String), StringVal(S) {}
 
@@ -248,6 +242,12 @@ public:
 
   DiagnosticArgument(Type T) : Kind(DiagnosticArgumentKind::Type), TypeVal(T) {}
 
+  DiagnosticArgument(llvm::VersionTuple version)
+      : Kind(DiagnosticArgumentKind::VersionTuple), VersionVal(version) {}
+
+  DiagnosticArgument(DiagnosticInfo *D)
+      : Kind(DiagnosticArgumentKind::Diagnostic), DiagnosticVal(D) {}
+
   /// Initializes a diagnostic argument using the underlying type of the
   /// given enum.
   template <
@@ -259,6 +259,11 @@ public:
   }
 
   DiagnosticArgumentKind getKind() const { return Kind; }
+
+  bool getAsBool() const {
+    assert(Kind == DiagnosticArgumentKind::Bool);
+    return BoolVal;
+  }
 
   StringRef getAsString() const {
     assert(Kind == DiagnosticArgumentKind::String);
@@ -288,6 +293,20 @@ public:
   Type getAsType() const {
     assert(Kind == DiagnosticArgumentKind::Type);
     return TypeVal;
+  }
+
+  llvm::VersionTuple getAsVersionTuple() const {
+    assert(Kind == DiagnosticArgumentKind::VersionTuple);
+    return VersionVal;
+  }
+
+  DiagnosticInfo *getAsDiagnostic() const {
+    assert(Kind == DiagnosticArgumentKind::Diagnostic);
+    return DiagnosticVal;
+  }
+  const clang::NamedDecl *getAsClangDecl() const {
+    assert(Kind == DiagnosticArgumentKind::ClangDecl);
+    return ClangDecl;
   }
 };
 
@@ -342,7 +361,7 @@ private:
   std::vector<Diagnostic> ChildNotes;
   SrcLoc Loc;
   bool IsChildNote = false;
-  const stone::Decl *Decl = nullptr;
+  const stone::Decl *theDecl = nullptr;
   DiagnosticBehavior BehaviorLimit = DiagnosticBehavior::Unspecified;
 
   friend DiagnosticEngine;
@@ -380,12 +399,13 @@ public:
   ArrayRef<Diagnostic> getChildNotes() const { return ChildNotes; }
   bool isChildNote() const { return IsChildNote; }
   SrcLoc getLoc() const { return Loc; }
-  const class Decl *getDecl() const { return Decl; }
+  const stone::Decl *getDecl() const { return theDecl; }
+  bool IsDecl() const { return theDecl != nullptr; }
   DiagnosticBehavior getBehaviorLimit() const { return BehaviorLimit; }
 
   void setLoc(SrcLoc loc) { Loc = loc; }
   void setIsChildNote(bool isChildNote) { IsChildNote = isChildNote; }
-  void setDecl(const class Decl *decl) { Decl = decl; }
+  void setDecl(const stone::Decl *inputDecl) { theDecl = inputDecl; }
   void setBehaviorLimit(DiagnosticBehavior limit) { BehaviorLimit = limit; }
 
   /// Returns true if this object represents a particular diagnostic.
@@ -523,14 +543,14 @@ public:
   ///
   /// This helps stage in fixes for stricter diagnostics as warnings
   /// until the next major language version.
-  InFlightDiagnostic &limitBehaviorUntilSwiftVersion(DiagnosticBehavior limit,
+  InFlightDiagnostic &limitBehaviorUntilStoneVersion(DiagnosticBehavior limit,
                                                      unsigned majorVersion);
 
   /// Limit the diagnostic behavior to warning until the specified version.
   ///
   /// This helps stage in fixes for stricter diagnostics as warnings
   /// until the next major language version.
-  InFlightDiagnostic &warnUntilSwiftVersion(unsigned majorVersion);
+  InFlightDiagnostic &warnUntilStoneVersion(unsigned majorVersion);
 
   /// Limit the diagnostic behavior to warning if the context is a
   /// swiftinterface.
@@ -539,7 +559,7 @@ public:
   /// future version of the compiler. In such cases, it may be helpful to
   /// avoid failing to build a module from its interface if the interface was
   /// emitted using a compiler that no longer has the restriction.
-  InFlightDiagnostic &warnInSwiftInterface(const DeclContext *context);
+  InFlightDiagnostic &warnInStoneInterface(const DeclContext *context);
 
   /// Conditionally limit the diagnostic behavior to warning until
   /// the specified version.  If the condition is false, no limit is
@@ -547,11 +567,11 @@ public:
   ///
   /// This helps stage in fixes for stricter diagnostics as warnings
   /// until the next major language version.
-  InFlightDiagnostic &warnUntilSwiftVersionIf(bool shouldLimit,
+  InFlightDiagnostic &warnUntilStoneVersionIf(bool shouldLimit,
                                               unsigned majorVersion) {
     if (!shouldLimit)
       return *this;
-    return warnUntilSwiftVersion(majorVersion);
+    return warnUntilStoneVersion(majorVersion);
   }
 
   /// Wraps this diagnostic in another diagnostic. That is, \p wrapper will be
@@ -908,6 +928,13 @@ public:
   void handleDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info) override;
 };
 
+class DiagnosticLocalizationProducer {
+
+public:
+  DiagnosticLocalizationProducer() {}
+  virtual ~DiagnosticLocalizationProducer() {}
+};
+
 /// Class responsible for formatting diagnostics and presenting them
 /// to the user.
 class DiagnosticEngine final {
@@ -949,7 +976,7 @@ private:
 
   /// Diagnostic producer to handle the logic behind retrieving a localized
   /// diagnostic message.
-  // std::unique_ptr<diag::LocalizationProducer> localization;
+  std::unique_ptr<DiagnosticLocalizationProducer> localization;
 
   /// The number of open diagnostic transactions. Diagnostics are only
   /// emitted once all transactions have closed.
@@ -967,12 +994,12 @@ private:
   /// Path to diagnostic documentation directory.
   std::string diagnosticDocumentationPath = "";
 
-  /// The Swift language version. This is used to limit diagnostic behavior
-  /// until a specific language version, e.g. Swift 6.
+  /// The Stone language version. This is used to limit diagnostic behavior
+  /// until a specific language version, e.g. Stone 6.
   stone::Version languageVersion;
 
-  /// The stats reporter used to keep track of Swift 6 errors
-  /// diagnosed via \c warnUntilSwiftVersion(6).
+  /// The stats reporter used to keep track of Stone 6 errors
+  /// diagnosed via \c warnUntilStoneVersion(6).
   StatsReporter *statsReporter = nullptr;
 
   /// Whether we are actively pretty-printing a declaration as part of
@@ -1072,6 +1099,7 @@ public:
   /// Return all \c DiagnosticConsumers.
   ArrayRef<DiagnosticConsumer *> getConsumers() const { return Consumers; }
 
+  SrcMgr &GetSrcMgr() { return SourceMgr; }
   /// Emit a diagnostic using a preformatted array of diagnostic
   /// arguments.
   ///
@@ -1597,7 +1625,91 @@ public:
 /// a macro expansion.
 DeclName getGeneratedSourceInfoMacroName(const GeneratedSourceInfo &info);
 
-} // namespace diag
+/// RAII class that suppresses diagnostics by temporarily disabling all of
+/// the diagnostic consumers.
+class DiagnosticSuppression {
+  DiagnosticEngine &diags;
+  std::vector<DiagnosticConsumer *> consumers;
+
+  DiagnosticSuppression(const DiagnosticSuppression &) = delete;
+  DiagnosticSuppression &operator=(const DiagnosticSuppression &) = delete;
+
+public:
+  explicit DiagnosticSuppression(DiagnosticEngine &diags);
+  ~DiagnosticSuppression();
+  static bool isEnabled(const DiagnosticEngine &diags);
+};
+
+/// Diagnostic consumer that displays diagnostics to standard error.
+class TextDiagnosticPrinter final : public DiagnosticConsumer {
+  llvm::raw_ostream &Stream;
+  bool ForceColors = false;
+  bool PrintEducationalNotes = false;
+  bool EmitMacroExpansionFiles = false;
+  bool DidErrorOccur = false;
+  DiagnosticOptions::FormattingStyle FormattingStyle =
+      DiagnosticOptions::FormattingStyle::LLVM;
+  // Educational notes which are buffered until the consumer is finished
+  // constructing a snippet.
+  SmallVector<std::string, 1> BufferedEducationalNotes;
+  bool SuppressOutput = false;
+
+  /// swift-syntax rendering
+
+  /// A queued up source file known to the queued diagnostics.
+  using QueuedBuffer = void *;
+
+  /// The queued diagnostics structure.
+  void *queuedDiagnostics = nullptr;
+  llvm::DenseMap<unsigned, QueuedBuffer> queuedBuffers;
+
+  /// Source file syntax nodes cached by { source manager, buffer ID }.
+  llvm::DenseMap<std::pair<SrcMgr *, unsigned>, void *> sourceFileSyntax;
+
+public:
+  TextDiagnosticPrinter(llvm::raw_ostream &stream = llvm::errs());
+  ~TextDiagnosticPrinter();
+
+  virtual void handleDiagnostic(SrcMgr &SM,
+                                const DiagnosticInfo &Info) override;
+
+  virtual bool finishProcessing() override;
+
+  void flush(bool includeTrailingBreak);
+
+  virtual void flush() override { flush(false); }
+
+  void forceColors() {
+    ForceColors = true;
+    llvm::sys::Process::UseANSIEscapeCodes(true);
+  }
+
+  void setPrintEducationalNotes(bool ShouldPrint) {
+    PrintEducationalNotes = ShouldPrint;
+  }
+
+  void setFormattingStyle(DiagnosticOptions::FormattingStyle style) {
+    FormattingStyle = style;
+  }
+
+  void setEmitMacroExpansionFiles(bool ShouldEmit) {
+    EmitMacroExpansionFiles = ShouldEmit;
+  }
+
+  bool didErrorOccur() { return DidErrorOccur; }
+
+  void setSuppressOutput(bool suppressOutput) {
+    SuppressOutput = suppressOutput;
+  }
+
+private:
+  /// Retrieve the SourceFileSyntax for the given buffer.
+  void *getSourceFileSyntax(SrcMgr &SM, unsigned bufferID,
+                            StringRef displayName);
+
+  void queueBuffer(SrcMgr &sourceMgr, unsigned bufferID);
+  void printDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info);
+};
 
 } // namespace stone
 
