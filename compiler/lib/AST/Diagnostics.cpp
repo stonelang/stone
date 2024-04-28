@@ -474,7 +474,7 @@ bool DiagnosticEngine::finishProcessing() {
 }
 
 
-StringRef diags::GetDiagnosticModifierString(diags::DiagnosticModifier modifier) {
+StringRef GetDiagnosticModifierString(DiagnosticModifier modifier) {
   switch(modifier){
   case DiagnosticModifier::Error: 
     return "error";

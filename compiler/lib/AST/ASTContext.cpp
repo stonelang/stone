@@ -1,5 +1,4 @@
 #include "stone/AST/ASTContext.h"
-#include "stone/Support/DiagnosticEngine.h"
 #include "stone/AST/Module.h"
 
 #include "llvm/ADT/DenseMap.h"

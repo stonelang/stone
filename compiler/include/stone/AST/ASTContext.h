@@ -15,7 +15,6 @@
 
 #include "stone/Basic/SrcLoc.h"
 #include "stone/AST/Diagnostics.h"
-#include "stone/AST/ASTDiagnosticArgument.h"
 #include "stone/AST/ClangContext.h"
 #include "stone/AST/Expr.h"
 #include "stone/AST/Ownership.h"
@@ -224,22 +223,6 @@ public:
   //   outputBackend = std::move(outBackend);
   // }
 
-public:
-  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID) {
-    return GetDiags().PrintD(
-        loc, ASTDiagnostic(diagID, llvm::ArrayRef<diag::Argument>()));
-  }
-  stone::InFlightDiagnostic PrintD(SrcLoc loc, DiagID diagID,
-                                   llvm::ArrayRef<diag::Argument> args) {
-    return GetDiags().PrintD(loc, ASTDiagnostic(diagID, args));
-  }
-
-  template <typename... ArgTypes>
-  stone::InFlightDiagnostic
-  PrintD(SrcLoc loc, Diag<ArgTypes...> id,
-         typename stone::detail::PassArgument<ArgTypes>::type... args) {
-    return GetDiags().PrintD(loc, ASTDiagnostic(id, std::move(args)...));
-  }
 
 public:
   template <typename T>
