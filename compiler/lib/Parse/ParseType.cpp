@@ -3,7 +3,6 @@
 #include "stone/AST/Type.h"
 #include "stone/AST/Types.h"
 #include "stone/Parse/Parser.h"
-#include "stone/Support/ASTDiagnostic.h"
 
 using namespace stone;
 

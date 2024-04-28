@@ -9,8 +9,7 @@ set( LLVM_LINK_COMPONENTS
   Option
  )
 set(stone_support_sources
-  StatsReporter.cpp
-
+  Statistics.cpp
   Action.cpp
   Options.cpp
 
@@ -19,7 +18,6 @@ set(stone_support_sources
 
   DEPENDS
   StoneOptions
-
 
 )
 add_stone_library(StoneSupport

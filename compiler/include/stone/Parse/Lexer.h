@@ -3,12 +3,12 @@
 
 #include "stone/Basic/Token.h"
 #include "stone/Parse/Trivia.h"
-#include "stone/Support/DiagnosticEngine.h"
 #include "stone/Support/LexerBase.h"
-#include "stone/Support/StatsReporter.h"
+#include "stone/Support/Statistics.h"
+#include "stone/AST/Diagnostics.h"
 
+// TODO: Move to support
 namespace stone {
-class SrcID;
 class SrcMgr;
 class Token;
 /// Given a pointer to the starting byte of a UTF8 character, validate it and
@@ -517,13 +517,12 @@ private:
     return BufferStart + sm.getLocOffsetInBuffer(Loc, BufferID);
   }
 
-  InFlightDiagnostic PrintD(const char *loc, Diagnostic diagnostic);
+  InFlightDiagnostic diagnose(const char *loc, Diagnostic diagnostic);
 
   template <typename... DiagArgTypes, typename... ArgTypes>
-  InFlightDiagnostic PrintD(const char *loc, Diag<DiagArgTypes...> DiagID,
-                            ArgTypes &&...Args) {
-    return PrintD(
-        loc, Diagnostic(Diagnostic(DiagID, std::forward<ArgTypes>(Args)...)));
+  InFlightDiagnostic diagnose(const char *loc, Diag<DiagArgTypes...> DiagID,
+                              ArgTypes &&...Args) {
+    return diagnose(loc, Diagnostic(DiagID, std::forward<ArgTypes>(Args)...));
   }
 
   void formToken(tok Kind, const char *TokStart);

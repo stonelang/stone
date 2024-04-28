@@ -13,7 +13,7 @@
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/ParserResult.h"
 #include "stone/Parse/Parsing.h"
-#include "stone/Support/StatsReporter.h"
+#include "stone/Support/Statistics.h"
 
 #include "llvm/Support/Timer.h"
 
@@ -239,7 +239,7 @@ public:
   /// Is at end of file.
   bool IsEOF() { return curTok.GetKind() == tok::eof; }
   bool IsParsing() { return (!IsEOF() && !HasError()); }
-  bool HasError() { return astContext.GetDiags().HasError(); }
+  bool HasError() { return astContext.GetDiags().hadAnyError(); }
   DiagnosticEngine &GetDiags() { return astContext.GetDiags(); }
 
 public:
@@ -385,8 +385,8 @@ public:
   void PushCurScope(Scope *scope) { scopeCache.push_back(scope); }
 
 public:
-  InFlightDiagnostic PrintD(SrcLoc loc, Diag<> diagID);
-  InFlightDiagnostic PrintD(Token &curTok, Diag<> diagID);
+  InFlightDiagnostic diagnose(SrcLoc loc, Diag<> diagID);
+  InFlightDiagnostic diagnose(Token &curTok, Diag<> diagID);
 
 private:
   static Scope *CreateScope(ScopeKind kind, ASTContext &sc,
@@ -414,22 +414,6 @@ private:
 public:
   Identifier GetIdentifier(llvm::StringRef text);
 };
-
-// class TopLevelSpecifier {
-
-// };
-
-// class ImportSpecifier : public TopLevelSpecifier {
-// public:
-//   void Collect();
-// };
-// class PublicSpecifier : public TopLevelSpecifier {
-// public:
-//   void Collect() {
-//     auto specifier = GetTopLevelSecifier();
-//     specifier.Collect();
-//   }
-// };
 
 } // namespace stone
 #endif

@@ -4,7 +4,7 @@
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Support/StatsReporter.h"
+#include "stone/Support/Statistics.h"
 #include "stone/AST/Builtin.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"

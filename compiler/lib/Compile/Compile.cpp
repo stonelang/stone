@@ -6,7 +6,7 @@
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Core.h"
 #include "stone/Support/CompilerDiagnostic.h"
-#include "stone/Support/StatsReporter.h"
+#include "stone/Support/Statistics.h"
 #include "stone/Support/TextDiagnosticConsumer.h"
 #include "stone/Support/TextDiagnosticFormatter.h"
 

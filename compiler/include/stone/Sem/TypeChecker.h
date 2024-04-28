@@ -3,7 +3,7 @@
 
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
-#include "stone/Support/StatsReporter.h"
+#include "stone/Support/Statistics.h"
 
 #include <memory>
 
