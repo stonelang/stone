@@ -1,9 +1,9 @@
 #include "stone/Parse/Parser.h"
-#include "stone/Syntax/ASTContext.h"
-#include "stone/Syntax/ASTDiagnostic.h"
-#include "stone/Syntax/ASTNode.h"
-#include "stone/Syntax/Type.h"
-#include "stone/Syntax/Types.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTDiagnostic.h"
+#include "stone/AST/ASTNode.h"
+#include "stone/AST/Type.h"
+#include "stone/AST/Types.h"
 
 using namespace stone;
 

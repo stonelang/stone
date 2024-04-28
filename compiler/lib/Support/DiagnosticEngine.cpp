@@ -194,17 +194,13 @@ DiagnosticEngine::DiagnosticEngine(SrcMgr &sm) : sm(sm), curDiagnostic() {}
 //    return LocalDiagnostics[(unsigned)id].severity;
 //  }
 
-llvm::StringRef DiagnosticEngine::GetDiagString(const DiagID diagID,
+llvm::StringRef DiagnosticEngine::GetDiagIDString(const DiagID diagID,
                                                 bool printDiagnosticName) {
   // TODO: Localization
   if (printDiagnosticName) {
     return DebugDiagnosticStrings[(unsigned)diagID];
   }
   return DiagnosticStrings[(unsigned)diagID];
-}
-
-llvm::StringRef DiagnosticEngine::GetDiagIDStringByDiagID(const DiagID diagID) {
-  return DiagnosticIDStrings[(unsigned)diagID];
 }
 
 void InFlightDiagnostic::Flush() {
@@ -248,7 +244,7 @@ std::optional<DiagnosticMessage>
 DiagnosticEngine::CreateDiagnosticMessage(const Diagnostic &diagnostic) {
   return DiagnosticMessage(
       /*TODO*/ DiagnosticLevel::Warn, diagnostic, GetSrcMgr(),
-      GetDiagString(diagnostic.GetID(), true),
+      GetDiagIDString(diagnostic.GetID(), true),
       /*TODO*/ llvm::StringRef());
 }
 

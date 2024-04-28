@@ -2,7 +2,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
 #include "stone/Gen/IRGenABI.h"
-#include "stone/Syntax/Decl.h"
+#include "stone/AST/Decl.h"
 
 using namespace stone;
 

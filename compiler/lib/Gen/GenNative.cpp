@@ -1,8 +1,8 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
 #include "stone/Gen/IRGenOptimizer.h"
-#include "stone/Syntax/ASTContext.h"
-#include "stone/Syntax/Module.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/Module.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"

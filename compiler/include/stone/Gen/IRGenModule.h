@@ -8,8 +8,8 @@
 #include "stone/Gen/IRGenMetadata.h"
 #include "stone/Gen/IRGenTypeCache.h"
 #include "stone/Gen/IRGenTypeResolver.h"
-#include "stone/Syntax/ASTVisitor.h"
-#include "stone/Syntax/Module.h"
+#include "stone/AST/ASTVisitor.h"
+#include "stone/AST/Module.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"

@@ -3,9 +3,9 @@
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/IDE.h"
-#include "stone/Syntax/ASTContext.h"
-#include "stone/Syntax/ASTDiagnostic.h"
-#include "stone/Syntax/Scope.h"
+#include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTDiagnostic.h"
+#include "stone/AST/Scope.h"
 
 using namespace stone;
 

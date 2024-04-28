@@ -411,9 +411,8 @@ public:
 
 public:
   /// Get the actual string in the ".def" for the diagnostic
-  llvm::StringRef GetDiagString(const DiagID diagID, bool printDiagnosticName);
-  llvm::StringRef GetDiagIDStringByDiagID(const DiagID diagID);
-
+  llvm::StringRef GetDiagIDString(const DiagID diagID, bool printDiagnosticName = false);
+  
 public:
   /// Add an additional DiagnosticConsumer to receive diagnostics.
   void AddConsumer(DiagnosticConsumer &listener) {

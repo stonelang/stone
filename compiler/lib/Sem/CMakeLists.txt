@@ -10,7 +10,7 @@ set(stone_sem_sources
 	ImportResolution.cpp
 	
 	LINK_LIBS
-	StoneSyntax
+	StoneAST
 
 	DEPENDS
 	StoneOptions

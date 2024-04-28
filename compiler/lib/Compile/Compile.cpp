@@ -6,7 +6,7 @@
 #include "stone/Core.h"
 #include "stone/Support/DiagnosticsCompile.h"
 #include "stone/Support/StatsReporter.h"
-#include "stone/Syntax/ASTDiagnostic.h"
+#include "stone/AST/ASTDiagnostic.h"
 
 using namespace stone;
 
