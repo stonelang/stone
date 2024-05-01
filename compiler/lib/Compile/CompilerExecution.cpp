@@ -285,6 +285,7 @@ Status EmitIRBeforeExecution::ExecuteAction() {
 Status EmitIRBeforeExecution::FinishAction() { return Status(); }
 
 void EmitIRBeforeExecution::CompletedSemanticAnalysis(SourceFile &result) {}
+
 void EmitIRBeforeExecution::CompletedSemanticAnalysis(ModuleDecl &result) {}
 
 ///< EmitIRAfterExecution

@@ -10,7 +10,7 @@
 #include "llvm/Target/TargetMachine.h"
 
 namespace stone {
-class IRGenInvocation;
+class IRGenPassManager;
 
 // There are two layers to optimization
 // (1) optimization during module constructiong
@@ -18,7 +18,7 @@ class IRGenInvocation;
 // So, this is a convenient class to wrapp of the essential objects required.
 class IRGenOptimizer final {
 
-  IRGenInvocation &invocation;
+  IRGenPassManager &passMgr;
 
 public:
   IRGenOptimizer(const IRGenOptimizer &) = delete;
@@ -27,7 +27,7 @@ public:
   void operator=(IRGenOptimizer &&) = delete;
 
 public:
-  IRGenOptimizer(IRGenInvocation &invocation);
+  IRGenOptimizer(IRGenPassManager &passMgr);
   ~IRGenOptimizer();
 
 public:

@@ -3,8 +3,8 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
 #include "stone/Gen/IRGenInstance.h"
-#include "stone/Gen/IRGenInvocation.h"
 #include "stone/Gen/IRGenOptimizer.h"
+#include "stone/Gen/IRGenPassManager.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
@@ -46,29 +46,22 @@
 
 using namespace stone;
 
-IRGenOptimizer::IRGenOptimizer(IRGenInvocation &invocation)
-    : invocation(invocation) {}
+IRGenOptimizer::IRGenOptimizer(IRGenPassManager &passMgr)
+    : passMgr(passMgr) {}
 
-void IRGenOptimizer::Optimize() {
-  invocation.GetPassManager().run(*invocation.GetLLVMModule(),
-                                  invocation.GetModuleAnalysisManager());
-}
 
-void IRGenOptimizer::OptimizeWithLegacyPassManager() {
-  invocation.GetLegacyPassManager().run(*invocation.GetLLVMModule());
-}
 
-// TODO: Pass the IRGenInvocation
+// TODO: Pass the IRGenPassManager
 void stone::OptimizeIR(const CodeGenOptions &codeGenOpts,
                        llvm::Module *llvmModule, llvm::TargetMachine *target,
                        DiagnosticEngine &diags) {
 
-  IRGenInvocation invocation(codeGenOpts, llvmModule, target, diags);
-  IRGenOptimizer optimizer(invocation);
+  IRGenPassManager passMgr(codeGenOpts, llvmModule, target, diags);
+  // IRGenOptimizer optimizer(invocation);
 
   if (codeGenOpts.useLegacyPassManager) {
-    optimizer.OptimizeWithLegacyPassManager();
+    passMgr.RunLegacyPasses(llvmModule);
   } else {
-    optimizer.Optimize();
+    passMgr.RunPasses(llvmModule);
   }
 }

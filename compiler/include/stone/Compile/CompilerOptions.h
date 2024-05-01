@@ -85,6 +85,8 @@ public:
   // Some actions require just GenIR w/o actually emitting out.
   bool shouldEmitIR = false;
 
+  bool noIROptimization = false;
+
   enum class LibOutputMode {
     /// Default
     Dynamic = 0,

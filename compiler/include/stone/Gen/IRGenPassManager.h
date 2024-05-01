@@ -20,7 +20,7 @@ class CodeGenOptions;
 // (1) optimization during module constructiong
 // (2) optimization when actually generating backend code
 // So, this is a convenient class to wrapp of the essential objects required.
-class IRGenInvocation final {
+class IRGenPassManager final {
   const CodeGenOptions &codeGenOpts;
   llvm::Module *mod = nullptr;
   llvm::TargetMachine *targetMachine = nullptr;
@@ -38,15 +38,15 @@ class IRGenInvocation final {
   llvm::FunctionPassManager fpm;
 
 public:
-  IRGenInvocation(const IRGenInvocation &) = delete;
-  void operator=(const IRGenInvocation &) = delete;
-  IRGenInvocation(IRGenInvocation &&) = delete;
-  void operator=(IRGenInvocation &&) = delete;
+  IRGenPassManager(const IRGenPassManager &) = delete;
+  void operator=(const IRGenPassManager &) = delete;
+  IRGenPassManager(IRGenPassManager &&) = delete;
+  void operator=(IRGenPassManager &&) = delete;
 
 public:
-  IRGenInvocation(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
-                  llvm::TargetMachine *targetMachine, DiagnosticEngine &diags);
-  ~IRGenInvocation();
+  IRGenPassManager(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
+                   llvm::TargetMachine *targetMachine, DiagnosticEngine &diags);
+  ~IRGenPassManager();
 
 public:
   llvm::PassBuilder &GetPassBuilder() { return pb; }
@@ -60,6 +60,9 @@ public:
     return lfpm;
   }
   llvm::FunctionPassManager &GetFunctionPassManager() { return fpm; }
+
+  void RunLegacyPasses(llvm::Module *mod);
+  void RunPasses(llvm::Module *mod);
 
 public:
   llvm::TargetMachine *GetTargetMachine() { return targetMachine; }

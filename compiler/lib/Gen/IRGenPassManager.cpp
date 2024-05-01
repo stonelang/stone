@@ -1,6 +1,6 @@
 
 
-#include "stone/Gen/IRGenInvocation.h"
+#include "stone/Gen/IRGenPassManager.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
@@ -47,10 +47,10 @@
 
 using namespace stone;
 
-IRGenInvocation::IRGenInvocation(const CodeGenOptions &codeGenOpts,
-                                 llvm::Module *mod,
-                                 llvm::TargetMachine *targetMachine,
-                                 DiagnosticEngine &diags)
+IRGenPassManager::IRGenPassManager(const CodeGenOptions &codeGenOpts,
+                                   llvm::Module *mod,
+                                   llvm::TargetMachine *targetMachine,
+                                   DiagnosticEngine &diags)
     : codeGenOpts(codeGenOpts), mod(mod), targetMachine(targetMachine),
       diags(diags), lfpm(mod) {
 
@@ -60,7 +60,11 @@ IRGenInvocation::IRGenInvocation(const CodeGenOptions &codeGenOpts,
   pb.registerFunctionAnalyses(fam);
   pb.registerLoopAnalyses(lam);
   pb.crossRegisterProxies(lam, fam, cgam, mam);
-
-  // TODO: get ol from gen options
   mpm = pb.buildPerModuleDefaultPipeline(codeGenOpts.GetOptimizationLevel());
+}
+void IRGenPassManager::RunLegacyPasses(llvm::Module *llvmModule) {
+  GetLegacyPassManager().run(*llvmModule);
+}
+void IRGenPassManager::RunPasses(llvm::Module *llvmModule) {
+  GetPassManager().run(*llvmModule, GetModuleAnalysisManager());
 }
