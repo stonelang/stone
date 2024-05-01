@@ -34,10 +34,10 @@ using ModuleDeclOrModuleFile = llvm::PointerUnion<ModuleDecl *, ModuleFile *>;
 
 struct ModuleInfo final {
   ModuleDeclOrModuleFile info;
+  
   ModuleInfo(ModuleDeclOrModuleFile info) : info(info) {}
 
   ModuleFile *GetAsModuleFile() const { return info.get<ModuleFile *>(); }
-
   ModuleDecl *GetAsModuleDecl() const { return info.get<ModuleDecl *>(); }
 };
 
