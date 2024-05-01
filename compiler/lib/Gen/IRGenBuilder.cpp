@@ -7,22 +7,22 @@ void IRGenBuilderInserter::InsertHelper(
     llvm::Instruction *instruction, const llvm::Twine &name,
     llvm::BasicBlock *basicBlock, llvm::BasicBlock::iterator insertPt) const {}
 
-IRGenBuilder::IRGenBuilder(IRGen &irGen, const IRGenTypeCache &typeCache)
-    : IRGenBuilderBase(irGen.GetLLVMContext()), irGen(irGen),
+IRGenBuilder::IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache)
+    : IRGenBuilderBase(invocation.GetLLVMContext()), invocation(invocation),
       typeCache(typeCache) {}
 
-IRGenBuilder::IRGenBuilder(IRGen &irGen, const IRGenTypeCache &typeCache,
+IRGenBuilder::IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache,
                            const llvm::ConstantFolder &constFoler,
                            const IRGenBuilderInserter &inserter)
-    : IRGenBuilderBase(irGen.GetLLVMContext(), constFoler, inserter),
-      irGen(irGen), typeCache(typeCache) {}
+    : IRGenBuilderBase(invocation.GetLLVMContext(), constFoler, inserter),
+      invocation(invocation), typeCache(typeCache) {}
 
-IRGenBuilder::IRGenBuilder(IRGen &irGen, const IRGenTypeCache &typeCache,
+IRGenBuilder::IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache,
                            llvm::Instruction *instruction)
-    : IRGenBuilderBase(instruction), irGen(irGen), typeCache(typeCache) {}
+    : IRGenBuilderBase(instruction), invocation(invocation), typeCache(typeCache) {}
 
-IRGenBuilder::IRGenBuilder(IRGen &irGen, const IRGenTypeCache &typeCache,
+IRGenBuilder::IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache,
                            llvm::BasicBlock *basicBlock)
-    : IRGenBuilderBase(basicBlock), irGen(irGen), typeCache(typeCache) {}
+    : IRGenBuilderBase(basicBlock), invocation(invocation), typeCache(typeCache) {}
 
 IRGenBuilder::~IRGenBuilder() {}

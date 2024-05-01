@@ -1,6 +1,6 @@
 
 #include "stone/Gen/IRGenFunction.h"
-#include "stone/Gen/IRGenModule.h"
+#include "stone/Gen/IRGenInvocation.h"
 
 using namespace stone;
 

@@ -161,12 +161,12 @@ public:
   // llvm::orc::ThreadSafeModule IntoThreadSafeContext() &&;
 };
 
-class IRGen final {
+class IRGenInvocation final {
 
   const CodeGenOptions &codeGenOpts;
   ASTContext &astContext;
 
-  llvm::DenseMap<SourceFile *, IRGenModule *> irGenModules;
+  llvm::DenseMap<SourceFile *, IRGenModule *> modules;
 
   llvm::SmallVector<IRGenModule *, 8> queue;
 
@@ -181,11 +181,11 @@ public:
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
 private:
-  IRGen(const IRGen &) = delete;
-  void operator=(const IRGen &) = delete;
+  IRGenInvocation(const IRGenInvocation &) = delete;
+  void operator=(const IRGenInvocation &) = delete;
 
 public:
-  explicit IRGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
+  explicit IRGenInvocation(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
 
 public:
   /// Add an IRGenModule for a source file.
@@ -213,7 +213,7 @@ public:
 
 class IRGenModule final : public ASTVisitor<IRGenModule> {
 
-  IRGen &irGen;
+  IRGenInvocation &invocation;
   IRGenTypeCache typeCache;
   IRGenTypeResolver typeResolver;
   IRGenMetadata metadata;
@@ -244,7 +244,7 @@ private:
   void operator=(const IRGenModule &) = delete;
 
 public:
-  IRGenModule(IRGen &irGen, SourceFile *sourceFile, llvm::StringRef moduleName,
+  IRGenModule(IRGenInvocation &invocation, SourceFile *sourceFile, llvm::StringRef moduleName,
               llvm::StringRef outputFilename);
   ~IRGenModule();
 
@@ -269,7 +269,7 @@ public:
   llvm::SmallVector<InterfaceDecl *, 4> interfaces;
 
 public:
-  IRGen &GetIRGen() { return irGen; }
+  IRGenInvocation &GetInvocation() { return invocation; }
   IRGenTypeCache &GetIRGenTypeCache() { return typeCache; }
   IRGenTypeResolver &GetIRGenTypeResolver() { return typeResolver; }
   IRGenMetadata &GetIRGenMetadata() { return metadata; }

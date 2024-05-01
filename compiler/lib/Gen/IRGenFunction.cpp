@@ -1,18 +1,18 @@
 #include "stone/Gen/IRGenFunction.h"
-#include "stone/Gen/IRGenModule.h"
+#include "stone/Gen/IRGenInvocation.h"
 
 using namespace stone;
 
 IRGenFunction::IRGenFunction(IRGenModule &gm, llvm::Function *llvmFunction)
     : gm(gm), llvmFunction(llvmFunction),
-      builder(gm.GetIRGen(), gm.GetIRGenTypeCache()) {}
+      builder(gm.GetInvocation(), gm.GetIRGenTypeCache()) {}
 
 IRGenFunction::~IRGenFunction() {}
 
 /// Create a new basic block with the given name.  The block is not
 /// automatically inserted into the function.
 llvm::BasicBlock *IRGenFunction::CreateBasicBlock(const llvm::Twine &name) {
-  return llvm::BasicBlock::Create(gm.GetIRGen().GetLLVMContext(), name);
+  return llvm::BasicBlock::Create(gm.GetInvocation().GetLLVMContext(), name);
 }
 
 void IRGenFunction::EmitFunction(FunctionDecl *fd) {

@@ -3,7 +3,7 @@
 
 #include "stone/AST/Module.h"
 #include "stone/Basic/LLVM.h"
-#include "stone/Gen/IRGenModule.h"
+#include "stone/Gen/IRGenInvocation.h"
 
 #include "llvm/IR/PassManager.h"
 

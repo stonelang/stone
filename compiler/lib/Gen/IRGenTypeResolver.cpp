@@ -1,7 +1,7 @@
 #include "stone/Gen/IRGenTypeResolver.h"
 #include "stone/AST/Type.h"
 #include "stone/Gen/IRGenABI.h"
-#include "stone/Gen/IRGenModule.h"
+#include "stone/Gen/IRGenInvocation.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Analysis/ValueTracking.h"
@@ -28,7 +28,7 @@ llvm::FunctionType *IRGenTypeResolver::GetFunctionType(const FunctionDecl *fd) {
 
   // TODO: Just for now
   return llvm::FunctionType::get(
-      llvm::Type::getVoidTy(cgm.GetIRGen().GetLLVMContext()), {}, false);
+      llvm::Type::getVoidTy(cgm.GetInvocation().GetLLVMContext()), {}, false);
 }
 
 // llvm::Type *IRGenTypeResolver::GetType(const MemberPointerType mpty)

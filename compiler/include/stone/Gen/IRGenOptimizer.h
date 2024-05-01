@@ -3,7 +3,7 @@
 
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
-#include "stone/Support/DiagnosticEngine.h"
+#include "stone/AST/Diagnostics.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/Passes/PassBuilder.h"

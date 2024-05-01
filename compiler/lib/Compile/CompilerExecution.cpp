@@ -293,7 +293,7 @@ EmitIRAfterExecution::EmitIRAfterExecution(Compiler &compiler)
 
 Status EmitIRAfterExecution::ExecuteAction() {
 
-  // stone::OptimizeIR(compiler.GetIRGen()....)
+  // stone::OptimizeIR(compiler.GetInvocation()....)
 
   // std::unique_ptr<IRCodeOptimizer>
   /// irOptimizer = std::make_uqnique<IROptimizer>(GetCodeGenOptions(),
@@ -316,7 +316,7 @@ PrintIRExecution::PrintIRExecution(Compiler &compiler)
 
 Status PrintIRExecution::ExecuteAction() {
 
-  // stone::OptimizeIR(compiler.GetIRGen()....)
+  // stone::OptimizeIR(compiler.GetInvocation()....)
 
   // std::unique_ptr<IRCodeOptimizer>
   /// irOptimizer = std::make_uqnique<IROptimizer>(GetCodeGenOptions(),

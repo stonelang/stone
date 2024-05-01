@@ -24,15 +24,9 @@ class MemberPointerType;
 class IRGenModule;
 
 class IRGenABI final {
-  IRGenModule &gm;
-
-  std::unique_ptr<MangleContext> mangleContext;
-
-public:
-  IRGenABI(IRGenModule &gm);
-
-public:
-  llvm::Type *ResolveMemberPointerType(const MemberPointerType mpt);
+	IRGenModule &gm;
+ public:
+	IRGenABI(IRGenModule &gm);
 };
 
 } // namespace stone

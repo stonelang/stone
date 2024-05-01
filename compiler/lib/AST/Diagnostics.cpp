@@ -1232,6 +1232,7 @@ void TextDiagnosticPrinter::handleDiagnostic(SrcMgr &SM,
     return;
   }
 
+  //TODO: 
   switch (FormattingStyle) {
   case DiagnosticOptions::FormattingStyle::Stone: {
   }

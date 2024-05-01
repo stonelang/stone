@@ -1,4 +1,4 @@
-#include "stone/Gen/IRGenModule.h"
+#include "stone/Gen/IRGenInvocation.h"
 #include "stone/AST/Decl.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
@@ -6,12 +6,12 @@
 
 using namespace stone;
 
-IRGen::IRGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext)
+IRGenInvocation::IRGenInvocation(const CodeGenOptions &codeGenOpts, ASTContext &astContext)
     : codeGenOpts(codeGenOpts), astContext(astContext),
       llvmContext(new llvm::LLVMContext()),
       llvmTargetMachine(stone::CreateTargetMachine(codeGenOpts)) {}
 
-llvm::Triple IRGen::GetEffectiveClangTriple() {
+llvm::Triple IRGenInvocation::GetEffectiveClangTriple() {
   return llvm::Triple(astContext.GetClangContext()
                           .GetInstance()
                           .getTarget()
@@ -19,22 +19,22 @@ llvm::Triple IRGen::GetEffectiveClangTriple() {
                           .Triple);
 }
 
-const llvm::StringRef IRGen::GetClangDataLayoutString() {
+const llvm::StringRef IRGenInvocation::GetClangDataLayoutString() {
   return astContext.GetClangContext()
       .GetInstance()
       .getTarget()
       .getDataLayoutString();
 }
 
-static clang::CodeGenerator *CreateClangCodeGen(IRGen &irGen,
+static clang::CodeGenerator *CreateClangCodeGen(IRGenInvocation &invocation,
                                                 llvm::StringRef moduleName) {
 
-  auto &clangInstance = irGen.GetASTContext().GetClangContext().GetInstance();
+  auto &clangInstance = invocation.GetASTContext().GetClangContext().GetInstance();
   auto &clangASTContext = clangInstance.getASTContext();
   auto &clangCodeGenOpts = clangInstance.getCodeGenOpts();
 
   clangCodeGenOpts.OptimizationLevel =
-      irGen.GetCodeGenOptions().ShouldOptimize() ? 3 : 0;
+      invocation.GetCodeGenOptions().ShouldOptimize() ? 3 : 0;
 
   clangCodeGenOpts.CoverageMapping = false;
 
@@ -47,32 +47,32 @@ static clang::CodeGenerator *CreateClangCodeGen(IRGen &irGen,
       clangInstance.getPreprocessor().getPreprocessorOpts();
   auto *clangCodeGen = clang::CreateLLVMCodeGen(
       clangInstance.getDiagnostics(), moduleName, &vfs, headerSearchOpts,
-      preprocessorOpts, clangCodeGenOpts, irGen.GetLLVMContext());
+      preprocessorOpts, clangCodeGenOpts, invocation.GetLLVMContext());
 
   clangCodeGen->Initialize(clangASTContext);
   return clangCodeGen;
 }
 
-IRGenModule::IRGenModule(IRGen &irGen, SourceFile *sourceFile,
+IRGenModule::IRGenModule(IRGenInvocation &invocation, SourceFile *sourceFile,
                          llvm::StringRef moduleName,
                          llvm::StringRef outputFilename)
 
-    : irGen(irGen), dataLayout(irGen.GetClangDataLayoutString()),
-      triple(irGen.GetEffectiveClangTriple()),
-      typeCache(irGen.GetLLVMContext()), outputFilename(outputFilename),
-      clangCodeGen(CreateClangCodeGen(irGen, moduleName)), typeResolver(*this),
+    : invocation(invocation), dataLayout(invocation.GetClangDataLayoutString()),
+      triple(invocation.GetEffectiveClangTriple()),
+      typeCache(invocation.GetLLVMContext()), outputFilename(outputFilename),
+      clangCodeGen(CreateClangCodeGen(invocation, moduleName)), typeResolver(*this),
       metadata(*this) {
 
   // Setup module target
-  irGen.AddIRGenModule(sourceFile, this);
+  invocation.AddIRGenModule(sourceFile, this);
 }
 
 /// Add an IRGenModule for a source file.
 /// Should only be called from IRGenModule's constructor.
-void IRGen::AddIRGenModule(SourceFile *sourceFile, IRGenModule *codeGenModule) {
+void IRGenInvocation::AddIRGenModule(SourceFile *sourceFile, IRGenModule *codeGenModule) {
 
-  assert(irGenModules.count(sourceFile) == 0);
-  irGenModules[sourceFile] = codeGenModule;
+  assert(modules.count(sourceFile) == 0);
+  modules[sourceFile] = codeGenModule;
   if (!primaryCodeGenModule) {
     primaryCodeGenModule = codeGenModule;
   }
