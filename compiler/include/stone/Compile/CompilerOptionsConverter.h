@@ -1,9 +1,9 @@
 #ifndef STONE_COMPILE_COMPILEROPTIONSCONVERTER_H
 #define STONE_COMPILE_COMPILEROPTIONSCONVERTER_H
 
+#include "stone/AST/Diagnostics.h"
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/AST/Diagnostics.h"
 #include "stone/Support/Options.h"
 
 namespace stone {

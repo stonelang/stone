@@ -1,11 +1,11 @@
 #ifndef STONE_COMPILE_COMPILEROUTPUTSCONVERTER_H
 #define STONE_COMPILE_COMPILEROUTPUTSCONVERTER_H
 
+#include "stone/AST/Diagnostics.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SupplementaryOutputPaths.h"
 #include "stone/Compile/CompilerInputsAndOutputs.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/AST/Diagnostics.h"
 #include "stone/Support/Options.h"
 #include "llvm/Option/ArgList.h"
 

@@ -22,13 +22,11 @@ IRGenBuilder::IRGenBuilder(IRGenInstance &instance,
 IRGenBuilder::IRGenBuilder(IRGenInstance &instance,
                            const IRGenTypeCache &typeCache,
                            llvm::Instruction *instruction)
-    : IRGenBuilderBase(instruction), instance(instance),
-      typeCache(typeCache) {}
+    : IRGenBuilderBase(instruction), instance(instance), typeCache(typeCache) {}
 
 IRGenBuilder::IRGenBuilder(IRGenInstance &instance,
                            const IRGenTypeCache &typeCache,
                            llvm::BasicBlock *basicBlock)
-    : IRGenBuilderBase(basicBlock), instance(instance),
-      typeCache(typeCache) {}
+    : IRGenBuilderBase(basicBlock), instance(instance), typeCache(typeCache) {}
 
 IRGenBuilder::~IRGenBuilder() {}

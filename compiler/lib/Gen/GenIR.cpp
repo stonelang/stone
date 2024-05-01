@@ -80,8 +80,7 @@ using namespace stone;
 
 IRGenResult *stone::GenIR(IRGenRequest request) {
 
-  IRGenInstance instance(request.GetCodeGenOptions(),
-                             request.GetASTContext());
+  IRGenInstance instance(request.GetCodeGenOptions(), request.GetASTContext());
 
   const auto &psps = request.GetPrimaryFileSpecificPaths();
   IRGenModule gm(instance, request.GetPrimarySourceFile(),

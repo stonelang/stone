@@ -1,13 +1,12 @@
 #include "stone/Compile/Compile.h"
 #include "stone/AST/Diagnostics.h"
+#include "stone/AST/DiagnosticsCompile.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
 #include "stone/Core.h"
-#include "stone/AST/DiagnosticsCompile.h"
 #include "stone/Support/Statistics.h"
-
 
 using namespace stone;
 
@@ -50,7 +49,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
 
   if (!invocation.GetCompilerOptions().HasMainAction()) {
-    // compiler.GetDiags().diagnose(diag::err_no_compile_action);
+    // compiler.GetDiags().diagnose(diag::error_no_compile_action);
     return FinishCompile(Status::Error());
   }
 

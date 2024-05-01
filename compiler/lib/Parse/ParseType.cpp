@@ -28,7 +28,7 @@ Type Parser::ParseFunctionType(ParsingDecl &collector, Diag<> diagID) {
   // ParserStatus status;
 
   // ParserResult<Type> type =
-  //     ParseType(collector, diag::err_expected_type_for_function_result);
+  //     ParseType(collector, diag::error_expected_type_for_function_result);
 
   // if (!collector.GetTypeSpecifierCollector().HasAny()) {
   //   // TODO: log that "Function requires a return type. Try '-> void' if it

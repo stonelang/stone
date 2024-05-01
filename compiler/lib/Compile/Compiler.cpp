@@ -1,5 +1,6 @@
 #include "stone/Compile/Compiler.h"
 #include "stone/AST/ClangContext.h"
+#include "stone/AST/DiagnosticsCompile.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Memory.h"
@@ -9,7 +10,6 @@
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Parse/Lexer.h" // TODO: do better
-#include "stone/AST/DiagnosticsCompile.h"
 
 using namespace stone;
 using namespace stone::file;
@@ -213,7 +213,7 @@ Compiler::GetRecordedBufferID(const CompilerInputFile &input,
 // &input) {
 //   auto fb = GetFileMgr().getBufferForFile(input.GetFileName());
 //   if (!fb) {
-//     GetDiags().diagnose(SrcLoc(), diag::err_unable_to_open_buffer_for_file,
+//     GetDiags().diagnose(SrcLoc(), diag::error_unable_to_open_buffer_for_file,
 //                       diag::LLVMStr(input.GetFileName()));
 //   }
 //   auto srcID = astContext->GetSrcMgr().addNewSourceBuffer(std::move(*fb));
@@ -243,8 +243,8 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
 
   if (!inputFileOrError) {
     invocation.GetDiags().diagnose(SrcLoc(),
-                                 diag::error_unable_to_open_buffer_for_file,
-                                 input.GetFileName());
+                                   diag::error_unable_to_open_buffer_for_file,
+                                   input.GetFileName());
     return std::nullopt;
   }
 
@@ -252,7 +252,7 @@ Compiler::GetInputBuffersIfPresent(const CompilerInputFile &input) {
   return ModuleBuffers(std::move(*inputFileOrError));
   // if (!fb) {
   //   ctx.GetDiagUnit().diagnose(SrcLoc(),
-  //   diag::err_unable_to_open_buffer_for_file,
+  //   diag::error_unable_to_open_buffer_for_file,
   //                            diag::LLVMStr(input.GetFileName()));
   // }
   // auto srcID = ctx.GetSrcMgr().addNewSourceBuffer(std::move(*fb));

@@ -18,7 +18,8 @@ class IRGenInvocation;
 // So, this is a convenient class to wrapp of the essential objects required.
 class IRGenOptimizer final {
 
-  IRGenInvocation& invocation;
+  IRGenInvocation &invocation;
+
 public:
   IRGenOptimizer(const IRGenOptimizer &) = delete;
   void operator=(const IRGenOptimizer &) = delete;
@@ -26,7 +27,7 @@ public:
   void operator=(IRGenOptimizer &&) = delete;
 
 public:
-  IRGenOptimizer(IRGenInvocation& invocation);
+  IRGenOptimizer(IRGenInvocation &invocation);
   ~IRGenOptimizer();
 
 public:

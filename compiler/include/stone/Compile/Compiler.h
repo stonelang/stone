@@ -1,9 +1,9 @@
 #ifndef STONE_COMPILE_COMPILER_H
 #define STONE_COMPILE_COMPILER_H
 
+#include "stone/AST/Diagnostics.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/AST/Diagnostics.h"
 #include "stone/Support/Statistics.h"
 //
 // #include "llvm/Support/HashingOutputBackend.h"

@@ -103,8 +103,8 @@ Status DriverInputsConverter::AddFile(llvm::StringRef file) {
   if (files.insert(file)) {
     return Status();
   }
-  driver.GetDiags().diagnose(SrcLoc(), diag::err_duplicate_input_file,
-                           diag::LLVMStr(file));
+  driver.GetDiags().diagnose(SrcLoc(), diag::error_duplicate_input_file,
+                             diag::LLVMStr(file));
   return Status::MakeHasCompletionAndIsError();
 }
 
@@ -237,7 +237,7 @@ ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
   }
   default: {
     driver.GetDiags().diagnose(
-        SrcLoc(), diag::err_unknown_target,
+        SrcLoc(), diag::error_unknown_target,
         diag::LLVMStr(args.getLastArg(opts::Target)->getValue()));
     return ToolChainKind::None;
   }

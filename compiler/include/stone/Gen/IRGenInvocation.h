@@ -45,7 +45,7 @@ public:
 
 public:
   IRGenInvocation(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
-                 llvm::TargetMachine *targetMachine, DiagnosticEngine &diags);
+                  llvm::TargetMachine *targetMachine, DiagnosticEngine &diags);
   ~IRGenInvocation();
 
 public:
@@ -64,8 +64,8 @@ public:
 public:
   llvm::TargetMachine *GetTargetMachine() { return targetMachine; }
   llvm::Module *GetLLVMModule() { return mod; }
-  DiagnosticEngine& GetDiags() { return diags;}
-  const CodeGenOptions& GetCodGenOptions() const { return codeGenOpts; }
+  DiagnosticEngine &GetDiags() { return diags; }
+  const CodeGenOptions &GetCodGenOptions() const { return codeGenOpts; }
 };
 
 } // namespace stone

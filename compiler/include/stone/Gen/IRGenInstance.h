@@ -186,7 +186,7 @@ private:
 
 public:
   explicit IRGenInstance(const CodeGenOptions &codeGenOpts,
-                           ASTContext &astContext);
+                         ASTContext &astContext);
 
 public:
   /// Add an IRGenModule for a source file.

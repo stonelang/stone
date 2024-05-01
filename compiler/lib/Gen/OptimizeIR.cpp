@@ -3,8 +3,8 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
 #include "stone/Gen/IRGenInstance.h"
-#include "stone/Gen/IRGenOptimizer.h"
 #include "stone/Gen/IRGenInvocation.h"
+#include "stone/Gen/IRGenOptimizer.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
@@ -46,17 +46,19 @@
 
 using namespace stone;
 
-IRGenOptimizer::IRGenOptimizer(IRGenInvocation& invocation) : invocation(invocation){}
+IRGenOptimizer::IRGenOptimizer(IRGenInvocation &invocation)
+    : invocation(invocation) {}
 
 void IRGenOptimizer::Optimize() {
-  invocation.GetPassManager().run(*invocation.GetLLVMModule(), invocation.GetModuleAnalysisManager());
+  invocation.GetPassManager().run(*invocation.GetLLVMModule(),
+                                  invocation.GetModuleAnalysisManager());
 }
 
 void IRGenOptimizer::OptimizeWithLegacyPassManager() {
   invocation.GetLegacyPassManager().run(*invocation.GetLLVMModule());
 }
 
-// TODO: Pass the IRGenInvocation 
+// TODO: Pass the IRGenInvocation
 void stone::OptimizeIR(const CodeGenOptions &codeGenOpts,
                        llvm::Module *llvmModule, llvm::TargetMachine *target,
                        DiagnosticEngine &diags) {

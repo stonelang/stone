@@ -1,9 +1,9 @@
 #include "stone/Compile/CompilerInputsAndOutputs.h"
+#include "stone/AST/DiagnosticsCompile.h"
 #include "stone/Basic/FileType.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Basic/Range.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/AST/DiagnosticsCompile.h"
 #include "stone/Support/Options.h"
 
 #include "llvm/Option/Arg.h"

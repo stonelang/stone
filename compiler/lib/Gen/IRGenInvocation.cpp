@@ -1,11 +1,11 @@
 
 
+#include "stone/Gen/IRGenInvocation.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
 #include "stone/Gen/IRGenInstance.h"
-#include "stone/Gen/IRGenInvocation.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
@@ -48,12 +48,12 @@
 using namespace stone;
 
 IRGenInvocation::IRGenInvocation(const CodeGenOptions &codeGenOpts,
-                               llvm::Module *mod,
-                               llvm::TargetMachine *targetMachine,
-                               DiagnosticEngine &diags)
+                                 llvm::Module *mod,
+                                 llvm::TargetMachine *targetMachine,
+                                 DiagnosticEngine &diags)
     : codeGenOpts(codeGenOpts), mod(mod), targetMachine(targetMachine),
       diags(diags), lfpm(mod) {
-      	
+
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);
   pb.registerCGSCCAnalyses(cgam);
@@ -64,7 +64,3 @@ IRGenInvocation::IRGenInvocation(const CodeGenOptions &codeGenOpts,
   // TODO: get ol from gen options
   mpm = pb.buildPerModuleDefaultPipeline(codeGenOpts.GetOptimizationLevel());
 }
-
-
-
-

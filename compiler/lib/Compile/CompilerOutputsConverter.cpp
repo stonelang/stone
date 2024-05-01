@@ -1,6 +1,6 @@
+#include "stone/AST/DiagnosticsCompile.h"
 #include "stone/Basic/OutputFileMap.h"
 #include "stone/Strings.h"
-#include "stone/AST/DiagnosticCompile.h"
 // #include "stone/Basic/Platform.h"
 #include "stone/Compile/CompilerInputsConverter.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
@@ -86,7 +86,8 @@ CompilerOutputsConverter::ReadOutputFileList(const llvm::StringRef fileListPath,
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer =
       llvm::MemoryBuffer::getFile(fileListPath);
   if (!buffer) {
-    de.diagnose(SrcLoc(), diag::error_cannot_open_file, fileListPath, buffer.getError().message());
+    de.diagnose(SrcLoc(), diag::error_cannot_open_file, fileListPath,
+                buffer.getError().message());
     return std::nullopt;
   }
   std::vector<std::string> outputFiles;
@@ -140,8 +141,8 @@ std::optional<CompilerOutputFilesComputer> CompilerOutputFilesComputer::Create(
       outputFileArguments.size() !=
           inputsAndOutputs.CountOfInputsProducingMainOutputs()) {
     de.diagnose(SrcLoc(),
-              diag::err_if_any_output_files_are_specified_they_all_must_be,
-              diag::LLVMStr(optInfo.PrettyName));
+                diag::error_if_any_output_files_are_specified_they_all_must_be,
+                optInfo.PrettyName);
     return std::nullopt;
   }
 
@@ -220,8 +221,8 @@ CompilerOutputFilesComputer::DeriveOutputFileFromInput(
   std::string baseName = DetermineBaseNameOfOutput(input);
   if (baseName.empty()) {
     // Assuming CompilerOptions::doesJobActionProduceOutput(RequestedJobAction)
-    de.diagnose(SrcLoc(), diag::err_no_output_filename_specified,
-              diag::LLVMStr(OutputInfo.PrettyName));
+    de.diagnose(SrcLoc(), diag::error_no_output_filename_specified,
+                OutputInfo.PrettyName);
     return std::nullopt;
   }
   return DeriveOutputFileFromParts("", baseName);
@@ -232,9 +233,8 @@ CompilerOutputFilesComputer::DeriveOutputFileForDirectory(
     const CompilerInputFile &input) const {
   std::string baseName = DetermineBaseNameOfOutput(input);
   if (baseName.empty()) {
-    de.diagnose(SrcLoc(), diag::err_implicit_output_file_is_directory,
-              diag::LLVMStr(OutputDirectoryArgument),
-              diag::LLVMStr(OutputInfo.SingleOptSpelling));
+    de.diagnose(SrcLoc(), diag::error_implicit_output_file_is_directory,
+                OutputDirectoryArgument, OutputInfo.SingleOptSpelling);
     return std::nullopt;
   }
   return DeriveOutputFileFromParts(OutputDirectoryArgument, baseName);
@@ -409,7 +409,7 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
     // We only need one file to output the module trace file because they
     // are all equivalent. Add supplementary empty output paths for moduletrace
     // to make sure the compiler won't panic for
-    // diag::err_wrong_number_of_arguments.
+    // diag::error_wrong_number_of_arguments.
 
     for (unsigned I = paths.size(); I != N; I++) {
       paths.emplace_back();
@@ -421,10 +421,9 @@ SupplementaryOutputPathsComputer::GetSupplementaryFilenamesFromArguments(
     return std::vector<std::string>(N, std::string());
   }
 
-  de.diagnose(
-      SrcLoc(), diag::err_wrong_number_of_arguments,
-      diag::LLVMStr(args.getLastArg(pathID)->getOption().getPrefixedName()),
-      diag::Int(N), diag::Int(paths.size()));
+  de.diagnose(SrcLoc(), diag::error_wrong_number_of_arguments,
+              args.getLastArg(pathID)->getOption().getPrefixedName(), N,
+              paths.size());
   return std::nullopt;
 }
 
@@ -650,9 +649,8 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
   if (const Arg *A = args.getLastArg(opts::OPT_BadFileDescriptorRetryCount)) {
     if (StringRef(A->getValue())
             .getAsInteger(10, BadFileDescriptorRetryCount)) {
-      de.diagnose(SrcLoc(), diag::err_invalid_arg_value,
-                diag::LLVMStr(A->getAsString(args)),
-                diag::LLVMStr(A->getValue()));
+      de.diagnose(SrcLoc(), diag::error_invalid_arg_value, A->getAsString(args),
+                  A->getValue());
       return std::nullopt;
     }
   }
@@ -667,17 +665,16 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
     }
   }
   if (!buffer) {
-    de.diagnose(SrcLoc(), diag::err_cannot_open_file,
-              diag::LLVMStr(supplementaryFileMapPath),
-              diag::LLVMStr(buffer.getError().message()));
+    de.diagnose(SrcLoc(), diag::error_cannot_open_file,
+                supplementaryFileMapPath, buffer.getError().message());
     return std::nullopt;
   }
   llvm::Expected<OutputFileMap> outputFileMap =
       OutputFileMap::LoadFromBuffer(std::move(buffer.get()), "");
   if (auto Err = outputFileMap.takeError()) {
-    de.diagnose(SrcLoc(), diag::err_unable_to_load_supplementary_output_file_map,
-              diag::LLVMStr(supplementaryFileMapPath),
-              diag::LLVMStr(llvm::toString(std::move(Err))));
+    de.diagnose(SrcLoc(),
+                diag::error_unable_to_load_supplementary_output_file_map,
+                supplementaryFileMapPath, llvm::toString(std::move(Err)));
     return std::nullopt;
   }
 
@@ -688,10 +685,10 @@ SupplementaryOutputPathsComputer::ReadSupplementaryOutputFileMap() const {
         const TypeToPathMap *mapForInput =
             outputFileMap->GetOutputMapForInput(input.GetFileName());
         if (!mapForInput) {
-          de.diagnose(SrcLoc(),
-                    diag::err_missing_entry_in_supplementary_output_file_map,
-                    diag::LLVMStr(supplementaryFileMapPath),
-                    diag::LLVMStr(input.GetFileName()));
+          de.diagnose(
+              SrcLoc(),
+              diag::error_missing_entry_in_supplementary_output_file_map,
+              supplementaryFileMapPath, input.GetFileName());
           hadError = true;
         }
         outputPaths.push_back(CreateFromTypeToPathMap(mapForInput));

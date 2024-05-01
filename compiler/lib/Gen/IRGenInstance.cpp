@@ -7,7 +7,7 @@
 using namespace stone;
 
 IRGenInstance::IRGenInstance(const CodeGenOptions &codeGenOpts,
-                                 ASTContext &astContext)
+                             ASTContext &astContext)
     : codeGenOpts(codeGenOpts), astContext(astContext),
       llvmContext(new llvm::LLVMContext()),
       llvmTargetMachine(stone::CreateTargetMachine(codeGenOpts)) {}
@@ -72,7 +72,7 @@ IRGenModule::IRGenModule(IRGenInstance &instance, SourceFile *sourceFile,
 /// Add an IRGenModule for a source file.
 /// Should only be called from IRGenModule's constructor.
 void IRGenInstance::AddIRGenModule(SourceFile *sourceFile,
-                                     IRGenModule *codeGenModule) {
+                                   IRGenModule *codeGenModule) {
 
   assert(modules.count(sourceFile) == 0);
   modules[sourceFile] = codeGenModule;
