@@ -5,14 +5,14 @@ using namespace stone;
 
 IRGenFunction::IRGenFunction(IRGenModule &gm, llvm::Function *llvmFunction)
     : gm(gm), llvmFunction(llvmFunction),
-      builder(gm.GetInvocation(), gm.GetIRGenTypeCache()) {}
+      builder(gm.GetPassMgr(), gm.GetIRGenTypeCache()) {}
 
 IRGenFunction::~IRGenFunction() {}
 
 /// Create a new basic block with the given name.  The block is not
 /// automatically inserted into the function.
 llvm::BasicBlock *IRGenFunction::CreateBasicBlock(const llvm::Twine &name) {
-  return llvm::BasicBlock::Create(gm.GetInvocation().GetLLVMContext(), name);
+  return llvm::BasicBlock::Create(gm.GetPassMgr().GetLLVMContext(), name);
 }
 
 void IRGenFunction::EmitFunction(FunctionDecl *fd) {

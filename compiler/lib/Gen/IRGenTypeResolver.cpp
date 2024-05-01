@@ -28,7 +28,7 @@ llvm::FunctionType *IRGenTypeResolver::GetFunctionType(const FunctionDecl *fd) {
 
   // TODO: Just for now
   return llvm::FunctionType::get(
-      llvm::Type::getVoidTy(cgm.GetInvocation().GetLLVMContext()), {}, false);
+      llvm::Type::getVoidTy(cgm.GetPassMgr().GetLLVMContext()), {}, false);
 }
 
 // llvm::Type *IRGenTypeResolver::GetType(const MemberPointerType mpty)

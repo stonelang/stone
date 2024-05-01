@@ -57,7 +57,7 @@ void stone::OptimizeIR(const CodeGenOptions &codeGenOpts,
                        DiagnosticEngine &diags) {
 
   IRGenPassManager passMgr(codeGenOpts, llvmModule, target, diags);
-  // IRGenOptimizer optimizer(invocation);
+  // IRGenOptimizer optimizer(passMgr);
 
   if (codeGenOpts.useLegacyPassManager) {
     passMgr.RunLegacyPasses(llvmModule);
