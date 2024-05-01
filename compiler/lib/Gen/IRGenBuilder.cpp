@@ -7,22 +7,28 @@ void IRGenBuilderInserter::InsertHelper(
     llvm::Instruction *instruction, const llvm::Twine &name,
     llvm::BasicBlock *basicBlock, llvm::BasicBlock::iterator insertPt) const {}
 
-IRGenBuilder::IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache)
-    : IRGenBuilderBase(invocation.GetLLVMContext()), invocation(invocation),
+IRGenBuilder::IRGenBuilder(IRGenInstance &instance,
+                           const IRGenTypeCache &typeCache)
+    : IRGenBuilderBase(instance.GetLLVMContext()), instance(instance),
       typeCache(typeCache) {}
 
-IRGenBuilder::IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache,
+IRGenBuilder::IRGenBuilder(IRGenInstance &instance,
+                           const IRGenTypeCache &typeCache,
                            const llvm::ConstantFolder &constFoler,
                            const IRGenBuilderInserter &inserter)
-    : IRGenBuilderBase(invocation.GetLLVMContext(), constFoler, inserter),
-      invocation(invocation), typeCache(typeCache) {}
+    : IRGenBuilderBase(instance.GetLLVMContext(), constFoler, inserter),
+      instance(instance), typeCache(typeCache) {}
 
-IRGenBuilder::IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache,
+IRGenBuilder::IRGenBuilder(IRGenInstance &instance,
+                           const IRGenTypeCache &typeCache,
                            llvm::Instruction *instruction)
-    : IRGenBuilderBase(instruction), invocation(invocation), typeCache(typeCache) {}
+    : IRGenBuilderBase(instruction), instance(instance),
+      typeCache(typeCache) {}
 
-IRGenBuilder::IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache,
+IRGenBuilder::IRGenBuilder(IRGenInstance &instance,
+                           const IRGenTypeCache &typeCache,
                            llvm::BasicBlock *basicBlock)
-    : IRGenBuilderBase(basicBlock), invocation(invocation), typeCache(typeCache) {}
+    : IRGenBuilderBase(basicBlock), instance(instance),
+      typeCache(typeCache) {}
 
 IRGenBuilder::~IRGenBuilder() {}

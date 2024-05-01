@@ -5,7 +5,7 @@
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/Status.h"
 #include "stone/Gen/IRGenBuilder.h"
-#include "stone/Gen/IRGenInvocation.h"
+#include "stone/Gen/IRGenInstance.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/IR/CallingConv.h"

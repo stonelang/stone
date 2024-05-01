@@ -1,4 +1,4 @@
-#include "stone/Gen/IRGenInvocation.h"
+#include "stone/Gen/IRGenInstance.h"
 
 class TypeCodeGen final {
 public:

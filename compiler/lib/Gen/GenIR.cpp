@@ -3,7 +3,7 @@
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Core.h"
-#include "stone/Gen/IRGenInvocation.h"
+#include "stone/Gen/IRGenInstance.h"
 #include "stone/Gen/IRGenRequest.h"
 
 #include "llvm/ADT/SmallSet.h"
@@ -80,11 +80,12 @@ using namespace stone;
 
 IRGenResult *stone::GenIR(IRGenRequest request) {
 
-  IRGenInvocation invocation(request.GetCodeGenOptions(), request.GetASTContext());
+  IRGenInstance instance(request.GetCodeGenOptions(),
+                             request.GetASTContext());
 
   const auto &psps = request.GetPrimaryFileSpecificPaths();
-  IRGenModule gm(invocation, request.GetPrimarySourceFile(), request.GetModuleName(),
-                 psps.outputFilename);
+  IRGenModule gm(instance, request.GetPrimarySourceFile(),
+                 request.GetModuleName(), psps.outputFilename);
   gm.Setup();
 
   for (auto *moduleFile : request.GetFiles()) {
@@ -101,9 +102,9 @@ IRGenResult *stone::GenIR(IRGenRequest request) {
   }
 
   return IRGenResult::Create(
-      request.GetASTContext(), std::move(invocation.llvmContext),
+      request.GetASTContext(), std::move(instance.llvmContext),
       std::unique_ptr<llvm::Module>{gm.GetClangCodeGen().ReleaseModule()},
-      std::move(invocation.llvmTargetMachine));
+      std::move(instance.llvmTargetMachine));
 }
 
 // std::unique_ptr<llvm::Module>

@@ -3,8 +3,7 @@
 
 #include "stone/AST/Module.h"
 #include "stone/Basic/LLVM.h"
-#include "stone/Gen/IRGenInvocation.h"
-
+#include "stone/Gen/IRGenInstance.h"
 
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/IRBuilder.h"
@@ -44,20 +43,20 @@ using IRGenBuilderBase =
     llvm::IRBuilder<llvm::ConstantFolder, IRGenBuilderInserter>;
 
 class IRGenBuilder final : public IRGenBuilderBase {
-  IRGenInvocation &invocation;
+  IRGenInstance &instance;
   const IRGenTypeCache &typeCache;
 
 public:
-  IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache);
+  IRGenBuilder(IRGenInstance &instance, const IRGenTypeCache &typeCache);
 
-  IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache,
+  IRGenBuilder(IRGenInstance &instance, const IRGenTypeCache &typeCache,
                const llvm::ConstantFolder &constFoler,
                const IRGenBuilderInserter &inserter);
 
-  IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache,
+  IRGenBuilder(IRGenInstance &instance, const IRGenTypeCache &typeCache,
                llvm::Instruction *instruction);
 
-  IRGenBuilder(IRGenInvocation &invocation, const IRGenTypeCache &typeCache,
+  IRGenBuilder(IRGenInstance &instance, const IRGenTypeCache &typeCache,
                llvm::BasicBlock *basicBlock);
 
   ~IRGenBuilder();

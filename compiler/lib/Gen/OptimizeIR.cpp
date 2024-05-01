@@ -2,7 +2,7 @@
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
-#include "stone/Gen/IRGenInvocation.h"
+#include "stone/Gen/IRGenInstance.h"
 #include "stone/Gen/IRGenOptimizer.h"
 
 #include "llvm/ADT/SmallSet.h"

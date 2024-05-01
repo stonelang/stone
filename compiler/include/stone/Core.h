@@ -33,16 +33,12 @@ class PrimaryFileSpecificPaths;
 using ModuleDeclOrModuleFile = llvm::PointerUnion<ModuleDecl *, ModuleFile *>;
 
 struct ModuleInfo final {
-      ModuleDeclOrModuleFile info; 
-      ModuleInfo(ModuleDeclOrModuleFile info) : info(info){}
+  ModuleDeclOrModuleFile info;
+  ModuleInfo(ModuleDeclOrModuleFile info) : info(info) {}
 
-  ModuleFile *GetAsModuleFile() const {
-    return info.get<ModuleFile *>();
-  }
+  ModuleFile *GetAsModuleFile() const { return info.get<ModuleFile *>(); }
 
-  ModuleDecl *GetAsModuleDecl() const {
-    return info.get<ModuleDecl *>();
-  }
+  ModuleDecl *GetAsModuleDecl() const { return info.get<ModuleDecl *>(); }
 };
 
 /// This walks the syntax to resolve imports.

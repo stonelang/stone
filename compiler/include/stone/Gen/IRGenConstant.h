@@ -2,7 +2,7 @@
 #define STONE_GEN_IRCODEGENCONST_H
 
 #include "stone/Gen/IRGenFunction.h"
-#include "stone/Gen/IRGenInvocation.h"
+#include "stone/Gen/IRGenInstance.h"
 
 namespace stone {
 

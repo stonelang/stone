@@ -24,9 +24,10 @@ class MemberPointerType;
 class IRGenModule;
 
 class IRGenABI final {
-	IRGenModule &gm;
- public:
-	IRGenABI(IRGenModule &gm);
+  IRGenModule &gm;
+
+public:
+  IRGenABI(IRGenModule &gm);
 };
 
 } // namespace stone

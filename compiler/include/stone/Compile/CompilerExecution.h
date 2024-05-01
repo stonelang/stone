@@ -5,7 +5,7 @@
 #include "stone/Basic/Status.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Gen/IRGenInvocation.h"
+#include "stone/Gen/IRGenInstance.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Support/Chrono.h"

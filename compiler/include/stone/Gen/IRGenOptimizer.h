@@ -1,9 +1,9 @@
 #ifndef STONE_GEN_CODEGEN_OPTIMIZER_H
 #define STONE_GEN_CODEGEN_OPTIMIZER_H
 
+#include "stone/AST/Diagnostics.h"
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
-#include "stone/AST/Diagnostics.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/Passes/PassBuilder.h"

@@ -1,7 +1,7 @@
 #include "stone/Gen/IRGenTypeResolver.h"
 #include "stone/AST/Type.h"
 #include "stone/Gen/IRGenABI.h"
-#include "stone/Gen/IRGenInvocation.h"
+#include "stone/Gen/IRGenInstance.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Analysis/ValueTracking.h"

@@ -25,7 +25,7 @@ set(stone_gen_sources
 		IRGenDebug.cpp
 		IRGenBuilder.cpp
 		IRGenFunction.cpp
-		IRGenInvocation.cpp
+		IRGenInstance.cpp
 		IRGenRequest.cpp
 		IRGenMetadata.cpp
 		IRGenTypeResolver.cpp
