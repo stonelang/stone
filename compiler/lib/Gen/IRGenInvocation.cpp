@@ -1,9 +1,10 @@
+
+
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Core.h"
 #include "stone/Gen/IRGenInstance.h"
-#include "stone/Gen/IRGenOptimizer.h"
 #include "stone/Gen/IRGenInvocation.h"
 
 #include "llvm/ADT/SmallSet.h"
@@ -46,27 +47,24 @@
 
 using namespace stone;
 
-IRGenOptimizer::IRGenOptimizer(IRGenInvocation& invocation) : invocation(invocation){}
+IRGenInvocation::IRGenInvocation(const CodeGenOptions &codeGenOpts,
+                               llvm::Module *mod,
+                               llvm::TargetMachine *targetMachine,
+                               DiagnosticEngine &diags)
+    : codeGenOpts(codeGenOpts), mod(mod), targetMachine(targetMachine),
+      diags(diags), lfpm(mod) {
+      	
+  // Register all the ctx analyses with the managers.
+  pb.registerModuleAnalyses(mam);
+  pb.registerCGSCCAnalyses(cgam);
+  pb.registerFunctionAnalyses(fam);
+  pb.registerLoopAnalyses(lam);
+  pb.crossRegisterProxies(lam, fam, cgam, mam);
 
-void IRGenOptimizer::Optimize() {
-  invocation.GetPassManager().run(*invocation.GetLLVMModule(), invocation.GetModuleAnalysisManager());
+  // TODO: get ol from gen options
+  mpm = pb.buildPerModuleDefaultPipeline(codeGenOpts.GetOptimizationLevel());
 }
 
-void IRGenOptimizer::OptimizeWithLegacyPassManager() {
-  invocation.GetLegacyPassManager().run(*invocation.GetLLVMModule());
-}
 
-// TODO: Pass the IRGenInvocation 
-void stone::OptimizeIR(const CodeGenOptions &codeGenOpts,
-                       llvm::Module *llvmModule, llvm::TargetMachine *target,
-                       DiagnosticEngine &diags) {
 
-  IRGenInvocation invocation(codeGenOpts, llvmModule, target, diags);
-  IRGenOptimizer optimizer(invocation);
 
-  if (codeGenOpts.useLegacyPassManager) {
-    optimizer.OptimizeWithLegacyPassManager();
-  } else {
-    optimizer.Optimize();
-  }
-}

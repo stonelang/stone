@@ -103,7 +103,7 @@ Status DriverInputsConverter::AddFile(llvm::StringRef file) {
   if (files.insert(file)) {
     return Status();
   }
-  driver.GetDiags().PrintD(SrcLoc(), diag::err_duplicate_input_file,
+  driver.GetDiags().diagnose(SrcLoc(), diag::err_duplicate_input_file,
                            diag::LLVMStr(file));
   return Status::MakeHasCompletionAndIsError();
 }
@@ -236,7 +236,7 @@ ToolChainKind DriverOptionsConverter::ComputeToolChainKind() {
     return ToolChainKind::Unix;
   }
   default: {
-    driver.GetDiags().PrintD(
+    driver.GetDiags().diagnose(
         SrcLoc(), diag::err_unknown_target,
         diag::LLVMStr(args.getLastArg(opts::Target)->getValue()));
     return ToolChainKind::None;

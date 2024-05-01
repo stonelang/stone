@@ -2,7 +2,7 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Compile/CompilerOptions.h"
 #include "stone/Compile/CompilerOutputsConverter.h"
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/AST/DiagnosticsCompile.h"
 
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
@@ -72,13 +72,13 @@ std::optional<CompilerInputsAndOutputs> CompilerInputsConverter::Convert(
 
 bool CompilerInputsConverter::EnforceFilelistExclusion() {
   if (args.hasArg(opts::OPT_INPUT) && fileListPathArg) {
-    de.PrintD(SrcLoc(), diag::err_cannot_have_input_files_with_file_list);
+    de.diagnose(SrcLoc(), diag::err_cannot_have_input_files_with_file_list);
     return true;
   }
   // The following is not strictly necessary, but the restriction makes
   // it easier to understand a given command line:
   if (args.hasArg(opts::OPT_PrimaryFile) && primaryFileListPathArg) {
-    de.PrintD(SrcLoc(),
+    de.diagnose(SrcLoc(),
               diag::err_cannot_have_primary_files_with_primary_file_list);
     return true;
   }
@@ -125,7 +125,7 @@ bool CompilerInputsConverter::ForAllFilesInFileList(
   if (badFileDescriptorRetryCountArg &&
       llvm::StringRef(badFileDescriptorRetryCountArg->getValue())
           .getAsInteger(10, RetryCount)) {
-    de.PrintD(SrcLoc(), diag::err_invalid_arg_value,
+    de.diagnose(SrcLoc(), diag::err_invalid_arg_value,
               diag::LLVMStr(badFileDescriptorRetryCountArg->getAsString(args)),
               diag::LLVMStr(badFileDescriptorRetryCountArg->getValue()));
     return true;
@@ -143,7 +143,7 @@ bool CompilerInputsConverter::ForAllFilesInFileList(
     }
   }
   if (!filelistBufferOrError) {
-    de.PrintD(SrcLoc(), diag::err_cannot_open_file, diag::LLVMStr(path),
+    de.diagnose(SrcLoc(), diag::err_cannot_open_file, diag::LLVMStr(path),
               diag::LLVMStr(filelistBufferOrError.getError().message()));
     return true;
   }
@@ -160,7 +160,7 @@ bool CompilerInputsConverter::AddFile(llvm::StringRef file) {
   if (files.insert(file)) {
     return false;
   }
-  de.PrintD(SrcLoc(), diag::err_duplicate_input_file, diag::LLVMStr(file));
+  de.diagnose(SrcLoc(), diag::err_duplicate_input_file, diag::LLVMStr(file));
   return true;
 }
 
@@ -210,7 +210,7 @@ bool CompilerInputsConverter::DiagnoseUnusedPrimaryFiles(
     // Catch "stone-compile  -c -filelist foo -primary-file
     // some-file-not-in-foo".
     assert(fileListPathArg && "Unused primary with no filelist");
-    de.PrintD(SrcLoc(), diag::err_primary_file_not_found, diag::LLVMStr(file),
+    de.diagnose(SrcLoc(), diag::err_primary_file_not_found, diag::LLVMStr(file),
               diag::LLVMStr(fileListPathArg->getValue()));
   }
   return !primaryFiles.empty();

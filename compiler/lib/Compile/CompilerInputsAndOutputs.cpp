@@ -3,7 +3,7 @@
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
 #include "stone/Basic/Range.h"
 #include "stone/Compile/CompilerOptions.h"
-#include "stone/Support/CompilerDiagnostic.h"
+#include "stone/AST/DiagnosticsCompile.h"
 #include "stone/Support/Options.h"
 
 #include "llvm/Option/Arg.h"
@@ -194,7 +194,7 @@ bool CompilerInputsAndOutputs::VerifyInputs(DiagnosticEngine &diags,
 
   AssertMustNotBeMoreThanOnePrimaryInput();
   if (!isNoneRequested && !HasInputs()) {
-    // diags.PrintD(SourceLoc(), diag::error_mode_requires_an_input_file);
+    // diags.diagnose(SourceLoc(), diag::error_mode_requires_an_input_file);
     return true;
   }
   return false;

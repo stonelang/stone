@@ -105,7 +105,7 @@ llvm::StringRef opts::GetArgName(const llvm::opt::Arg *arg) {
 //   assert(ial && "No input argument list.");
 //   // Check for missing argument error.
 //   if (missingArgCount) {
-//     diags.PrintD(
+//     diags.diagnose(
 //         SrcLoc(), diag::err_missing_arg_value,
 //         diag::LLVMStr(ial->getArgString(missingArgIndex)),
 //         diag::UInt(missingArgCount));
@@ -113,7 +113,7 @@ llvm::StringRef opts::GetArgName(const llvm::opt::Arg *arg) {
 //   }
 //   // Check for unknown arguments.
 //   for (const llvm::opt::Arg *arg : ial->filtered(opts::UNKNOWN)) {
-//     GetLangContext().GetDiags().PrintD(SrcLoc(), diag::err_unknown_arg,
+//     GetLangContext().GetDiags().diagnose(SrcLoc(), diag::err_unknown_arg,
 //                                        diag::LLVMStr(arg->getAsString(*ial)));
 //     return nullptr;
 //   }

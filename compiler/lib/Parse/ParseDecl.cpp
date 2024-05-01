@@ -308,7 +308,7 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDecl &collector) {
     lParenLoc = ConsumeToken(tok::l_paren);
   } else {
     // If we don't have the leading '(', complain.
-    // auto diag = PrintD(Tok, diagID);
+    // auto diag = diagnose(Tok, diagID);
     return MakeParserError();
   }
 
@@ -316,7 +316,7 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDecl &collector) {
     lParenLoc = ConsumeToken(tok::r_paren);
   } else {
     // If we don't have the leading '(', complain.
-    // auto diag = PrintD(Tok, diagID);
+    // auto diag = diagnose(Tok, diagID);
     return MakeParserError();
   }
   return MakeParserSuccess();

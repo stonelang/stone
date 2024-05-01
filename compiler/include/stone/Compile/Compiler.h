@@ -3,7 +3,7 @@
 
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
-#include "stone/Support/DiagnosticEngine.h"
+#include "stone/AST/Diagnostics.h"
 #include "stone/Support/Statistics.h"
 //
 // #include "llvm/Support/HashingOutputBackend.h"
