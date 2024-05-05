@@ -37,6 +37,33 @@ ParsingDecl::~ParsingDecl() {
   // Apply();
 }
 
+bool ParsingDecl::IsAccessLevelActive(DeclSpecifierKind kind) {
+
+  // TODO: List all kinds and throw if it is not an option.
+  switch (kind) {
+  case DeclSpecifierKind::Public:
+  case DeclSpecifierKind::Private:
+  case DeclSpecifierKind::Internal:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool ParsingDecl::IsTypeQualsActive(DeclSpecifierKind kind) {
+
+  // TODO: List all kinds and throw if it is not an option.
+  switch (kind) {
+  case DeclSpecifierKind::Const:
+  case DeclSpecifierKind::Pure:
+  case DeclSpecifierKind::Mutable:
+  case DeclSpecifierKind::Final:
+    return true;
+  default:
+    return false;
+  }
+}
+
 ParsingPrettyStackTrace::ParsingPrettyStackTrace(Parser &parser)
     : parser(parser) {}
 

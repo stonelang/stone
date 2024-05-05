@@ -139,6 +139,7 @@ using ParsingDeclOptions = stone::OptionSet<ParsingDeclFlags::ID>;
 
 class ParsingDecl final : public DeclSpecifierCollector {
   Parser &parser;
+  DeclSpecifierKind activeDeclSpecKind = DeclSpecifierKind::None;
 
 public:
   ParsingDeclOptions parsingDeclOpts;
@@ -150,9 +151,25 @@ public:
 
 public:
   Parser &GetParser() { return parser; }
+  DeclSpecifierKind GetActiveDeclSpecKind() { return activeDeclSpecKind; }
+  void SetActiveDeclSpecKind(DeclSpecifierKind kind) {
+    activeDeclSpecKind = kind;
+  }
+
+public:
+  bool IsAccessLevelActive() {
+    ParsingDecl::IsAccessLevelActive(activeDeclSpecKind);
+  }
+  bool IsTypeQualsActive() {
+    ParsingDecl::IsTypeQualsActive(activeDeclSpecKind);
+  }
 
 public:
   ParserStatus Verify();
+
+public:
+  bool IsAccessLevelActive(DeclSpecifierKind kind);
+  bool IsTypeQualsActive(DeclSpecifierKind kind);
 };
 
 enum class ParsingContextKind : UInt8 {

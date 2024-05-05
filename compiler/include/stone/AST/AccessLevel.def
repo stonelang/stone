@@ -1,0 +1,11 @@
+#ifndef ACCESS_LEVEL
+#define ACCESS_LEVEL(name)
+#endif
+// Use Any instead of void 
+ACCESS_LEVEL(Private)
+ACCESS_LEVEL(Public)
+ACCESS_LEVEL(Internal)
+ACCESS_LEVEL(Global)
+ACCESS_LEVEL(File)
+
+#undef ACCESS_LEVEL

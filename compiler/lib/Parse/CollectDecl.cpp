@@ -76,6 +76,7 @@ ParserStatus Parser::CollectAccessSpecifier(ParsingDecl &parsingDecl) {
     if (parsingDecl.GetAccessSpecifierCollector().HasPublic()) {
       return stone::MakeParserCodeCompletionStatus();
     }
+    parsingDecl.SetActiveDeclSpecKind(DeclSpecifierKind::Public);
     parsingDecl.GetAccessSpecifierCollector().AddPublic(ConsumeToken());
     break;
   }
@@ -83,6 +84,7 @@ ParserStatus Parser::CollectAccessSpecifier(ParsingDecl &parsingDecl) {
     if (parsingDecl.GetAccessSpecifierCollector().HasInternal()) {
       return stone::MakeParserCodeCompletionStatus();
     }
+    parsingDecl.SetActiveDeclSpecKind(DeclSpecifierKind::Internal);
     parsingDecl.GetAccessSpecifierCollector().AddInternal(ConsumeToken());
     break;
   }
@@ -90,6 +92,7 @@ ParserStatus Parser::CollectAccessSpecifier(ParsingDecl &parsingDecl) {
     if (parsingDecl.GetAccessSpecifierCollector().HasPrivate()) {
       return stone::MakeParserCodeCompletionStatus();
     }
+    parsingDecl.SetActiveDeclSpecKind(DeclSpecifierKind::Private);
     parsingDecl.GetAccessSpecifierCollector().AddPrivate(ConsumeToken());
     break;
   default:
@@ -116,6 +119,7 @@ ParserStatus Parser::CollectTypeQualifier(ParsingDecl &parsingDecl) {
     if (parsingDecl.GetTypeQualifierCollector().HasConst()) {
       return stone::MakeParserCodeCompletionStatus();
     }
+    parsingDecl.SetActiveDeclSpecKind(DeclSpecifierKind::Const);
     parsingDecl.GetTypeQualifierCollector().AddConst(ConsumeToken());
     break;
   }

@@ -16,16 +16,9 @@ class DeclContext;
 // TODO: All you need is Public and Local
 enum class AccessLevel : UInt8 {
   None = 0,
-  /// Limited to the scope
-  Private,
-  /// Limited to the current file
-  File,
-  /// Accessible only within module
-  Internal,
-  /// Open outside of module with certain restrictions
-  Public,
-  /// Completely open and available
-  Global,
+#define ACCESS_LEVEL(N) N,
+#include "stone/AST/AccessLevel.def"
+  MAX
 };
 
 /// The wrapper around the outermost DeclContext from which

@@ -72,8 +72,13 @@ public:
         passMgr(codeGenOpts, llvmModule) {}
 
 public:
-  bool EmitOutput();
+  bool WriteOutputFile();
+  bool TryOpenOputFile();
 };
+
+bool NativeEmitter::WriteOutputFile() {}
+
+bool NativeEmitter::TryOpenOputFile() {}
 
 /// CodeGenCompletionCallbacks
 bool stone::EmitNative(const CodeGenOptions &codeGenOpts,
@@ -84,7 +89,7 @@ bool stone::EmitNative(const CodeGenOptions &codeGenOpts,
                               outputFilename);
 
   /// Now, emit the output
-  nativeEmitter.EmitOutput();
+  nativeEmitter.WriteOutputFile();
 
   // stone::EmbedBitCode(codeGenOpts, llvmModule);
   // stone::OptimizeIR(codeGenOpts, llvmModule, targetMachine, diags);

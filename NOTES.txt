@@ -82,6 +82,13 @@ Given a Type(TypeQualifiers qualifiers)
 TypeQualifiers& GetQualifiers()
 
 
+CompilerExecution e;
+
+e.GetParser().ParseSourceFiles();
+e.GetParser.ParseSourceFile(....)
+e.GetIRGenerator().GenDecls()
+
+
 
 
 

@@ -1,0 +1,78 @@
+#ifndef DECL_SPEC
+#define DECL_SPEC(DS)
+#endif
+
+#ifndef ACCESS_SPEC
+#define ACCESS_SPEC(AS) DECL_SPEC(AS)
+#endif
+
+#ifndef STORAGE_SPEC
+#define STORAGE_SPEC(SS) DECL_SPEC(SS)
+#endif
+
+#ifndef QUAL_SPEC
+#define QUAL_SPEC(QS) DECL_SPEC(QS)
+#endif
+
+#ifndef FUN_SPEC
+#define FUN_SPEC(FS) DECL_SPEC(FS)
+#endif
+
+#ifndef TYPE_SPEC
+#define TYPE_SPEC(TS) DECL_SPEC(TS)
+#endif
+
+QUAL_SPEC(Const)
+QUAL_SPEC(Pure)
+QUAL_SPEC(Mutable)
+QUAL_SPEC(Final)
+
+STORAGE_SPEC(Static)
+STORAGE_SPEC(Register)
+
+ACCESS_SPEC(Private)
+ACCESS_SPEC(Public)
+ACCESS_SPEC(Internal)
+
+FUN_SPEC(Fun)
+FUN_SPEC(Inline)
+
+TYPE_SPEC(Any)
+TYPE_SPEC(Void)
+TYPE_SPEC(Auto)
+TYPE_SPEC(Bool)
+TYPE_SPEC(Char)
+TYPE_SPEC(String)
+TYPE_SPEC(Float)
+TYPE_SPEC(Float16)
+TYPE_SPEC(Float32)
+TYPE_SPEC(Float64)
+TYPE_SPEC(Enum)
+TYPE_SPEC(Interface)
+TYPE_SPEC(Struct)
+TYPE_SPEC(Int)
+TYPE_SPEC(Int8)
+TYPE_SPEC(Int16)
+TYPE_SPEC(Int32)
+TYPE_SPEC(Int64)
+TYPE_SPEC(UInt)
+TYPE_SPEC(UInt8)
+// Alias for Uint8
+TYPE_SPEC(Byte) 
+TYPE_SPEC(UInt16)
+TYPE_SPEC(UInt32)
+TYPE_SPEC(UInt64)
+TYPE_SPEC(Complex32)
+TYPE_SPEC(Complex64)
+TYPE_SPEC(Imaginary32)
+TYPE_SPEC(Imaginary64)
+
+#undef TYPE_SPEC
+#undef ACCESS_SPEC
+#undef DECL_SPEC
+#undef FUN_SPEC
+#undef STORAGE_SPEC
+#undef QUAL_SPEC
+
+
+

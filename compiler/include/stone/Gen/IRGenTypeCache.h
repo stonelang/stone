@@ -10,8 +10,7 @@ class LLVMContext;
 
 namespace stone {
 
-class IRGenTypeCache final {
-public:
+struct IRGenTypeCache final {
   llvm::Type *VoidTy;
 
   llvm::IntegerType *Int8Ty;  /// i8
@@ -32,7 +31,6 @@ public:
   llvm::IntegerType *RelativeAddressTy;
   llvm::PointerType *RelativeAddressPtrTy;
 
-public:
   explicit IRGenTypeCache(llvm::LLVMContext &llvmContext);
 };
 

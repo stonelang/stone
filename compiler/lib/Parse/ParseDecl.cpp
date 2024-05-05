@@ -50,6 +50,9 @@ ParserResult<Decl> Parser::ParseTopLevelDecl(ParsingDecl &parsingDecl) {
       // This is an empty file -- stop parsing.
       return result;
     }
+    if (parsingDecl.IsAccessLevelActive() || parsingDecl.IsTypeQualsActive()) {
+      continue;
+    }
     result = ParseDecl(parsingDecl);
   }
   return result;

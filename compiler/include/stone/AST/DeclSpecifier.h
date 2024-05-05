@@ -134,6 +134,14 @@ public:
   void SetLoc(SrcLoc inputLoc) { loc = inputLoc; }
   SrcLoc GetLoc() { return loc; }
 };
+
+enum class DeclSpecifierKind {
+  None = 0,
+#define DECL_SPEC(DS) DS,
+#include "stone/AST/DeclSpecifierKind.def"
+
+};
+
 class DeclSpecifierCollector {
 
   /// Import specifier collection
