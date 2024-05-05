@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_ASTCACHE_H
-#define STONE_SYNTAX_ASTCACHE_H
+#ifndef STONE_AST_ASTCACHE_H
+#define STONE_AST_ASTCACHE_H
 
 namespace stone {
 

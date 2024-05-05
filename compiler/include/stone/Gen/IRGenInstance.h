@@ -270,7 +270,7 @@ public:
   llvm::SmallVector<InterfaceDecl *, 4> interfaces;
 
 public:
-  IRGenInstance &GetPassMgr() { return instance; }
+  IRGenInstance &GetIRGenInstance() { return instance; }
   IRGenTypeCache &GetIRGenTypeCache() { return typeCache; }
   IRGenTypeResolver &GetIRGenTypeResolver() { return typeResolver; }
   IRGenMetadata &GetIRGenMetadata() { return metadata; }

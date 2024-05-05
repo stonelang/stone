@@ -1,5 +1,5 @@
 #include "stone/AST/Module.h"
-#include "stone/Core.h"
+#include "stone/Public.h"
 
 using namespace stone;
 

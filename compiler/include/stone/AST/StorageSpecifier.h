@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_STORAGE_SPECIFIER_H
-#define STONE_SYNTAX_STORAGE_SPECIFIER_H
+#ifndef STONE_AST_STORAGE_SPECIFIER_H
+#define STONE_AST_STORAGE_SPECIFIER_H
 
 #include "stone/AST/Attribute.h"
 #include "stone/Basic/OptionSet.h"

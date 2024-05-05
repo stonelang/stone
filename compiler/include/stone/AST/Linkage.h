@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_LINKAGE_H
-#define STONE_SYNTAX_LINKAGE_H
+#ifndef STONE_AST_LINKAGE_H
+#define STONE_AST_LINKAGE_H
 
 #include "stone/Basic/STDAlias.h"
 

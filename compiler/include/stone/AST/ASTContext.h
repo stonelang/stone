@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_ASTCONTEXT_H
-#define STONE_SYNTAX_ASTCONTEXT_H
+#ifndef STONE_AST_ASTCONTEXT_H
+#define STONE_AST_ASTCONTEXT_H
 
 #include "stone/AST/Builtin.h"
 #include "stone/AST/DeclName.h"
@@ -73,7 +73,6 @@ class Stmt;
 class IfStmt;
 class SwitchStmt;
 class Expr;
-class SourceFile;
 class StatsReporter;
 
 /// Look up option used in \c GetRealModuleName when module aliasing is applied.

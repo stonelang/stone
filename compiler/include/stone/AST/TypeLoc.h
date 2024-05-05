@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_TYPELOC_H
-#define STONE_SYNTAX_TYPELOC_H
+#ifndef STONE_AST_TYPELOC_H
+#define STONE_AST_TYPELOC_H
 
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/Types.h"

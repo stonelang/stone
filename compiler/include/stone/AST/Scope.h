@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_SYNTAXSCOPE_H
-#define STONE_SYNTAX_SYNTAXSCOPE_H
+#ifndef STONE_AST_ASTSCOPE_H
+#define STONE_AST_ASTSCOPE_H
 
 #include "stone/AST/Decl.h"
 #include "stone/Basic/Memory.h"

@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_ATTRIBUTE_H
-#define STONE_SYNTAX_ATTRIBUTE_H
+#ifndef STONE_AST_ATTRIBUTE_H
+#define STONE_AST_ATTRIBUTE_H
 
 #include "stone/AST/AttributeKind.h"
 #include "stone/AST/Identifier.h"

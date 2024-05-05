@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_TYPEWALKER_H
-#define STONE_SYNTAX_TYPEWALKER_H
+#ifndef STONE_AST_TYPEWALKER_H
+#define STONE_AST_TYPEWALKER_H
 
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeKind.h"

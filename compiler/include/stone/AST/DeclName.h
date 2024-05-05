@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_DECLNAME_H
-#define STONE_SYNTAX_DECLNAME_H
+#ifndef STONE_AST_DECLNAME_H
+#define STONE_AST_DECLNAME_H
 
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Type.h"

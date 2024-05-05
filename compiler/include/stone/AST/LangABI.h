@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_LANGABI_H
-#define STONE_SYNTAX_LANGABI_H
+#ifndef STONE_AST_LANGABI_H
+#define STONE_AST_LANGABI_H
 
 #include "stone/Basic/STDAlias.h"
 

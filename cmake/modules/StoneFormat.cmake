@@ -1,5 +1,6 @@
 set(stone_include_files
 	${STONE_SOURCE_DIR}/compiler/include/stone/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/AST/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Basic/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Compile/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Driver/*.h
@@ -7,11 +8,11 @@ set(stone_include_files
 	${STONE_SOURCE_DIR}/compiler/include/stone/Parse/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Sem/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Support/*.h
-	${STONE_SOURCE_DIR}/compiler/include/stone/AST/*.h
+	
 	
 )
 set(stone_lib_files
-	${STONE_SOURCE_DIR}/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/AST/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Basic/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Compile/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Driver/*.cpp
@@ -20,7 +21,7 @@ set(stone_lib_files
 	${STONE_SOURCE_DIR}/compiler/lib/Parse/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Sem/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Support/*.cpp
-	${STONE_SOURCE_DIR}/compiler/lib/AST/*.cpp
+	
 )
 set(stone_tools_files
 	${STONE_SOURCE_DIR}/tools/compile/*.cpp  
@@ -45,7 +46,5 @@ find_program(CLANG_FORMAT clang-format)
 		-style=llvm
 		${stone_lib_files}
 		${stone_include_files}
-		${stone_tools_files}
-		${stone_tests_files}
 	)
 endif()

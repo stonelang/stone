@@ -8,7 +8,7 @@
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/Status.h"
 #include "stone/Basic/TargetOptions.h"
-#include "stone/Core.h"
+#include "stone/Public.h"
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {

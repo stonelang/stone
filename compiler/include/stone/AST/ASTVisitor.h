@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_SYNTAXVISITOR_H
-#define STONE_SYNTAX_SYNTAXVISITOR_H
+#ifndef STONE_AST_ASTVISITOR_H
+#define STONE_AST_ASTVISITOR_H
 
 #include "stone/AST/Decl.h"
 #include "stone/AST/Expr.h"

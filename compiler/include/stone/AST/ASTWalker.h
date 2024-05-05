@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_SYNTAXWALKER_H
-#define STONE_SYNTAX_SYNTAXWALKER_H
+#ifndef STONE_AST_ASTWALKER_H
+#define STONE_AST_ASTWALKER_H
 
 #include "stone/AST/ASTDescription.h"
 

@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_SEARCHPATH_H
-#define STONE_SYNTAX_SEARCHPATH_H
+#ifndef STONE_AST_SEARCHPATH_H
+#define STONE_AST_SEARCHPATH_H
 
 namespace stone {
 

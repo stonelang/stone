@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_AVAILABILITY_H
-#define STONE_SYNTAX_AVAILABILITY_H
+#ifndef STONE_AST_AVAILABILITY_H
+#define STONE_AST_AVAILABILITY_H
 
 #include "stone/AST/Attribute.h"
 #include "stone/AST/Type.h"

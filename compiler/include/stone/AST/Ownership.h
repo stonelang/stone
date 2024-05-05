@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef STONE_SYNTAX_OWNERSHIP_H
-#define STONE_SYNTAX_OWNERSHIP_H
+#ifndef STONE_AST_OWNERSHIP_H
+#define STONE_AST_OWNERSHIP_H
 
 #include <cassert>
 #include <cstddef>

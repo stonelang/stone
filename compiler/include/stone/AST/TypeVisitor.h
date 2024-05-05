@@ -14,8 +14,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef STONE_SYNTAX_TYPEVISITOR_H
-#define STONE_SYNTAX_TYPEVISITOR_H
+#ifndef STONE_AST_TYPEVISITOR_H
+#define STONE_AST_TYPEVISITOR_H
 
 #include "stone/AST/Types.h"
 #include "llvm/Support/ErrorHandling.h"

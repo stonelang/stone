@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_TYPEQUALIFIER_H
-#define STONE_SYNTAX_TYPEQUALIFIER_H
+#ifndef STONE_AST_TYPEQUALIFIER_H
+#define STONE_AST_TYPEQUALIFIER_H
 
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"

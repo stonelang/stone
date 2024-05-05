@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_DIAGNOSTICS_H
-#define STONE_SYNTAX_DIAGNOSTICS_H
+#ifndef STONE_AST_DIAGNOSTICS_H
+#define STONE_AST_DIAGNOSTICS_H
 
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"

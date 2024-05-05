@@ -2,8 +2,8 @@
 #include "stone/Basic/Status.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerObservation.h"
-#include "stone/Core.h"
 #include "stone/Gen/IRGenRequest.h"
+#include "stone/Public.h"
 
 using namespace stone;
 
@@ -427,7 +427,7 @@ Status EmitAssemblyExecution::ExecuteAction() {
   // nativeCode->Optimize();
   // nativeCode->Write();
 
-  // stone::GenNative(IRGenOuput,
+  // stone::EmitNative(IRGenOuput,
   //                  GetCodeGenContext().GetLLVMModule().getName());
 
   // if (compiler.HasObservation()) {
@@ -453,11 +453,11 @@ Status stone::CompileAction(Compiler &compiler) {
 Status stone::CompileLLVM(Compiler &compiler) {
 
   llvm::Module *llvmModule = nullptr;
-  stone::GenNative(compiler.GetInvocation().GetCodeGenOptions(), llvmModule,
-                   compiler.GetASTContext(),
-                   compiler.GetInvocation()
-                       .GetCompilerOptions()
-                       .inputsAndOutputs.GetSingleOutputFilename());
+  stone::EmitNative(compiler.GetInvocation().GetCodeGenOptions(), llvmModule,
+                    compiler.GetASTContext(),
+                    compiler.GetInvocation()
+                        .GetCompilerOptions()
+                        .inputsAndOutputs.GetSingleOutputFilename());
 
   return Status();
 }

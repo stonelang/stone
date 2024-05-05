@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_TYPE_H
-#define STONE_SYNTAX_TYPE_H
+#ifndef STONE_AST_TYPE_H
+#define STONE_AST_TYPE_H
 
 #include "stone/AST/Foreign.h"
 #include "stone/AST/Ownership.h"

@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_DECL_SPECIFIER_H
-#define STONE_SYNTAX_DECL_SPECIFIER_H
+#ifndef STONE_AST_DECL_SPECIFIER_H
+#define STONE_AST_DECL_SPECIFIER_H
 
 #include "stone/AST/Attribute.h"
 #include "stone/AST/DeclName.h"

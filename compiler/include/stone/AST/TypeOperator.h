@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_TYPEOPERATOR_H
-#define STONE_SYNTAX_TYPEOPERATOR_H
+#ifndef STONE_AST_TYPEOPERATOR_H
+#define STONE_AST_TYPEOPERATOR_H
 
 #include "stone/Basic/STDAlias.h"
 #include "stone/Basic/SrcLoc.h"

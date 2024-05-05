@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_PRINTOPTIONS_H
-#define STONE_SYNTAX_PRINTOPTIONS_H
+#ifndef STONE_AST_PRINTOPTIONS_H
+#define STONE_AST_PRINTOPTIONS_H
 
 #include "stone/AST/Access.h"
 #include "stone/Basic/STDAlias.h"

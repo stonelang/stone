@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_GENERICS_H
-#define STONE_SYNTAX_GENERICS_H
+#ifndef STONE_AST_GENERICS_H
+#define STONE_AST_GENERICS_H
 
 #include "stone/AST/Decl.h"
 #include "stone/AST/DeclContext.h"

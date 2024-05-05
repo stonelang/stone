@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_AVAILABILITYSPEC_H
-#define STONE_SYNTAX_AVAILABILITYSPEC_H
+#ifndef STONE_AST_AVAILABILITYSPEC_H
+#define STONE_AST_AVAILABILITYSPEC_H
 
 #include "stone/AST/Identifier.h"
 #include "stone/Basic/Memory.h"

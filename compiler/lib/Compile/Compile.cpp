@@ -5,7 +5,7 @@
 #include "stone/Basic/LLVMInit.h"
 #include "stone/Compile/Compiler.h"
 #include "stone/Compile/CompilerExecution.h"
-#include "stone/Core.h"
+#include "stone/Public.h"
 #include "stone/Support/Statistics.h"
 
 using namespace stone;

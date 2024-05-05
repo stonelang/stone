@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_IMPORT_H
-#define STONE_SYNTAX_IMPORT_H
+#ifndef STONE_AST_IMPORT_H
+#define STONE_AST_IMPORT_H
 
 // #include "stone/Basic/Located.h"
 

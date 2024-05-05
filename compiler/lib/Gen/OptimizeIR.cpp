@@ -1,10 +1,10 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Core.h"
 #include "stone/Gen/IRGenInstance.h"
 #include "stone/Gen/IRGenOptimizer.h"
 #include "stone/Gen/IRGenPassManager.h"
+#include "stone/Public.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
@@ -46,22 +46,19 @@
 
 using namespace stone;
 
-IRGenOptimizer::IRGenOptimizer(IRGenPassManager &passMgr)
-    : passMgr(passMgr) {}
-
-
+IRGenOptimizer::IRGenOptimizer(IRGenPassManager &passMgr) : passMgr(passMgr) {}
 
 // TODO: Pass the IRGenPassManager
 void stone::OptimizeIR(const CodeGenOptions &codeGenOpts,
                        llvm::Module *llvmModule, llvm::TargetMachine *target,
                        DiagnosticEngine &diags) {
 
-  IRGenPassManager passMgr(codeGenOpts, llvmModule, target, diags);
+  IRGenPassManager passMgr(codeGenOpts, llvmModule);
   // IRGenOptimizer optimizer(passMgr);
 
   if (codeGenOpts.useLegacyPassManager) {
-    passMgr.RunLegacyPasses(llvmModule);
+    passMgr.RunLegacy();
   } else {
-    passMgr.RunPasses(llvmModule);
+    passMgr.Run();
   }
 }

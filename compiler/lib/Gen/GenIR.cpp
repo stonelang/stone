@@ -2,9 +2,9 @@
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/Basic/PrimaryFileSpecificPaths.h"
-#include "stone/Core.h"
 #include "stone/Gen/IRGenInstance.h"
 #include "stone/Gen/IRGenRequest.h"
+#include "stone/Public.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"

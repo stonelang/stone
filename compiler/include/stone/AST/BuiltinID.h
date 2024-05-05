@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_BUILTINID_H
-#define STONE_SYNTAX_BUILTINID_H
+#ifndef STONE_AST_BUILTINID_H
+#define STONE_AST_BUILTINID_H
 
 namespace stone {
 

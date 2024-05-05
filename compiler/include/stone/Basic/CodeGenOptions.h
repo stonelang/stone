@@ -35,14 +35,14 @@ enum class LTOKind {
 
 // The optimization mode specified on the command line or with function
 // attributes.
-enum class OptimizationMode : uint8_t {
+enum class OptimizationMode : unsigned {
   None = 0,
   Less = 1,
   Default = 2,
   Aggressive = 3,
 };
 
-enum class CodeGenOutputKind : uint8_t {
+enum class CodeGenOutputKind : unsigned {
   None = 0,
   /// Generate an LLVM module and return it.
   LLVMModule,

@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_DECLKIND_H
-#define STONE_SYNTAX_DECLKIND_H
+#ifndef STONE_AST_DECLKIND_H
+#define STONE_AST_DECLKIND_H
 
 #include "stone/Basic/STDAlias.h"
 

@@ -1,5 +1,5 @@
-#ifndef STONE_FOREIGN_CLANG_H
-#define STONE_FOREIGN_CLANG_H
+#ifndef STONE_AST_CLANGCONTEXT_H
+#define STONE_AST_CLANGCONTEXT_H
 
 #include "stone/AST/ClangModuleImporter.h"
 #include "stone/Basic/STDAlias.h"

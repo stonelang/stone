@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_SYNTAXNODE_H
-#define STONE_SYNTAX_SYNTAXNODE_H
+#ifndef STONE_AST_ASTNODE_H
+#define STONE_AST_ASTNODE_H
 
 #include "stone/Basic/STDAlias.h"
 
@@ -44,6 +44,20 @@ struct ASTNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *, Type *> {
   void Walk(ASTWalker &walker);
   void Walk(ASTWalker &&walker) { Walk(walker); }
 };
+
+// enum class TopLevelASTNodeKind : unsigned {
+//   None = 0,
+//   Import,
+//   Const,
+//   Pure,
+//   Private,
+//   Public,
+//   Internal,
+//   Fun,
+//   Struct,
+//   Class,
+//   Interface,
+// };
 
 } // namespace stone
 

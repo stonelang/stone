@@ -15,7 +15,7 @@ set(stone_gen_sources
 		GenExpr.cpp
 		GenFun.cpp
 		GenIR.cpp
-		GenNative.cpp
+		EmitNative.cpp
 		GenStmt.cpp
 		GenStruct.cpp
 		GenBuiltin.cpp

@@ -1,8 +1,8 @@
 #include "stone/Gen/IRGenInstance.h"
 #include "stone/AST/Decl.h"
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Core.h"
 #include "stone/Gen/IRGenABI.h"
+#include "stone/Public.h"
 
 using namespace stone;
 

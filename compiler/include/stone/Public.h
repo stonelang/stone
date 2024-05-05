@@ -1,5 +1,5 @@
-#ifndef STONE_CORE_H
-#define STONE_CORE_H
+#ifndef STONE_PUBLIC_H
+#define STONE_PUBLIC_H
 
 #include "stone/AST/Diagnostics.h"
 #include "stone/Basic/CodeGenOptions.h"
@@ -99,6 +99,8 @@ GenIR(const CodeGenOptions &codeGenOpts, ModuleFile *moduleFile,
       const PrimaryFileSpecificPaths psps,
       llvm::GlobalVariable *outModuleHash = nullptr);
 
+bool EmitIR();
+
 // IRGenResult GenIRInParallel(ParallelCodeGenContext);
 
 bool EmitImportedModules(ASTContext &context, ModuleDecl *mainModule,
@@ -115,25 +117,21 @@ void OptimizeIR(const CodeGenOptions &opts, llvm::Module *llvmModule,
 
 /// Returns true is successfull
 // You want IRGenOutput
-bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
-               ASTContext &astContext, llvm::StringRef outputFilename);
+bool EmitNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
+                ASTContext &astContext, llvm::StringRef outputFilename);
 
-bool GenNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
-               llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
-               llvm::GlobalVariable *hashGlobal,
-               llvm::TargetMachine *targetMachine);
+bool EmitNative(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
+                llvm::StringRef outputFilename, llvm::sys::Mutex *diagMutex,
+                llvm::GlobalVariable *hashGlobal,
+                llvm::TargetMachine *targetMachine);
 
-bool GenNativeWithParallelization();
+bool EmitNativeWithParallelization();
 
 bool WriteEmptyOutputFiles(std::vector<std::string> &parallelOutputFilenames,
                            const ASTContext &Context,
                            const CodeGenOptions &opts);
 
 void EmbedBitCode(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule);
-
-/// Returns true is successfull
-bool WriteNative(CodeGenOptions &codeGenOpts, llvm::raw_pwrite_stream &out,
-                 llvm::sys::Mutex *diagMutex = nullptr);
 
 /// Print the compiler version
 void PrintVersion();

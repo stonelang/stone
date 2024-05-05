@@ -5,8 +5,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef STONE_SYNTAX_REDECLARABLE_H
-#define STONE_SYNTAX_REDECLARABLE_H
+#ifndef STONE_AST_REDECLARABLE_H
+#define STONE_AST_REDECLARABLE_H
 
 #include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/PointerUnion.h"

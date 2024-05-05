@@ -22,10 +22,7 @@ class CodeGenOptions;
 // So, this is a convenient class to wrapp of the essential objects required.
 class IRGenPassManager final {
   const CodeGenOptions &codeGenOpts;
-  llvm::Module *mod = nullptr;
-  llvm::TargetMachine *targetMachine = nullptr;
-
-  DiagnosticEngine &diags;
+  llvm::Module *llvmModule = nullptr;
 
   llvm::PassBuilder pb;
   llvm::LoopAnalysisManager lam;
@@ -44,8 +41,7 @@ public:
   void operator=(IRGenPassManager &&) = delete;
 
 public:
-  IRGenPassManager(const CodeGenOptions &codeGenOpts, llvm::Module *mod,
-                   llvm::TargetMachine *targetMachine, DiagnosticEngine &diags);
+  IRGenPassManager(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule);
   ~IRGenPassManager();
 
 public:
@@ -61,14 +57,15 @@ public:
   }
   llvm::FunctionPassManager &GetFunctionPassManager() { return fpm; }
 
-  void RunLegacyPasses(llvm::Module *mod);
-  void RunPasses(llvm::Module *mod);
+  void RunLegacy();
+  void Run();
 
 public:
-  llvm::TargetMachine *GetTargetMachine() { return targetMachine; }
-  llvm::Module *GetLLVMModule() { return mod; }
-  DiagnosticEngine &GetDiags() { return diags; }
+  llvm::Module *GetLLVMModule() { return llvmModule; }
   const CodeGenOptions &GetCodGenOptions() const { return codeGenOpts; }
+
+  void RunLegacyPasses();
+  void RunPasses();
 };
 
 } // namespace stone

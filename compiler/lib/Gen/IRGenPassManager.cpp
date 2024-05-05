@@ -4,8 +4,8 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/Core.h"
 #include "stone/Gen/IRGenInstance.h"
+#include "stone/Public.h"
 
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
@@ -48,11 +48,9 @@
 using namespace stone;
 
 IRGenPassManager::IRGenPassManager(const CodeGenOptions &codeGenOpts,
-                                   llvm::Module *mod,
-                                   llvm::TargetMachine *targetMachine,
-                                   DiagnosticEngine &diags)
-    : codeGenOpts(codeGenOpts), mod(mod), targetMachine(targetMachine),
-      diags(diags), lfpm(mod) {
+                                   llvm::Module *llvmModule)
+
+    : codeGenOpts(codeGenOpts), llvmModule(llvmModule), lfpm(llvmModule) {
 
   // Register all the ctx analyses with the managers.
   pb.registerModuleAnalyses(mam);
@@ -62,9 +60,9 @@ IRGenPassManager::IRGenPassManager(const CodeGenOptions &codeGenOpts,
   pb.crossRegisterProxies(lam, fam, cgam, mam);
   mpm = pb.buildPerModuleDefaultPipeline(codeGenOpts.GetOptimizationLevel());
 }
-void IRGenPassManager::RunLegacyPasses(llvm::Module *llvmModule) {
+void IRGenPassManager::RunLegacyPasses() {
   GetLegacyPassManager().run(*llvmModule);
 }
-void IRGenPassManager::RunPasses(llvm::Module *llvmModule) {
+void IRGenPassManager::RunPasses() {
   GetPassManager().run(*llvmModule, GetModuleAnalysisManager());
 }

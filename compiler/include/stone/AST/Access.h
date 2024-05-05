@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_ACCESS_H
-#define STONE_SYNTAX_ACCESS_H
+#ifndef STONE_AST_ACCESS_H
+#define STONE_AST_ACCESS_H
 
 #include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/LLVM.h"

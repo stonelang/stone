@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_GLOBAL_H
-#define STONE_SYNTAX_GLOBAL_H
+#ifndef STONE_AST_GLOBAL_H
+#define STONE_AST_GLOBAL_H
 
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/PointerUnion.h"

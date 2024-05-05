@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_TYPEKIND_H
-#define STONE_SYNTAX_TYPEKIND_H
+#ifndef STONE_AST_TYPEKIND_H
+#define STONE_AST_TYPEKIND_H
 
 #include "stone/AST/InlineBitfield.h"
 #include "stone/Basic/STDAlias.h"

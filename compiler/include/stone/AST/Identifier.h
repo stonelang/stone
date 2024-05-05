@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_IDENTIFIER_H
-#define STONE_SYNTAX_IDENTIFIER_H
+#ifndef STONE_AST_IDENTIFIER_H
+#define STONE_AST_IDENTIFIER_H
 
 #include <cassert>
 #include <cstddef>

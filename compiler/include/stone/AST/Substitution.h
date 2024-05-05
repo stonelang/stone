@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_SUBSTITUTION_H
-#define STONE_SYNTAX_SUBSTITUTION_H
+#ifndef STONE_AST_SUBSTITUTION_H
+#define STONE_AST_SUBSTITUTION_H
 
 #include "llvm/ADT/PointerUnion.h"
 

@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_NAMELOOKUP_H
-#define STONE_SYNTAX_NAMELOOKUP_H
+#ifndef STONE_AST_NAMELOOKUP_H
+#define STONE_AST_NAMELOOKUP_H
 
 namespace stone {
 

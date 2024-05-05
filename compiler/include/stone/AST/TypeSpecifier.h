@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_SPECIFIER_H
-#define STONE_SYNTAX_SPECIFIER_H
+#ifndef STONE_AST_SPECIFIER_H
+#define STONE_AST_SPECIFIER_H
 
 #include "stone/AST/Types.h"
 #include "stone/Basic/LLVM.h"

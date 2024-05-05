@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_TYPECHUNK_H
-#define STONE_SYNTAX_TYPECHUNK_H
+#ifndef STONE_AST_TYPECHUNK_H
+#define STONE_AST_TYPECHUNK_H
 
 #include "stone/Basic/SrcLoc.h"
 

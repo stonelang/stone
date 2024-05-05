@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_DECLGROUP_H
-#define STONE_SYNTAX_DECLGROUP_H
+#ifndef STONE_AST_DECLGROUP_H
+#define STONE_AST_DECLGROUP_H
 
 #include <cassert>
 #include <cstdint>

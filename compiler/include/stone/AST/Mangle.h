@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_MANGLE_H
-#define STONE_SYNTAX_MANGLE_H
+#ifndef STONE_AST_MANGLE_H
+#define STONE_AST_MANGLE_H
 
 #include "stone/AST/Decl.h"
 #include "stone/AST/Global.h"

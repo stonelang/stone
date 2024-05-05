@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_SYNTAXOPTIONS_H
-#define STONE_SYNTAX_SYNTAXOPTIONS_H
+#ifndef STONE_AST_ASTOPTIONS_H
+#define STONE_AST_ASTOPTIONS_H
 
 #include "stone/Basic/STDAlias.h"
 

@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_SYNTAXRESULT_H
-#define STONE_SYNTAX_SYNTAXRESULT_H
+#ifndef STONE_AST_ASTRESULT_H
+#define STONE_AST_ASTRESULT_H
 
 #include "llvm/ADT/PointerIntPair.h"
 #include <type_traits>

@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_DECL_H
-#define STONE_SYNTAX_DECL_H
+#ifndef STONE_AST_DECL_H
+#define STONE_AST_DECL_H
 
 #include "stone/AST/Access.h"
 #include "stone/AST/DeclContext.h"

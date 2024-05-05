@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_MEMBERTABLE_H
-#define STONE_SYNTAX_MEMBERTABLE_H
+#ifndef STONE_AST_MEMBERTABLE_H
+#define STONE_AST_MEMBERTABLE_H
 
 #include "stone/Foreign/DeclName.h"
 

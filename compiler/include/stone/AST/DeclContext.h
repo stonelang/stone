@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_DECLCONTEXT_H
-#define STONE_SYNTAX_DECLCONTEXT_H
+#ifndef STONE_AST_DECLCONTEXT_H
+#define STONE_AST_DECLCONTEXT_H
 
 #include <type_traits>
 

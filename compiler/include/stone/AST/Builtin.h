@@ -1,5 +1,5 @@
-#ifndef STONE_SYNTAX_BUILTINCONTEXT_H
-#define STONE_SYNTAX_BUILTINCONTEXT_H
+#ifndef STONE_AST_BUILTINCONTEXT_H
+#define STONE_AST_BUILTINCONTEXT_H
 
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Types.h"
