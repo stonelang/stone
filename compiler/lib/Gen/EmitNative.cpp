@@ -61,11 +61,18 @@ class NativeEmitter final {
   ASTContext &astContext;
   llvm::StringRef outputFilename;
   // std::unique_ptr<llvm::vfs::FileSystem> vfs;
+
+  IRGenPassManager passMgr;
+
 public:
   NativeEmitter(const CodeGenOptions &codeGenOpts, llvm::Module *llvmModule,
                 ASTContext &astContext, llvm::StringRef outputFilename)
       : codeGenOpts(codeGenOpts), llvmModule(llvmModule),
-        astContext(astContext), outputFilename(outputFilename) {}
+        astContext(astContext), outputFilename(outputFilename),
+        passMgr(codeGenOpts, llvmModule) {}
+
+public:
+  bool EmitOutput();
 };
 
 /// CodeGenCompletionCallbacks
@@ -73,9 +80,11 @@ bool stone::EmitNative(const CodeGenOptions &codeGenOpts,
                        llvm::Module *llvmModule, ASTContext &astContext,
                        llvm::StringRef outputFilename) {
 
-  NativeEmitter nativeEmitter(const CodeGenOptions &codeGenOpts,
-                              llvm::Module *llvmModule, ASTContext &astContext,
-                              llvm::StringRef outputFilename);
+  NativeEmitter nativeEmitter(codeGenOpts, llvmModule, astContext,
+                              outputFilename);
+
+  /// Now, emit the output
+  nativeEmitter.EmitOutput();
 
   // stone::EmbedBitCode(codeGenOpts, llvmModule);
   // stone::OptimizeIR(codeGenOpts, llvmModule, targetMachine, diags);
