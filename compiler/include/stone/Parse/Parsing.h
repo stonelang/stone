@@ -163,6 +163,9 @@ public:
   bool IsTypeQualsActive() {
     ParsingDecl::IsTypeQualsActive(activeDeclSpecKind);
   }
+  bool IsStorageTypeActive() {
+    ParsingDecl::IsTypeQualsActive(activeDeclSpecKind);
+  }
 
 public:
   ParserStatus Verify();
@@ -170,6 +173,7 @@ public:
 public:
   bool IsAccessLevelActive(DeclSpecifierKind kind);
   bool IsTypeQualsActive(DeclSpecifierKind kind);
+  bool IsStorageTypeActive(DeclSpecifierKind kind);
 };
 
 enum class ParsingContextKind : UInt8 {

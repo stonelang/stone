@@ -190,6 +190,7 @@ public:
       return false;
     }
   }
+  bool IsFun() const { return kind == tok::kw_fun; }
   bool IsFinal() const { return kind == tok::kw_final; }
   bool IsMutable() const { return kind == tok::kw_mutable; }
   bool IsAlien() const { return kind == tok::alien; }
@@ -224,7 +225,7 @@ public:
   bool IsLSquare() const { return kind == tok::l_square; }
   bool IsRSquare() const { return kind == tok::r_square; }
 
-  bool IsQualifier() const {
+  bool IsTypeQualifier() const {
     return IsAny(tok::kw_const, tok::kw_restrict, tok::kw_volatile,
                  tok::kw_final, tok::kw_mutable, tok::kw_pure, tok::kw_default,
                  tok::kw_delete);

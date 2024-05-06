@@ -64,11 +64,22 @@ bool ParsingDecl::IsTypeQualsActive(DeclSpecifierKind kind) {
   }
 }
 
+bool ParsingDecl::IsStorageTypeActive(DeclSpecifierKind kind) {
+
+  // TODO: List all kinds and throw if it is not an option.
+  switch (kind) {
+  case DeclSpecifierKind::Static:
+  case DeclSpecifierKind::Register:
+  default:
+    return false;
+  }
+}
+
 ParsingPrettyStackTrace::ParsingPrettyStackTrace(Parser &parser)
     : parser(parser) {}
 
 void ParsingPrettyStackTrace::print(llvm::raw_ostream &out) const {
   out << "With parser at source location: ";
-  parser.GetTok().GetLoc().print(out, parser.GetASTContext().GetSrcMgr());
+  parser.GetCurTok().GetLoc().print(out, parser.GetASTContext().GetSrcMgr());
   out << '\n';
 }

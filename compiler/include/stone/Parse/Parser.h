@@ -39,7 +39,10 @@ class Parser final {
   SourceFile &sf;
   DeclContext *curDC;
 
-  /// This is the current curTok being considered by the parser.
+  /// This is the previous token pasrsed by the parser.
+  Token prevTok;
+
+  /// This is the current token being considered by the parser.
   Token curTok;
 
   /// Leading trivia for \c Tok.
@@ -92,10 +95,12 @@ public:
   }
 
 public:
-  Lexer &GetLexer() { return *lexer; }
-  const Token &GetTok() const { return curTok; }
-  ASTContext &GetASTContext() { return astContext; }
+  const Token &GetCurTok() const { return curTok; }
+  void SetPrevTok(Token tok) { prevTok = tok; }
+  const Token &GetPrevTok() const { return prevTok; }
 
+  Lexer &GetLexer() { return *lexer; }
+  ASTContext &GetASTContext() { return astContext; }
   /// The SourceFile is the current decl-context
   DeclContext *GetCurDeclContext() { return curDC; }
 

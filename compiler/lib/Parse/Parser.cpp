@@ -29,6 +29,7 @@ Parser::~Parser() {}
 // void Parser::ExitScope() {}
 
 SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
+  SetPrevTok(curTok);
   auto loc = curTok.GetLoc();
   assert(curTok.IsNot(tok::eof) && "Lexing past eof!");
 
@@ -109,7 +110,7 @@ SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
 ParserStatus Parser::ParseIdentifier(Identifier &result, SrcLoc &resultLoc) {
   ParserStatus status;
 
-  assert(GetTok().IsIdentifierOrUnderscore());
+  assert(GetCurTok().IsIdentifierOrUnderscore());
   resultLoc = ConsumeIdentifier(result);
 
   return status;
@@ -117,7 +118,7 @@ ParserStatus Parser::ParseIdentifier(Identifier &result, SrcLoc &resultLoc) {
 SrcLoc Parser::ConsumeIdentifier(Identifier &result) {
   // assert(Tok.isAny(tok::identifier, tok::kw_self, tok::kw_Self));
   // assert(Result.empty());
-  result = GetIdentifier(GetTok().GetText());
+  result = GetIdentifier(GetCurTok().GetText());
   // if (Tok.getText()[0] == '$')
   //   diagnoseDollarIdentifier(Tok, diagnoseDollarPrefix);
   return ConsumeToken();

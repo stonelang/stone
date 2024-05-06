@@ -63,7 +63,7 @@ Type Parser::ParseType(ParsingDecl &collector, Diag<> diagID) {
   //   }
   // }
 
-  if (GetTok().IsBasicType()) {
+  if (GetCurTok().IsBasicType()) {
     result = ParseBasicType(collector, diagID);
   }
 
@@ -92,7 +92,7 @@ Type Parser::ParseDeclResultType(ParsingDecl &collector, Diag<> diagID) {
 
 Type Parser::ParseBasicType(ParsingDecl &collector, Diag<> diagID) {
 
-  assert(GetTok().IsBasicType());
+  assert(GetCurTok().IsBasicType());
 
   // Collect the type -- only basic types for now (TODO: user type  and function
   // types)

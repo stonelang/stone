@@ -50,9 +50,6 @@ ParserResult<Decl> Parser::ParseTopLevelDecl(ParsingDecl &parsingDecl) {
       // This is an empty file -- stop parsing.
       return result;
     }
-    if (parsingDecl.IsAccessLevelActive() || parsingDecl.IsTypeQualsActive()) {
-      continue;
-    }
     result = ParseDecl(parsingDecl);
   }
   return result;
@@ -78,7 +75,7 @@ ParserResult<Decl> Parser::ParseDecl(ParsingDecl &parsingDecl) {
   }
   return ParserResult<Decl>();
 }
-bool Parser::IsTopLevelDeclSpecifier() { return GetTok().IsTopLevel(); }
+bool Parser::IsTopLevelDeclSpecifier() { return GetCurTok().IsTopLevel(); }
 
 void Parser::ParseDeclName() {}
 
@@ -127,6 +124,8 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDecl &parsingDecl) {
   ParsingScope funDeclScope(*this, ScopeKind::FunDecl,
                             "parsing fun declaration");
 
+  assert(GetCurTok().IsFun() && "expecting tok::fun");
+
   assert(parsingDecl.GetFunctionSpecifierCollector().HasFun() &&
          "Attempting to parse a function without a function definition.");
 
@@ -140,18 +139,18 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDecl &parsingDecl) {
   if (parsingDecl.GetTypeQualifierCollector().HasAny() &&
       !parsingDecl.GetTypeQualifierCollector().IsPure()) {
     // Do some logging
-    return MakeParserError();
+    return stone::MakeParserError();
   }
 
   if (parsingDecl.GetTypeSpecifierCollector().HasAny()) {
     // TODO: Log a message -- not allowed to have type specs here
-    return MakeParserError();
+    return stone::MakeParserError();
   }
 
   // Make sure we have a valid identifier
-  if (!GetTok().IsIdentifierOrUnderscore()) {
+  if (!GetCurTok().IsIdentifierOrUnderscore()) {
     // Do some logging  "Expecting function declarator or identifier");
-    return MakeParserError();
+    return stone::MakeParserError();
   }
 
   ParserStatus status;
@@ -165,7 +164,7 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDecl &parsingDecl) {
 
   // TODO: You have to perform a name look-up where because you will be
   // dealing with "identifier::""
-  if (GetTok().IsDoubleColon()) {
+  if (GetCurTok().IsDoubleColon()) {
     if (parsingDecl.GetStorageSpecifierCollector().HasStatic()) {
       // TODO: Log
       return MakeParserError();
@@ -173,7 +172,7 @@ ParserResult<Decl> Parser::ParseFunDecl(ParsingDecl &parsingDecl) {
     // TODO: You are consuming the double colon
     parsingDecl.GetFunctionSpecifierCollector().AddIsMember(ConsumeToken());
 
-    if (!GetTok().IsIdentifierOrUnderscore()) {
+    if (!GetCurTok().IsIdentifierOrUnderscore()) {
       // Do some logging  "Expecting Parent identifier");
       return MakeParserError();
     }
@@ -241,7 +240,7 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDecl &parsingDecl,
   fullName = DeclName(basicName);
 
   SrcLoc arrowLoc;
-  if (GetTok().IsArrow()) {
+  if (GetCurTok().IsArrow()) {
     ParsingScope functionResult(*this, ScopeKind::ReturnClause,
                                 "parsing result");
 
@@ -309,7 +308,7 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDecl &parsingDecl) {
   /// TODO: Handle
   /// Name(int i)
   /// Name(int i, () -> void)
-  if (GetTok().IsLParen()) {
+  if (GetCurTok().IsLParen()) {
     lParenLoc = ConsumeToken(tok::l_paren);
   } else {
     // If we don't have the leading '(', complain.
@@ -317,7 +316,7 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDecl &parsingDecl) {
     return MakeParserError();
   }
 
-  if (GetTok().IsRParen()) {
+  if (GetCurTok().IsRParen()) {
     lParenLoc = ConsumeToken(tok::r_paren);
   } else {
     // If we don't have the leading '(', complain.
