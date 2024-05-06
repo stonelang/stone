@@ -84,6 +84,33 @@ class IRGenBuilder;
 class IRGenFunctionInvocation final {
 public:
 };
+
+// class IRGenFunctionJumpDest final {
+
+//   unsigned index;
+//   llvm::BasicBlock *block;
+//   EHScopeStack::stable_iterator scopeDepth;
+
+// public:
+//   IRGenFunctionJumpDest() : block(nullptr), index(0) {}
+
+//   IRGenFunctionJumpDest(llvm::BasicBlock *block,
+//                         EHScopeStack::stable_iterator depth, unsigned index)
+//       : block(Block), scopeDepth(depth), index(index) {}
+
+// public:
+//   bool IsValid() const { return block != nullptr; }
+//   llvm::BasicBlock *GetBlock() const { return block; }
+
+//   EHScopeStack::stable_iterator GetScopeDepth() const { return scopeDepth; }
+//   unsigned GetDestIndex() const { return Index; }
+
+//   // This should be used cautiously.
+//   void SetScopeDepth(EHScopeStack::stable_iterator depth) {
+//     scopeDepth = depth;
+//   }
+// };
+
 class IRGenFunction final : public ASTVisitor<IRGenFunction> {
 
   IRGenModule &gm;
@@ -91,6 +118,9 @@ class IRGenFunction final : public ASTVisitor<IRGenFunction> {
 
   llvm::Function *llvmFunction = nullptr;
   llvm::BasicBlock *returnBB;
+
+  /// ReturnBlock - Unified return block.
+  //IRGenFunctionJumpDest returnBlock;
 
 public:
   IRGenFunction(const IRGenFunction &) = delete;

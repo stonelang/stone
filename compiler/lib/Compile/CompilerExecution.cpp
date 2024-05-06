@@ -8,49 +8,19 @@
 using namespace stone;
 
 CompilerExecution::CompilerExecution(Compiler &compiler) : compiler(compiler) {}
-
 CompilerExecution::~CompilerExecution() {}
 
-void CompilerExecution::CompletedCommandLineParsing(Compiler &compiler) {
-  llvm_unreachable("Illegal to handle command line parsing!");
-}
-void CompilerExecution::CompletedConfiguration(Compiler &compiler) {
-  llvm_unreachable("Illegal to handle compiler configuration!");
-}
-void CompilerExecution::CompletedSyntaxAnalysis(Compiler &result) {
+void CompilerExecution::HandleSourceFile(SourceFile& result) {
   llvm_unreachable("Illegal to handle syntax analysis!");
 }
-void CompilerExecution::CompletedSyntaxAnalysis(SourceFile &result) {
+void CompilerExecution::HandleModuleDecl(ModuleDecl& result) {
   llvm_unreachable("Illegal to handle syntax analysis!");
 }
-void CompilerExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {
-  llvm_unreachable("Illegal to handle syntax analysis!");
-}
-void CompilerExecution::CompletedSemanticAnalysis(Compiler &result) {
-  llvm_unreachable("Illegal to handle semantic analysis!");
-}
-void CompilerExecution::CompletedSemanticAnalysis(SourceFile &result) {
-  llvm_unreachable("Illegal to handle semantic analysis!");
-}
-void CompilerExecution::CompletedSemanticAnalysis(ModuleDecl &result) {
-  llvm_unreachable("Illegal to handle semantic analysis!");
-}
-void CompilerExecution::CompletedIRGeneration(Compiler &result) {
-  llvm_unreachable("Illegal to handle IR generation!");
-}
-void CompilerExecution::CompletedIRGeneration(llvm::Module *result) {
-  llvm_unreachable("Illegal to handle IR generation!");
-}
-void CompilerExecution::CompletedIRGeneration(
-    llvm::ArrayRef<llvm::Module *> &results) {
+void CompilerExecution::HandleIRGeneration(llvm::Module *result) {
   llvm_unreachable("Illegal to handle IR generation!");
 }
 
 void CompilerExecution::Print(ColorStream &stream) const {}
-
-CodeCompletionCallbacks *CompilerExecution::GetCodeCompletionCallbacks() {
-  llvm_unreachable("Illegal to handle code completion callbacks!");
-}
 
 CompilerAction CompilerExecution::GetMainAction() {
   return compiler.GetMainAction();
@@ -130,13 +100,13 @@ Status ParseExecution::ExecuteAction() {
       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
     }
     if (ShouldNotifyConsumer() && !compiler.IsCompileForWholeModule()) {
-      GetConsumer()->CompletedSyntaxAnalysis(sourceFile);
+      GetConsumer()->HandleSourceFile(sourceFile);
     }
     return Status();
   });
 
   if (ShouldNotifyConsumer() && compiler.IsCompileForWholeModule()) {
-    GetConsumer()->CompletedSyntaxAnalysis(*compiler.GetMainModule());
+    GetConsumer()->HandleModuleDecl(*compiler.GetMainModule());
   }
 
   if (compiler.HasObservation()) {
@@ -161,9 +131,9 @@ Status ResolveImportsExecution::ExecuteAction() {
   return Status();
 }
 
-void ResolveImportsExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
+void ResolveImportsExecution::HandleSourceFile(SourceFile &result) {}
 
-void ResolveImportsExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
+void ResolveImportsExecution::HandleModuleDecl(ModuleDecl &result) {}
 
 PrintASTBeforeExecution::PrintASTBeforeExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -174,8 +144,8 @@ Status PrintASTBeforeExecution::ExecuteAction() {
   return Status();
 }
 
-void PrintASTBeforeExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
-void PrintASTBeforeExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
+void PrintASTBeforeExecution::HandleSourceFile(SourceFile &result) {}
+void PrintASTBeforeExecution::HandleModuleDecl(ModuleDecl &result) {}
 
 TypeCheckExecution::TypeCheckExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -204,9 +174,9 @@ Status TypeCheckExecution::ExecuteAction() {
   return Status();
 }
 
-void TypeCheckExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
+void TypeCheckExecution::HandleSourceFile(SourceFile &result) {}
 
-void TypeCheckExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
+void TypeCheckExecution::HandleModuleDecl(ModuleDecl &result) {}
 
 PrintASTAfterExecution::PrintASTAfterExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -222,9 +192,9 @@ Status PrintASTAfterExecution::ExecuteAction() {
   return Status();
 }
 
-void PrintASTAfterExecution::CompletedSyntaxAnalysis(SourceFile &result) {}
+void PrintASTAfterExecution::HandleSourceFile(SourceFile &result) {}
 
-void PrintASTAfterExecution::CompletedSyntaxAnalysis(ModuleDecl &result) {}
+void PrintASTAfterExecution::HandleModuleDecl(ModuleDecl &result) {}
 
 ///< EmitIRBeforeExecution
 EmitIRBeforeExecution::EmitIRBeforeExecution(Compiler &compiler)
@@ -252,7 +222,7 @@ Status EmitIRBeforeExecution::ExecuteAction() {
           compiler.GetASTContext(), psps, parallelOutputFilenames));
 
       if (ShouldNotifyConsumer()) {
-        GetConsumer()->CompletedIRGeneration(result->GetLLVMModule());
+        GetConsumer()->HandleIRGeneration(result->GetLLVMModule());
       }
       if (IsMainAction()) {
         // stone::EmitIR(result->GetLLVMModule());
@@ -269,7 +239,7 @@ Status EmitIRBeforeExecution::ExecuteAction() {
           psps.outputFilename, compiler.GetASTContext(), psps));
 
       if (ShouldNotifyConsumer()) {
-        GetConsumer()->CompletedIRGeneration(result->GetLLVMModule());
+        GetConsumer()->HandleIRGeneration(result->GetLLVMModule());
       }
       return Status();
     });
@@ -284,9 +254,9 @@ Status EmitIRBeforeExecution::ExecuteAction() {
 
 Status EmitIRBeforeExecution::FinishAction() { return Status(); }
 
-void EmitIRBeforeExecution::CompletedSemanticAnalysis(SourceFile &result) {}
+void EmitIRBeforeExecution::HandleSourceFile(SourceFile &result) {}
 
-void EmitIRBeforeExecution::CompletedSemanticAnalysis(ModuleDecl &result) {}
+void EmitIRBeforeExecution::HandleModuleDecl(ModuleDecl &result) {}
 
 ///< EmitIRAfterExecution
 EmitIRAfterExecution::EmitIRAfterExecution(Compiler &compiler)
@@ -305,9 +275,9 @@ Status EmitIRAfterExecution::ExecuteAction() {
 
 Status EmitIRAfterExecution::FinishAction() { return Status(); }
 
-void EmitIRAfterExecution::CompletedSemanticAnalysis(SourceFile &result) {}
+void EmitIRAfterExecution::HandleSourceFile(SourceFile &result) {}
 
-void EmitIRAfterExecution::CompletedSemanticAnalysis(ModuleDecl &result) {}
+void EmitIRAfterExecution::HandleModuleDecl(ModuleDecl &result) {}
 
 ///< PrintIR
 
@@ -396,10 +366,7 @@ Status EmitObjectExecution::ExecuteAction() {
   return Status();
 }
 
-void EmitObjectExecution::CompletedIRGeneration(llvm::Module *result) {}
-
-void EmitObjectExecution::CompletedIRGeneration(
-    llvm::ArrayRef<llvm::Module *> &results) {}
+void EmitObjectExecution::HandleIRGeneration(llvm::Module *result) {}
 
 Status EmitObjectExecution::FinishAction() { return Status(); }
 
@@ -437,10 +404,7 @@ Status EmitAssemblyExecution::ExecuteAction() {
   return Status();
 }
 
-void EmitAssemblyExecution::CompletedIRGeneration(llvm::Module *result) {}
-
-void EmitAssemblyExecution::CompletedIRGeneration(
-    llvm::ArrayRef<llvm::Module *> &results) {}
+void EmitAssemblyExecution::HandleIRGeneration(llvm::Module *result) {}
 
 Status EmitAssemblyExecution::FinishAction() { return Status(); }
 

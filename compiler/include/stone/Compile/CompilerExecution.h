@@ -21,7 +21,7 @@ class ModuleDecl;
 class CompilerExecution;
 class CodeCompletionCallbacks;
 
-class CompilerExecution : public CompilerObservation {
+class CompilerExecution {
 
 protected:
   Compiler &compiler;
@@ -103,41 +103,9 @@ public:
   virtual void Print(ColorStream &stream) const;
 
 public:
-  /// The command line has been parsed.
-  void CompletedCommandLineParsing(Compiler &result) override;
-
-  /// The compiler has been configured
-  void CompletedConfiguration(Compiler &result) override;
-
-  /// Completed syntax analysis
-  void CompletedSyntaxAnalysis(Compiler &result);
-
-  /// Completed syntax analysis
-  void CompletedSyntaxAnalysis(SourceFile &result) override;
-
-  /// Completed syntax analysis
-  void CompletedSyntaxAnalysis(ModuleDecl &result) override;
-
-  /// Completed semantic analysis
-  void CompletedSemanticAnalysis(Compiler &result) override;
-
-  /// Completed semantic analysis
-  void CompletedSemanticAnalysis(SourceFile &result) override;
-
-  /// Completed semantic analysis
-  void CompletedSemanticAnalysis(ModuleDecl &result) override;
-
-  // Completed IR generation
-  void CompletedIRGeneration(Compiler &result) override;
-
-  /// Some executions may require access to the results of ir generation.
-  void CompletedIRGeneration(llvm::Module *result) override;
-
-  /// Some executions may require access to the results of ir generation.
-  void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
-
-  /// Callbacks into the parsing pipeline
-  CodeCompletionCallbacks *GetCodeCompletionCallbacks() override;
+  virtual void HandleSourceFile(SourceFile& result);
+  virtual void HandleModuleDecl(ModuleDecl& moduleDecl);
+  virtual void HandleIRGeneration(llvm::Module *result);
 };
 
 class PrintHelpExecution final : public CompilerExecution {
@@ -205,8 +173,8 @@ public:
   }
 
 public:
-  void CompletedSyntaxAnalysis(SourceFile &result) override;
-  void CompletedSyntaxAnalysis(ModuleDecl &result) override;
+  void HandleSourceFile(SourceFile &result) override;
+  void HandleModuleDecl(ModuleDecl &result) override;
 };
 
 class PrintASTBeforeExecution final : public CompilerExecution {
@@ -222,8 +190,8 @@ public:
   }
   CompilerAction GetDepAction() override { return CompilerAction::Parse; }
 
-  void CompletedSyntaxAnalysis(SourceFile &result) override;
-  void CompletedSyntaxAnalysis(ModuleDecl &result) override;
+  void HandleSourceFile(SourceFile &result) override;
+  void HandleModuleDecl(ModuleDecl &result) override;
 };
 
 class TypeCheckExecution final : public CompilerExecution {
@@ -239,8 +207,8 @@ public:
   }
   CompilerAction GetSelfAction() override { return CompilerAction::TypeCheck; }
 
-  void CompletedSyntaxAnalysis(SourceFile &result) override;
-  void CompletedSyntaxAnalysis(ModuleDecl &result) override;
+  void HandleSourceFile(SourceFile &result) override;
+  void HandleModuleDecl(ModuleDecl &result) override;
 };
 
 class PrintASTAfterExecution final : public CompilerExecution {
@@ -256,8 +224,8 @@ public:
     return CompilerAction::PrintASTAfter;
   }
 
-  void CompletedSyntaxAnalysis(SourceFile &result) override;
-  void CompletedSyntaxAnalysis(ModuleDecl &result) override;
+  void HandleSourceFile(SourceFile &result) override;
+  void HandleModuleDecl(ModuleDecl &result) override;
 };
 
 // Generate IR, before optimization
@@ -275,8 +243,8 @@ public:
   }
 
 public:
-  void CompletedSemanticAnalysis(SourceFile &result) override;
-  void CompletedSemanticAnalysis(ModuleDecl &result) override;
+  void HandleSourceFile(SourceFile &result) override;
+  void HandleModuleDecl(ModuleDecl &result) override;
 };
 
 // Generate IR, optimize ir, then print it.
@@ -296,8 +264,8 @@ public:
   }
 
 public:
-  void CompletedSemanticAnalysis(SourceFile &result) override;
-  void CompletedSemanticAnalysis(ModuleDecl &result) override;
+  void HandleSourceFile(SourceFile &result) override;
+  void HandleModuleDecl(ModuleDecl &result) override;
 };
 
 // Generate IR, optimize ir, then print it.
@@ -359,8 +327,7 @@ public:
   CompilerAction GetSelfAction() override { return CompilerAction::EmitObject; }
   Status FinishAction() override;
 
-  void CompletedIRGeneration(llvm::Module *result) override;
-  void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
+  void HandleIRGeneration(llvm::Module *result) override;
 };
 
 class EmitAssemblyExecution final : public CompilerExecution {
@@ -374,9 +341,7 @@ public:
     return CompilerAction::EmitAssembly;
   }
   Status FinishAction() override;
-
-  void CompletedIRGeneration(llvm::Module *result) override;
-  void CompletedIRGeneration(llvm::ArrayRef<llvm::Module *> &results) override;
+  void HandleIRGeneration(llvm::Module *result) override;
 };
 
 /// Handles LLVM
