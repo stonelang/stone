@@ -9,7 +9,7 @@ using namespace stone;
 bool TypeBase::IsBasic() {
   switch (GetKind()) {
   case TypeKind::Float:
-  case TypeKind::Integer:
+  case TypeKind::Int:
     return true;
   default:
     return false;

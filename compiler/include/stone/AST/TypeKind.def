@@ -1,104 +1,3 @@
-
-// def Type : TypeNode<?, 1>;
-// def BuiltinType : TypeNode<Type>, LeafType;
-// def ComplexType : TypeNode<Type>;
-// def PointerType : TypeNode<Type>;
-// def ReferenceType : TypeNode<Type, 1>;
-// def LValueReferenceType : TypeNode<ReferenceType>;
-// def RValueReferenceType : TypeNode<ReferenceType>;
-// def MemberPointerType : TypeNode<Type>;
-// def ArrayType : TypeNode<Type, 1>;
-// def ConstantArrayType : TypeNode<ArrayType>;
-// def IncompleteArrayType : TypeNode<ArrayType>;
-// def VariableArrayType : TypeNode<ArrayType>;
-// def DependentSizedArrayType : TypeNode<ArrayType>, AlwaysDependent;
-// def DependentSizedExtVectorType : TypeNode<Type>, AlwaysDependent;
-// def DependentAddressSpaceType : TypeNode<Type>, AlwaysDependent;
-// def VectorType : TypeNode<Type>;
-// def DependentVectorType : TypeNode<Type>, AlwaysDependent;
-// def ExtVectorType : TypeNode<VectorType>;
-// def MatrixType : TypeNode<Type, 1>;
-// def ConstantMatrixType : TypeNode<MatrixType>;
-// def DependentSizedMatrixType : TypeNode<MatrixType>, AlwaysDependent;
-// def FunctionType : TypeNode<Type, 1>;
-// def FunctionProtoType : TypeNode<FunctionType>;
-// def FunctionNoProtoType : TypeNode<FunctionType>;
-// def UsingType : TypeNode<Type>, NeverCanonical;
-// def UnresolvedUsingType : TypeNode<Type>, AlwaysDependent;
-// def ParenType : TypeNode<Type>, NeverCanonical;
-// def TypedefType : TypeNode<Type>, NeverCanonical;
-// def MacroQualifiedType : TypeNode<Type>, NeverCanonical;
-// def AdjustedType : TypeNode<Type>, NeverCanonical;
-// def DecayedType : TypeNode<AdjustedType>, NeverCanonical;
-// def TypeOfExprType : TypeNode<Type>, NeverCanonicalUnlessDependent;
-// def TypeOfType : TypeNode<Type>, NeverCanonicalUnlessDependent;
-// def DecltypeType : TypeNode<Type>, NeverCanonicalUnlessDependent;
-// def UnaryTransformType : TypeNode<Type>, NeverCanonicalUnlessDependent;
-// def TagType : TypeNode<Type, 1>;
-// def RecordType : TypeNode<TagType>, LeafType;
-// def EnumType : TypeNode<TagType>, LeafType;
-// def ElaboratedType : TypeNode<Type>, NeverCanonical;
-// def AttributedType : TypeNode<Type>, NeverCanonical;
-// def TemplateTypeParmType : TypeNode<Type>, AlwaysDependent, LeafType;
-// def SubstTemplateTypeParmType : TypeNode<Type>, NeverCanonical;
-// def SubstTemplateTypeParmPackType : TypeNode<Type>, AlwaysDependent;
-// def TemplateSpecializationType : TypeNode<Type>, NeverCanonicalUnlessDependent;
-// def DeducedType : TypeNode<Type, 1>;
-// def AutoType : TypeNode<DeducedType>;
-// def DeducedTemplateSpecializationType : TypeNode<DeducedType>;
-// def InjectedClassNameType : TypeNode<Type>, AlwaysDependent, LeafType;
-// def DependentNameType : TypeNode<Type>, AlwaysDependent;
-// def DependentTemplateSpecializationType : TypeNode<Type>, AlwaysDependent;
-// def PackExpansionType : TypeNode<Type>, AlwaysDependent;
-// def ObjCTypeParamType : TypeNode<Type>, NeverCanonical;
-// def ObjCObjectType : TypeNode<Type>;
-// def ObjCInterfaceType : TypeNode<ObjCObjectType>, LeafType;
-// def ObjCObjectPointerType : TypeNode<Type>;
-// def PipeType : TypeNode<Type>;
-// def AtomicType : TypeNode<Type>;
-// def BitIntType : TypeNode<Type>;
-// def DependentBitIntType : TypeNode<Type>, AlwaysDependent;
-
-
-/// TYPE(id, parent)
-///   If the type node is not abstract, its enumerator value is
-///   TypeKind::id.  The node's class name is 'id##Type', and the name of
-///   its base class (in the Type hierarchy) is 'parent' (including
-///   the 'Type' suffix).
-
-/// CANONICAL_TYPE(id, parent)
-///   This type is always canonical.  The default behavior is TYPE(id, parent).
-
-/// BUILTIN_TYPE(id, parent)
-///   This type is a builtin type. The default behavior is
-///   CANONICAL_TYPE(id, parent).
-
-/// SWEET_TYPE(id, parent)
-///   This type is never canonical.  It provides an efficient accessor,
-///   getSinglyDesugaredType(), which removes one level of sugar.  This
-///   process does not necessarily converge to the canonical type, however.
-///   The default behavior is TYPE(id, parent).
-//
-// If you add a new sugared type, be sure to test it in PrintAsObjC!
-
-/// UNCHECKED_TYPE(id, parent)
-///   This type is not present in valid, type-checked programs.
-///   The default behavior is TYPE(id, parent).
-
-/// ARTIFICIAL_TYPE(id, parent)
-///   This type is not part of the user-facing type system. It may be
-///   used freely in SIL, and it may appear as the type of a
-///   declaration in the AST (due to e.g. the application of the
-///   [weak] attribute), but it cannot be written directly in normal
-///   programs and it cannot be the type of an expression.
-///   The default behavior is TYPE(id, parent).
-
-/// SINGLETON_TYPE(SHORT_ID, id)
-///   This type is a singleton, i.e. there is exactly one instance of
-///   it, which can be found as ASTContext.The#SHORT_ID#Type.
-///   This is only expanded if SINGLETON_TYPE is defined, and in this
-///   case no other macros are expanded.
-
 #ifndef CANONICAL_TYPE
 #define CANONICAL_TYPE(id, parent) TYPE(id, parent)
 #endif
@@ -124,6 +23,7 @@
 #ifndef ABSTRACT_TYPE
 #define ABSTRACT_TYPE(Id, Parent)
 #endif
+
 
 #ifndef ABSTRACT_SWEET_TYPE
 #define ABSTRACT_SWEET_TYPE(Id, Parent) ABSTRACT_TYPE(Id, Parent)
@@ -151,27 +51,46 @@
 //     TYPEREPR(GenericIdent, ComponentIdentTypeRepr)
 //   TYPEREPR(CompoundIdent, IdentTypeRepr)
 
-
+// Abstract, first real , last real 
 ABSTRACT_TYPE(Builtin, Type)
-  ABSTRACT_TYPE(Scalar,  BuiltinType)
-    ABSTRACT_TYPE(Number,  ScalarType)
-      BUILTIN_TYPE(Integer,         NumberType)
-      BUILTIN_TYPE(UInteger,        NumberType)
-      BUILTIN_TYPE(Float,           NumberType)
-      BUILTIN_TYPE(Complex,         NumberType)
-      BUILTIN_TYPE(Imaginary,       NumberType)
-      TYPE_RANGE(Number, Integer, Imaginary) 
+  ABSTRACT_TYPE(Numeric,  BuiltinType)
+    ABSTRACT_TYPE(Signed,  Numeric)
+      BUILTIN_TYPE(Int,    Signed)
+      BUILTIN_TYPE(Int8,   Signed)
+      BUILTIN_TYPE(Int32,  Signed)
+      BUILTIN_TYPE(Int16,  Signed)
+      BUILTIN_TYPE(Int64,  Signed)
+      BUILTIN_TYPE(Int128,  Signed)
+      TYPE_RANGE(Signed, Int, Int128) 
+    ABSTRACT_TYPE(Unsigned,  Numeric)
+      BUILTIN_TYPE(UInt,    Unsigned)
+      BUILTIN_TYPE(UInt8,   Unsigned)
+      BUILTIN_TYPE(UInt32,  Unsigned)
+      BUILTIN_TYPE(UInt16,  Unsigned)
+      BUILTIN_TYPE(UInt64,  Unsigned)
+      BUILTIN_TYPE(UInt128, Unsigned)
+      BUILTIN_TYPE(Bool,    Unsigned)
+      BUILTIN_TYPE(Char,    Unsigned)
+      BUILTIN_TYPE(Char8,   Unsigned)
+      BUILTIN_TYPE(Char16,  Unsigned)
+      BUILTIN_TYPE(Char32,  Unsigned)
+      TYPE_RANGE(Unsigned, UInt, Char32) 
+  BUILTIN_TYPE(Float,       Numeric)
+  BUILTIN_TYPE(Float16, Numeric)
+  BUILTIN_TYPE(Float32, Numeric)
+  BUILTIN_TYPE(Float64, Numeric)
+  BUILTIN_TYPE(Float128, Numeric)
+  BUILTIN_TYPE(Complex32,  Numeric)
+  BUILTIN_TYPE(Complex64,  Numeric)
+  BUILTIN_TYPE(Imaginary32,Numeric)
+  BUILTIN_TYPE(Imaginary64,Numeric)
+  TYPE_RANGE(Numeric, Int, Imaginary64) 
 
-    BUILTIN_TYPE(Bool, ScalarType)
-    BUILTIN_TYPE(Char, ScalarType)
-    TYPE_RANGE(Scalar, Integer, Char) 
-
-  BUILTIN_TYPE(Any, BuiltinType)
   BUILTIN_TYPE(Null, BuiltinType)
   BUILTIN_TYPE(Void, BuiltinType)
   //BUILTIN_TYPE(String, BuiltinType)
 
-  TYPE_RANGE(Builtin, Integer, Void) 
+  TYPE_RANGE(Builtin, Int, Void) 
 
 CANONICAL_TYPE(Module, Type)
 

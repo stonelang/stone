@@ -141,9 +141,232 @@ inline bool CanType::IsCanTypeOrNull() const {
          GetPtr()->IsCanType();
 }
 
-class SourType : public TypeBase {
+class BuiltinType : public TypeBase {
+protected:
+  BuiltinType(TypeKind kind, const ASTContext &sc) : TypeBase(kind, &sc) {
+    // Bits.TypeBase.IsBuiltin = true;
+  }
+};
+
+class IdentifierType : public TypeBase {
 public:
 };
+
+// class StringType : public BuiltinType {
+// public:
+//   StringType(const ASTContext &sc) : ScalarType(TypeKind::String, sc) {}
+// };
+
+class NumericType : public BuiltinType {
+protected:
+  NumericType(TypeKind kind, const ASTContext &sc) : BuiltinType(kind, sc) {}
+};
+
+class SignedType : public NumericType {
+protected:
+  SignedType(TypeKind kind, const ASTContext &sc) : NumericType(kind, sc) {}
+};
+
+class IntType : public SignedType {
+  friend class ASTContext;
+
+public:
+  IntType(const ASTContext &sc) : SignedType(TypeKind::Int, sc) {}
+
+public:
+  static IntType *Create(const ASTContext &sc);
+};
+
+class Int8Type : public SignedType {
+  friend class ASTContext;
+
+public:
+  Int8Type(const ASTContext &sc) : SignedType(TypeKind::Int8, sc) {}
+
+public:
+  static Int8Type *Create(const ASTContext &sc);
+};
+
+class Int16Type : public SignedType {
+  friend class ASTContext;
+
+public:
+  Int16Type(const ASTContext &sc) : SignedType(TypeKind::Int16, sc) {}
+
+public:
+  static Int16Type *Create(const ASTContext &sc);
+};
+class Int32Type : public SignedType {
+  friend class ASTContext;
+
+public:
+  Int32Type(const ASTContext &sc) : SignedType(TypeKind::Int32, sc) {}
+
+public:
+  static Int16Type *Create(const ASTContext &sc);
+};
+
+class Int64Type : public SignedType {
+  friend class ASTContext;
+
+public:
+  Int64Type(const ASTContext &sc) : SignedType(TypeKind::Int64, sc) {}
+
+public:
+  static Int64Type *Create(const ASTContext &sc);
+};
+
+class Int128Type : public SignedType {
+  friend class ASTContext;
+
+public:
+  Int128Type(const ASTContext &sc) : SignedType(TypeKind::Int128, sc) {}
+
+public:
+  static Int128Type *Create(const ASTContext &sc);
+};
+
+class UnsignedType : public NumericType {
+protected:
+  UnsignedType(TypeKind kind, const ASTContext &sc) : NumericType(kind, sc) {}
+};
+
+class UIntType : public UnsignedType {
+  friend class ASTContext;
+
+public:
+  UIntType(const ASTContext &sc) : UnsignedType(TypeKind::UInt, sc) {}
+};
+class UInt8Type : public UnsignedType {
+  friend class ASTContext;
+
+public:
+  UInt8Type(const ASTContext &sc) : UnsignedType(TypeKind::UInt8, sc) {}
+};
+class UInt16Type : public UnsignedType {
+  friend class ASTContext;
+
+public:
+  UInt16Type(const ASTContext &sc) : UnsignedType(TypeKind::UInt16, sc) {}
+};
+
+class UInt32Type : public UnsignedType {
+  friend class ASTContext;
+
+public:
+  UInt32Type(const ASTContext &sc) : UnsignedType(TypeKind::UInt32, sc) {}
+};
+
+class UInt64Type final : public UnsignedType {
+  friend class ASTContext;
+
+public:
+  UInt64Type(const ASTContext &sc) : UnsignedType(TypeKind::UInt64, sc) {}
+};
+class UInt128Type final : public UnsignedType {
+  friend class ASTContext;
+
+public:
+  UInt128Type(const ASTContext &sc) : UnsignedType(TypeKind::UInt128, sc) {}
+};
+
+class CharType final : public UnsignedType {
+public:
+  CharType(const ASTContext &sc) : UnsignedType(TypeKind::Char, sc) {}
+};
+class Char8Type final : public UnsignedType {
+public:
+  Char8Type(const ASTContext &sc) : UnsignedType(TypeKind::Char8, sc) {}
+};
+class Char16Type final : public UnsignedType {
+public:
+  Char16Type(const ASTContext &sc) : UnsignedType(TypeKind::Char16, sc) {}
+};
+class Char32Type final : public UnsignedType {
+public:
+  Char32Type(const ASTContext &sc) : UnsignedType(TypeKind::Char32, sc) {}
+};
+
+class BoolType final : public UnsignedType {
+public:
+  BoolType(const ASTContext &sc) : UnsignedType(TypeKind::Bool, sc) {}
+};
+
+class Complex32Type final : public NumericType {
+  friend class ASTContext;
+
+public:
+  Complex32Type(const ASTContext &sc) : NumericType(TypeKind::Complex32, sc) {}
+};
+
+class Complex64Type final : public NumericType {
+  friend class ASTContext;
+
+public:
+  Complex64Type(const ASTContext &sc) : NumericType(TypeKind::Complex64, sc) {}
+};
+
+class Imaginary32Type final : public NumericType {
+  friend class ASTContext;
+
+public:
+  Imaginary32Type(const ASTContext &sc)
+      : NumericType(TypeKind::Imaginary32, sc) {}
+};
+
+class Imaginary64Type final : public NumericType {
+  friend class ASTContext;
+
+public:
+  Imaginary64Type(const ASTContext &sc)
+      : NumericType(TypeKind::Imaginary64, sc) {}
+};
+
+class FloatType : public NumericType {
+  friend class ASTContext;
+
+public:
+  FloatType(const ASTContext &sc) : NumericType(TypeKind::Float, sc) {}
+
+public:
+  static FloatType *Create(const ASTContext &astContext);
+
+public:
+  const llvm::fltSemantics &GetAPFloatSemantics() const;
+  static bool classof(const TypeBase *T) {
+    return T->GetKind() == TypeKind::Float;
+  }
+};
+
+class Float16Type : public NumericType {
+  friend class ASTContext;
+
+public:
+  Float16Type(const ASTContext &sc) : NumericType(TypeKind::Float16, sc) {}
+};
+
+class Float32Type : public NumericType {
+  friend class ASTContext;
+
+public:
+  Float32Type(const ASTContext &sc) : NumericType(TypeKind::Float32, sc) {}
+};
+
+class Float64Type : public NumericType {
+  friend class ASTContext;
+
+public:
+  Float64Type(const ASTContext &sc) : NumericType(TypeKind::Float64, sc) {}
+};
+class Float128Type : public NumericType {
+  friend class ASTContext;
+
+public:
+  Float128Type(const ASTContext &sc) : NumericType(TypeKind::Float128, sc) {}
+};
+
+// class TemplateParmType : public Type{
+// };
 
 class FunctionType : public TypeBase {
   Type result;
@@ -191,149 +414,6 @@ protected:
 
 class AutoType final : public DeducedType, public llvm::FoldingSetNode {
 public:
-};
-
-// class TemplateParmType : public Type{
-// };
-
-class BuiltinType : public TypeBase {
-protected:
-  BuiltinType(TypeKind kind, const ASTContext &sc) : TypeBase(kind, &sc) {
-    // Bits.TypeBase.IsBuiltin = true;
-  }
-};
-
-class IdentifierType : public TypeBase {};
-
-class ScalarType : public BuiltinType {
-public:
-  ScalarType(TypeKind kind, const ASTContext &sc) : BuiltinType(kind, sc) {}
-};
-
-class CharType : public ScalarType {
-public:
-  CharType(const ASTContext &sc) : ScalarType(TypeKind::Char, sc) {}
-};
-
-class BoolType : public ScalarType {
-public:
-  BoolType(const ASTContext &sc) : ScalarType(TypeKind::Bool, sc) {}
-};
-
-// class StringType : public BuiltinType {
-// public:
-//   StringType(const ASTContext &sc) : ScalarType(TypeKind::String, sc) {}
-// };
-
-struct NumberBitWidth final {
-  enum Kind : UInt8 {
-    Platform = 0,
-    N8,
-    N16,
-    N32,
-    N64,
-    N80,
-    N128,
-  };
-  static unsigned GetNumberBitWidth(NumberBitWidth::Kind kind) {
-    switch (kind) {
-    case NumberBitWidth::Platform:
-      return 0;
-    case NumberBitWidth::N8:
-      return 8;
-    case NumberBitWidth::N16:
-      return 16;
-    case NumberBitWidth::N32:
-      return 32;
-    case NumberBitWidth::N64:
-      return 64;
-    case NumberBitWidth::N80:
-      return 80;
-    case NumberBitWidth::N128:
-      return 128;
-    }
-    llvm_unreachable("Valid bit widths are: 8 | 16 | 32 | 64 | 80 | 128");
-  }
-};
-using NumberBitWidthKind = NumberBitWidth::Kind;
-/// An abstract base class for integers and floats
-class NumberType : public ScalarType {
-  NumberBitWidthKind bitWidthKind;
-
-public:
-  NumberType(TypeKind kind, NumberBitWidthKind bitWidthKind,
-             const ASTContext &sc)
-      : ScalarType(kind, sc), bitWidthKind(bitWidthKind) {}
-
-public:
-  unsigned GetNumberBitWidth() const {
-    return NumberBitWidth::GetNumberBitWidth(bitWidthKind);
-  }
-  bool UsePlatformNumberBitWidth() {
-    return GetNumberBitWidth() == NumberBitWidth::Platform;
-  }
-};
-
-class IntegerType : public NumberType {
-  friend class ASTContext;
-
-public:
-  IntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
-      : NumberType(TypeKind::Integer, bitWidthKind, sc) {}
-
-public:
-  static IntegerType *Create(NumberBitWidthKind bitWidthKind,
-                             const ASTContext &sc, MemoryAllocationArena arena);
-};
-
-class UIntegerType : public NumberType {
-  friend class ASTContext;
-
-public:
-  UIntegerType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
-
-      : NumberType(TypeKind::UInteger, bitWidthKind, sc) {}
-};
-
-class ComplexType : public NumberType {
-  friend class ASTContext;
-
-public:
-  ComplexType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
-      : NumberType(TypeKind::Complex, bitWidthKind, sc) {}
-};
-
-class ImaginaryType : public NumberType {
-  friend class ASTContext;
-
-public:
-  ImaginaryType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
-      : NumberType(TypeKind::Imaginary, bitWidthKind, sc) {}
-};
-
-class FloatType : public NumberType {
-  friend class ASTContext;
-
-public:
-  FloatType(NumberBitWidthKind bitWidthKind, const ASTContext &sc)
-      : NumberType(TypeKind::Float, bitWidthKind, sc) {}
-
-public:
-  static FloatType *Create(NumberBitWidthKind bitWidthKind,
-                           const ASTContext &astContext,
-                           MemoryAllocationArena arena);
-
-public:
-  const llvm::fltSemantics &GetAPFloatSemantics() const;
-  static bool classof(const TypeBase *T) {
-    return T->GetKind() == TypeKind::Float;
-  }
-};
-
-class AnyType : public BuiltinType {
-public:
-  AnyType(const ASTContext &astContext)
-      : BuiltinType(TypeKind::Any, astContext) {}
 };
 
 class VoidType : public BuiltinType {
