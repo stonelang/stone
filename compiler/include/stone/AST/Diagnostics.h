@@ -212,7 +212,7 @@ class DiagnosticArgument final {
     unsigned UnsignedVal;
     StringRef StringVal;
     Identifier IdentifierVal;
-    const Decl *TheDecl;
+    const Decl *DeclVal;
     Type TypeVal;
     DiagnosticInfo *DiagnosticVal;
     llvm::VersionTuple VersionVal;
@@ -235,8 +235,8 @@ public:
       : Kind(DiagnosticArgumentKind::Identifier), IdentifierVal(Identifier(I)) {
   }
 
-  DiagnosticArgument(const Decl *VD)
-      : Kind(DiagnosticArgumentKind::Decl), TheDecl(VD) {}
+  DiagnosticArgument(const Decl *val)
+      : Kind(DiagnosticArgumentKind::Decl), DeclVal(val) {}
 
   DiagnosticArgument(Type T) : Kind(DiagnosticArgumentKind::Type), TypeVal(T) {}
 
@@ -285,7 +285,7 @@ public:
 
   const Decl *getAsDecl() const {
     assert(Kind == DiagnosticArgumentKind::Decl);
-    return TheDecl;
+    return DeclVal;
   }
 
   Type getAsType() const {

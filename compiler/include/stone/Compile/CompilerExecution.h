@@ -103,9 +103,9 @@ public:
   virtual void Print(ColorStream &stream) const;
 
 public:
-  virtual void HandleSourceFile(SourceFile& result);
-  virtual void HandleModuleDecl(ModuleDecl& moduleDecl);
-  virtual void HandleIRGeneration(llvm::Module *result);
+  virtual void CompletedSourceFile(SourceFile& result);
+  virtual void CompletedModuleDecl(ModuleDecl& moduleDecl);
+  virtual void CompletedIRGeneration(llvm::Module *result);
 };
 
 class PrintHelpExecution final : public CompilerExecution {
@@ -173,8 +173,8 @@ public:
   }
 
 public:
-  void HandleSourceFile(SourceFile &result) override;
-  void HandleModuleDecl(ModuleDecl &result) override;
+  void CompletedSourceFile(SourceFile &result) override;
+  void CompletedModuleDecl(ModuleDecl &result) override;
 };
 
 class PrintASTBeforeExecution final : public CompilerExecution {
@@ -190,8 +190,8 @@ public:
   }
   CompilerAction GetDepAction() override { return CompilerAction::Parse; }
 
-  void HandleSourceFile(SourceFile &result) override;
-  void HandleModuleDecl(ModuleDecl &result) override;
+  void CompletedSourceFile(SourceFile &result) override;
+  void CompletedModuleDecl(ModuleDecl &result) override;
 };
 
 class TypeCheckExecution final : public CompilerExecution {
@@ -207,8 +207,8 @@ public:
   }
   CompilerAction GetSelfAction() override { return CompilerAction::TypeCheck; }
 
-  void HandleSourceFile(SourceFile &result) override;
-  void HandleModuleDecl(ModuleDecl &result) override;
+  void CompletedSourceFile(SourceFile &result) override;
+  void CompletedModuleDecl(ModuleDecl &result) override;
 };
 
 class PrintASTAfterExecution final : public CompilerExecution {
@@ -224,8 +224,8 @@ public:
     return CompilerAction::PrintASTAfter;
   }
 
-  void HandleSourceFile(SourceFile &result) override;
-  void HandleModuleDecl(ModuleDecl &result) override;
+  void CompletedSourceFile(SourceFile &result) override;
+  void CompletedModuleDecl(ModuleDecl &result) override;
 };
 
 // Generate IR, before optimization
@@ -243,8 +243,8 @@ public:
   }
 
 public:
-  void HandleSourceFile(SourceFile &result) override;
-  void HandleModuleDecl(ModuleDecl &result) override;
+  void CompletedSourceFile(SourceFile &result) override;
+  void CompletedModuleDecl(ModuleDecl &result) override;
 };
 
 // Generate IR, optimize ir, then print it.
@@ -264,8 +264,8 @@ public:
   }
 
 public:
-  void HandleSourceFile(SourceFile &result) override;
-  void HandleModuleDecl(ModuleDecl &result) override;
+  void CompletedSourceFile(SourceFile &result) override;
+  void CompletedModuleDecl(ModuleDecl &result) override;
 };
 
 // Generate IR, optimize ir, then print it.
@@ -327,7 +327,7 @@ public:
   CompilerAction GetSelfAction() override { return CompilerAction::EmitObject; }
   Status FinishAction() override;
 
-  void HandleIRGeneration(llvm::Module *result) override;
+  void CompletedIRGeneration(llvm::Module *result) override;
 };
 
 class EmitAssemblyExecution final : public CompilerExecution {
@@ -341,13 +341,13 @@ public:
     return CompilerAction::EmitAssembly;
   }
   Status FinishAction() override;
-  void HandleIRGeneration(llvm::Module *result) override;
+  void CompletedIRGeneration(llvm::Module *result) override;
 };
 
-/// Handles LLVM
+/// Completeds LLVM
 Status CompileLLVM(Compiler &compiler);
 
-/// Handles LLVM
+/// Completeds LLVM
 Status CompileAction(Compiler &compiler);
 
 } // namespace stone

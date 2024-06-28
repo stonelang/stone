@@ -10,14 +10,15 @@ using namespace stone;
 CompilerExecution::CompilerExecution(Compiler &compiler) : compiler(compiler) {}
 CompilerExecution::~CompilerExecution() {}
 
-void CompilerExecution::HandleSourceFile(SourceFile& result) {
-  llvm_unreachable("Illegal to handle syntax analysis!");
+void CompilerExecution::CompletedSourceFile(SourceFile& result) {
+  assert(false && "Illegal to handle syntax analysis!");
+
 }
-void CompilerExecution::HandleModuleDecl(ModuleDecl& result) {
-  llvm_unreachable("Illegal to handle syntax analysis!");
+void CompilerExecution::CompletedModuleDecl(ModuleDecl& result) {
+  assert(false && "Illegal to handle syntax analysis!");
 }
-void CompilerExecution::HandleIRGeneration(llvm::Module *result) {
-  llvm_unreachable("Illegal to handle IR generation!");
+void CompilerExecution::CompletedIRGeneration(llvm::Module *result) {
+  assert(false && "Illegal to handle IR generation!");
 }
 
 void CompilerExecution::Print(ColorStream &stream) const {}
@@ -100,13 +101,13 @@ Status ParseExecution::ExecuteAction() {
       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
     }
     if (ShouldNotifyConsumer() && !compiler.IsCompileForWholeModule()) {
-      GetConsumer()->HandleSourceFile(sourceFile);
+      GetConsumer()->CompletedSourceFile(sourceFile);
     }
     return Status();
   });
 
   if (ShouldNotifyConsumer() && compiler.IsCompileForWholeModule()) {
-    GetConsumer()->HandleModuleDecl(*compiler.GetMainModule());
+    GetConsumer()->CompletedModuleDecl(*compiler.GetMainModule());
   }
 
   if (compiler.HasObservation()) {
@@ -131,9 +132,9 @@ Status ResolveImportsExecution::ExecuteAction() {
   return Status();
 }
 
-void ResolveImportsExecution::HandleSourceFile(SourceFile &result) {}
+void ResolveImportsExecution::CompletedSourceFile(SourceFile &result) {}
 
-void ResolveImportsExecution::HandleModuleDecl(ModuleDecl &result) {}
+void ResolveImportsExecution::CompletedModuleDecl(ModuleDecl &result) {}
 
 PrintASTBeforeExecution::PrintASTBeforeExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -144,8 +145,8 @@ Status PrintASTBeforeExecution::ExecuteAction() {
   return Status();
 }
 
-void PrintASTBeforeExecution::HandleSourceFile(SourceFile &result) {}
-void PrintASTBeforeExecution::HandleModuleDecl(ModuleDecl &result) {}
+void PrintASTBeforeExecution::CompletedSourceFile(SourceFile &result) {}
+void PrintASTBeforeExecution::CompletedModuleDecl(ModuleDecl &result) {}
 
 TypeCheckExecution::TypeCheckExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -174,9 +175,9 @@ Status TypeCheckExecution::ExecuteAction() {
   return Status();
 }
 
-void TypeCheckExecution::HandleSourceFile(SourceFile &result) {}
+void TypeCheckExecution::CompletedSourceFile(SourceFile &result) {}
 
-void TypeCheckExecution::HandleModuleDecl(ModuleDecl &result) {}
+void TypeCheckExecution::CompletedModuleDecl(ModuleDecl &result) {}
 
 PrintASTAfterExecution::PrintASTAfterExecution(Compiler &compiler)
     : CompilerExecution(compiler) {}
@@ -192,9 +193,9 @@ Status PrintASTAfterExecution::ExecuteAction() {
   return Status();
 }
 
-void PrintASTAfterExecution::HandleSourceFile(SourceFile &result) {}
+void PrintASTAfterExecution::CompletedSourceFile(SourceFile &result) {}
 
-void PrintASTAfterExecution::HandleModuleDecl(ModuleDecl &result) {}
+void PrintASTAfterExecution::CompletedModuleDecl(ModuleDecl &result) {}
 
 ///< EmitIRBeforeExecution
 EmitIRBeforeExecution::EmitIRBeforeExecution(Compiler &compiler)
@@ -222,7 +223,7 @@ Status EmitIRBeforeExecution::ExecuteAction() {
           compiler.GetASTContext(), psps, parallelOutputFilenames));
 
       if (ShouldNotifyConsumer()) {
-        GetConsumer()->HandleIRGeneration(result->GetLLVMModule());
+        GetConsumer()->CompletedIRGeneration(result->GetLLVMModule());
       }
       if (IsMainAction()) {
         // stone::EmitIR(result->GetLLVMModule());
@@ -239,7 +240,7 @@ Status EmitIRBeforeExecution::ExecuteAction() {
           psps.outputFilename, compiler.GetASTContext(), psps));
 
       if (ShouldNotifyConsumer()) {
-        GetConsumer()->HandleIRGeneration(result->GetLLVMModule());
+        GetConsumer()->CompletedIRGeneration(result->GetLLVMModule());
       }
       return Status();
     });
@@ -254,9 +255,9 @@ Status EmitIRBeforeExecution::ExecuteAction() {
 
 Status EmitIRBeforeExecution::FinishAction() { return Status(); }
 
-void EmitIRBeforeExecution::HandleSourceFile(SourceFile &result) {}
+void EmitIRBeforeExecution::CompletedSourceFile(SourceFile &result) {}
 
-void EmitIRBeforeExecution::HandleModuleDecl(ModuleDecl &result) {}
+void EmitIRBeforeExecution::CompletedModuleDecl(ModuleDecl &result) {}
 
 ///< EmitIRAfterExecution
 EmitIRAfterExecution::EmitIRAfterExecution(Compiler &compiler)
@@ -275,9 +276,9 @@ Status EmitIRAfterExecution::ExecuteAction() {
 
 Status EmitIRAfterExecution::FinishAction() { return Status(); }
 
-void EmitIRAfterExecution::HandleSourceFile(SourceFile &result) {}
+void EmitIRAfterExecution::CompletedSourceFile(SourceFile &result) {}
 
-void EmitIRAfterExecution::HandleModuleDecl(ModuleDecl &result) {}
+void EmitIRAfterExecution::CompletedModuleDecl(ModuleDecl &result) {}
 
 ///< PrintIR
 
@@ -366,7 +367,7 @@ Status EmitObjectExecution::ExecuteAction() {
   return Status();
 }
 
-void EmitObjectExecution::HandleIRGeneration(llvm::Module *result) {}
+void EmitObjectExecution::CompletedIRGeneration(llvm::Module *result) {}
 
 Status EmitObjectExecution::FinishAction() { return Status(); }
 
@@ -404,16 +405,16 @@ Status EmitAssemblyExecution::ExecuteAction() {
   return Status();
 }
 
-void EmitAssemblyExecution::HandleIRGeneration(llvm::Module *result) {}
+void EmitAssemblyExecution::CompletedIRGeneration(llvm::Module *result) {}
 
 Status EmitAssemblyExecution::FinishAction() { return Status(); }
 
-/// Handles LLVM
+/// Completeds LLVM
 Status stone::CompileAction(Compiler &compiler) {
   assert(CompilerOptions::IsAnyAction(compiler.GetMainAction()));
   return compiler.ExecuteAction(compiler.GetMainAction());
 }
-/// Handles LLVM
+/// Completeds LLVM
 Status stone::CompileLLVM(Compiler &compiler) {
 
   llvm::Module *llvmModule = nullptr;
