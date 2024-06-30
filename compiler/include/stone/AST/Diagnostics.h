@@ -420,6 +420,8 @@ public:
 
   // Avoid copying the fix-it text more than necessary.
   void addFixIt(FixIt &&F) { FixIts.push_back(std::move(F)); }
+  void addArg(DiagnosticArgument &&arg) { Args.push_back(std::move(arg)); }
+
 
   void addChildNote(Diagnostic &&D);
   void insertChildNote(unsigned beforeIndex, Diagnostic &&D);
@@ -567,8 +569,9 @@ public:
   /// until the next major language version.
   InFlightDiagnostic &warnUntilStoneVersionIf(bool shouldLimit,
                                               unsigned majorVersion) {
-    if (!shouldLimit)
+    if (!shouldLimit){
       return *this;
+    }
     return warnUntilStoneVersion(majorVersion);
   }
 
@@ -713,6 +716,10 @@ private:
 
   InFlightDiagnostic &fixItInsertAfter(SrcLoc L, StringRef FormatString,
                                        ArrayRef<DiagnosticArgument> Args);
+
+public:
+   InFlightDiagnostic& AddArg(bool val);
+
 };
 
 /// Class to track, map, and remap diagnostic severity and fatality
@@ -1095,7 +1102,15 @@ public:
   }
 
   /// Return all \c DiagnosticConsumers.
-  ArrayRef<DiagnosticConsumer *> getConsumers() const { return Consumers; }
+  llvm::ArrayRef<DiagnosticConsumer *> getConsumers() const { return Consumers; }
+
+
+  void ForEachConsumer(std::function<void(DiagnosticConsumer *)> notify) {
+    for (auto consumer : Consumers) {
+      notify(consumer);
+    }
+  }
+  bool HasConsumers() { return Consumers.size() > 0; }
 
   SrcMgr &GetSrcMgr() { return SourceMgr; }
   /// Emit a diagnostic using a preformatted array of diagnostic
