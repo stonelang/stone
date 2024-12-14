@@ -82,6 +82,10 @@ public:
   bool IsAutolinkExtract() const {
     return GetKind() == StepKind::AutolinkExtract;
   }
+  bool IsJobStep() const { return Step::IsJobStep(GetKind()); }
+
+public:
+  static bool IsJobStep(StepKind kind);
 };
 
 class InputStep final : public Step {
@@ -107,23 +111,7 @@ protected:
   JobStep(StepKind kind, const Steps &inputs, FileType fileType);
 
 public:
-  static bool classof(const Step *step) {
-    switch (step->GetKind()) {
-    case StepKind::Compile:
-    case StepKind::Backend:
-    case StepKind::GeneratePCH:
-    case StepKind::MergeModule:
-    case StepKind::ModuleWrap:
-    case StepKind::DynamicLink:
-    case StepKind::StaticLink:
-    case StepKind::Interpret:
-    case StepKind::AutolinkExtract:
-      return true;
-    case StepKind::Input:
-      return false;
-    }
-    llvm_unreachable("Unknown step");
-  }
+  static bool classof(const Step *step) { return step->IsJobStep(); }
 };
 
 class CompileStep final : public JobStep {

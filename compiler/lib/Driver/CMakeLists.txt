@@ -1,6 +1,7 @@
  set(stone_drive_sources
 
   Step.cpp
+  DriverOptions.cpp
   Driver.cpp
   Job.cpp
   Main.cpp

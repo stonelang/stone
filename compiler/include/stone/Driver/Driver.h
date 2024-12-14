@@ -5,6 +5,9 @@
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/Allocator.h"
 
+#include "stone/Driver/DriverOptions.h"
+#include "stone/Driver/Step.h"
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -28,6 +31,9 @@ class Driver final {
   /// with the Driver objects will be released when the Driver
   /// itself is destroyed.
   mutable llvm::BumpPtrAllocator allocator;
+
+public:
+  Step GetFinalStep(DriverActionKind kind);
 
 public:
   llvm::BumpPtrAllocator &GetAllocator() { return allocator; }

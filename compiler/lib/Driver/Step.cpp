@@ -2,13 +2,6 @@
 #include "stone/Driver/Driver.h"
 using namespace stone;
 
-InputStep::InputStep(InputFile input)
-    : Step(StepKind::Input, input.GetFileType()), input(input) {}
-
-InputStep *InputStep::Create(Driver &driver, InputFile input) {
-  return new (driver) InputStep(input);
-}
-
 Step::Step(StepKind kind, FileType fileType) : Step(kind, Steps(), fileType) {}
 
 Step::Step(StepKind kind, Step *input, FileType fileType)
@@ -19,6 +12,31 @@ Step::Step(StepKind kind, Step *input)
 
 Step::Step(StepKind kind, const Steps &inputs, FileType fileType)
     : kind(kind), fileType(fileType), allInputs(inputs) {}
+
+bool Step::IsJobStep(StepKind kind) {
+  switch (kind) {
+  case StepKind::Compile:
+  case StepKind::Backend:
+  case StepKind::GeneratePCH:
+  case StepKind::MergeModule:
+  case StepKind::ModuleWrap:
+  case StepKind::DynamicLink:
+  case StepKind::StaticLink:
+  case StepKind::Interpret:
+  case StepKind::AutolinkExtract:
+    return true;
+  case StepKind::Input:
+    return false;
+  }
+  llvm_unreachable("Unknown step");
+}
+
+InputStep::InputStep(InputFile input)
+    : Step(StepKind::Input, input.GetFileType()), input(input) {}
+
+InputStep *InputStep::Create(Driver &driver, InputFile input) {
+  return new (driver) InputStep(input);
+}
 
 JobStep::JobStep(StepKind kind, Step *input, FileType fileType)
     : Step(kind, input, fileType) {}
