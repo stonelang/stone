@@ -1,7 +1,8 @@
  set(stone_drive_sources
 
-  Action.cpp
+  Step.cpp
   Driver.cpp
+  Job.cpp
   Main.cpp
 
   LINK_LIBS
