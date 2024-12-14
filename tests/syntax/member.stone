@@ -1,0 +1,15 @@
+
+
+public struct Particle {
+	public uint8 mass = 0; 
+}
+
+public Particle::Particle() {
+}
+
+public Particle::~Particle() {
+}
+
+public fun Particle::Fire() -> bool {
+	return false;
+}

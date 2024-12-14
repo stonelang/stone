@@ -1,0 +1,14 @@
+
+
+struct Boson {
+	public float64 mass; 
+}
+Boson::Boson() : Boson(0) {
+
+}
+Boson::Boson(float64 mass) {
+	this.mass = mass; 
+}
+
+Boson::~Boson() {
+}

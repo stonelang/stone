@@ -1,0 +1,30 @@
+#ifndef PLATFORM_CONDITION
+#define PLATFORM_CONDITION(LABEL, IDENTIFIER)
+#endif
+#ifndef PLATFORM_CONDITION_
+#define PLATFORM_CONDITION_(LABEL, IDENTIFIER) PLATFORM_CONDITION(LABEL, "_" IDENTIFIER)
+#endif
+
+/// The active os target (OSX, iOS, Linux, etc.)
+PLATFORM_CONDITION(OS, "os")
+
+/// The active arch target (x86_64, i386, arm, arm64, etc.)
+PLATFORM_CONDITION(Arch, "arch")
+
+/// The active endianness target (big or little)
+PLATFORM_CONDITION_(Endianness, "endian")
+
+/// Runtime support (_ObjC or _Native)
+PLATFORM_CONDITION_(Runtime, "runtime")
+
+/// Conditional import of module
+PLATFORM_CONDITION(CanImport, "canImport")
+
+/// Target Environment (currently just 'simulator' or absent)
+PLATFORM_CONDITION(TargetEnvironment, "targetEnvironment")
+
+/// Pointer authentication enabled
+PLATFORM_CONDITION_(PtrAuth, "ptrauth")
+
+#undef PLATFORM_CONDITION
+#undef PLATFORM_CONDITION_

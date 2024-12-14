@@ -1,0 +1,73 @@
+#ifndef SIGNED_TYPE
+#define SIGNED_TYPE(Id, SingletonId) BUILTIN_TYPE(Id, SingletonId)
+#endif
+
+#ifndef UNSIGNED_TYPE
+#define UNSIGNED_TYPE(Id, SingletonId) BUILTIN_TYPE(Id, SingletonId)
+#endif
+
+#ifndef FLOATING_TYPE
+#define FLOATING_TYPE(Id, SingletonId) BUILTIN_TYPE(Id, SingletonId)
+#endif
+
+#ifndef PLACEHOLDER_TYPE
+#define PLACEHOLDER_TYPE(Id, SingletonId) BUILTIN_TYPE(Id, SingletonId)
+#endif
+
+#ifndef SHARED_SINGLETON_TYPE
+#define SHARED_SINGLETON_TYPE(Expansion) Expansion
+#endif
+
+//===- Builtin Types ------------------------------------------------------===//
+
+BUILTIN_TYPE(Void, VoidType)
+BUILTIN_TYPE(Null, NullType)
+
+//===- Unsigned Types -----------------------------------------------------===//
+UNSIGNED_TYPE(Bool, BoolType)
+UNSIGNED_TYPE(UInt8, UInt8Type)
+UNSIGNED_TYPE(Byte,  ByteType)
+UNSIGNED_TYPE(UInt16, UInt16Type)
+UNSIGNED_TYPE(UInt32, UInt32Type)
+UNSIGNED_TYPE(UInt64, UInt64Type)
+UNSIGNED_TYPE(UInt128, UInt128Type)
+UNSIGNED_TYPE(UInt, UIntType)
+
+//===- Signed Types -------------------------------------------------------===//
+
+UNSIGNED_TYPE(Int8, Int8Type)
+UNSIGNED_TYPE(Int16, Int16Type)
+UNSIGNED_TYPE(Int32, Int32Type)
+UNSIGNED_TYPE(Int64, Int64Type)
+UNSIGNED_TYPE(Int128, Int128Type)
+UNSIGNED_TYPE(Int, IntType)
+
+
+//===- Float Types -------------------------------------------------------===//
+
+UNSIGNED_TYPE(Float32, Float32Type)
+UNSIGNED_TYPE(Float64, Float64Type)
+UNSIGNED_TYPE(Float, FloatType)
+
+//===- Complex Types -------------------------------------------------------===//
+UNSIGNED_TYPE(Complex32, Complex32Type)
+UNSIGNED_TYPE(Complex64, Complex64Type)
+
+//===- Language-specific types --------------------------------------------===//
+
+PLACEHOLDER_TYPE(BuiltinFunction, BuiltinFunctionType)
+
+
+#ifdef LAST_BUILTIN_TYPE
+LAST_BUILTIN_TYPE(OMPIterator)
+#undef LAST_BUILTIN_TYPE
+#endif
+
+#undef SHARED_SINGLETON_TYPE
+#undef PLACEHOLDER_TYPE
+#undef FLOATING_TYPE
+#undef SIGNED_TYPE
+#undef UNSIGNED_TYPE
+#undef BUILTIN_TYPE
+
+

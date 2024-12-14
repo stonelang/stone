@@ -1,0 +1,29 @@
+// Light.stone
+space Cosmology.Optics;
+
+
+public struct Light {
+
+
+}
+
+// BlackHole.stone 
+space Cosmology;
+	
+public struct BlackHole {
+}
+
+public fun BlackHole::TrapLight(Light& light) -> void {
+
+}
+
+// Main.stone 
+import Physics;
+
+public fun Main() -> int {
+
+	Cosmology.BlackHole bh = Cosmology.BlackHole();
+	Cosmology.Light light = Cosmology.Light();
+
+	bh.TrapLight(light); 
+}

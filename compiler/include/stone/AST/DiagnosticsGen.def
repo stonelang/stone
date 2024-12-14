@@ -1,0 +1,19 @@
+#define DEFINE_DIAGNOSTIC_MACROS
+#include "DiagnosticMacros.h"
+
+
+ERROR(error_no_llvm_target,none,
+      "erroror loading LLVM target for triple '%0': %1", (StringRef, StringRef))
+
+ERROR(error_codegen_init_fail,none,
+      "cannot initialize code generation passes for target", ())
+
+ERROR(error_type_to_verify_not_found,none, "unable to find type '%0' to verify",
+      (StringRef))
+      
+ERROR(error_type_to_verify_ambiguous,none, "type to verify '%0' is ambiguous",
+      (StringRef))
+
+
+#define UNDEFINE_DIAGNOSTIC_MACROS
+#include "DiagnosticMacros.h"

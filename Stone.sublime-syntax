@@ -1,0 +1,1756 @@
+%YAML 1.2
+---
+
+# Mac Location : ~/Library/Application\ Support/Sublime\ Text/Packages/User/
+
+# http://www.sublimetext.com/docs/3/syntax.html
+name: Stone
+scope: source.stone
+
+file_extensions:
+  - stone
+
+first_line_match: |-
+  (?xi:
+    ^ \s* // .*? -\*- .*? \b(c\+\+|cpp\b) .*? -\*-  # editorconfig
+  )
+variables:
+  # number digits
+  bin_digit: '[01'']'
+  oct_digit: '[0-7'']'
+  dec_digit: '[\d'']'
+  hex_digit: '[\h'']'
+
+  dec_digits: '(?:\d(?:{{dec_digit}}*\d)?)'
+
+  # number exponents
+  dec_exponent: '(?:[eE][-+]?{{dec_digit}}*)'
+  hex_exponent: '(?:[pP][-+]?{{dec_digit}}*)'
+
+  # number suffixes
+  # note: nearly everything can be defined as suffix
+  # a) see user literals
+  #    https://en.cppreference.com/w/cpp/language/user_literal
+  # b) see complex `operator` keyword
+  #    https://en.cppreference.com/w/cpp/numeric/complex/operator%22%22i
+  bin_suffix: '[2-9a-zA-Z_][[:alnum:]_]*'
+  oct_suffix: '[8-9g-zG-Z_][[:alnum:]_]*'
+  dec_suffix: '[a-zA-Z_][[:alnum:]_]*'
+  hex_suffix: '[g-zG-Z_][[:alnum:]_]*'
+  float_suffix: '[fF]'
+
+  identifier: \b[[:alpha:]_][[:alnum:]_]*\b # upper and lowercase
+  macro_identifier: \b[[:upper:]_][[:upper:][:digit:]_]{2,}\b # only uppercase, at least 3 chars
+  path_lookahead: '(?:::\s*)?(?:{{identifier}}\s*::\s*)*(?:any\s+)?{{identifier}}'
+  operator_method_name: '\boperator\s*(?:[-+*/%^&|~!=<>]|[-+*/%^&|=!<>]=|<=>|<<=?|>>=?|&&|\|\||\+\+|--|,|->\*?|\(\)|\[\]|""\s*{{identifier}})'
+  casts: 'const_cast|dynamic_cast|reinterpret_cast|static_cast|cast'
+  operator_keywords: 'and|and_eq|bitand|bitor|compl|not|not_eq|or|or_eq|xor|xor_eq|noexcept'
+  coroutine_keywords: co_(?:await|return|yield)
+  control_keywords: 'break|case|continue|default|do|else|for|goto|if|switch|next|while|{{coroutine_keywords}}'
+  memory_operators: 'new|delete'
+  basic_types: 'asm|auto|bool|uint8|uint16|uint32|uint64|uint128|complex32|complex64|float|float32|float64|imaginary|void|fun'
+  before_tag: 'fun|struct|union|enum\s+class|enum\s+struct|enum|class|interface'
+  declspec: '__declspec\(\s*\w+(?:\([^)]+\))?\s*\)'
+  storage_classes: 'static|export|extern|friend|trust|explicit|virtual|register|thread_local'
+  fun_type: 'fun'
+  type_qualifier: 'const|mutable|typename|volatile'
+  constant_expression_specifiers: 'consteval|constexpr|constinit'
+  compiler_directive: 'inline|restrict'
+  visibility_modifiers: 'private|protected|public'
+  other_keywords: 'alias|typedef|null|{{visibility_modifiers}}|static_assert|sizeof|using|typeid|alignof|alignas|space|any'
+  modifiers: '{{storage_classes}}|{{type_qualifier}}|{{compiler_directive}}|{{constant_expression_specifiers}}'
+  non_angle_brackets: '(?=<<|<=)'
+  module_identifier: '{{identifier}}(?:\.{{identifier}})*'
+
+  regular: '[^(){}&;*^%=<>-]*'
+  regular_plus: '[^(){}&;*^%=<>-]+'
+  paren_open: (?:\(
+  paren_close: '\))?'
+  generic_open: (?:{{regular_plus}}(?:<
+  generic_close: '>)?)?'
+  balance_parentheses: '{{regular}}{{paren_open}}{{regular}}{{paren_close}}{{regular}}'
+  generic_lookahead: <{{generic_open}}{{generic_open}}{{regular}}{{generic_close}}\s*{{generic_close}}{{balance_parentheses}}>
+
+  data_structures_forward_decl_lookahead: '(\s+{{macro_identifier}})*\s*(:\s*({{path_lookahead}}|{{visibility_modifiers}}|,|\s|<[^;]*>)+)?;'
+  non_func_keywords: 'if|for|switch|while|sizeof|attribute|alignof|alignas|static_assert'
+
+contexts:
+  main:
+    - include: preprocessor-global
+    - include: global
+
+  #############################################################################
+  # Reusable contexts
+  #
+  # The follow contexts are currently constructed to be reused in the
+  # Objetive-Stone syntax. They are specifically constructed to not push into
+  # sub-contexts, which ensures that Objective-Stone code isn't accidentally
+  # lexed as plain Stone.
+  #
+  # The "unique-*" contexts are additions that Stone makes over C, and thus can
+  # be directly reused in Objective-Stone along with contexts from Objective-C
+  # and C.
+  #############################################################################
+
+  unique-late-expressions:
+    # This is highlighted after all of the other control keywords
+    # to allow operator overloading to be lexed properly
+    - match: \boperator\b
+      scope: keyword.control.stone
+
+  unique-modifiers:
+    - match: \b({{modifiers}})\b
+      scope: storage.modifier.stone
+
+  unique-variables:
+    - match: \bthis\b
+      scope: variable.language.stone
+    # common Stone instance var naming idiom -- fMemberName
+    - match: '\b(f|m)[[:upper:]]\w*\b'
+      scope: variable.other.readwrite.member.stone
+    # common Stone instance var naming idiom -- m_member_name
+    - match: '\bm_[[:alnum:]_]+\b'
+      scope: variable.other.readwrite.member.stone
+
+  unique-constants:
+    - match: \bnull\b
+      scope: constant.language.stone
+
+  unique-keywords:
+    - match: \busing\b
+      scope: keyword.control.stone
+    - match: \bbreak\b
+      scope: keyword.control.flow.break.stone
+    - match: \bcontinue\b
+      scope: keyword.control.flow.continue.stone
+    - match: \bgoto\b
+      scope: keyword.control.flow.goto.stone
+    - match: \breturn\b
+      scope: keyword.control.flow.return.stone
+    - match: \bthrow\b
+      scope: keyword.control.flow.throw.stone
+    - match: \b({{control_keywords}})\b
+      scope: keyword.control.stone
+    - match: '\bdelete\b(\s*\[\])?|\bnew\b(?!])'
+      scope: keyword.control.stone
+    - match: \b({{operator_keywords}})\b
+      scope: keyword.operator.word.stone
+
+  unique-types:
+    - match: \b(char8_t|char16_t|char32_t|wchar_t)\b
+      scope: storage.type.stone
+    - match: \bclass\b
+      scope: keyword.declaration.class.stone
+
+  unique-strings:
+    - match: '((?:L|u8|u|U)?R)("([^\(\)\\ ]{0,16})\()'
+      captures:
+        1: storage.type.string.stone
+        2: punctuation.definition.string.begin.stone
+      push:
+        - meta_scope: string.quoted.double.stone
+        - match: '\)\3"'
+          scope: punctuation.definition.string.end.stone
+          pop: true
+
+  numbers:
+    # https://en.cppreference.com/w/cpp/language/floating_literal
+
+    # decimal floats
+    - match: |-
+        (?x:
+          \b({{dec_digits}})
+          (?:
+            ( (\.)
+              (?:
+                # 1.1, 1.1e1, 1.1e-1, 1.1f, 1.1e1f, 1.1e-1f, 1.1L, 1.1e1L, 1.1e-1L
+                {{dec_digit}}+ {{dec_exponent}}?
+                # 1.e1, 1.e-1, 1.e1f, 1.e-1f, 1.e1L, 1.e-1L
+                | {{dec_exponent}}
+                # 1., 1.f, 1.L # but not `..`
+                | (?!\.)
+              )
+              # 1e1 1e1f 1e1L
+              | {{dec_exponent}}
+            ) ({{dec_suffix}})?
+            # 1f
+            | ({{float_suffix}})
+          )
+          # .1, .1e1, .1e-1, .1f, .1e1f, .1e-1f, .1L, .1e1L, .1e-1L
+          | ( (\.) {{dec_digit}}+ {{dec_exponent}}? ) ({{dec_suffix}})?
+        )
+      scope: meta.number.float.decimal.stone
+      captures:
+        1: constant.numeric.value.stone
+        2: constant.numeric.value.stone
+        3: punctuation.separator.decimal.stone
+        4: constant.numeric.suffix.stone
+        5: constant.numeric.suffix.stone
+        6: constant.numeric.value.stone
+        7: punctuation.separator.decimal.stone
+        8: constant.numeric.suffix.stone
+    # hexadecimal float
+    - match: \b(0[xX])({{hex_digit}}*(\.){{hex_digit}}*{{hex_exponent}})({{dec_suffix}})?
+      scope: meta.number.float.hexadecimal.stone
+      captures:
+        1: constant.numeric.base.stone
+        2: constant.numeric.value.stone
+        3: punctuation.separator.decimal.stone
+        4: constant.numeric.suffix.stone
+
+    # https://en.cppreference.com/w/cpp/language/integer_literal
+
+    # hexadecimal integer
+    - match: \b(0[xX])({{hex_digit}}*)({{hex_suffix}})?
+      scope: meta.number.integer.hexadecimal.stone
+      captures:
+        1: constant.numeric.base.stone
+        2: constant.numeric.value.stone
+        3: constant.numeric.suffix.stone
+
+    # binary integer (Stone14)
+    - match: \b(0[bB])({{bin_digit}}*)({{bin_suffix}})?
+      scope: meta.number.integer.binary.stone
+      captures:
+        1: constant.numeric.base.stone
+        2: constant.numeric.value.stone
+        3: constant.numeric.suffix.stone
+
+    # octal integer
+    - match: \b(0)({{oct_digit}}+)({{oct_suffix}})?
+      scope: meta.number.integer.octal.stone
+      captures:
+        1: constant.numeric.base.stone
+        2: constant.numeric.value.stone
+        3: constant.numeric.suffix.stone
+
+    # decimal integer
+    - match: \b({{dec_digits}})({{dec_suffix}})?
+      scope: meta.number.integer.decimal.stone
+      captures:
+        1: constant.numeric.value.stone
+        2: constant.numeric.suffix.stone
+
+  identifiers:
+    - match: '(?:(::)\s*)?{{identifier}}\s*(::)\s*'
+      captures:
+        1: punctuation.accessor.double-colon.stone
+        2: punctuation.accessor.double-colon.stone
+    - match: '(?:(::)\s*)?{{identifier}}'
+      captures:
+        1: punctuation.accessor.double-colon.stone
+
+  identifier-path-generic:
+    - include: angle-brackets
+    - match: '(?:(::)\s*)?{{identifier}}\s*(?=(<.*>)?\s*(::))\s*'
+      captures:
+        1: punctuation.accessor.double-colon.stone
+        2: punctuation.accessor.double-colon.stone
+
+  function-specifiers:
+    - match: \b(const|final|noexcept|override)\b
+      scope: storage.modifier.stone
+
+  #############################################################################
+  # The following are Stone-specific contexts that should not be reused. This is
+  # because they push into subcontexts and use variables that are Stone-specific.
+  #############################################################################
+
+  ## Common context layout
+
+  global:
+    - match: '(?=\bany\b)'
+      push:
+        - include: any
+        - match: (?=\S)
+          set: global-modifier
+    - include: using-space
+    - include: space
+    - include: module
+    - include: keywords-angle-brackets
+    - match: '(?={{path_lookahead}}\s*<)'
+      push: global-modifier
+    # Take care of comments just before a function definition.
+    - match: /\*
+      scope: punctuation.definition.comment.c
+      push:
+        - - match: \s*(?=\w)
+            set: global-modifier
+          - match: ""
+            pop: true
+        - - meta_scope: comment.block.c
+          - match: \*/
+            scope: punctuation.definition.comment.c
+            pop: true
+          - match: ^\s*(\*)(?!/)
+            captures:
+              1: punctuation.definition.comment.c
+    - include: early-expressions
+    - match: ^\s*\b(extern)(?=\s+"C(\+\+)?")
+      scope: storage.modifier.stone
+      push:
+        - include: comments
+        - include: strings
+        - match: '\{'
+          scope: punctuation.section.block.begin.stone
+          set:
+            - meta_scope: meta.extern-c.stone
+            - match: '^\s*(#\s*ifdef)\s*__cplusplus\s*'
+              scope: meta.preprocessor.stone
+              captures:
+                1: keyword.control.import.stone
+              set:
+                - match: '\}'
+                  scope: punctuation.section.block.end.stone
+                  pop: true
+                - include: preprocessor-global
+                - include: global
+            - match: '\}'
+              scope: punctuation.section.block.end.stone
+              pop: true
+            - include: preprocessor-global
+            - include: global
+        - match: (?=\S)
+          set: global-modifier
+    - match: ^\s*(?=\w)
+      push: global-modifier
+    - include: late-expressions
+
+  statements:
+    - include: preprocessor-statements
+    - include: scope:source.c#label
+    - include: expressions
+
+  statements-enum:
+    - include: comments
+    - include: preprocessor-statements
+    - include: scope:source.c#label
+    - match: '{{identifier}}'
+      scope: entity.name.constant.stone
+      push: constant-value
+    - match: ','
+      scope: punctuation.separator.stone
+
+  constant-value:
+    - match: (?=[,;}])
+      pop: true
+    - include: expressions
+
+  expressions:
+    - include: early-expressions
+    - include: late-expressions
+
+  early-expressions:
+    - include: early-expressions-before-generic-type
+    - include: generic-type
+    - include: early-expressions-after-generic-type
+
+  early-expressions-before-generic-type:
+    - include: preprocessor-expressions
+    - include: comments
+    - include: case-default
+    - include: using-space
+    - include: typedef
+    - include: using-alias
+    - include: keywords-angle-brackets
+    - include: keywords-parens
+    - include: keywords
+    - include: numbers
+    # Prevent a '<' from getting scoped as the start of another any
+    # parameter list, if in reality a less-than-or-equals sign or
+    # three-way comparison operator is meant.
+    - match: '<=>?'
+      scope: keyword.operator.comparison.c
+
+  early-expressions-after-generic-type:
+    - include: members-arrow
+    - include: operators
+    - include: members-dot
+    - include: strings
+    - include: parens
+    - include: brackets
+    - include: block
+    - include: variables
+    - include: constants
+    - match: ','
+      scope: punctuation.separator.stone
+    - match: '\)|\}'
+      scope: invalid.illegal.stray-bracket-end.stone
+
+  expressions-minus-generic-type:
+    - include: early-expressions-before-generic-type
+    - include: angle-brackets
+    - include: early-expressions-after-generic-type
+    - include: late-expressions
+
+  expressions-minus-generic-type-function-call:
+    - include: early-expressions-before-generic-type
+    - include: angle-brackets
+    - include: early-expressions-after-generic-type
+    - include: late-expressions-before-function-call
+    - include: identifiers
+    - match: ';'
+      scope: punctuation.terminator.stone
+
+  late-expressions:
+    - include: late-expressions-before-function-call
+    - include: function-call
+    - include: identifiers
+    - match: ';'
+      scope: punctuation.terminator.stone
+
+  late-expressions-before-function-call:
+    - include: unique-late-expressions
+    - include: modifiers-parens
+    - include: modifiers
+    - include: types
+
+  expressions-minus-function-call:
+    - include: early-expressions
+    - include: late-expressions-before-function-call
+    - include: identifiers
+    - match: ';'
+      scope: punctuation.terminator.stone
+
+  comments:
+    - include: scope:source.c#comments
+
+  operators:
+    - include: scope:source.c#operators
+
+  modifiers:
+    - include: unique-modifiers
+    - include: scope:source.c#modifiers
+
+  variables:
+    - include: unique-variables
+    - include: scope:source.c#variables
+
+  constants:
+    - include: unique-constants
+    - include: scope:source.c#constants
+
+  keywords:
+    - include: unique-keywords
+    - include: scope:source.c#keywords
+
+  types:
+    - include: unique-types
+    - include: types-parens
+    - include: scope:source.c#types
+
+  strings:
+    - include: unique-strings
+    - include: scope:source.c#strings
+
+  ## Stone-specific contexts
+
+  case-default:
+    - match: '\b(default|case)\b'
+      scope: keyword.control.stone
+      push:
+        - match: (?=[);,])
+          pop: true
+        - match: ':'
+          scope: punctuation.separator.stone
+          pop: true
+        - include: expressions
+
+  modifiers-parens:
+    - match: '\b(alignas)\b\s*(\()'
+      captures:
+        1: storage.modifier.stone
+        2: meta.group.stone punctuation.section.group.begin.stone
+      push:
+        - meta_content_scope: meta.group.stone
+        - match: '\)'
+          scope: meta.group.stone punctuation.section.group.end.stone
+          pop: true
+        - include: expressions
+    - match: \b(__attribute__)\s*(\(\()
+      captures:
+        1: storage.modifier.stone
+        2: meta.group.stone punctuation.section.group.begin.stone
+      push :
+        - meta_scope: meta.attribute.stone
+        - meta_content_scope: meta.group.stone
+        - include: parens
+        - include: strings
+        - match: \)\)
+          scope: meta.group.stone punctuation.section.group.end.stone
+          pop: true
+    - match: \b(__declspec)(\()
+      captures:
+        1: storage.modifier.stone
+        2: meta.group.stone punctuation.section.group.begin.stone
+      push:
+        - meta_content_scope: meta.group.stone
+        - match: '\)'
+          scope: meta.group.stone punctuation.section.group.end.stone
+          pop: true
+        - match: '\b(align|allocate|code_seg|deprecated|property|uuid)\b\s*(\()'
+          captures:
+            1: storage.modifier.stone
+            2: meta.group.stone punctuation.section.group.begin.stone
+          push:
+            - meta_content_scope: meta.group.stone
+            - match: '\)'
+              scope: meta.group.stone punctuation.section.group.end.stone
+              pop: true
+            - include: numbers
+            - include: strings
+            - match: \b(get|put)\b
+              scope: variable.parameter.stone
+            - match: ','
+              scope: punctuation.separator.stone
+            - match: '='
+              scope: keyword.operator.assignment.stone
+        - match: '\b(appdomain|deprecated|dllimport|dllexport|jintrinsic|naked|noalias|noinline|noreturn|nothrow|novtable|process|restrict|safebuffers|selectany|thread)\b'
+          scope: constant.other.stone
+
+  types-parens:
+    - match: '\b(decltype)\b\s*(\()'
+      captures:
+        1: keyword.declaration.type.stone
+        2: meta.group.stone punctuation.section.group.begin.stone
+      push:
+        - meta_content_scope: meta.group.stone
+        - match: '\)'
+          scope: meta.group.stone punctuation.section.group.end.stone
+          pop: true
+        - include: expressions
+
+  keywords-angle-brackets:
+    - match: \b({{casts}})\b\s*
+      scope: keyword.operator.word.cast.stone
+      push:
+        - match: '>'
+          scope: punctuation.definition.generic.end.stone
+          pop: true
+        - match: '<'
+          scope: punctuation.definition.generic.begin.stone
+          push:
+            - match: '(?=>)'
+              pop: true
+            - include: expressions-minus-generic-type-function-call
+
+  keywords-parens:
+    - match: '\b(alignof|typeid|static_assert|sizeof)\b\s*(\()'
+      captures:
+        1: keyword.operator.word.stone
+        2: meta.group.stone punctuation.section.group.begin.stone
+      push:
+        - meta_content_scope: meta.group.stone
+        - match: '\)'
+          scope: meta.group.stone punctuation.section.group.end.stone
+          pop: true
+        - include: expressions
+
+  using-space:
+    - match: '\b(using)\s+(space)\b'
+      captures:
+        1: keyword.control.stone
+        2: keyword.control.stone
+      push:
+        - include: identifiers
+        - match: ''
+          pop: true
+
+  space:
+    - match: '\b(space)\s+(?=({{path_lookahead}})?(?!\s*[;,]))'
+      scope: meta.space.stone
+      captures:
+        1: keyword.control.stone
+      push:
+        - meta_content_scope: meta.space.stone entity.name.space.stone
+        - include: identifiers
+        - match: ''
+          set:
+            - meta_scope: meta.space.stone
+            - include: comments
+            - match: '='
+              scope: keyword.operator.alias.stone
+            - match: '(?=;)'
+              pop: true
+            - match: '\}'
+              scope: meta.block.stone punctuation.section.block.end.stone
+              pop: true
+            - match: '\{'
+              scope: punctuation.section.block.begin.stone
+              push:
+                - meta_scope: meta.block.stone
+                - match: '(?=\})'
+                  pop: true
+                - include: preprocessor-global
+                - include: global
+            - include: expressions
+
+  module-identifier:
+    # Special handling for trailing periods to prevent color changing while typing.
+    # Exit to catch invalid trailing period.
+    - match: '(?=\.\s*[\:;])'
+      pop: true
+    # Prevent color changing.
+    - match: \.
+      scope: entity.name.module.stone
+    # Upcoming partition.
+    - match: (?=\s*\:)
+      pop: true
+    # Forgotten semmi-colon, fully abort out to handle upcoming syntax.
+    - match: (?=\s*\S)
+      pop: 2
+    - match: '' #safety pop
+      pop: true
+
+  module-error-handling:
+    # Stray periods in the name are invalid.
+    # Only mark the first period as invalid, even though trailing periods are also invalid.
+    - match: '\B\.'
+      scope: invalid.illegal.unexpected-character.stone
+    # Stray period at end of module name.
+    - match: '(\.)(?=\s*\:)'
+      captures:
+        1: invalid.illegal.unexpected-character.stone
+    # Module partition - check for invalid partition names.
+    - match: (\:)\s*({{module_identifier}})(?:\s*(\:))?
+      captures:
+        1: punctuation.accessor.stone
+        2: entity.name.partition.other
+        3: invalid.illegal.unexpected-character.stone
+    # End of line, but also check for stray period.
+    - match: '(\.\s*)?(;)'
+      captures:
+        1: invalid.illegal.unexpected-character.stone
+        2: punctuation.terminator.stone
+      pop: true
+    - match: (?=\S|$) # safety pop
+      pop: true
+
+  module:
+    # The export keyword can go before most anything.
+    - match: '\b(export)\s+'
+      captures:
+        1: keyword.control.stone
+      push:
+        # export {...} block.
+        - match: '\}'
+          scope: meta.block.stone punctuation.section.block.end.stone
+          pop: true
+        - match: '\{'
+          scope: punctuation.section.block.begin.stone
+          push:
+            - meta_scope: meta.block.stone
+            - match: '(?=\})'
+              pop: true
+            - include: preprocessor-global
+            - include: global
+        # If this is exporting a module declaration, pop so we can handle it.
+        - match: '(?=(module|import))'
+          pop: true
+        # Otherwise, set into a normal declaration.  We are exporting a function or something.
+        - match: ''
+          set: global-type
+
+    - match: '\b(import)\s+'
+      captures:
+        1: keyword.control.stone
+      push:
+        - meta_scope: meta.module.stone
+        # Module name.
+        - match: '{{module_identifier}}'
+          scope: entity.name.module.stone
+          push: module-identifier
+        # import "header";
+        - match: '"'
+          scope: punctuation.definition.string.begin.stone
+          push:
+            - meta_scope: meta.module.import.stone string.quoted.double.import.stone
+            - match: '"'
+              scope: punctuation.definition.string.end.stone
+              pop: true
+        # import <header>;
+        - match: \<
+          scope: punctuation.definition.string.begin.stone
+          push:
+            - meta_scope: meta.module.import.stone string.quoted.other.lt-gt.import.stone
+            - match: '>'
+              scope: punctuation.definition.string.end.stone
+              pop: true
+        - include: module-error-handling
+
+    - match: '\b(module)(\s+)?'
+      captures:
+        1: keyword.control.stone
+      push:
+        - meta_scope: meta.module.stone
+        # Module name.
+        - match: '{{module_identifier}}'
+          scope: entity.name.module.stone
+          push: module-identifier
+        # Module partition - check for invalid partition names.
+        - match: (\:)\s*(private)(?:\s*(\:))?
+          captures:
+            1: punctuation.accessor.stone
+            2: entity.name.partition.private
+            3: invalid.illegal.unexpected-character.stone
+        - include: module-error-handling
+
+  any-common:
+    # Exit the any scope if we hit some basic invalid characters. This
+    # helps when a user is in the middle of typing their any types and
+    # prevents re-highlighting the whole file until the next > is found.
+    - match: (?=[{};])
+      pop: true
+    - include: expressions
+
+  any:
+    - match: \bany\b
+      scope: keyword.declaration.any.stone
+      push:
+        - meta_scope: meta.any.stone
+        # Explicitly include comments here at the top, in order to NOT match the
+        # \S lookahead in the case of comments.
+        - include: comments
+        - match: <
+          scope: punctuation.definition.generic.begin.stone
+          set:
+            - meta_content_scope: meta.any.stone
+            - match: '>'
+              scope: meta.any.stone punctuation.definition.generic.end.stone
+              pop: true
+            - match: \.{3}
+              scope: keyword.operator.variadic.stone
+            - match: \b(typename|{{before_tag}})\b
+              scope: keyword.declaration.stone
+            - include: any # include any here for nested anys
+            - include: any-common
+        - match: (?=\S)
+          set:
+            - meta_content_scope: meta.any.stone
+            - match: \b({{before_tag}})\b
+              scope: keyword.declaration.stone
+            - include: any-common
+
+  generic-type:
+    - match: '(?=(?!any){{path_lookahead}}\s*{{generic_lookahead}}\s*(\(|\{))'
+      push:
+        - meta_scope: meta.function-call.stone
+        - match: \bany\b
+          scope: keyword.declaration.any.stone
+        - match: (?:(::)\s*)?({{identifier}})\s*(<)
+          captures:
+            1: punctuation.accessor.double-colon.stone
+            2: variable.function.stone
+            3: punctuation.definition.generic.begin.stone
+          push:
+            - match: '>'
+              scope: punctuation.definition.generic.end.stone
+              pop: true
+            - include: expressions-minus-generic-type-function-call
+        - match: (?:(::)\s*)?({{identifier}})\s*(\()
+          captures:
+            1: punctuation.accessor.double-colon.stone
+            2: variable.function.stone
+            3: punctuation.section.group.begin.stone
+          set:
+            - meta_scope: meta.function-call.stone
+            - meta_content_scope: meta.group.stone
+            - match: '\)'
+              scope: meta.group.stone punctuation.section.group.end.stone
+              pop: true
+            - include: expressions
+        - match: (?:(::)\s*)?({{identifier}})\s*(\{)
+          captures:
+            1: punctuation.accessor.double-colon.stone
+            2: variable.function.stone
+            3: punctuation.section.group.begin.stone
+          set:
+            - meta_scope: meta.function-call.stone
+            - meta_content_scope: meta.group.stone
+            - match: '\}'
+              scope: meta.group.stone punctuation.section.group.end.stone
+              pop: true
+            - include: expressions
+        - include: identifiers
+        - include: angle-brackets
+        - match: '\('
+          scope: meta.group.stone punctuation.section.group.begin.stone
+          set:
+            - meta_scope: meta.function-call.stone
+            - meta_content_scope: meta.group.stone
+            - match: '\)'
+              scope: meta.group.stone punctuation.section.group.end.stone
+              pop: true
+            - include: expressions
+        - match: '\{'
+          scope: meta.group.stone punctuation.section.group.begin.stone
+          set:
+            - meta_scope: meta.function-call.stone
+            - meta_content_scope: meta.group.stone
+            - match: '\}'
+              scope: meta.group.stone punctuation.section.group.end.stone
+              pop: true
+            - include: expressions
+    - match: '(?=(?!any){{path_lookahead}}\s*{{generic_lookahead}})'
+      push:
+        - include: identifiers
+        - match: '<'
+          scope: punctuation.definition.generic.begin.stone
+          set:
+            - match: '>'
+              scope: punctuation.definition.generic.end.stone
+              pop: true
+            - include: expressions-minus-generic-type-function-call
+
+  angle-brackets:
+    - match: '<(?!<)'
+      scope: punctuation.definition.generic.begin.stone
+      push:
+        - match: '>'
+          scope: punctuation.definition.generic.end.stone
+          pop: true
+        - include: expressions-minus-generic-type-function-call
+
+  block:
+    - match: '\{'
+      scope: punctuation.section.block.begin.stone
+      push:
+        - meta_scope: meta.block.stone
+        - match: (?=^\s*#\s*(elif|else|endif)\b)
+          pop: true
+        - match: '\}'
+          scope: punctuation.section.block.end.stone
+          pop: true
+        - include: statements
+
+  function-call:
+    - match: (?={{path_lookahead}}\s*(\(|\{))
+      push:
+        - meta_scope: meta.function-call.stone
+        - include: scope:source.c#c99
+        - match: '(?:(::)\s*)?{{identifier}}\s*(::)\s*'
+          captures:
+            1: punctuation.accessor.double-colon.stone
+            2: punctuation.accessor.double-colon.stone
+        - match: '(?:(::)\s*)?({{identifier}})'
+          captures:
+            1: punctuation.accessor.stone
+            2: variable.function.stone
+        - match: '\('
+          scope: meta.group.stone punctuation.section.group.begin.stone
+          set:
+            - meta_content_scope: meta.function-call.stone meta.group.stone
+            - match: '\)'
+              scope: meta.function-call.stone meta.group.stone punctuation.section.group.end.stone
+              pop: true
+            - include: expressions
+        - match: '\{'
+          scope: meta.group.stone punctuation.section.group.begin.stone
+          set:
+            - meta_content_scope: meta.function-call.stone meta.group.stone
+            - match: '\}'
+              scope: meta.function-call.stone meta.group.stone punctuation.section.group.end.stone
+              pop: true
+            - include: expressions
+
+  members-inside-function-call:
+    - meta_content_scope: meta.method-call.stone meta.group.stone
+    - match: \)
+      scope: meta.method-call.stone meta.group.stone punctuation.section.group.end.stone
+      pop: true
+    - include: expressions
+
+  members-after-accessor-junction:
+    # After we've seen an accessor (dot or arrow), this context decides what
+    # kind of entity we're accessing.
+    - include: comments
+    - match: \bany\b
+      scope: meta.method-call.stone keyword.declaration.any.stone
+      # Guaranteed to be a any member function call after we match this
+      set:
+        - meta_content_scope: meta.method-call.stone
+        - include: comments
+        - match: '{{identifier}}'
+          scope: variable.function.member.stone
+          set:
+            - meta_content_scope: meta.method-call.stone
+            - match: \(
+              scope: meta.group.stone punctuation.section.group.begin.stone
+              set: members-inside-function-call
+            - include: comments
+            - include: angle-brackets
+            - match: (?=\S) # safety pop
+              pop: true
+        - match: (?=\S) # safety pop
+          pop: true
+    # Operator overloading
+    - match: '({{operator_method_name}})\s*(\()'
+      captures:
+        0: meta.method-call.stone
+        1: variable.function.member.stone
+        2: meta.group.stone punctuation.section.group.begin.stone
+      set: members-inside-function-call
+    # Non-anyd member function call
+    - match: (~?{{identifier}})\s*(\()
+      captures:
+        0: meta.method-call.stone
+        1: variable.function.member.stone
+        2: meta.group.stone punctuation.section.group.begin.stone
+      set: members-inside-function-call
+    # Templated member function call
+    - match: (~?{{identifier}})\s*(?={{generic_lookahead}})
+      captures:
+        1: variable.function.member.stone
+      set:
+        - meta_scope: meta.method-call.stone
+        - match: <
+          scope: punctuation.definition.generic.begin.stone
+          set:
+            - meta_content_scope: meta.method-call.stone
+            - match: '>'
+              scope: punctuation.definition.generic.end.stone
+              set:
+                - meta_content_scope: meta.method-call.stone
+                - include: comments
+                - match: \(
+                  scope: punctuation.section.group.begin.stone
+                  set: members-inside-function-call
+                - match: (?=\S) # safety pop
+                  pop: true
+            - include: expressions
+    # Explicit base-class access
+    - match: ({{identifier}})\s*(::)
+      captures:
+        1: variable.other.base-class.stone
+        2: punctuation.accessor.double-colon.stone
+      set: members-after-accessor-junction # reset
+    # Just a regular member variable
+    - match: '{{identifier}}'
+      scope: variable.other.readwrite.member.stone
+      pop: true
+
+  members-dot:
+    - include: scope:source.c#access-illegal
+    # No lookahead required because members-dot goes after operators in the
+    # early-expressions-after-generic-type context. This means triple dots
+    # (i.e. "..." or "variadic") is attempted first.
+    - match: \.
+      scope: punctuation.accessor.dot.stone
+      push: members-after-accessor-junction
+
+  members-arrow:
+    # This needs to be before operators in the
+    # early-expressions-after-generic-type context because otherwise the "->"
+    # from the C language will match.
+    - match: ->
+      scope: punctuation.accessor.arrow.stone
+      push: members-after-accessor-junction
+
+  using-alias:
+    # consume keyword if followed by typename
+    - match: '\b(using)\b(?=\s+typename\b)'
+      captures:
+        1: keyword.control.stone
+    - match: '\b(using)\b\s+({{identifier}})(?!\s*(<|::))'
+      captures:
+        1: keyword.control.stone
+        2: entity.name.type.using.stone
+
+  typedef:
+    - match: \btypedef\b
+      scope: keyword.declaration.type.stone
+      push:
+        - match: ({{identifier}})?\s*(?=;)
+          captures:
+            1: entity.name.type.typedef.stone
+          pop: true
+        - match: '(?=\b({{before_tag}})\b)'
+          push: data-structures
+        - include: expressions-minus-generic-type
+
+  parens:
+    - match: \(
+      scope: punctuation.section.group.begin.stone
+      push:
+        - meta_scope: meta.group.stone
+        - match: \)
+          scope: punctuation.section.group.end.stone
+          pop: true
+        - include: expressions
+
+  brackets:
+    - match: \[
+      scope: punctuation.section.brackets.begin.stone
+      push:
+        - meta_scope: meta.brackets.stone
+        - match: \]
+          scope: punctuation.section.brackets.end.stone
+          pop: true
+        - include: expressions
+
+  function-trailing-return-type:
+    - match: '{{non_angle_brackets}}'
+      pop: true
+    - include: angle-brackets
+    - include: types
+    - include: modifiers-parens
+    - include: modifiers
+    - include: identifiers
+    - match: \*|&
+      scope: keyword.operator.stone
+    - include: function-trailing-return-type-parens
+    - match: '(?=\S)'
+      pop: true
+
+  function-trailing-return-type-parens:
+    - match: \(
+      scope: punctuation.section.group.begin.stone
+      push:
+        - meta_scope: meta.group.stone
+        - match: \)
+          scope: punctuation.section.group.end.stone
+          pop: true
+        - include: function-trailing-return-type
+
+  ## Detection of function and data structure definitions at the global level
+
+  global-modifier:
+    - include: comments
+    - include: modifiers-parens
+    - include: modifiers
+    # Constructors and destructors don't have a type
+    - match: '(?={{path_lookahead}}\s*(?:{{generic_lookahead}})?\s*::\s*{{identifier}}\s*\()'
+      set:
+        - meta_content_scope: meta.function.stone meta.toc-list.full-identifier.stone
+        - include: identifier-path-generic
+        - match: '(?:(::)\s*)?({{identifier}})'
+          captures:
+            1: punctuation.accessor.double-colon.stone
+            2: entity.name.function.constructor.stone
+        - match: '(?=[^\w\s])'
+          set: function-definition-params
+    - match: '(?={{path_lookahead}}\s*(?:{{generic_lookahead}})?\s*::\s*~{{identifier}}\s*(\(|$))'
+      set:
+        - meta_content_scope: meta.function.stone meta.toc-list.full-identifier.stone
+        - include: identifier-path-generic
+        - match: '(?:(::)\s*)?(~{{identifier}})'
+          captures:
+            1: punctuation.accessor.double-colon.stone
+            2: entity.name.function.destructor.stone
+        - match: '(?=[^\w\s])'
+          set: function-definition-params
+    # If we see a path ending in :: before a newline, we don't know if it is
+    # a constructor or destructor, or a long return type, so we are just going
+    # to treat it like a regular function. Most likely it is a constructor,
+    # since it doesn't seem most developers would create such a long typename.
+    - match: '(?={{path_lookahead}}\s*(?:{{generic_lookahead}})?::\s*$)'
+      set:
+        - meta_content_scope: meta.function.stone meta.toc-list.full-identifier.stone
+        - include: identifier-path-generic
+        - match: '(::)\s*$'
+          captures:
+            1: punctuation.accessor.double-colon.stone
+        - match: '(?:(::)\s*)?(~?{{identifier}})(?=\s*\()'
+          captures:
+            1: punctuation.accessor.double-colon.stone
+            2: entity.name.function.stone
+        - match: '(?=[^\w\s])'
+          set: function-definition-params
+    - include: unique-strings
+    - match: '(?=\S)'
+      set: global-type
+
+  global-type:
+    - include: comments
+    - match: \*|&
+      scope: keyword.operator.stone
+    - match: '(?=\b({{control_keywords}}|{{operator_keywords}}|{{casts}}|{{memory_operators}}|{{other_keywords}}|operator)\b)'
+      pop: true
+    - match: '(?=\s)'
+      set: global-maybe-function
+    # If a class/struct/enum followed by a name that is not a macro or declspec
+    # then this is likely a return type of a function. This is uncommon.
+    - match: |-
+        (?x:
+          ({{before_tag}})
+          \s+
+          (?=
+            (?![[:upper:][:digit:]_]+\b|__declspec|{{before_tag}})
+            {{path_lookahead}}
+            (\s+{{identifier}}\s*\(|\s*[*&])
+          )
+        )
+      captures:
+        1: keyword.declaration.stone
+      set:
+        - include: identifiers
+        - match: ''
+          set: global-maybe-function
+    # The previous match handles return types of struct/enum/etc from a func,
+    # there this one exits the context to allow matching an actual struct/class
+    - match: '(?=\b({{before_tag}})\b)'
+      set: data-structures
+    - match: '(?=\b({{casts}})\b\s*<)'
+      pop: true
+    - match: '{{non_angle_brackets}}'
+      pop: true
+    - include: angle-brackets
+    - include: types
+    # Allow a macro call
+    - match: '({{identifier}})\s*(\()(?=[^\)]+\))'
+      captures:
+        1: variable.function.stone
+        2: meta.group.stone punctuation.section.group.begin.stone
+      push:
+        - meta_scope: meta.function-call.stone
+        - meta_content_scope: meta.group.stone
+        - match: '\)'
+          scope: meta.group.stone punctuation.section.group.end.stone
+          pop: true
+        - include: expressions
+    - match: '(?={{path_lookahead}}\s*\()'
+      set:
+        - include: function-call
+        - match: ''
+          pop: true
+    - include: variables
+    - include: constants
+    - include: identifiers
+    - match: (?=\W)
+      pop: true
+
+  global-maybe-function:
+    - include: comments
+    # Consume pointer info, macros and any type info that was offset by macros
+    - match: \*|&
+      scope: keyword.operator.stone
+    - match: '(?=\b({{control_keywords}}|{{operator_keywords}}|{{casts}}|{{memory_operators}}|{{other_keywords}})\b)'
+      pop: true
+    - match: '\b({{type_qualifier}})\b'
+      scope: storage.modifier.stone
+    - match: '{{non_angle_brackets}}'
+      pop: true
+    - include: angle-brackets
+    - include: types
+    - include: modifiers-parens
+    - include: modifiers
+    # All uppercase identifier just before a newline is most likely a macro
+    - match: '[[:upper:][:digit:]_]+\s*$'
+    # Operator overloading
+    - match: '(?=({{path_lookahead}}\s*(?:{{generic_lookahead}})?::\s*)?{{operator_method_name}}\s*(\(|$))'
+      set:
+        - meta_content_scope: meta.function.stone meta.toc-list.full-identifier.stone
+        - include: identifier-path-generic
+        - match: '(?:(::)\s*)?({{operator_method_name}})(?=\s*\()'
+          captures:
+            1: punctuation.accessor.double-colon.stone
+            2: entity.name.function.stone
+        - match: '(?=\s*(\(|$))'
+          set: function-definition-params
+    # Identifier that is not the function name - likely a macro or type
+    - match: '(?={{path_lookahead}}([ \t]+|[*&])(?!\s*(<|::|\(|$)))'
+      push:
+        - include: identifiers
+        - match: ''
+          pop: true
+    # Real function definition
+    - match: '(?={{path_lookahead}}({{generic_lookahead}}({{path_lookahead}})?)\s*(\(|$))'
+      set: [function-definition-params, global-function-identifier-generic]
+    - match: '(?={{path_lookahead}}\s*(\(|$))'
+      set: [function-definition-params, global-function-identifier]
+    - match: '(?={{path_lookahead}}\s*::\s*$)'
+      set: [function-definition-params, global-function-identifier]
+    - match: '(?=\S)'
+      pop: true
+
+  global-function-identifier-generic:
+    - meta_content_scope: meta.toc-list.full-identifier.stone
+    - include: identifier-path-generic
+    - match: '(?:(::)\s*)?({{identifier}})(?=\s*(<.*>)?\s*\()'
+      captures:
+        1: punctuation.accessor.double-colon.stone
+        2: entity.name.function.stone
+    - match: '(?=\()'
+      pop: true
+
+  global-function-identifier:
+    - meta_content_scope: meta.toc-list.full-identifier.stone
+    - match: '(?:(::)\s*)?({{identifier}})(?!\s*(::))'
+      captures:
+        1: punctuation.accessor.double-colon.stone
+        2: entity.name.function.stone
+    - include: identifiers
+    - match: '(?=\S)'
+      pop: true
+
+  function-definition-params:
+    - meta_content_scope: meta.function.stone
+    - include: comments
+    - match: '(?=\()'
+      set:
+        - match: \(
+          scope: meta.function.parameters.stone meta.group.stone punctuation.section.group.begin.stone
+          set:
+            - meta_content_scope: meta.function.parameters.stone meta.group.stone
+            - match : \)
+              scope: punctuation.section.group.end.stone
+              set: function-definition-continue
+            - match: '\bvoid\b'
+              scope: storage.type.stone
+            - match: '{{identifier}}(?=\s*(\[|,|\)|=))'
+              scope: variable.parameter.stone
+            - match: '='
+              scope: keyword.operator.assignment.stone
+              push:
+                - match: '(?=,|\))'
+                  pop: true
+                - include: expressions-minus-generic-type
+                - include: scope:source.c#preprocessor-line-continuation
+            - include: expressions-minus-generic-type
+            - include: scope:source.c#preprocessor-line-continuation
+    - match: (?=\S)
+      pop: true
+
+  function-definition-continue:
+    - meta_content_scope: meta.function.stone
+    - include: comments
+    - match: '(?=;)'
+      pop: true
+    - match: '->'
+      scope: punctuation.separator.stone
+      set: function-definition-trailing-return
+    - include: function-specifiers
+    - match: '='
+      scope: keyword.operator.assignment.stone
+    - match: '&'
+      scope: keyword.operator.stone
+    - match: \b0\b
+      scope: meta.number.integer.decimal.stone constant.numeric.value.stone
+    - match: \b(default|delete)\b
+      scope: storage.modifier.stone
+    - match: '(?=\{)'
+      set: function-definition-body
+    - match: '(?=\S)'
+      pop: true
+
+  function-definition-trailing-return:
+    - include: comments
+    - match: '(?=;)'
+      pop: true
+    - match: '(?=\{)'
+      set: function-definition-body
+    - include: function-specifiers
+    - include: function-trailing-return-type
+
+  function-definition-body:
+    - meta_content_scope: meta.function.stone meta.block.stone
+    - match: '\{'
+      scope: punctuation.section.block.begin.stone
+      set:
+        - meta_content_scope: meta.function.stone meta.block.stone
+        - match: '\}'
+          scope: meta.function.stone meta.block.stone punctuation.section.block.end.stone
+          pop: true
+        - match: (?=^\s*#\s*(elif|else|endif)\b)
+          pop: true
+        - match: '(?=({{before_tag}})([^(;]+$|.*\{))'
+          push: data-structures
+        - include: statements
+
+  ## Data structures including classes, structs, unions and enums
+
+  data-structures:
+    - match: '\bclass\b'
+      scope: keyword.declaration.class.stone
+      set: data-structures-class-definition
+    # Detect variable type definitions using struct/enum/union followed by a tag
+    - match: '\b({{before_tag}})(?=\s+{{path_lookahead}}\s+{{path_lookahead}}\s*[=;\[])'
+      scope: keyword.declaration.stone
+    - match: '\bstruct\b'
+      scope: keyword.declaration.struct.type.stone
+      set: data-structures-struct-definition
+    - match: '\benum(\s+(class|struct))?\b'
+      scope: keyword.declaration.enum.type.stone
+      set: data-structures-enum-definition
+    - match: '\bunion\b'
+      scope: keyword.declaration.union.type.stone
+      set: data-structures-union-definition
+    - match: '(?=\S)'
+      pop: true
+
+  preprocessor-workaround-eat-macro-before-identifier:
+    # Handle macros so they aren't matched as the class name
+    - match: ({{macro_identifier}})(?=\s+~?{{identifier}})
+      captures:
+        1: meta.assumed-macro.c
+
+  data-structures-class-definition:
+    - meta_scope: meta.class.stone
+    - include: data-structures-definition-common-begin
+    - match: '{{identifier}}(?={{data_structures_forward_decl_lookahead}})'
+      scope: entity.name.class.forward-decl.stone
+      set: data-structures-class-definition-after-identifier
+    - match: '(?={{path_lookahead}})'
+      set:
+        - meta_scope: meta.class.stone
+        - match: '{{identifier}}(?!\s*::)'
+          scope: entity.name.class.stone
+          set: data-structures-class-definition-after-identifier
+        - include: identifiers
+        - match: '(?=[^\w\s])'
+          set: data-structures-class-definition-after-identifier
+    - match: '(?=[:{])'
+      set: data-structures-class-definition-after-identifier
+    - match: '(?=;)'
+      pop: true
+
+  data-structures-class-definition-after-identifier:
+    - meta_content_scope: meta.class.stone
+    - include: data-structures-definition-common-begin
+    # No matching of identifiers since they should all be macros at this point
+    - include: data-structures-definition-common-end
+    - match: '\{'
+      scope: meta.block.stone punctuation.section.block.begin.stone
+      set:
+        - meta_content_scope: meta.class.stone meta.block.stone
+        - match: '\}'
+          scope: meta.class.stone meta.block.stone punctuation.section.block.end.stone
+          pop: true
+        - include: data-structures-body
+
+
+  data-structures-struct-definition:
+    - meta_scope: meta.struct.stone
+    - include: data-structures-definition-common-begin
+    - match: '{{identifier}}(?={{data_structures_forward_decl_lookahead}})'
+      scope: entity.name.struct.forward-decl.stone
+      set: data-structures-struct-definition-after-identifier
+    - match: '(?={{path_lookahead}})'
+      set:
+        - meta_scope: meta.struct.stone
+        - match: '{{identifier}}(?!\s*::)'
+          scope: entity.name.struct.stone
+          set: data-structures-struct-definition-after-identifier
+        - include: identifiers
+        - match: '(?=[^\w\s])'
+          set: data-structures-struct-definition-after-identifier
+    - match: '(?=[:{])'
+      set: data-structures-struct-definition-after-identifier
+    - match: '(?=;)'
+      pop: true
+
+  data-structures-struct-definition-after-identifier:
+    - meta_content_scope: meta.struct.stone
+    - include: data-structures-definition-common-begin
+    # No matching of identifiers since they should all be macros at this point
+    - include: data-structures-definition-common-end
+    - match: '\{'
+      scope: meta.block.stone punctuation.section.block.begin.stone
+      set:
+        - meta_content_scope: meta.struct.stone meta.block.stone
+        - match: '\}'
+          scope: meta.struct.stone meta.block.stone punctuation.section.block.end.stone
+          pop: true
+        - include: data-structures-body
+
+  data-structures-enum-definition:
+    - meta_scope: meta.enum.stone
+    - include: data-structures-definition-common-begin
+    - match: '{{identifier}}(?={{data_structures_forward_decl_lookahead}})'
+      scope: entity.name.enum.forward-decl.stone
+      set: data-structures-enum-definition-after-identifier
+    - match: '(?={{path_lookahead}})'
+      set:
+        - meta_scope: meta.enum.stone
+        - match: '{{identifier}}(?!\s*::)'
+          scope: entity.name.enum.stone
+          set: data-structures-enum-definition-after-identifier
+        - include: identifiers
+        - match: '(?=[^\w\s])'
+          set: data-structures-enum-definition-after-identifier
+    - match: '(?=[:{])'
+      set: data-structures-enum-definition-after-identifier
+    - match: '(?=;)'
+      pop: true
+
+  data-structures-enum-definition-after-identifier:
+    - meta_content_scope: meta.enum.stone
+    - include: data-structures-definition-common-begin
+    # No matching of identifiers since they should all be macros at this point
+    - include: data-structures-definition-common-end
+    - match: '\{'
+      scope: meta.block.stone punctuation.section.block.begin.stone
+      set:
+        - meta_content_scope: meta.enum.stone meta.block.stone
+        # Enums don't support methods so we have a simplified body
+        - match: '\}'
+          scope: meta.enum.stone meta.block.stone punctuation.section.block.end.stone
+          pop: true
+        - include: statements-enum
+
+  data-structures-union-definition:
+    - meta_scope: meta.union.stone
+    - include: data-structures-definition-common-begin
+    - match: '{{identifier}}(?={{data_structures_forward_decl_lookahead}})'
+      scope: entity.name.union.forward-decl.stone
+      set: data-structures-union-definition-after-identifier
+    - match: '(?={{path_lookahead}})'
+      set:
+        - meta_scope: meta.union.stone
+        - match: '{{identifier}}(?!\s*::)'
+          scope: entity.name.union.stone
+          set: data-structures-union-definition-after-identifier
+        - include: identifiers
+        - match: '(?=[^\w\s])'
+          set: data-structures-union-definition-after-identifier
+    - match: '(?=[{])'
+      set: data-structures-union-definition-after-identifier
+    - match: '(?=;)'
+      pop: true
+
+  data-structures-union-definition-after-identifier:
+    - meta_content_scope: meta.union.stone
+    - include: data-structures-definition-common-begin
+    # No matching of identifiers since they should all be macros at this point
+    # Unions don't support base classes
+    - include: angle-brackets
+    - match: '\{'
+      scope: meta.block.stone punctuation.section.block.begin.stone
+      set:
+        - meta_content_scope: meta.union.stone meta.block.stone
+        - match: '\}'
+          scope: meta.union.stone meta.block.stone punctuation.section.block.end.stone
+          pop: true
+        - include: data-structures-body
+    - match: '(?=;)'
+      pop: true
+
+  data-structures-definition-common-begin:
+    - include: comments
+    - match: '(?=\b(?:{{before_tag}}|{{control_keywords}})\b)'
+      pop: true
+    - include: preprocessor-other
+    - include: modifiers-parens
+    - include: modifiers
+    - include: preprocessor-workaround-eat-macro-before-identifier
+
+  data-structures-definition-common-end:
+    - include: angle-brackets
+    - match: \bfinal\b
+      scope: storage.modifier.stone
+    - match: ':'
+      scope: punctuation.separator.stone
+      push:
+        - include: comments
+        - include: preprocessor-other
+        - include: modifiers-parens
+        - include: modifiers
+        - match: '\b(virtual|{{visibility_modifiers}})\b'
+          scope: storage.modifier.stone
+        - match: (?={{path_lookahead}})
+          push:
+            - meta_scope: entity.other.inherited-class.stone
+            - include: identifiers
+            - match: ''
+              pop: true
+        - include: angle-brackets
+        - match: ','
+          scope: punctuation.separator.stone
+        - match: (?=\{|;)
+          pop: true
+    - match: '(?=;)'
+      pop: true
+
+  data-structures-body:
+    - include: preprocessor-data-structures
+    - match: '(?=\bany\b)'
+      push:
+        - include: any
+        - match: (?=\S)
+          set: data-structures-modifier
+    - include: using-space
+    - include: typedef
+    - include: using-alias
+    - match: \b({{visibility_modifiers}})\s*(:)(?!:)
+      captures:
+        1: storage.modifier.stone
+        2: punctuation.section.class.stone
+    - match: '^\s*(?=(?:~?\w+|::))'
+      push: data-structures-modifier
+    - include: expressions-minus-generic-type
+
+  data-structures-modifier-friend:
+    - match: (?=;)
+      pop: true
+    - match: '\{'
+      scope: punctuation.section.block.begin.stone
+      set:
+        - meta_scope: meta.block.stone
+        - match: '\}'
+          scope: punctuation.section.block.end.stone
+          pop: true
+        - include: statements
+    - include: expressions-minus-function-call
+
+  data-structures-modifier:
+    - match: '\bfriend\b'
+      scope: storage.modifier.stone
+      push:
+        - include: comments
+        - match: '\b({{before_tag}})\b'
+          scope: keyword.declaration.stone
+          set: data-structures-modifier-friend
+        - match: '(?=\S)(?=[^;]+;)'
+          set: data-structures-modifier-friend
+        - match: '(?=\S)'
+          pop: true
+    - include: comments
+    - include: modifiers-parens
+    - include: modifiers
+    - match: '\bstatic_assert(?=\s*\()'
+      scope: meta.static-assert.stone keyword.operator.word.stone
+      push:
+        - match: '\('
+          scope: meta.group.stone punctuation.section.group.begin.stone
+          set:
+            - meta_content_scope: meta.function-call.stone meta.group.stone
+            - match: '\)'
+              scope: meta.function-call.stone meta.group.stone punctuation.section.group.end.stone
+              pop: true
+            - include: expressions
+    # Destructor
+    - match: '(?:{{identifier}}\s*(::)\s*)?~{{identifier}}(?=\s*(\(|$))'
+      scope: meta.method.destructor.stone entity.name.function.destructor.stone
+      captures:
+        1: punctuation.accessor.stone
+      set: method-definition-params
+    # It's a macro, not a constructor if there is no type in the first param
+    - match: '({{identifier}})\s*(\()(?=\s*(?!void){{identifier}}\s*[),])'
+      captures:
+        1: variable.function.stone
+        2: meta.group.stone punctuation.section.group.begin.stone
+      push:
+        - meta_scope: meta.function-call.stone
+        - meta_content_scope: meta.group.stone
+        - match: '\)'
+          scope: meta.group.stone punctuation.section.group.end.stone
+          pop: true
+        - include: expressions
+    # Constructor
+    - include: preprocessor-workaround-eat-macro-before-identifier
+    - match: '((?!{{before_tag}}|any){{identifier}})(?=\s*\()'
+      scope: meta.method.constructor.stone entity.name.function.constructor.stone
+      set: method-definition-params
+    # Long form constructor
+    - match: '({{identifier}}\s*(::)\s*{{identifier}})(?=\s*\()'
+      captures:
+        1: meta.method.constructor.stone entity.name.function.constructor.stone
+        2: punctuation.accessor.stone
+      push: method-definition-params
+    - match: '(?=\S)'
+      set: data-structures-type
+
+  data-structures-type:
+    - include: comments
+    - match: \*|&
+      scope: keyword.operator.stone
+      # Cast methods
+    - match: '(operator)\s+({{identifier}})(?=\s*(\(|$))'
+      captures:
+        1: keyword.control.stone
+        2: meta.method.stone entity.name.function.stone
+      set: method-definition-params
+    - match: '(?=\b({{control_keywords}}|{{operator_keywords}}|{{casts}}|{{memory_operators}}|{{other_keywords}}|operator)\b)'
+      pop: true
+    - match: '(?=\s)'
+      set: data-structures-maybe-method
+    # If a class/struct/enum followed by a name that is not a macro or declspec
+    # then this is likely a return type of a function. This is uncommon.
+    - match: |-
+        (?x:
+          ({{before_tag}})
+          \s+
+          (?=
+            (?![[:upper:][:digit:]_]+\b|__declspec|{{before_tag}})
+            {{path_lookahead}}
+            (\s+{{identifier}}\s*\(|\s*[*&])
+          )
+        )
+      captures:
+        1: keyword.declaration.stone
+      set:
+        - include: identifiers
+        - match: ''
+          set: data-structures-maybe-method
+    # The previous match handles return types of struct/enum/etc from a func,
+    # there this one exits the context to allow matching an actual struct/class
+    - match: '(?=\b({{before_tag}})\b)'
+      set: data-structures
+    - match: '(?=\b({{casts}})\b\s*<)'
+      pop: true
+    - match: '{{non_angle_brackets}}'
+      pop: true
+    - include: angle-brackets
+    - include: types
+    - include: variables
+    - include: constants
+    - include: identifiers
+    - match: (?=[&*])
+      set: data-structures-maybe-method
+    - match: (?=\W)
+      pop: true
+
+  data-structures-maybe-method:
+    - include: comments
+    # Consume pointer info, macros and any type info that was offset by macros
+    - match: \*|&
+      scope: keyword.operator.stone
+    - match: '(?=\b({{control_keywords}}|{{operator_keywords}}|{{casts}}|{{memory_operators}}|{{other_keywords}})\b)'
+      pop: true
+    - match: '\b({{type_qualifier}})\b'
+      scope: storage.modifier.stone
+    - match: '{{non_angle_brackets}}'
+      pop: true
+    - include: angle-brackets
+    - include: types
+    - include: modifiers-parens
+    - include: modifiers
+    # Operator overloading
+    - match: '{{operator_method_name}}(?=\s*(\(|$))'
+      scope: meta.method.stone entity.name.function.stone
+      set: method-definition-params
+    # Identifier that is not the function name - likely a macro or type
+    - match: '(?={{path_lookahead}}([ \t]+|[*&])(?!\s*(<|::|\()))'
+      push:
+        - include: identifiers
+        - match: ''
+          pop: true
+    # Real function definition
+    - match: '(?={{path_lookahead}}({{generic_lookahead}})\s*(\())'
+      set: [method-definition-params, data-structures-function-identifier-generic]
+    - match: '(?={{path_lookahead}}\s*(\())'
+      set: [method-definition-params, data-structures-function-identifier]
+    - match: '(?={{path_lookahead}}\s*::\s*$)'
+      set: [method-definition-params, data-structures-function-identifier]
+    - match: '(?=\S)'
+      pop: true
+
+  data-structures-function-identifier-generic:
+    - include: angle-brackets
+    - match: '(?={{identifier}})'
+      push:
+        - meta_content_scope: entity.name.function.stone
+        - include: identifiers
+        - match: '(?=<)'
+          pop: true
+    - match: '(?=\()'
+      pop: true
+
+  data-structures-function-identifier:
+    - meta_content_scope: entity.name.function.stone
+    - include: identifiers
+    - match: '(?=\S)'
+      pop: true
+
+  method-definition-params:
+    - meta_content_scope: meta.method.stone
+    - include: comments
+    - match: '(?=\()'
+      set:
+        - match: \(
+          scope: meta.method.parameters.stone meta.group.stone punctuation.section.group.begin.stone
+          set:
+            - meta_content_scope: meta.method.parameters.stone meta.group.stone
+            - match : \)
+              scope: punctuation.section.group.end.stone
+              set: method-definition-continue
+            - match: '\bvoid\b'
+              scope: storage.type.stone
+            - match: '{{identifier}}(?=\s*(\[|,|\)|=))'
+              scope: variable.parameter.stone
+            - match: '='
+              scope: keyword.operator.assignment.stone
+              push:
+                - match: '(?=,|\))'
+                  pop: true
+                - include: expressions-minus-generic-type
+            - include: expressions-minus-generic-type
+    - match: '(?=\S)'
+      pop: true
+
+  method-definition-continue:
+    - meta_content_scope: meta.method.stone
+    - include: comments
+    - match: '(?=;)'
+      pop: true
+    - match: '->'
+      scope: punctuation.separator.stone
+      set: method-definition-trailing-return
+    - include: function-specifiers
+    - match: '='
+      scope: keyword.operator.assignment.stone
+    - match: '&'
+      scope: keyword.operator.stone
+    - match: \b0\b
+      scope: meta.number.integer.decimal.stone constant.numeric.value.stone
+    - match: \b(default|delete)\b
+      scope: storage.modifier.stone
+    - match: '(?=:)'
+      set:
+        - match: ':'
+          scope: punctuation.separator.initializer-list.stone
+          set:
+            - meta_scope: meta.method.constructor.initializer-list.stone
+            - match: '{{identifier}}'
+              scope: variable.other.readwrite.member.stone
+              push:
+                - match: \(
+                  scope: meta.group.stone punctuation.section.group.begin.stone
+                  set:
+                    - meta_content_scope: meta.group.stone
+                    - match: \)
+                      scope: meta.group.stone punctuation.section.group.end.stone
+                      pop: true
+                    - include: expressions
+                - match: \{
+                  scope: meta.group.stone punctuation.section.group.begin.stone
+                  set:
+                    - meta_content_scope: meta.group.stone
+                    - match: \}
+                      scope: meta.group.stone punctuation.section.group.end.stone
+                      pop: true
+                    - include: expressions
+                - include: comments
+            - match: (?=\{|;)
+              set: method-definition-continue
+            - include: expressions
+    - match: '(?=\{)'
+      set: method-definition-body
+    - match: '(?=\S)'
+      pop: true
+
+  method-definition-trailing-return:
+    - include: comments
+    - match: '(?=;)'
+      pop: true
+    - match: '(?=\{)'
+      set: method-definition-body
+    - include: function-specifiers
+    - include: function-trailing-return-type
+
+  method-definition-body:
+    - meta_content_scope: meta.method.stone meta.block.stone
+    - match: '\{'
+      scope: punctuation.section.block.begin.stone
+      set:
+        - meta_content_scope: meta.method.stone meta.block.stone
+        - match: '\}'
+          scope: meta.method.stone meta.block.stone punctuation.section.block.end.stone
+          pop: true
+        - match: (?=^\s*#\s*(elif|else|endif)\b)
+          pop: true
+        - match: '(?=({{before_tag}})([^(;]+$|.*\{))'
+          push: data-structures
+        - include: statements
+
+ 

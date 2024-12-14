@@ -1,0 +1,22 @@
+
+
+public interface A0 {
+	fun Do() -> void;
+}
+
+public interface A1 {
+	fun Do() -> void;
+}
+
+public struct S1 : A1, A0 {
+
+}
+public fun S1::A0::Do() -> void {
+
+}
+
+public fun S1::A1::Do() -> void {
+	
+}
+
+

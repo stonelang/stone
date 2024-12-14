@@ -1,0 +1,35 @@
+#ifndef MODE
+#define MODE(M)
+#endif
+
+#ifndef COMPILER_MODE
+#define COMPILER_MODE(M) MODE(M)
+#endif
+
+#ifndef DRIVER_MODE
+#define DRIVER_MODE(M) MODE(M)
+#endif
+
+COMPILER_MODE(None)
+
+COMPILER_MODE(PrintHelp)
+COMPILER_MODE(PrintHelpHidden)
+COMPILER_MODE(PrintVersion)
+COMPILER_MODE(PrintFeature)
+COMPILER_MODE(Parse)
+COMPILER_MODE(EmitParse)
+COMPILER_MODE(ResolveImports)
+COMPILER_MODE(TypeCheck)
+COMPILER_MODE(EmitAST)
+COMPILER_MODE(EmitIR)   
+COMPILER_MODE(EmitBC)
+COMPILER_MODE(EmitObject)  
+COMPILER_MODE(EmitModule)   
+COMPILER_MODE(MergeModules)
+COMPILER_MODE(EmitAssembly)
+DRIVER_MODE(EmitLibrary)
+DRIVER_MODE(EmitExecutable)
+
+#undef MODE
+#undef COMPILER_MODE
+#undef DRIVER_MODE

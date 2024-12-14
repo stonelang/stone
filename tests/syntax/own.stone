@@ -1,0 +1,38 @@
+
+public struct S0 {
+
+}
+public struct S1 {
+	internal own S0* s0 = null; 
+}
+
+S1::S1(own S0* s) {
+	s0(move s); 
+}
+
+fun UseS1(S1* s) -> void {
+
+}
+fun TakeS1(own S1* s) -> void {
+	
+	S0 s0(move s); 
+
+}
+
+struct Quark {
+}
+fun Main() -> int {
+	// This will auto free 
+	own S0* s0 = new S0();
+
+	own S1* s1 = new S0(move s0); 
+
+	UseS1(s1);
+
+	Take(move s1);
+
+	// Behaves like std::unique_ptr 
+	own Quark* quark = new Quark(); 
+
+}
+	

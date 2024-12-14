@@ -1,0 +1,9 @@
+
+// pure => will not support interfaces 
+public struct S0 {
+}
+
+
+fun Main() -> int {
+	
+}

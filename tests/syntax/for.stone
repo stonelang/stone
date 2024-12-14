@@ -1,0 +1,9 @@
+	
+public fun F0() -> void {
+	for (int i = 0; i< 10; ++i) {
+	}
+	for  {
+		break; // Break out of the forever loop.
+	}
+}
+

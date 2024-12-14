@@ -1,0 +1,56 @@
+//===-- KnownIdentifiers.def - Known identifier metaprogramming -*- C++ -*-===//
+//
+// This source file is part of the Swift.org open source project
+//
+// Copyright (c) 2014 - 2017 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See https://swift.org/LICENSE.txt for license information
+// See https://swift.org/CONTRIBUTORS.txt for the list of Swift project authors
+//
+//===----------------------------------------------------------------------===//
+//
+// This file defines macros used for macro-metaprogramming with compiler-known
+// identifiers.
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef BUILTIN_IDENTIFIER_WITH_NAME
+#  error Must define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr) before including this x-macro file
+#endif
+
+#define BUILTIN_IDENTIFIER(name)  BUILTIN_IDENTIFIER_WITH_NAME(name, #name)
+#define BUILTIN_IDENTIFIER_(name) BUILTIN_IDENTIFIER_WITH_NAME(name, "_" #name)
+
+
+BUILTIN_IDENTIFIER(Main)
+BUILTIN_IDENTIFIER(for)
+BUILTIN_IDENTIFIER(move)
+BUILTIN_IDENTIFIER(own)
+
+BUILTIN_IDENTIFIER(Type)
+BUILTIN_IDENTIFIER(type)
+
+BUILTIN_IDENTIFIER(projected)
+BUILTIN_IDENTIFIER(private)
+BUILTIN_IDENTIFIER(public)
+
+BUILTIN_IDENTIFIER(next)
+BUILTIN_IDENTIFIER(error)
+BUILTIN_IDENTIFIER(Any)
+
+BUILTIN_IDENTIFIER(this)
+
+
+#undef BUILTIN_IDENTIFIER
+#undef BUILTIN_IDENTIFIER_
+#undef BUILTIN_IDENTIFIER_WITH_NAME
+
+
+
+
+
+
+
+
+

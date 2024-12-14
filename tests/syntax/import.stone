@@ -1,0 +1,28 @@
+
+
+// This will be added to a module System.Physics 
+// stone --emit-module System.Physics --module-source ~/Project/Source/System/Physics --import-module System.Core -output-dir ~/Project/Build/Debug/Bin  
+space QuantumMechanics;
+
+	public struct Accelerator {
+	}
+	fun Accelerator::Fire() -> bool {
+		return true; 
+	}
+
+// This will import the module Core.Physics.stonemodule and its types; 
+import Physics;
+
+fun Main() -> uint32 {	
+	// To get to Accelerator, we using the space it belongs to. 
+	QuantumMechanics.Accelerator* a = new QuantumMechanics.Accelerator();
+
+	defer {
+		if(a){
+			delete a; 
+		}
+	}
+	a.Fire();
+	return 0;
+}
+

@@ -1,0 +1,20 @@
+
+
+//default initialization: std::string s;
+//value initialization: std::string s{};
+//list initialization: std::string s{'d', 'e', 'm', 'o'};
+//aggregate initialization: char s[5] = {'d', 'e', 'm', 'o'};
+//reference initialization: char& c = s[0];
+
+struct S0 {
+}
+
+
+fun Main() -> i32 {
+	
+	S0 s0; 
+
+	S0 s1{};
+
+	S0 s2{1};
+}

@@ -1,0 +1,11 @@
+
+// Forward declaration -- only within a module for now
+internal forward fun Lanuch() -> bool; 
+
+public fun TryLaunch() -> bool {
+	auto result = Lanuch();
+}
+
+public fun Lanuch() -> void {
+}
+

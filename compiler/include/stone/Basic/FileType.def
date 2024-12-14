@@ -1,0 +1,24 @@
+#ifndef FILE_TYPE
+#error "Define FILE_TYPE prior to including this file!"
+#endif
+
+FILE_TYPE(Stone,  					"stone",				"stone")
+FILE_TYPE(Image, 					"image",        		"out")
+FILE_TYPE(Object,					"object",       		"o")
+FILE_TYPE(Assembly,					"assembly",	  			"s")
+FILE_TYPE(IR,						"llvm-ir",      		"ll")
+FILE_TYPE(BC,						"llvm-bc",      		"bc")
+FILE_TYPE(Dependencies, 			"dependencies",         "d")
+FILE_TYPE(SerializedDiagnostics,  	"diagnostics",    		"dia")
+FILE_TYPE(Autolink, 				"autolink",             "autolink")
+FILE_TYPE(StoneDeps, 				"stone-dependencies",   "stonedeps")
+FILE_TYPE(StoneModuleSummary,		"stonemodulesummary",   "stonemodulesummary")
+FILE_TYPE(StoneModuleInterface,		"stoneinterface", 	   	"stonetinterface")
+FILE_TYPE(StoneSourceInfo, 			"stonesourceinfo",      "stonesourceinfo")
+FILE_TYPE(StoneModuleFile,			"stonemodule",  		"stonemodule")
+FILE_TYPE(ImportedModules,			"imported-modules",     "importedmodules")
+FILE_TYPE(StoneModuleDoc,			"stonedoc",             "stonedoc")
+FILE_TYPE(TBD, 						"tbd",                  "tbd")
+FILE_TYPE(PCH,  					"pch",                  "pch")
+
+#undef FILE_TYPE

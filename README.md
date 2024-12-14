@@ -1,2 +1,1 @@
-# stone
-Compiler
+# Stone Compiler

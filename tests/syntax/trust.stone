@@ -1,0 +1,14 @@
+
+
+public struct S0 {
+	trust forward S1; 
+	private int data; 
+}
+
+public struct S1 {
+}
+
+public fun S1::DoSomething() -> void {
+	if(data == 0){
+	}
+}

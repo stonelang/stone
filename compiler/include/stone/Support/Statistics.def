@@ -1,0 +1,68 @@
+#ifdef DRIVER_STATISTIC
+/// Total number of jobs (compile, merge-modules, link, etc.) run by the
+/// driver.  This should be some number less than the total number of files in
+/// the module in primary-files mode, and will likely just be 1 or 2 in WMO
+/// mode.
+DRIVER_STATISTIC(NumDriverJobsRun)
+
+/// Total number of jobs (frontend, merge-modules, link, etc.) which _could_
+/// have been run by the driver, but that it decided to skip due to analysis of
+/// the dependency graph induced by .swiftdeps files. This, added together with
+/// the number of driver jobs run (above) should be relatively constant
+/// run-over-run.
+DRIVER_STATISTIC(NumDriverJobsSkipped)
+
+/// Total number of driver processes that exited with EXIT_FAILURE / not with
+/// EXIT_SUCCESS.
+DRIVER_STATISTIC(NumProcessFailures)
+
+/// Total number of driver poll() calls on subprocess pipes.
+DRIVER_STATISTIC(NumDriverPipePolls)
+
+/// Total number of driver read() calls on subprocess pipes.
+DRIVER_STATISTIC(NumDriverPipeReads)
+
+DRIVER_STATISTIC(ChildrenMaxRSS)
+
+
+#endif
+
+/// Driver statistics are collected for frontend processes
+#ifdef FRONTEND_STATISTIC
+
+/// Total number of frontend processes that exited with EXIT_FAILURE / not with
+/// EXIT_SUCCESS.
+FRONTEND_STATISTIC(Compile, NumProcessFailures)
+
+/// Total instructions-executed count in each frontend process.
+FRONTEND_STATISTIC(Compile, NumInstructionsExecuted)
+
+/// Maximum number of bytes allocated via malloc.
+FRONTEND_STATISTIC(Compile, MaxMallocUsage)
+
+/// Number of source buffers visible in the source manager.
+FRONTEND_STATISTIC(AST, NumSourceBuffers)
+
+/// Total number of lines of source code (just by counting newlines) in all the
+/// source buffers visible in the source manager. Crude proxy for "project
+/// size".
+FRONTEND_STATISTIC(AST, NumSourceLines)
+
+/// The NumSourceLines value of a frontend divided by the user-time of the
+/// frontend; stored and emitted separately so there's a precomputed value a
+/// user can grep-for to find a slow frontend.
+FRONTEND_STATISTIC(AST, NumSourceLinesPerSecond)
+
+/// Number of full function bodies parsed.
+FRONTEND_STATISTIC(Parse, NumSourceFilesParsed)
+
+/// Number of full function bodies parsed.
+FRONTEND_STATISTIC(Parse, NumFunctionsParsed)
+
+/// Number of tokens parsed
+FRONTEND_STATISTIC(Parse, NumTokensParsed)
+
+/// Number of declarations type checked.
+FRONTEND_STATISTIC(Sem, NumDeclsTypeChecked)
+
+#endif 

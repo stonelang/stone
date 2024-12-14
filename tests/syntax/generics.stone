@@ -1,0 +1,20 @@
+
+
+public interface Queue<T> {
+	fun Push(const T* t);
+	fun Pop() -> T*;
+}
+
+public struct PriorityQueue<T> : Queue<T> {
+	private T*[] entries; 
+}
+public PriorityQueue::PriorityQueue() {
+}
+public PriorityQueue::~PriorityQueue() {
+}
+
+public fun PriorityQueue::Push(const T* t) -> void {
+}
+
+public fun PriorityQueue::Pop() -> T* {
+}

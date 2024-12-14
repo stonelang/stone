@@ -1,0 +1,86 @@
+
+
+
+// Particle 
+public struct ParticleDetail {
+	public float32 mass; 
+	public string name; 
+}
+public interface Particle {
+	fun Fire() -> auto;  
+}	
+public struct Proton : Particle {
+	ParticleDetail* particleDetail = null;
+}
+
+public Proton::Proton(const ParticleDetail* particleDetail) {
+		this.particleDetail = particleDetail; 
+ }
+public Proton::~Proton() {
+	if(particleDetail){
+		delete particleDetail; 
+
+	}
+}
+public fun Proton::GetParticleDetail() -> ParticleDetail* {
+	return particleDetail;  
+}
+public fun Proton::Fire() -> auto {
+	int* result = null;
+	if(profile.mass > 10.00) {
+	}
+	return true;
+}
+
+
+// You may want to consider:
+
+// code/Physics/Particle.stone
+//module Stone.Physics.Particle (one-to-one relation to Particle.SetShowDiagnosticsAfterFatalError)
+
+
+public fun Fire(Particle* particle) -> bool {
+	if(particle == null) {
+		Panic("Could not create 'Particle'");
+	}
+	return false; 
+}
+
+module Main; 
+using Stone.Physics.Particle; 
+
+public fun Main() -> int32 {	
+	auto particle = new Particle();
+	Fire(particle);
+	delete particle; 
+	return 0; 
+}
+
+// code/Particle.stone
+module Physics.Particle 
+
+public fun Fire(Particle* particle) -> bool {
+	if(particle == null) {
+		Panic("Could not create 'Particle'");
+	}
+	return false; 
+}
+
+
+// code/Main.stone
+module Main; 
+using Stone.Physics.Particle; 
+
+public fun Main() -> int32 {	
+
+	ParticleDetail* particleDetail = new ParticleDetail();
+	Proton* proton = new Proton(particleDetail);
+
+	Fire(proton);
+	defer {
+		delete proton; 
+	}; 
+
+	return 0; 
+}
+

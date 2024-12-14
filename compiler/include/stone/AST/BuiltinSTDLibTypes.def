@@ -1,0 +1,33 @@
+//===--- KnownStdlibTypes.def - Common standard library types ---*- C++ -*-===//
+//
+// This source file is part of the Swift.org open source project
+//
+// Copyright (c) 2014 - 2017 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See https://swift.org/LICENSE.txt for license information
+// See https://swift.org/CONTRIBUTORS.txt for the list of Swift project authors
+//
+//===----------------------------------------------------------------------===//
+//
+//  This xmacro generates code for common standard library types the compiler
+//  has special knowledge of.
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef LANG_STDLIB_TYPE_DECL
+/// LANG_STDLIB_TYPE_DECL(NAME, DECL_CLASS, NUM_GENERIC_PARAMS)
+///
+/// The macro is expanded for each known standard library type. NAME is
+/// bound to the unqualified name of the type. DECL_CLASS is bound to the
+/// Decl subclass it is expected to be an instance of. NUM_GENERIC_PARAMS is
+/// bound to the number of generic parameters the type is expected to have.
+#define LANG_STDLIB_TYPE_DECL(NAME, DECL_CLASS, NUM_GENERIC_PARAMS)
+#endif
+
+LANG_STDLIB_TYPE_DECL(Bool, NominalTypeDecl, 0)
+LANG_STDLIB_TYPE_DECL(String, NominalTypeDecl, 0)
+LANG_STDLIB_TYPE_DECL(Array, NominalTypeDecl, 1)
+LANG_STDLIB_TYPE_DECL(Set, NominalTypeDecl, 1)
+
+#undef LANG_STDLIB_TYPE_DECL

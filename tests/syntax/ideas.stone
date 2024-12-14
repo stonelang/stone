@@ -1,0 +1,171 @@
+
+space Physics.QM {
+	public struct Particle {
+		public bool fired = false; 
+	}
+	public interface Accelerator<T> {
+		fun Fire(const Particle* p) -> bool;
+	}
+	public struct LinearAccelerator : Accelerator<LinearAccelerator> {
+		private string maker; 
+		Detector* detector = null;
+	}
+
+	LinearAcceleartor::LinearAcceleartor() {
+		LinearAcceleartor("none");
+		detector = new Detector(); 
+	}
+	LinearAcceleartor::LinearAcceleartor(string maker) {
+	}
+	LinearAcceleartor:::~LinearAcceleartor() {	
+		if(detector){
+			delete detector;
+		}
+	}
+	public fun LinearAcellerator::Fire(const Particle* p) -> bool {
+		p.fired = true; 
+		return true; 
+	}
+	using max = fun(int first, int second) -> int;
+
+}
+public struct Detector {
+}
+public struct Particle {
+		public bool fired = false; 
+}
+public interface Accelerator<T> {
+	fun Fire(const Particle* p) -> bool;
+}
+public struct LinearAccelerator : Accelerator<LinearAccelerator> {
+	private string maker; 
+	Detector* detector = null;
+}
+LinearAcceleartor::this() : Init("none") {
+}
+LinearAcceleartor::this(string maker) {
+	this.maker = maker; 
+	detector = new Detector(); {
+}
+LinearAcceleartor::~this() {	
+	if(detector){
+		delete detector;
+	}
+}
+fun Main() -> i32 {
+
+		Particle p = new Particle();
+		auto a = new LinearAcceleartor(); 
+		a.Fire(a);
+
+		delete p; 
+		delete a;
+		// auto Fire = fun() -> Particle* {
+		// 	auto p = new Particle();
+		// 	p.Fire(); 
+		// }
+}
+
+/// Forwarding maybe of great value 
+
+public forward struct Projectile; 
+public forward fun Launch(const Projectile* projectile) -> bool; 
+
+fun Main() -> int {
+	Projectile p = new Projectile();
+	Launch(p);
+	delete p; 
+}
+public struct Projectile {
+
+}
+public fun Launch(const Projectile* projectile) -> bool {
+
+}
+
+
+/// Hmm... thinking outside of the box 
+// public struct Projectile {
+// 	float64 mass; 
+// }
+// public interface Launcher {
+// 	fun Launch(Projectile* projectile) -> bool; 
+// }
+// public class ProjectileLauncher : Launcher {
+// 	// No data members 
+// 	public fun Launch(Projectile* projectile){
+// 	}
+// }
+
+
+//= Forwarding =// 
+public struct Quark {
+
+}
+
+public forward fun Quark::Initialize() -> void; 
+
+public Quark::Quark() {
+	Initialize();
+}
+
+public fun Quark::Initialize() -> void {
+
+}
+
+//=Modules=// 
+
+// code/
+// 	Stone/
+// 		Syntax/
+// 			Space.stone 
+// 			Decl.stone
+// 			Expr.stone
+// 			Syntax.stone
+
+
+// Decl.stone 
+// module Stone::Syntax::Declaration {
+// 	enum DeclBits {
+
+// 	}
+// 	public struct Decl {
+// 	}
+// }
+// // Expr.stone
+// module Stone::Syntax::Expression {
+
+// 	enum DeclBits {
+// 	}
+// 	public struct Decl {
+// 	}
+
+// }
+// // Syntax.stone
+// use Stone::Syntax::Declaration;
+// use Stone::Syntax::Expression;
+
+// module Stone::Syntax::Syntax {
+// 	enum DeclBits {
+// 	}
+// 	public struct Decl {
+// 	}
+// }
+
+// // OR Just
+
+// // Decl.stone 
+// module Stone::Syntax::Decl;
+
+// public struct Decl {
+// }
+
+
+// // Decl.stone 
+// module Stone.Syntax.Decl;
+
+// space Node {
+// 	public struct Decl {
+// 	}
+
+// }
