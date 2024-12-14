@@ -100,33 +100,33 @@ public:
   static bool classof(const Step *step) { return step->IsInput(); }
 };
 
-// class JobStep : public Step {
+class JobStep : public Step {
 
-// protected:
-//   JobStep(StepKind kind, Step *input, FileType fileType);
-//   JobStep(StepKind kind, const Steps &inputs, FileType fileType);
+protected:
+  JobStep(StepKind kind, Step *input, FileType fileType);
+  JobStep(StepKind kind, const Steps &inputs, FileType fileType);
 
-// public:
-//   static bool classof(const Step *step) {
-//     switch (step->GetKind()) {
-//     case StepKind::Compile:
-//     case StepKind::Backend:
-//     case StepKind::GeneratePCH:
-//     case StepKind::MergeModule:
-//     case StepKind::ModuleWrap:
-//     case StepKind::DynamicLink:
-//     case StepKind::StaticLink:
-//     case StepKind::Interpret:
-//     case SteKind::AutolinkExtract:
-//       return return true;
-//     case StepKind::Input:
-//       return false;
-//     }
-//     llvm_unreachable("Unknown step");
-//   }
-// };
+public:
+  static bool classof(const Step *step) {
+    switch (step->GetKind()) {
+    case StepKind::Compile:
+    case StepKind::Backend:
+    case StepKind::GeneratePCH:
+    case StepKind::MergeModule:
+    case StepKind::ModuleWrap:
+    case StepKind::DynamicLink:
+    case StepKind::StaticLink:
+    case StepKind::Interpret:
+    case StepKind::AutolinkExtract:
+      return true;
+    case StepKind::Input:
+      return false;
+    }
+    llvm_unreachable("Unknown step");
+  }
+};
 
-class CompileStep final : public Step {
+class CompileStep final : public JobStep {
 
 public:
   /// In this scenario, one compile job with all inputs to be added.
@@ -144,7 +144,7 @@ public:
   static bool classof(const Step *step) { return step->IsCompile(); }
 };
 
-class BackendStep : public Step {
+class BackendStep : public JobStep {
 
   // For multi-threaded compilations, the CompileStep produces multiple
   // output bitcode-files. For each bitcode-file a BackendStep is created.
@@ -160,7 +160,7 @@ public:
   static bool classof(const Step *step) { return step->IsBackend(); }
 };
 
-class MergeModuleStep : public Step {
+class MergeModuleStep : public JobStep {
 
 public:
   MergeModuleStep(Steps inputs);
@@ -183,7 +183,7 @@ enum class LinkMode : uint8_t {
   // -satic -> test.a'
   StaticLibrary
 };
-class DynamicLinkStep final : public Step {
+class DynamicLinkStep final : public JobStep {
 
   bool withLTO;
   LinkMode linkMode;
@@ -199,7 +199,7 @@ public:
                                  LinkMode linkMode, bool withLTO = false);
   static bool classof(const Step *step) { return step->IsDynamicLink(); }
 };
-class StaticLinkStep final : public Step {
+class StaticLinkStep final : public JobStep {
   LinkMode linkMode;
 
 public:

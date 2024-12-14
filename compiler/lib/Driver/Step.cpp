@@ -20,17 +20,17 @@ Step::Step(StepKind kind, Step *input)
 Step::Step(StepKind kind, const Steps &inputs, FileType fileType)
     : kind(kind), fileType(fileType), allInputs(inputs) {}
 
-// JobStep::JobStep(StepKind kind, Step *input, FileType fileType)
-//     : Step(kind, input, fileType) {}
+JobStep::JobStep(StepKind kind, Step *input, FileType fileType)
+    : Step(kind, input, fileType) {}
 
-// JobStep::JobStep(StepKind kind, const Steps &inputs, FileType fileType)
-//     : Step(kind, inputs, fileType) {}
+JobStep::JobStep(StepKind kind, const Steps &inputs, FileType fileType)
+    : Step(kind, inputs, fileType) {}
 
 CompileStep::CompileStep(FileType outputFileType)
-    : Step(StepKind::Compile, Steps(), outputFileType) {}
+    : JobStep(StepKind::Compile, Steps(), outputFileType) {}
 
 CompileStep::CompileStep(Step *input, FileType outputFileType)
-    : Step(StepKind::Compile, input, outputFileType) {}
+    : JobStep(StepKind::Compile, input, outputFileType) {}
 
 CompileStep *CompileStep::Create(Driver &driver, FileType outputFileType) {
 
@@ -45,7 +45,8 @@ CompileStep *CompileStep::Create(Driver &driver, Step *input,
 
 BackendStep::BackendStep(Step *input, FileType outputFileType,
                          size_t inputIndex)
-    : Step(StepKind::Backend, input, outputFileType), inputIndex(inputIndex) {}
+    : JobStep(StepKind::Backend, input, outputFileType),
+      inputIndex(inputIndex) {}
 
 BackendStep *BackendStep::Create(Driver &driver, Step *input,
                                  FileType outputFileType, size_t inputIndex) {
@@ -54,7 +55,7 @@ BackendStep *BackendStep::Create(Driver &driver, Step *input,
 }
 
 MergeModuleStep::MergeModuleStep(Steps inputs)
-    : Step(StepKind::MergeModule, inputs, FileType::StoneModuleFile) {}
+    : JobStep(StepKind::MergeModule, inputs, FileType::StoneModuleFile) {}
 
 MergeModuleStep *MergeModuleStep::Create(Driver &driver, Steps inputs) {
 
@@ -62,7 +63,7 @@ MergeModuleStep *MergeModuleStep::Create(Driver &driver, Steps inputs) {
 }
 
 StaticLinkStep::StaticLinkStep(Steps inputs, LinkMode linkMode)
-    : Step(StepKind::StaticLink, inputs, FileType::Image) {
+    : JobStep(StepKind::StaticLink, inputs, FileType::Image) {
   assert(linkMode == LinkMode::StaticLibrary);
 }
 
@@ -73,8 +74,8 @@ StaticLinkStep *StaticLinkStep::Create(Driver &driver, Steps inputs,
 }
 
 DynamicLinkStep::DynamicLinkStep(Steps inputs, LinkMode linkMode, bool withLTO)
-    : Step(StepKind::DynamicLink, inputs, FileType::Image), linkMode(linkMode),
-      withLTO(withLTO) {
+    : JobStep(StepKind::DynamicLink, inputs, FileType::Image),
+      linkMode(linkMode), withLTO(withLTO) {
 
   assert((linkMode != LinkMode::None) && (linkMode != LinkMode::StaticLibrary));
 }
