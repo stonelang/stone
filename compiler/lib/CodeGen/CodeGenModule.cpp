@@ -3,7 +3,6 @@
 
 using namespace stone;
 
-
 CodeGenModule::CodeGenModule(
     CodeGen &codeGen, SourceFile *sourceFile,
     ModuleNameAndOuptFileName moduleNameAndOuptFileName)

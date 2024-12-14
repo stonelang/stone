@@ -31,7 +31,6 @@ class CodeGenModule;
 class CodeGenFunction;
 class FunctionDecl;
 
-
 class CodeGenConstant final {
 public:
   CodeGenModule &cgm;

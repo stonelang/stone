@@ -1,5 +1,7 @@
  set(stone_drive_sources
 
+  CompilationEntity.cpp
+  Driver.cpp
   Main.cpp
 
   LINK_LIBS

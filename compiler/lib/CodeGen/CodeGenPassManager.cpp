@@ -1,6 +1,5 @@
 #include "stone/CodeGen/CodeGenPassManager.h"
 
-
 using namespace stone;
 
 CodeGenPassManager::CodeGenPassManager(const CodeGenOptions &codeGenOpts,
