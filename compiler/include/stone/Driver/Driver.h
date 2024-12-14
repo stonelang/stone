@@ -32,11 +32,11 @@ class Driver final {
 public:
   llvm::BumpPtrAllocator &GetAllocator() { return allocator; }
   /// Allocate - Allocate memory from the Driver bump pointer.
-  void *Allocate(unsigned long bytes, unsigned alignment = 8) {
+  void *Allocate(unsigned long bytes, unsigned alignment = 8) const {
     if (bytes == 0) {
       return nullptr;
     }
-    return GetAllocator().Allocate(bytes, alignment);
+    return allocator.Allocate(bytes, alignment);
   }
 };
 

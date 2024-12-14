@@ -1,6 +1,6 @@
  set(stone_drive_sources
 
-  CompilationEntity.cpp
+  Action.cpp
   Driver.cpp
   Main.cpp
 

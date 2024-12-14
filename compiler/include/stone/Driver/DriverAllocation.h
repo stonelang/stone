@@ -4,7 +4,7 @@
 #include "llvm/Support/Allocator.h"
 
 namespace stone {
-
+class Driver;
 template <typename T> class DriverAllocation {
 public:
   /// Disable non-placement new.
