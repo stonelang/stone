@@ -21,8 +21,7 @@ enum class StepKind : uint8_t {
   GeneratePCH,
   MergeModule,
   ModuleWrap,
-  DynamicLink,
-  StaticLink,
+  Link,
   Interpret,
   AutolinkExtract,
 };
@@ -76,8 +75,8 @@ public:
   bool IsGeneratePCH() const { return GetKind() == StepKind::GeneratePCH; }
   bool IsMergeModule() const { return GetKind() == StepKind::MergeModule; }
   bool IsModuleWrap() const { return GetKind() == StepKind::ModuleWrap; }
-  bool IsDynamicLink() const { return GetKind() == StepKind::DynamicLink; }
-  bool IsStaticLink() const { return GetKind() == StepKind::StaticLink; }
+  bool IsLink() const { return GetKind() == StepKind::Link; }
+
   bool IsInterpret() const { return GetKind() == StepKind::Interpret; }
   bool IsAutolinkExtract() const {
     return GetKind() == StepKind::AutolinkExtract;
@@ -157,7 +156,7 @@ public:
   static MergeModuleStep *Create(Driver &driver, Steps inputs);
   static bool classof(const Step *step) { return step->IsMergeModule(); }
 };
-enum class LinkMode : uint8_t {
+enum class LinkType : uint8_t {
   // We are not linking
   None = 0,
   // The default output compiling -- sc looks afor a main file and
@@ -171,35 +170,32 @@ enum class LinkMode : uint8_t {
   // -satic -> test.a'
   StaticLibrary
 };
-class DynamicLinkStep final : public JobStep {
+class LinkStep final : public JobStep {
 
   bool withLTO;
-  LinkMode linkMode;
+  LinkType linkType;
 
 public:
-  DynamicLinkStep(Steps inputs, LinkMode linkMode, bool withLTO = false);
+  LinkStep(Steps inputs, LinkType linkType, bool withLTO = false);
 
 public:
   bool WithLTO() const { return withLTO; }
 
-public:
-  static DynamicLinkStep *Create(Driver &driver, Steps inputs,
-                                 LinkMode linkMode, bool withLTO = false);
-  static bool classof(const Step *step) { return step->IsDynamicLink(); }
-};
-class StaticLinkStep final : public JobStep {
-  LinkMode linkMode;
+  LinkType GetLinkType() const { return linkType; }
+
+  bool IsDynamicLibrary() const {
+    return GetLinkType() == LinkType::DynamicLibrary;
+  }
+  bool IsStaticLibrary() const {
+    return GetLinkType() == LinkType::StaticLibrary;
+  }
+  bool IsExecutable() const { return GetLinkType() == LinkType::Executable; }
 
 public:
-  StaticLinkStep(Steps inputs, LinkMode linkMode);
+  static LinkStep *Create(Driver &driver, Steps inputs, LinkType linkType,
+                          bool withLTO = false);
 
-public:
-  LinkMode GetLinkMode() { return linkMode; }
-
-public:
-  static StaticLinkStep *Create(Driver &driver, Steps inputs,
-                                LinkMode linkMode);
-  static bool classof(const Step *step) { return step->IsStaticLink(); }
+  static bool classof(const Step *step) { return step->IsLink(); }
 };
 
 } // namespace stone

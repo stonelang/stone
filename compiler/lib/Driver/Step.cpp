@@ -20,8 +20,7 @@ bool Step::IsJobStep(StepKind kind) {
   case StepKind::GeneratePCH:
   case StepKind::MergeModule:
   case StepKind::ModuleWrap:
-  case StepKind::DynamicLink:
-  case StepKind::StaticLink:
+  case StepKind::Link:
   case StepKind::Interpret:
   case StepKind::AutolinkExtract:
     return true;
@@ -80,26 +79,15 @@ MergeModuleStep *MergeModuleStep::Create(Driver &driver, Steps inputs) {
   return new (driver) MergeModuleStep(inputs);
 }
 
-StaticLinkStep::StaticLinkStep(Steps inputs, LinkMode linkMode)
-    : JobStep(StepKind::StaticLink, inputs, FileType::Image) {
-  assert(linkMode == LinkMode::StaticLibrary);
+LinkStep::LinkStep(Steps inputs, LinkType linkType, bool withLTO)
+    : JobStep(StepKind::Link, inputs, FileType::Image), linkType(linkType),
+      withLTO(withLTO) {
+
+  assert((linkType != LinkType::None));
 }
 
-StaticLinkStep *StaticLinkStep::Create(Driver &driver, Steps inputs,
-                                       LinkMode linkMode) {
+LinkStep *LinkStep::Create(Driver &driver, Steps inputs, LinkType linkType,
+                           bool withLTO) {
 
-  return new (driver) StaticLinkStep(inputs, linkMode);
-}
-
-DynamicLinkStep::DynamicLinkStep(Steps inputs, LinkMode linkMode, bool withLTO)
-    : JobStep(StepKind::DynamicLink, inputs, FileType::Image),
-      linkMode(linkMode), withLTO(withLTO) {
-
-  assert((linkMode != LinkMode::None) && (linkMode != LinkMode::StaticLibrary));
-}
-
-DynamicLinkStep *DynamicLinkStep::Create(Driver &driver, Steps inputs,
-                                         LinkMode linkMode, bool withLTO) {
-
-  return new (driver) DynamicLinkStep(inputs, linkMode, withLTO);
+  return new (driver) LinkStep(inputs, linkType, withLTO);
 }

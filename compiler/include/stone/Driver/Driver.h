@@ -33,7 +33,7 @@ class Driver final {
   mutable llvm::BumpPtrAllocator allocator;
 
 public:
-  Step GetFinalStep(DriverActionKind kind);
+  StepKind GetFinalStepKind(DriverActionKind kind);
 
 public:
   llvm::BumpPtrAllocator &GetAllocator() { return allocator; }

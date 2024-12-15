@@ -9,6 +9,7 @@ set( LLVM_LINK_COMPONENTS
   Option
  )
 set(stone_support_sources
+  InputFile.cpp
   Statistics.cpp
   Options.cpp
 
