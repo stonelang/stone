@@ -57,7 +57,6 @@ using namespace stone;
 
 namespace stone {
 
-
 class CodeGenBackend final {
 
   CodeGenBackend() = delete;
@@ -73,9 +72,7 @@ public:
                        StringRef OutputFilename, StatsReporter *Stats);
 
   static bool WriteFile();
-
 };
-
 
 bool EmitBackendOutput(const CodeGenOptions &Opts, ASTContext &Ctx,
                        llvm::Module *Module, StringRef OutputFilename);

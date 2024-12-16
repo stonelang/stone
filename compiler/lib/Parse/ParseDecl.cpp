@@ -159,7 +159,11 @@ ParserResult<FunDecl> Parser::ParseFunDecl(ParsingDeclSpec &spec) {
 ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec,
                                             Identifier identifierName) {
 
-  assert(spec.HasParsingTypeSpec() && "ParseDecl requires a type-spec");
+  assert(spec.HasParsingTypeSpec() &&
+         "ParseFunctionSignature requires a type-spec");
+  assert(spec.GetParsingTypeSpec()->IsFunction() &&
+         "ParseFunctionSignature type-pec is not function");
+
   auto parsingFunTypeSpec = spec.GetParsingFunTypeSpec();
 
   // ParserStatus status;

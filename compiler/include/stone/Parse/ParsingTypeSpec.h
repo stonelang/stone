@@ -164,16 +164,24 @@ public:
   ParsingTypeSpecKind GetKind() const { return kind; }
 
   //\return true if the type is FunType
-  bool IsBuiltin() const;
+  bool IsBuiltin() const { return GetKind() == ParsingTypeSpecKind::Builtin; }
 
   //\return true if the type is FunType
-  bool IsFunction() const;
+  bool IsFunction() const { return GetKind() == ParsingTypeSpecKind::Function; }
+
+  //\return true if the type is enum type
+  bool IsEnum() const { return GetKind() == ParsingTypeSpecKind::Enum; }
 
   //\return true if the type is struct type
-  bool IsStruct() const;
+  bool IsStruct() const { return GetKind() == ParsingTypeSpecKind::Struct; }
+
+  //\return true if the type is class type
+  bool IsClass() const { return GetKind() == ParsingTypeSpecKind::Class; }
 
   //\return true if the type is an identifier type
-  bool IsIdentifier() const;
+  bool IsIdentifier() const {
+    return GetKind() == ParsingTypeSpecKind::Identifier;
+  }
 
 public:
   const ParsingTypeChunk *GetInnermostParsingTypeChunk(
