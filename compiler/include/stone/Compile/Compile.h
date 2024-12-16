@@ -53,32 +53,32 @@ bool PerformTypeCheck(CompilerInstance &instance, SourceFile &sourceFile);
 bool PerformEmitAST(CompilerInstance &instance);
 
 // \return true if the code generation was successfull
-bool PerformCodeGeneration(CompilerInstance &instance);
+bool PerformEmitCode(CompilerInstance &instance);
 
 // \return true if the code generation was successfull
-bool PerformCodeGeneration(CompilerInstance &instance,
-                           ModuleDeclOrModuleFile moduleOrFile,
-                           const PrimaryFileSpecificPaths &sps);
+bool PerformEmitCode(CompilerInstance &instance,
+                     ModuleDeclOrModuleFile moduleOrFile,
+                     const PrimaryFileSpecificPaths &sps);
 
 // \return llvm::Module if IR generation is successful
-CodeGenResult PerformIRGeneration(CompilerInstance &instance,
-                                  SourceFile *sourceFile,
-                                  llvm::StringRef moduleName,
-                                  const PrimaryFileSpecificPaths &sps,
-                                  llvm::GlobalVariable *&globalHash);
+CodeGenResult PerformCodeGenIR(CompilerInstance &instance,
+                               SourceFile *sourceFile,
+                               llvm::StringRef moduleName,
+                               const PrimaryFileSpecificPaths &sps,
+                               llvm::GlobalVariable *&globalHash);
 
 ///\return the generated module
-CodeGenResult PerformIRGeneration(CompilerInstance &instance,
-                                  ModuleDecl *moduleDecl,
-                                  llvm::StringRef moduleName,
-                                  const PrimaryFileSpecificPaths &sps,
-                                  ArrayRef<std::string> parallelOutputFilenames,
-                                  llvm::GlobalVariable *&globalHash);
+CodeGenResult PerformCodeGenIR(CompilerInstance &instance,
+                               ModuleDecl *moduleDecl,
+                               llvm::StringRef moduleName,
+                               const PrimaryFileSpecificPaths &sps,
+                               ArrayRef<std::string> parallelOutputFilenames,
+                               llvm::GlobalVariable *&globalHash);
 
 // \return true if syntax analysis is successful
-bool PerformBackendOutput(CompilerInstance &instance,
-                          llvm::StringRef outputFilename, llvm::Module *module,
-                          llvm::GlobalVariable *&globalHash);
+bool PerformCodeGenBackend(CompilerInstance &instance,
+                           llvm::StringRef outputFilename, llvm::Module *module,
+                           llvm::GlobalVariable *&globalHash);
 
 ///\return the IRTargetOptions
 IRTargetOptions GetIRTargetOptions(const CodeGenOptions &codeGenOpts,

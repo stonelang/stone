@@ -126,7 +126,7 @@ bool stone::PerformCompile(CompilerInstance &instance,
   if (!stone::PerformCompile(instance, CompilerActionKind::TypeCheck)) {
     return false;
   }
-  return stone::PerformCodeGeneration(instance);
+  return stone::PerformEmitCode(instance);
 }
 
 bool stone::PerformParse(CompilerInstance &instance) {
@@ -191,15 +191,14 @@ bool stone::PerformTypeCheck(CompilerInstance &instance,
 }
 
 // \return true if the code generation was successfull
-bool stone::PerformCodeGeneration(CompilerInstance &instance) {
+bool stone::PerformEmitCode(CompilerInstance &instance) {
 
   if (instance.IsCompileForWholeModule()) {
     // Perform whole modufle
     const PrimaryFileSpecificPaths psps =
         instance.GetInvocation()
             .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-    return stone::PerformCodeGeneration(instance, instance.GetMainModule(),
-                                        psps);
+    return stone::PerformEmitCode(instance, instance.GetMainModule(), psps);
   }
 
   if (instance.IsCompileForSourceFile()) {
@@ -211,7 +210,7 @@ bool stone::PerformCodeGeneration(CompilerInstance &instance) {
               primarySourceFile);
 
       // Perform post semantic analysis on each primary file.
-      success |= stone::PerformCodeGeneration(
+      success |= stone::PerformEmitCode(
           instance, instance.CastToModuleFile(&primarySourceFile), psps);
     });
     return success;
@@ -223,9 +222,9 @@ bool stone::PerformCodeGeneration(CompilerInstance &instance) {
 bool stone::PerformEmitAST(CompilerInstance &instance) { return false; }
 
 // \return true if the code generation was successfull
-bool stone::PerformCodeGeneration(CompilerInstance &instance,
-                                  ModuleDeclOrModuleFile moduleOrFile,
-                                  const PrimaryFileSpecificPaths &sps) {
+bool stone::PerformEmitCode(CompilerInstance &instance,
+                            ModuleDeclOrModuleFile moduleOrFile,
+                            const PrimaryFileSpecificPaths &sps) {
 
   llvm::GlobalVariable *globalHash;
   llvm::StringRef outputFilename = sps.outputFilename;
@@ -234,8 +233,8 @@ bool stone::PerformCodeGeneration(CompilerInstance &instance,
     if (auto *primarySourceFile = llvm::dyn_cast_or_null<SourceFile>(
             moduleOrFile.dyn_cast<ModuleFile *>())) {
 
-      return stone::PerformIRGeneration(instance, primarySourceFile,
-                                        outputFilename, sps, globalHash);
+      return stone::PerformCodeGenIR(instance, primarySourceFile,
+                                     outputFilename, sps, globalHash);
     }
 
     std::vector<std::string> parallelOutputFilenames =
@@ -243,7 +242,7 @@ bool stone::PerformCodeGeneration(CompilerInstance &instance,
             .GetCompilerOptions()
             .inputsAndOutputs.CopyOutputFilenames();
 
-    return stone::PerformIRGeneration(
+    return stone::PerformCodeGenIR(
         instance, moduleOrFile.dyn_cast<ModuleDecl *>(), outputFilename, sps,
         parallelOutputFilenames, globalHash);
   }();
@@ -252,16 +251,16 @@ bool stone::PerformCodeGeneration(CompilerInstance &instance,
     return true;
   }
 
-  return stone::PerformBackendOutput(instance, outputFilename,
-                                     codeGenResult.GetLLVMModule(), globalHash);
+  return stone::PerformCodeGenBackend(
+      instance, outputFilename, codeGenResult.GetLLVMModule(), globalHash);
 }
 
 // \return llvm::Module if IR generation is successful
-CodeGenResult stone::PerformIRGeneration(CompilerInstance &instance,
-                                         SourceFile *primarySourceFile,
-                                         llvm::StringRef moduleName,
-                                         const PrimaryFileSpecificPaths &sps,
-                                         llvm::GlobalVariable *&globalHash) {
+CodeGenResult stone::PerformCodeGenIR(CompilerInstance &instance,
+                                      SourceFile *primarySourceFile,
+                                      llvm::StringRef moduleName,
+                                      const PrimaryFileSpecificPaths &sps,
+                                      llvm::GlobalVariable *&globalHash) {
 
   assert(
       primarySourceFile->HasTypeChecked() &&
@@ -284,11 +283,11 @@ CodeGenResult stone::PerformIRGeneration(CompilerInstance &instance,
 
 ///\return the generated module
 CodeGenResult
-stone::PerformIRGeneration(CompilerInstance &instance, ModuleDecl *moduleDecl,
-                           llvm::StringRef moduleName,
-                           const PrimaryFileSpecificPaths &sps,
-                           ArrayRef<std::string> parallelOutputFilenames,
-                           llvm::GlobalVariable *&globalHash) {
+stone::PerformCodeGenIR(CompilerInstance &instance, ModuleDecl *moduleDecl,
+                        llvm::StringRef moduleName,
+                        const PrimaryFileSpecificPaths &sps,
+                        ArrayRef<std::string> parallelOutputFilenames,
+                        llvm::GlobalVariable *&globalHash) {
 
   CodeGen codeGen(instance.GetInvocation().GetCodeGenOptions(),
                   instance.GetASTContext());
@@ -298,10 +297,10 @@ stone::PerformIRGeneration(CompilerInstance &instance, ModuleDecl *moduleDecl,
 }
 
 // \return true if syntax analysis is successful
-bool stone::PerformBackendOutput(CompilerInstance &instance,
-                                 llvm::StringRef outputFilename,
-                                 llvm::Module *irModule,
-                                 llvm::GlobalVariable *&globalHash) {
+bool stone::PerformCodeGenBackend(CompilerInstance &instance,
+                                  llvm::StringRef outputFilename,
+                                  llvm::Module *irModule,
+                                  llvm::GlobalVariable *&globalHash) {
 
   return stone::EmitBackendOutput(instance.GetInvocation().GetCodeGenOptions(),
                                   instance.GetASTContext(), irModule,
