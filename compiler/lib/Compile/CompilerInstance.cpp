@@ -4,6 +4,7 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Compile/Compile.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerObservation.h"
@@ -32,6 +33,8 @@ bool CompilerInstance::Setup() {
   SetupStats();
   return true;
 }
+
+bool CompilerInstance::Compile() { return stone::PerformCompile(*this); }
 
 ModuleDecl *CompilerInstance::GetMainModule() const {
 

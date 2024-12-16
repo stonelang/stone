@@ -1,8 +1,8 @@
 #include "stone/Compile/Compile.h"
 #include "stone/AST/Diagnostics.h"
 #include "stone/AST/DiagnosticsCompile.h"
-#include "stone/Basic/Defer.h"
 #include "stone/Basic/About.h"
+#include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/CodeGen/CodeGenBackend.h"
 #include "stone/CodeGen/CodeGenContext.h"
@@ -60,7 +60,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     invocation.GetCompilerOptions().PrintHelp(true);
     return FinishCompile();
   case CompilerActionKind::PrintVersion:
-    stone::PrintCompilerVesion();
+    stone::PrintCompilerVersion();
     return FinishCompile();
   case CompilerActionKind::PrintFeature:
     stone::PrintCompilerFeatures();
@@ -82,8 +82,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (compiler.HasObservation()) {
     compiler.GetObservation()->CompletedConfiguration(compiler);
   }
-
-  if (!stone::PerformCompile(compiler)) {
+  if (!compiler.Compile()) {
     return FinishCompile(Status::Error());
   }
 

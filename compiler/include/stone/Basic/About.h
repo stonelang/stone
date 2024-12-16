@@ -3,13 +3,11 @@
 
 namespace stone {
 
-
 /// Print the current version of the compiler
 void PrintCompilerVersion();
 
-/// Print the features the compiler supports 
+/// Print the features the compiler supports
 void PrintCompilerFeatures();
-
 
 } // namespace stone
 #endif

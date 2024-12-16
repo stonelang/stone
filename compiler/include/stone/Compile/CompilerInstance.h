@@ -50,6 +50,7 @@ public:
 public:
   CompilerInstance(CompilerInvocation &invocation);
   bool Setup();
+  bool Compile();
 
 public:
   bool HasObservation() { return observation != nullptr; }
