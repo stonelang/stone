@@ -10,7 +10,8 @@
 
 using namespace stone;
 
-CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts, ASTContext &astContext)
+CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts,
+                               ASTContext &astContext)
     : codeGenOpts(codeGenOpts), astContext(astContext),
       llvmContext(new llvm::LLVMContext()),
       llvmTargetMachine(CreateTargetMachine()) {}
@@ -36,11 +37,13 @@ std::unique_ptr<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
 
 /// Add an CodeGenModule for a source file.
 /// Should only be called from CodeGenModule's constructor.
-void CodeGenContext::AddCodeGenModule(SourceFile *sourceFile, CodeGenModule *cgm) {}
+void CodeGenContext::AddCodeGenModule(SourceFile *sourceFile,
+                                      CodeGenModule *cgm) {}
 
 /// Add an CodeGenModule to the queue
 /// Should only be called from IRGenModule's constructor.
-void CodeGenContext::QueueCodeGenModule(SourceFile *sourceFile, CodeGenModule *cgm) {}
+void CodeGenContext::QueueCodeGenModule(SourceFile *sourceFile,
+                                        CodeGenModule *cgm) {}
 
 /// Get an CodeGenModule for a declaration context.
 /// Returns the CodeGenModule of the containing source file, or if this

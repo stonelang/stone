@@ -274,7 +274,7 @@ CodeGenResult stone::PerformCodeGenIR(CompilerInstance &instance,
       "Unable to perform ir-gen on a source-file that was not type-checked.");
 
   CodeGenContext codeGen(instance.GetInvocation().GetCodeGenOptions(),
-                  instance.GetASTContext());
+                         instance.GetASTContext());
 
   ModuleNameAndOuptFileName moduleNameAndOuptFileName =
       std::make_pair(moduleName, sps.outputFilename);
@@ -297,7 +297,7 @@ stone::PerformCodeGenIR(CompilerInstance &instance, ModuleDecl *moduleDecl,
                         llvm::GlobalVariable *&globalHash) {
 
   CodeGenContext codeGen(instance.GetInvocation().GetCodeGenOptions(),
-                  instance.GetASTContext());
+                         instance.GetASTContext());
 
   ModuleNameAndOuptFileName moduleNameAndOuptFileName =
       std::make_pair(moduleName, sps.outputFilename);

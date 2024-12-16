@@ -119,6 +119,9 @@ public:
   std::string codeModel;
 
   CodeGenOutputKind codeGenOutputKind = CodeGenOutputKind::None;
+  bool HasCodeGenOutputKind() {
+    return codeGenOutputKind != CodeGenOutputKind::None;
+  }
 
   // TODO: vs llvm::CodeGenOpt::Level
   OptimizationMode optimizationMode = OptimizationMode::None;

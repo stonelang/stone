@@ -57,16 +57,25 @@ using namespace stone;
 
 namespace stone {
 
-// class CodeGenBackend final {
 
-// public:
-//   CodeGenBackend(const CodeGenOptions &codeGenOpts, ASTContext &astContext,
-//                  llvm::Module *llvmModule, llvm::StringRef outputFilename,
-//                  DiagnosticEngine &diags);
+class CodeGenBackend final {
 
-// public:
+  CodeGenBackend() = delete;
 
-// };
+public:
+  static bool EmitFile(const CodeGenOptions &Opts, ASTContext &Ctx,
+                       llvm::Module *Module, StringRef OutputFilename);
+
+  static bool EmitFile(const CodeGenOptions &Opts, DiagnosticEngine &Diags,
+                       llvm::sys::Mutex *DiagMutex,
+                       llvm::GlobalVariable *HashGlobal, llvm::Module *Module,
+                       llvm::TargetMachine *TargetMachine,
+                       StringRef OutputFilename, StatsReporter *Stats);
+
+  static bool WriteFile();
+
+};
+
 
 bool EmitBackendOutput(const CodeGenOptions &Opts, ASTContext &Ctx,
                        llvm::Module *Module, StringRef OutputFilename);
