@@ -4,6 +4,7 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
 #include "stone/CodeGen/CodeGen.h"
+#include "stone/CodeGen/CodeGenResult.h"
 #include "stone/CodeGen/CodeGenBackend.h"
 #include "stone/CodeGen/CodeGenModule.h"
 #include "stone/Compile/CompilerInstance.h"
