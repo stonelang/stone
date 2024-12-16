@@ -71,7 +71,7 @@ public:
   // llvm::CallingConv::ID DefaultCC;     /// default calling convention
 
 private:
-  CodeGen &codeGen;
+  CodeGenContext &codeGen;
   SourceFile *sourceFile;
   CodeGenPassManager codeGenPassMgr;
   ModuleNameAndOuptFileName moduleNameAndOuptFileName;
@@ -82,11 +82,11 @@ private:
 public:
   /// The \p sourceFile is used when the llvm module is generated in a
   /// doing multi-threaded and whole-module compilation -- null otherwise.
-  CodeGenModule(CodeGen &codeGen, SourceFile *sourceFile,
+  CodeGenModule(CodeGenContext &codeGen, SourceFile *sourceFile,
                 ModuleNameAndOuptFileName moduleNameAndOuptFileName);
 
 public:
-  CodeGen &GetCodeGen() { return codeGen; }
+  CodeGenContext &GetCodeGenContext() { return codeGen; }
   SourceFile *GetSourceFile() { return sourceFile; }
   bool HasSourceFile() { return sourceFile != nullptr; }
 

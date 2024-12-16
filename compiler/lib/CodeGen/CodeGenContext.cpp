@@ -10,12 +10,12 @@
 
 using namespace stone;
 
-CodeGen::CodeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext)
+CodeGenContext::CodeGenContext(const CodeGenOptions &codeGenOpts, ASTContext &astContext)
     : codeGenOpts(codeGenOpts), astContext(astContext),
       llvmContext(new llvm::LLVMContext()),
       llvmTargetMachine(CreateTargetMachine()) {}
 
-llvm::Triple CodeGen::GetEffectiveClangTriple() {
+llvm::Triple CodeGenContext::GetEffectiveClangTriple() {
   return llvm::Triple(astContext.GetClangImporter()
                           .GetClangInstance()
                           .getTarget()
@@ -23,26 +23,26 @@ llvm::Triple CodeGen::GetEffectiveClangTriple() {
                           .Triple);
 }
 
-const llvm::StringRef CodeGen::GetClangDataLayoutString() {
+const llvm::StringRef CodeGenContext::GetClangDataLayoutString() {
   return astContext.GetClangImporter()
       .GetClangInstance()
       .getTarget()
       .getDataLayoutString();
 }
 
-std::unique_ptr<llvm::TargetMachine> CodeGen::CreateTargetMachine() {
+std::unique_ptr<llvm::TargetMachine> CodeGenContext::CreateTargetMachine() {
   return stone::CreateTargetMachine(GetCodeGenOptions(), GetASTContext());
 }
 
 /// Add an CodeGenModule for a source file.
 /// Should only be called from CodeGenModule's constructor.
-void CodeGen::AddCodeGenModule(SourceFile *sourceFile, CodeGenModule *cgm) {}
+void CodeGenContext::AddCodeGenModule(SourceFile *sourceFile, CodeGenModule *cgm) {}
 
 /// Add an CodeGenModule to the queue
 /// Should only be called from IRGenModule's constructor.
-void CodeGen::QueueCodeGenModule(SourceFile *sourceFile, CodeGenModule *cgm) {}
+void CodeGenContext::QueueCodeGenModule(SourceFile *sourceFile, CodeGenModule *cgm) {}
 
 /// Get an CodeGenModule for a declaration context.
 /// Returns the CodeGenModule of the containing source file, or if this
 /// cannot be determined, returns the primary CodeGenModule.
-CodeGenModule *CodeGen::GetCodeGenModule() {}
+CodeGenModule *CodeGenContext::GetCodeGenModule() {}

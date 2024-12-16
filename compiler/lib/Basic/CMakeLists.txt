@@ -9,6 +9,7 @@ set( LLVM_LINK_COMPONENTS
   Option
   )
 set(stone_basic_sources
+	About.cpp
 	Cache.cpp
 	BumpTable.cpp
 	EditorPlaceholder.cpp

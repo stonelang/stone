@@ -4,7 +4,7 @@
 using namespace stone;
 
 CodeGenModule::CodeGenModule(
-    CodeGen &codeGen, SourceFile *sourceFile,
+    CodeGenContext &codeGen, SourceFile *sourceFile,
     ModuleNameAndOuptFileName moduleNameAndOuptFileName)
     : codeGen(codeGen), sourceFile(sourceFile),
       moduleNameAndOuptFileName(moduleNameAndOuptFileName),

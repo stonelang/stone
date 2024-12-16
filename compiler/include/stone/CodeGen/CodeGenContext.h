@@ -20,7 +20,7 @@ namespace stone {
 class CodeGenOptions;
 class CodeGenModule;
 
-class CodeGen final {
+class CodeGenContext final {
 
   const CodeGenOptions &codeGenOpts;
   ASTContext &astContext;
@@ -32,7 +32,7 @@ public:
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
 
 public:
-  CodeGen(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
+  CodeGenContext(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
 
 public:
   ASTContext &GetASTContext() { return astContext; }

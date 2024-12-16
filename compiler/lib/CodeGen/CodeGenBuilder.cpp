@@ -8,13 +8,13 @@ void CodeGenBuilderInserter::InsertHelper(
     llvm::BasicBlock *basicBlock, llvm::BasicBlock::iterator insertPt) const {}
 
 CodeGenBuilder::CodeGenBuilder(CodeGenModule &codeGenModule)
-    : CodeGenBuilderBase(codeGenModule.GetCodeGen().GetLLVMContext()),
+    : CodeGenBuilderBase(codeGenModule.GetCodeGenContext().GetLLVMContext()),
       codeGenModule(codeGenModule) {}
 
 CodeGenBuilder::CodeGenBuilder(CodeGenModule &codeGenModule,
                                const llvm::ConstantFolder &constFoler,
                                const CodeGenBuilderInserter &inserter)
-    : CodeGenBuilderBase(codeGenModule.GetCodeGen().GetLLVMContext(),
+    : CodeGenBuilderBase(codeGenModule.GetCodeGenContext().GetLLVMContext(),
                          constFoler, inserter),
       codeGenModule(codeGenModule) {}
 
