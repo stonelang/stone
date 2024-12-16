@@ -3,7 +3,7 @@
 
 #include "stone/AST/Diagnostics.h"
 #include "stone/AST/Module.h"
-#include "stone/CodeGen/CodeGen.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/CodeGen/CodeGenPassManager.h"
 
 #include "llvm/IR/LegacyPassManager.h"

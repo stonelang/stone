@@ -1,6 +1,6 @@
 #ifndef STONE_CODEGEN_CODEGENRESULT_H
 #define STONE_CODEGEN_CODEGENRESULT_H
- 
+
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {

@@ -2,11 +2,12 @@
 #include "stone/AST/Diagnostics.h"
 #include "stone/AST/DiagnosticsCompile.h"
 #include "stone/Basic/Defer.h"
+#include "stone/Basic/About.h"
 #include "stone/Basic/LLVMInit.h"
-#include "stone/CodeGen/CodeGen.h"
-#include "stone/CodeGen/CodeGenResult.h"
 #include "stone/CodeGen/CodeGenBackend.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/CodeGen/CodeGenModule.h"
+#include "stone/CodeGen/CodeGenResult.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Parse/CodeCompletionCallbacks.h"
@@ -57,6 +58,12 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishCompile();
   case CompilerActionKind::PrintHelpHidden:
     invocation.GetCompilerOptions().PrintHelp(true);
+    return FinishCompile();
+  case CompilerActionKind::PrintVersion:
+    stone::PrintCompilerVesion();
+    return FinishCompile();
+  case CompilerActionKind::PrintFeature:
+    stone::PrintCompilerFeatures();
     return FinishCompile();
   }
 

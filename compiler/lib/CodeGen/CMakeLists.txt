@@ -10,7 +10,7 @@ set( LLVM_LINK_COMPONENTS
   )
 set(stone_codegen_sources
 		CodeGenBackend.cpp
-		CodeGen.cpp
+		CodeGenContext.cpp
 		CodeGenDecl.cpp 
 		CodeGenExpr.cpp
 		CodeGenStmt.cpp 

@@ -1,4 +1,4 @@
-#include "stone/CodeGen/CodeGen.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/Basic/CodeGenOptions.h"
 #include "stone/CodeGen/CodeGenBackend.h"

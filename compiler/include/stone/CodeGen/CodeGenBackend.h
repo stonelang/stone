@@ -4,7 +4,7 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
-#include "stone/CodeGen/CodeGen.h"
+#include "stone/CodeGen/CodeGenContext.h"
 #include "stone/Support/Statistics.h"
 
 #include "llvm/ADT/ScopeExit.h"
