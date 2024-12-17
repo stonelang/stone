@@ -83,7 +83,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
 bool CompilerInstance::ParseAction::ExecuteAction() {
 
-  FrontendStatsTracer tracer(instance.GetStats(), "parse-source-file");
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
 
   CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
   if (instance.HasObservation()) {
@@ -112,12 +113,18 @@ bool CompilerInstance::ParseAction::ExecuteAction() {
 
   return true;
 }
-bool CompilerInstance::EmitParseAction::ExecuteAction() { return true; }
+bool CompilerInstance::EmitParseAction::ExecuteAction() {
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
+
+  return true;
+}
 
 bool CompilerInstance::ResolveImportsAction::ExecuteAction() {
 
-  /// Abstract away
-  FrontendStatsTracer tracer(instance.GetStats(), "resolve imports");
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
+
   auto PeformResolveImports = [&](CompilerInstance &instance,
                                   SourceFile &sourceFile) -> bool {
     return true;
@@ -133,7 +140,8 @@ bool CompilerInstance::ResolveImportsAction::ExecuteAction() {
 }
 bool CompilerInstance::TypeCheckAction::ExecuteAction() {
 
-  FrontendStatsTracer tracer(instance.GetStats(), "type-check");
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
 
   auto PerformTypeChecking = [&](CompilerInstance &instance,
                                  SourceFile &sourceFile) -> bool {
@@ -156,9 +164,16 @@ bool CompilerInstance::TypeCheckAction::ExecuteAction() {
   return true;
 }
 
-bool CompilerInstance::EmitASTAction::ExecuteAction() { return true; }
+bool CompilerInstance::EmitASTAction::ExecuteAction() {
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
+
+  return true;
+}
 
 bool CompilerInstance::EmitIRAction::ExecuteAction() {
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
 
   auto TryNotifyEmitCodeConsumer = [&](CodeGenResult *result) -> void {
     if (HasConsumer()) {
@@ -234,7 +249,13 @@ CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
     ArrayRef<std::string> parallelOutputFilenames,
     llvm::GlobalVariable *&globalHash) {}
 
-bool CompilerInstance::EmitObjectAction::ExecuteAction() { return true; }
+bool CompilerInstance::EmitObjectAction::ExecuteAction() {
+
+  FrontendStatsTracer emitObjectActionTracer(instance.GetStats(),
+                                             GetSelfActionKindString());
+
+  return true;
+}
 
 void CompilerInstance::EmitObjectAction::ConsumeEmittedCode(
     CodeGenResult *result) {
