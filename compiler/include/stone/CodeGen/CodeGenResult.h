@@ -60,7 +60,7 @@ public:
   }
   llvm::TargetMachine *GetTargetMachine() { return llvmTargetMachine.get(); }
   llvm::StringRef GetOutputFilename() { return outputFilename; }
-  llvm::GlobalVariable* GetGlobalHash() { return globalHash; }
+  llvm::GlobalVariable *GetGlobalHash() { return globalHash; }
 
 public:
   /// Release ownership of the context and module to the caller, consuming

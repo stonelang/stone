@@ -365,6 +365,23 @@ private:
     void ConsumeEmittedCode(CodeGenResult *result) override;
   };
 
+  class EmitBCAction final : public EmitCodeAction {
+  public:
+    EmitBCAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
+
+  public:
+    bool ExecuteAction() override;
+
+  public:
+    CompilerActionKind GetDepActionKind() const override {
+      return CompilerActionKind::EmitIR;
+    }
+    CompilerActionKind GetSelfActionKind() const override {
+      return CompilerActionKind::EmitBC;
+    }
+    void ConsumeEmittedCode(CodeGenResult *result) override;
+  };
+
 public:
   CompilerInstance(const CompilerInstance &) = delete;
   void operator=(const CompilerInstance &) = delete;
