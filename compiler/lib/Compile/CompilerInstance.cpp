@@ -34,7 +34,60 @@ bool CompilerInstance::Setup() {
   return true;
 }
 
-bool CompilerInstance::Compile() { return stone::PerformCompile(*this); }
+bool CompilerInstance::ExecuteAction() {
+  return ExecuteAction(GetPrimaryAction());
+}
+
+bool CompilerInstance::ExecuteAction(CompilerActionKind kind) {
+  auto action = ConstructAction(kind);
+  return ExecuteAction(*action);
+}
+bool CompilerInstance::ExecuteAction(CompilerAction &action) {
+  if (!action.SetupAction()) {
+    return false;
+  }
+  if (!action.ExecuteAction()) {
+    return false;
+  }
+  return action.FinishAction();
+}
+
+std::unique_ptr<CompilerAction>
+CompilerInstance::ConstructAction(CompilerActionKind kind) {
+  switch (kind) {
+  // case CompilerActionKind::PrintHelp:
+  //   return std::make_unique<PrintHelpAction>(*this);
+  // case CompilerActionKind::PrintHelpHidden:
+  //   return std::make_unique<PrintHelpHiddenAction>(*this);
+  // case CompilerActionKind::PrintVersion:
+  //   return std::make_unique<PrintVersionAction>(*this);
+  // case CompilerActionKind::PrintFeature:
+  //   return std::make_unique<PrintFeatureAction>(*this);
+  case CompilerActionKind::Parse:
+    return std::make_unique<CompilerInstance::ParseAction>(*this);
+  // case CompilerActionKind::EmitParse:
+  //   return std::make_unique<EmitParseAction>(*this);
+  // case CompilerActionKind::ResolveImports:
+  //   return std::make_unique<ResolveImportsAction>(*this);
+  case CompilerActionKind::TypeCheck:
+    return std::make_unique<CompilerInstance::TypeCheckAction>(*this);
+  // case CompilerActionKind::EmitAST:
+  //   return std::make_unique<EmitASTAction>(*this);
+  // case CompilerActionKind::EmitIR:
+  //   return std::make_unique<EmitIRAction>(*this);
+  // case CompilerActionKind::EmitBC:
+  //   return std::make_unique<EmitBCAction>(*this);
+  case CompilerActionKind::EmitObject:
+    return std::make_unique<CompilerInstance::EmitObjectAction>(*this);
+    // case CompilerActionKind::EmitModule:
+    //   return std::make_unique<EmitModuleAction>(*this);
+    // case CompilerActionKind::MergeModules:
+    //   return std::make_unique<MergeModulesAction>(*this);
+    // case CompilerActionKind::EmitAssembly:
+    //   return std::make_unique<EmitAssemblyAction>(*this);
+  }
+  llvm_unreachable("Unable to create CompilerAction -- unknon action!");
+}
 
 ModuleDecl *CompilerInstance::GetMainModule() const {
 

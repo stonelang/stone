@@ -222,6 +222,7 @@ private:
   public:
     ASTAction(CompilerInstance &instance) : CompilerAction(instance) {}
   };
+
   class ParseAction : public ASTAction {
   public:
     ParseAction(CompilerInstance &instance) : ASTAction(instance) {}
@@ -233,9 +234,25 @@ private:
     }
   };
 
+  class ResolveImportsAction final : public ASTAction {
+  public:
+    ResolveImportsAction(CompilerInstance &instance) : ASTAction(instance) {}
+
+  public:
+    bool ExecuteAction() override;
+
+    CompilerActionKind GetDepActionKind() override {
+      return CompilerActionKind::Parse;
+    }
+
+    CompilerActionKind GetSelfActionKind() const override {
+      return CompilerActionKind::ResolveImports;
+    }
+  };
+
   class TypeCheckAction final : public ASTAction {
   public:
-    TypeCheckAction(CompilerInstance &instance);
+    TypeCheckAction(CompilerInstance &instance) : ASTAction(instance) {}
 
   public:
     bool ExecuteAction() override;
@@ -304,7 +321,12 @@ public:
 public:
   CompilerInstance(CompilerInvocation &invocation);
   bool Setup();
-  bool Compile();
+  bool ExecuteAction();
+  bool ExecuteAction(CompilerActionKind kind);
+
+private:
+  std::unique_ptr<CompilerAction> ConstructAction(CompilerActionKind kind);
+  bool ExecuteAction(CompilerAction &compilerAction);
 
 public:
   bool HasObservation() { return observation != nullptr; }
@@ -323,6 +345,10 @@ public:
   ///\the primary requested action
   CompilerActionKind GetPrimaryAction() const {
     return invocation.GetCompilerOptions().GetPrimaryAction();
+  }
+
+  bool HasPrimaryAction() const {
+    return invocation.GetCompilerOptions().HasPrimaryAction();
   }
 
 public:

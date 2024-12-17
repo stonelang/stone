@@ -47,44 +47,40 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishCompile(Status::Error());
   }
 
-  if (!invocation.GetCompilerOptions().HasPrimaryAction()) {
+  CompilerInstance compiler(invocation);
+
+  if (compiler.HasPrimaryAction()) {
     // compiler.GetDiags().diagnose(diag::error_no_compile_action);
     return FinishCompile(Status::Error());
   }
 
-  switch (invocation.GetCompilerOptions().GetPrimaryAction()) {
+  switch (compiler.GetPrimaryAction()) {
   case CompilerActionKind::PrintHelp:
-    invocation.GetCompilerOptions().PrintHelp();
-    return FinishCompile();
   case CompilerActionKind::PrintHelpHidden:
-    invocation.GetCompilerOptions().PrintHelp(true);
-    return FinishCompile();
   case CompilerActionKind::PrintVersion:
-    stone::PrintCompilerVersion();
-    return FinishCompile();
-  case CompilerActionKind::PrintFeature:
-    stone::PrintCompilerFeatures();
+  case CompilerActionKind::PrintFeature: {
+    compiler.ExecuteAction();
     return FinishCompile();
   }
+  }
 
-  CompilerInstance compiler(invocation);
   compiler.SetObservation(observation);
 
-  if (compiler.HasObservation()) {
-    compiler.GetObservation()->CompletedCommandLineParsing(compiler);
-  }
+  // if (compiler.HasObservation()) {
+  //   compiler.GetObservation()->CompletedCommandLineParsing(compiler);
+  // }
 
-  // Now, setup the compiler
-  if (!compiler.Setup()) {
-    return FinishCompile(Status::Error());
-  }
+  // // Now, setup the compiler
+  // if (!compiler.Setup()) {
+  //   return FinishCompile(Status::Error());
+  // }
 
-  if (compiler.HasObservation()) {
-    compiler.GetObservation()->CompletedConfiguration(compiler);
-  }
-  if (!compiler.Compile()) {
-    return FinishCompile(Status::Error());
-  }
+  // if (compiler.HasObservation()) {
+  //   compiler.GetObservation()->CompletedConfiguration(compiler);
+  // }
+  // if (!compiler.ExecuteAction()) {
+  //   return FinishCompile(Status::Error());
+  // }
 
   return FinishCompile();
 }
@@ -348,9 +344,46 @@ bool CompilerInstance::ParseAction::ExecuteAction() {
   return true;
 }
 
+bool CompilerInstance::ResolveImportsAction::ExecuteAction() {
+
+  /// Abstract away
+  FrontendStatsTracer tracer(instance.GetStats(), "resolve imports");
+  auto PeformResolveImports = [&](CompilerInstance &instance,
+                                  SourceFile &sourceFile) -> bool {
+    return true;
+  };
+
+  instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+    if (!PeformResolveImports(instance, sourceFile)) {
+      return false;
+    }
+  });
+
+  return true;
+}
 bool CompilerInstance::TypeCheckAction::ExecuteAction() {
 
-  // stone::PerformTypeChecking();
+  FrontendStatsTracer tracer(instance.GetStats(), "type-check");
+
+  auto PerformTypeChecking = [&](CompilerInstance &instance,
+                                 SourceFile &sourceFile) -> bool {
+    assert(sourceFile.HasParsed() &&
+           "Unable to type-check a source-file that was not parsed.");
+
+    TypeChecker checker(sourceFile);
+    if (!checker.TypeCheckTopLevelDecls()) {
+      return false;
+    }
+    return true;
+  };
+
+  instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
+    if (!PerformTypeChecking(instance, sourceFile)) {
+      return false;
+    }
+    sourceFile.SetTypeCheckedStage();
+  });
+  return true;
 }
 
 bool CompilerInstance::EmitIRAction::ExecuteAction() {}
