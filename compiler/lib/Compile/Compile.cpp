@@ -309,9 +309,50 @@ bool stone::PerformCodeGenBackend(CompilerInstance &instance,
                                   llvm::Module *irModule,
                                   llvm::GlobalVariable *&globalHash) {
 
-  return stone::EmitBackendOutput(instance.GetInvocation().GetCodeGenOptions(),
-                                  instance.GetASTContext(), irModule,
-                                  outputFilename);
+  return CodeGenBackend::EmitOutputFile(
+      instance.GetInvocation().GetCodeGenOptions(), instance.GetASTContext(),
+      irModule, outputFilename);
 }
 
 bool stone::PerformCompileLLVM(CompilerInstance &compiler) { return false; }
+
+bool CompilerInstance::ParseAction::ExecuteAction() {
+
+  FrontendStatsTracer tracer(instance.GetStats(), "parse-source-file");
+
+  CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
+  if (instance.HasObservation()) {
+    codeCompletionCallbacks =
+        instance.GetObservation()->GetCodeCompletionCallbacks();
+  }
+
+  auto PerformParse = [&](CompilerInstance &instance,
+                          SourceFile &sourceFile) -> bool {
+    Parser parser(sourceFile, instance.GetASTContext());
+    if (!parser.ParseTopLevelDecls()) {
+      return false;
+    }
+    return true;
+  };
+
+  instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+    if (!PerformParse(instance, sourceFile)) {
+      return false;
+    }
+    sourceFile.SetParsedStage();
+    if (codeCompletionCallbacks) {
+      codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
+    }
+  });
+
+  return true;
+}
+
+bool CompilerInstance::TypeCheckAction::ExecuteAction() {
+
+  // stone::PerformTypeChecking();
+}
+
+bool CompilerInstance::EmitIRAction::ExecuteAction() {}
+
+bool CompilerInstance::EmitObjectAction::ExecuteAction() {}

@@ -97,26 +97,15 @@ bool stone::TryOpenBackendOputFile() {}
 
 void stone::WriteEmptyBackendOutputFiles() {}
 
-//  CodeGenBackend::CodeGenBackend(const CodeGenOptions &codeGenOpts, ASTContext
-//  &AC,
-//                  llvm::Module &llvmModule, llvm::StringRef outputFilename,
-//                  llvm::TargetMachine &TM, DiagnosticEngine &DE,
-//                  StatsReporter &SR) :
-
-// bool CodeGenBackend::EmitFile() {}
-// bool CodeGenBackend::EmitObjectFile() {}
-// bool CodeGenBackend::EmitAssemblyFile() {}
-// bool CodeGenBackend::EmitBCFile() {}
-
 /// Emit a backend file
-bool CodeGenBackend::EmitFile(const CodeGenOptions &Opts, ASTContext &Ctx,
-                              llvm::Module *Module, StringRef OutputFilename) {}
+bool CodeGenBackend::EmitOutputFile(const CodeGenOptions &Opts, ASTContext &Ctx,
+                                    llvm::Module *Module,
+                                    StringRef OutputFilename) {}
 
-bool CodeGenBackend::EmitFile(const CodeGenOptions &Opts,
-                              DiagnosticEngine &Diags,
-                              llvm::sys::Mutex *DiagMutex,
-                              llvm::GlobalVariable *HashGlobal,
-                              llvm::Module *Module,
-                              llvm::TargetMachine *TargetMachine,
-                              StringRef OutputFilename, StatsReporter *Stats) {}
-bool CodeGenBackend::WriteFile() {}
+bool CodeGenBackend::EmitOutputFile(
+    const CodeGenOptions &Opts, DiagnosticEngine &Diags,
+    llvm::sys::Mutex *DiagMutex, llvm::GlobalVariable *HashGlobal,
+    llvm::Module *Module, llvm::TargetMachine *TargetMachine,
+    StringRef OutputFilename, StatsReporter *Stats) {}
+
+bool CodeGenBackend::WriteOutputFile() {}

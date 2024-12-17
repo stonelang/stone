@@ -62,16 +62,16 @@ class CodeGenBackend final {
   CodeGenBackend() = delete;
 
 public:
-  static bool EmitFile(const CodeGenOptions &Opts, ASTContext &Ctx,
-                       llvm::Module *Module, StringRef OutputFilename);
+  static bool EmitOutputFile(const CodeGenOptions &Opts, ASTContext &Ctx,
+                             llvm::Module *Module, StringRef OutputFilename);
 
-  static bool EmitFile(const CodeGenOptions &Opts, DiagnosticEngine &Diags,
-                       llvm::sys::Mutex *DiagMutex,
-                       llvm::GlobalVariable *HashGlobal, llvm::Module *Module,
-                       llvm::TargetMachine *TargetMachine,
-                       StringRef OutputFilename, StatsReporter *Stats);
+  static bool
+  EmitOutputFile(const CodeGenOptions &Opts, DiagnosticEngine &Diags,
+                 llvm::sys::Mutex *DiagMutex, llvm::GlobalVariable *HashGlobal,
+                 llvm::Module *Module, llvm::TargetMachine *TargetMachine,
+                 StringRef OutputFilename, StatsReporter *Stats);
 
-  static bool WriteFile();
+  static bool WriteOutputFile();
 };
 
 bool EmitBackendOutput(const CodeGenOptions &Opts, ASTContext &Ctx,

@@ -25,89 +25,109 @@ bool ParsingBuiltinTypeSpec::IsInt64Type() const {
 }
 
 bool ParsingBuiltinTypeSpec::IsInt128Type() const {
-  IsTypeKind(TypeKind::Int128);
+  return IsTypeKind(TypeKind::Int128);
 }
 
-bool ParsingBuiltinTypeSpec::IsUIntType() const { IsTypeKind(TypeKind::UInt); }
+bool ParsingBuiltinTypeSpec::IsUIntType() const {
+  return IsTypeKind(TypeKind::UInt);
+}
 
 bool ParsingBuiltinTypeSpec::IsUInt8Type() const {
-  IsTypeKind(TypeKind::UInt8);
+  return IsTypeKind(TypeKind::UInt8);
 }
 
 bool ParsingBuiltinTypeSpec::IsUInt16Type() const {
-  IsTypeKind(TypeKind::UInt16);
+  return IsTypeKind(TypeKind::UInt16);
 }
 
 bool ParsingBuiltinTypeSpec::IsUInt32Type() const {
-  IsTypeKind(TypeKind::UInt32);
+  return IsTypeKind(TypeKind::UInt32);
 }
 
 bool ParsingBuiltinTypeSpec::IsUInt64Type() const {
-  IsTypeKind(TypeKind::UInt64);
+  return IsTypeKind(TypeKind::UInt64);
 }
 
 bool ParsingBuiltinTypeSpec::IsUInt128Type() const {
-  IsTypeKind(TypeKind::UInt128);
+  return IsTypeKind(TypeKind::UInt128);
 }
 
-bool ParsingBuiltinTypeSpec::IsBoolType() const { IsTypeKind(TypeKind::Bool); }
+bool ParsingBuiltinTypeSpec::IsBoolType() const {
+  return IsTypeKind(TypeKind::Bool);
+}
 
-bool ParsingBuiltinTypeSpec::IsCharType() const { IsTypeKind(TypeKind::Char); }
+bool ParsingBuiltinTypeSpec::IsCharType() const {
+  return IsTypeKind(TypeKind::Char);
+}
 
 bool ParsingBuiltinTypeSpec::IsChar8Type() const {
-  IsTypeKind(TypeKind::Char8);
+  return IsTypeKind(TypeKind::Char8);
 }
 
 bool ParsingBuiltinTypeSpec::IsChar16Type() const {
-  IsTypeKind(TypeKind::Char16);
+  return IsTypeKind(TypeKind::Char16);
 }
 
 bool ParsingBuiltinTypeSpec::IsChar32Type() const {
-  IsTypeKind(TypeKind::Char32);
+  return IsTypeKind(TypeKind::Char32);
 }
 
-bool ParsingBuiltinTypeSpec::IsRealType() const { IsTypeKind(TypeKind::Real); }
+bool ParsingBuiltinTypeSpec::IsRealType() const {
+  return IsTypeKind(TypeKind::Real);
+}
 
 bool ParsingBuiltinTypeSpec::IsFloatType() const {
-  IsTypeKind(TypeKind::Float);
+  return IsTypeKind(TypeKind::Float);
 }
 
 bool ParsingBuiltinTypeSpec::IsFloat16Type() const {
-  IsTypeKind(TypeKind::Float16);
+  return IsTypeKind(TypeKind::Float16);
 }
 
 bool ParsingBuiltinTypeSpec::IsFloat32Type() const {
-  IsTypeKind(TypeKind::Float32);
+  return IsTypeKind(TypeKind::Float32);
 }
 
 bool ParsingBuiltinTypeSpec::IsFloat64Type() const {
-  IsTypeKind(TypeKind::Float64);
+  return IsTypeKind(TypeKind::Float64);
 }
 
 bool ParsingBuiltinTypeSpec::IsFloat128Type() const {
-  IsTypeKind(TypeKind::Float128);
+  return IsTypeKind(TypeKind::Float128);
 }
 
 bool ParsingBuiltinTypeSpec::IsComplex32Type() const {
-  IsTypeKind(TypeKind::Complex32);
+  return IsTypeKind(TypeKind::Complex32);
 }
 
 bool ParsingBuiltinTypeSpec::IsComplex64Type() const {
-  IsTypeKind(TypeKind::Complex64);
+  return IsTypeKind(TypeKind::Complex64);
 }
 
 bool ParsingBuiltinTypeSpec::IsImaginary32Type() const {
-  IsTypeKind(TypeKind::Imaginary32);
+  return IsTypeKind(TypeKind::Imaginary32);
 }
 
 bool ParsingBuiltinTypeSpec::IsImaginary64Type() const {
-  IsTypeKind(TypeKind::Imaginary64);
+  return IsTypeKind(TypeKind::Imaginary64);
+}
+
+bool ParsingBuiltinTypeSpec::IsNullType() const {
+  return IsTypeKind(TypeKind::Null);
+}
+bool ParsingBuiltinTypeSpec::IsAutoType() const {
+  return IsTypeKind(TypeKind::Auto);
+}
+bool ParsingBuiltinTypeSpec::IsVoidType() const {
+  return IsTypeKind(TypeKind::Void);
 }
 
 TypeKind Parser::ResolveBuiltinTypeKind(tok kind) {
   switch (kind) {
   case tok::kw_void:
     return TypeKind::Void;
+  case tok::kw_null:
+    return TypeKind::Null;
   case tok::kw_auto:
     return TypeKind::Auto;
   case tok::kw_char:

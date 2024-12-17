@@ -287,6 +287,12 @@ public:
   bool IsImaginary32Type() const;
   ///\return true if the type is imaginary32
   bool IsImaginary64Type() const;
+  ///\return true if the type is null
+  bool IsNullType() const;
+  ///\return true if the type is auto
+  bool IsAutoType() const;
+  ///\return true if the type is void
+  bool IsVoidType() const;
 
 public:
   static bool classof(const ParsingTypeSpec *spec) {

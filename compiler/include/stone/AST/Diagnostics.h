@@ -236,14 +236,14 @@ public:
       : Kind(DiagnosticArgumentKind::Identifier), IdentifierVal(Identifier(I)) {
   }
 
-  DiagnosticArgument(const Decl *val)
-      : Kind(DiagnosticArgumentKind::Decl), DeclVal(val) {}
+  DiagnosticArgument(const Decl *D)
+      : Kind(DiagnosticArgumentKind::Decl), DeclVal(D) {}
 
   DiagnosticArgument(QualType T)
       : Kind(DiagnosticArgumentKind::Type), TypeVal(T) {}
 
-  DiagnosticArgument(llvm::VersionTuple version)
-      : Kind(DiagnosticArgumentKind::VersionTuple), VersionVal(version) {}
+  DiagnosticArgument(llvm::VersionTuple V)
+      : Kind(DiagnosticArgumentKind::VersionTuple), VersionVal(V) {}
 
   DiagnosticArgument(DiagnosticInfo *D)
       : Kind(DiagnosticArgumentKind::Diagnostic), DiagnosticVal(D) {}
