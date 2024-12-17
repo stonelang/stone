@@ -83,171 +83,173 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return FinishCompile();
 }
 
-bool stone::PerformCompile(CompilerInstance &instance,
-                           CompilerActionKind depActionKind) {
+// bool stone::PerformCompile(CompilerInstance &instance,
+//                            CompilerActionKind depActionKind) {
 
-  auto CurrentActionKind = [&]() -> CompilerActionKind {
-    if (depActionKind != CompilerActionKind::None) {
-      return depActionKind;
-    }
-    return instance.GetInvocation().GetCompilerOptions().GetPrimaryAction();
-  }();
+//   auto CurrentActionKind = [&]() -> CompilerActionKind {
+//     if (depActionKind != CompilerActionKind::None) {
+//       return depActionKind;
+//     }
+//     return instance.GetInvocation().GetCompilerOptions().GetPrimaryAction();
+//   }();
 
-  switch (CurrentActionKind) {
-  case CompilerActionKind::Parse: {
-    return stone::PerformParse(instance);
-  }
-  case CompilerActionKind::EmitParse: {
-    if (!stone::PerformCompile(instance, CompilerActionKind::Parse)) {
-      return false;
-    }
-    return stone::PerformEmitParse(instance);
-  }
-  case CompilerActionKind::ResolveImports: {
-    if (!stone::PerformCompile(instance, CompilerActionKind::Parse)) {
-      return false;
-    }
-    return stone::PerformResolveImports(instance);
-  }
-  case CompilerActionKind::TypeCheck: {
-    if (!stone::PerformCompile(instance, CompilerActionKind::ResolveImports)) {
-      return false;
-    }
-    return stone::PerformTypeCheck(instance);
-  }
+//   switch (CurrentActionKind) {
+//   case CompilerActionKind::Parse: {
+//     return stone::PerformParse(instance);
+//   }
+//   case CompilerActionKind::EmitParse: {
+//     if (!stone::PerformCompile(instance, CompilerActionKind::Parse)) {
+//       return false;
+//     }
+//     return stone::PerformEmitParse(instance);
+//   }
+//   case CompilerActionKind::ResolveImports: {
+//     if (!stone::PerformCompile(instance, CompilerActionKind::Parse)) {
+//       return false;
+//     }
+//     return stone::PerformResolveImports(instance);
+//   }
+//   case CompilerActionKind::TypeCheck: {
+//     if (!stone::PerformCompile(instance, CompilerActionKind::ResolveImports))
+//     {
+//       return false;
+//     }
+//     return stone::PerformTypeCheck(instance);
+//   }
 
-  case CompilerActionKind::EmitAST: {
-    if (!stone::PerformCompile(instance, CompilerActionKind::TypeCheck)) {
-      return false;
-    }
-    return stone::PerformEmitAST(instance);
-  }
-  }
+//   case CompilerActionKind::EmitAST: {
+//     if (!stone::PerformCompile(instance, CompilerActionKind::TypeCheck)) {
+//       return false;
+//     }
+//     return stone::PerformEmitAST(instance);
+//   }
+//   }
 
-  if (!stone::PerformCompile(instance, CompilerActionKind::TypeCheck)) {
-    return false;
-  }
-  return stone::PerformEmitCode(instance);
-}
+//   if (!stone::PerformCompile(instance, CompilerActionKind::TypeCheck)) {
+//     return false;
+//   }
+//   return stone::PerformEmitCode(instance);
+// }
 
-// \return true if the code generation was successfull
-bool stone::PerformEmitCode(CompilerInstance &instance) {
+// // \return true if the code generation was successfull
+// bool stone::PerformEmitCode(CompilerInstance &instance) {
 
-  if (instance.IsCompileForWholeModule()) {
-    // Perform whole modufle
-    const PrimaryFileSpecificPaths psps =
-        instance.GetInvocation()
-            .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-    return stone::PerformEmitCode(instance, instance.GetMainModule(), psps);
-  }
+//   if (instance.IsCompileForWholeModule()) {
+//     // Perform whole modufle
+//     const PrimaryFileSpecificPaths psps =
+//         instance.GetInvocation()
+//             .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+//     return stone::PerformEmitCode(instance, instance.GetMainModule(), psps);
+//   }
 
-  if (instance.IsCompileForSourceFile()) {
-    bool success = false;
-    instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
-      // Get the paths for the primary source file.
-      const PrimaryFileSpecificPaths psps =
-          instance.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
-              primarySourceFile);
+//   if (instance.IsCompileForSourceFile()) {
+//     bool success = false;
+//     instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
+//       // Get the paths for the primary source file.
+//       const PrimaryFileSpecificPaths psps =
+//           instance.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
+//               primarySourceFile);
 
-      // Perform post semantic analysis on each primary file.
-      success |= stone::PerformEmitCode(
-          instance, instance.CastToModuleFile(&primarySourceFile), psps);
-    });
-    return success;
-  }
+//       // Perform post semantic analysis on each primary file.
+//       success |= stone::PerformEmitCode(
+//           instance, instance.CastToModuleFile(&primarySourceFile), psps);
+//     });
+//     return success;
+//   }
 
-  return false;
-}
+//   return false;
+// }
 
-bool stone::PerformEmitAST(CompilerInstance &instance) { return false; }
+// bool stone::PerformEmitAST(CompilerInstance &instance) { return false; }
 
-// \return true if the code generation was successfull
-bool stone::PerformEmitCode(CompilerInstance &instance,
-                            ModuleDeclOrModuleFile moduleOrFile,
-                            const PrimaryFileSpecificPaths &sps) {
+// // \return true if the code generation was successfull
+// bool stone::PerformEmitCode(CompilerInstance &instance,
+//                             ModuleDeclOrModuleFile moduleOrFile,
+//                             const PrimaryFileSpecificPaths &sps) {
 
-  llvm::GlobalVariable *globalHash;
-  llvm::StringRef outputFilename = sps.outputFilename;
+//   llvm::GlobalVariable *globalHash;
+//   llvm::StringRef outputFilename = sps.outputFilename;
 
-  auto codeGenResult = [&]() -> CodeGenResult {
-    if (auto *primarySourceFile = llvm::dyn_cast_or_null<SourceFile>(
-            moduleOrFile.dyn_cast<ModuleFile *>())) {
+//   auto codeGenResult = [&]() -> CodeGenResult {
+//     if (auto *primarySourceFile = llvm::dyn_cast_or_null<SourceFile>(
+//             moduleOrFile.dyn_cast<ModuleFile *>())) {
 
-      return stone::PerformCodeGenIR(instance, primarySourceFile,
-                                     outputFilename, sps, globalHash);
-    }
+//       return stone::PerformCodeGenIR(instance, primarySourceFile,
+//                                      outputFilename, sps, globalHash);
+//     }
 
-    std::vector<std::string> parallelOutputFilenames =
-        instance.GetInvocation()
-            .GetCompilerOptions()
-            .inputsAndOutputs.CopyOutputFilenames();
+//     std::vector<std::string> parallelOutputFilenames =
+//         instance.GetInvocation()
+//             .GetCompilerOptions()
+//             .inputsAndOutputs.CopyOutputFilenames();
 
-    return stone::PerformCodeGenIR(
-        instance, moduleOrFile.dyn_cast<ModuleDecl *>(), outputFilename, sps,
-        parallelOutputFilenames, globalHash);
-  }();
+//     return stone::PerformCodeGenIR(
+//         instance, moduleOrFile.dyn_cast<ModuleDecl *>(), outputFilename, sps,
+//         parallelOutputFilenames, globalHash);
+//   }();
 
-  if (instance.GetInvocation().GetCompilerOptions().IsEmitIRAction()) {
-    return true;
-  }
+//   if (instance.GetInvocation().GetCompilerOptions().IsEmitIRAction()) {
+//     return true;
+//   }
 
-  return stone::PerformCodeGenBackend(
-      instance, outputFilename, codeGenResult.GetLLVMModule(), globalHash);
-}
+//   return stone::PerformCodeGenBackend(
+//       instance, outputFilename, codeGenResult.GetLLVMModule(), globalHash);
+// }
 
-// \return llvm::Module if IR generation is successful
-CodeGenResult stone::PerformCodeGenIR(CompilerInstance &instance,
-                                      SourceFile *primarySourceFile,
-                                      llvm::StringRef moduleName,
-                                      const PrimaryFileSpecificPaths &sps,
-                                      llvm::GlobalVariable *&globalHash) {
+// // \return llvm::Module if IR generation is successful
+// CodeGenResult stone::PerformCodeGenIR(CompilerInstance &instance,
+//                                       SourceFile *primarySourceFile,
+//                                       llvm::StringRef moduleName,
+//                                       const PrimaryFileSpecificPaths &sps,
+//                                       llvm::GlobalVariable *&globalHash) {
 
-  assert(
-      primarySourceFile->HasTypeChecked() &&
-      "Unable to perform ir-gen on a source-file that was not type-checked.");
+//   assert(
+//       primarySourceFile->HasTypeChecked() &&
+//       "Unable to perform ir-gen on a source-file that was not
+//       type-checked.");
 
-  CodeGenContext codeGen(instance.GetInvocation().GetCodeGenOptions(),
-                         instance.GetASTContext());
+//   CodeGenContext codeGen(instance.GetInvocation().GetCodeGenOptions(),
+//                          instance.GetASTContext());
 
-  ModuleNameAndOuptFileName moduleNameAndOuptFileName =
-      std::make_pair(moduleName, sps.outputFilename);
+//   ModuleNameAndOuptFileName moduleNameAndOuptFileName =
+//       std::make_pair(moduleName, sps.outputFilename);
 
-  CodeGenModule codeGenModule(codeGen, nullptr, moduleNameAndOuptFileName);
-  codeGenModule.EmitSourceFile(*primarySourceFile);
+//   CodeGenModule codeGenModule(codeGen, nullptr, moduleNameAndOuptFileName);
+//   codeGenModule.EmitSourceFile(*primarySourceFile);
 
-  return CodeGenResult(std::move(codeGen.llvmContext),
-                       std::unique_ptr<llvm::Module>{
-                           codeGenModule.GetClangCodeGen().ReleaseModule()},
-                       std::move(codeGen.llvmTargetMachine));
-}
+//   return CodeGenResult(std::move(codeGen.llvmContext),
+//                        std::unique_ptr<llvm::Module>{
+//                            codeGenModule.GetClangCodeGen().ReleaseModule()},
+//                        std::move(codeGen.llvmTargetMachine));
+// }
 
-///\return the generated module
-CodeGenResult
-stone::PerformCodeGenIR(CompilerInstance &instance, ModuleDecl *moduleDecl,
-                        llvm::StringRef moduleName,
-                        const PrimaryFileSpecificPaths &sps,
-                        ArrayRef<std::string> parallelOutputFilenames,
-                        llvm::GlobalVariable *&globalHash) {
+// ///\return the generated module
+// CodeGenResult
+// stone::PerformCodeGenIR(CompilerInstance &instance, ModuleDecl *moduleDecl,
+//                         llvm::StringRef moduleName,
+//                         const PrimaryFileSpecificPaths &sps,
+//                         ArrayRef<std::string> parallelOutputFilenames,
+//                         llvm::GlobalVariable *&globalHash) {
 
-  CodeGenContext codeGen(instance.GetInvocation().GetCodeGenOptions(),
-                         instance.GetASTContext());
+//   CodeGenContext codeGen(instance.GetInvocation().GetCodeGenOptions(),
+//                          instance.GetASTContext());
 
-  ModuleNameAndOuptFileName moduleNameAndOuptFileName =
-      std::make_pair(moduleName, sps.outputFilename);
-}
+//   ModuleNameAndOuptFileName moduleNameAndOuptFileName =
+//       std::make_pair(moduleName, sps.outputFilename);
+// }
 
-// \return true if syntax analysis is successful
-bool stone::PerformCodeGenBackend(CompilerInstance &instance,
-                                  llvm::StringRef outputFilename,
-                                  llvm::Module *irModule,
-                                  llvm::GlobalVariable *&globalHash) {
+// // \return true if syntax analysis is successful
+// bool stone::PerformCodeGenBackend(CompilerInstance &instance,
+//                                   llvm::StringRef outputFilename,
+//                                   llvm::Module *irModule,
+//                                   llvm::GlobalVariable *&globalHash) {
 
-  return CodeGenBackend::EmitOutputFile(
-      instance.GetInvocation().GetCodeGenOptions(), instance.GetASTContext(),
-      irModule, outputFilename);
-}
+//   return CodeGenBackend::EmitOutputFile(
+//       instance.GetInvocation().GetCodeGenOptions(), instance.GetASTContext(),
+//       irModule, outputFilename);
+// }
 
-bool stone::PerformCompileLLVM(CompilerInstance &compiler) { return false; }
+// bool stone::PerformCompileLLVM(CompilerInstance &compiler) { return false; }
 
 bool CompilerInstance::ParseAction::ExecuteAction() {
 
@@ -328,6 +330,14 @@ bool CompilerInstance::EmitASTAction::ExecuteAction() { return true; }
 
 bool CompilerInstance::EmitIRAction::ExecuteAction() {
 
+  auto TryNotifyEmitCodeConsumer = [&](CodeGenResult *result) -> void {
+    if (HasConsumer()) {
+      if (auto emittedCodeConsumer =
+              llvm::cast<EmitCodeAction>(GetConsumer())) {
+        emittedCodeConsumer->ConsumeEmittedCode(result);
+      }
+    }
+  };
   if (instance.IsCompileForWholeModule()) {
     // Perform whole modufle
     const PrimaryFileSpecificPaths psps =
@@ -343,6 +353,8 @@ bool CompilerInstance::EmitIRAction::ExecuteAction() {
     CodeGenResult result =
         ExecuteAction(instance.GetMainModule(), outputFilename, psps,
                       parallelOutputFilenames, globalHash);
+
+    TryNotifyEmitCodeConsumer(&result);
   }
   if (instance.IsCompileForSourceFile()) {
     instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
@@ -354,14 +366,36 @@ bool CompilerInstance::EmitIRAction::ExecuteAction() {
 
       CodeGenResult result =
           ExecuteAction(primarySourceFile, outputFilename, psps, globalHash);
+      TryNotifyEmitCodeConsumer(&result);
     });
   }
   return true;
 }
 
 CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
-    SourceFile &sourceFile, llvm::StringRef moduleName,
-    const PrimaryFileSpecificPaths &sps, llvm::GlobalVariable *&globalHash) {}
+    SourceFile &primarySourceFile, llvm::StringRef moduleName,
+    const PrimaryFileSpecificPaths &sps, llvm::GlobalVariable *&globalHash) {
+
+  assert(
+      primarySourceFile.HasTypeChecked() &&
+      "Unable to perform ir-gen on a source-file that was not type-checked.");
+
+  CodeGenContext codeGenContext(instance.GetInvocation().GetCodeGenOptions(),
+                                instance.GetASTContext());
+
+  ModuleNameAndOuptFileName moduleNameAndOuptFileName =
+      std::make_pair(moduleName, sps.outputFilename);
+
+  CodeGenModule codeGenModule(codeGenContext, nullptr,
+                              moduleNameAndOuptFileName);
+  codeGenModule.EmitSourceFile(primarySourceFile);
+
+  return CodeGenResult(std::move(codeGenContext.llvmContext),
+                       std::unique_ptr<llvm::Module>{
+                           codeGenModule.GetClangCodeGen().ReleaseModule()},
+                       std::move(codeGenContext.llvmTargetMachine),
+                       sps.outputFilename, globalHash);
+}
 
 ///\return the generated module
 CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
@@ -371,3 +405,11 @@ CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
     llvm::GlobalVariable *&globalHash) {}
 
 bool CompilerInstance::EmitObjectAction::ExecuteAction() { return true; }
+
+void CompilerInstance::EmitObjectAction::ConsumeEmittedCode(
+    CodeGenResult *result) {
+
+  CodeGenBackend::EmitOutputFile(
+      instance.GetInvocation().GetCodeGenOptions(), instance.GetASTContext(),
+      result->GetLLVMModule(), result->GetOutputFilename());
+}

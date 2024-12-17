@@ -306,11 +306,14 @@ private:
 
   public:
     EmitCodeAction(CompilerInstance &instance) : ASTAction(instance) {}
+
+  public:
+    virtual void ConsumeEmittedCode(CodeGenResult *result) {}
   };
 
   class EmitIRAction final : public EmitCodeAction {
 
-    CodeGenResult ExecuteAction(SourceFile &sourceFile,
+    CodeGenResult ExecuteAction(SourceFile &primarySourceFile,
                                 llvm::StringRef moduleName,
                                 const PrimaryFileSpecificPaths &sps,
                                 llvm::GlobalVariable *&globalHash);
@@ -359,7 +362,7 @@ private:
     CompilerActionKind GetSelfActionKind() const override {
       return CompilerActionKind::EmitObject;
     }
-    void DepCompleted(CompilerAction *action) override;
+    void ConsumeEmittedCode(CodeGenResult *result) override;
   };
 
 public:

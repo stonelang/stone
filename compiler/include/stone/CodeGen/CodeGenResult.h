@@ -17,6 +17,8 @@ class CodeGenResult final {
   std::unique_ptr<llvm::LLVMContext> llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::TargetMachine> llvmTargetMachine;
+  llvm::StringRef outputFilename;
+  llvm::GlobalVariable *globalHash;
 
   CodeGenResult()
       : llvmContext(nullptr), llvmModule(nullptr), llvmTargetMachine(nullptr) {}
@@ -34,9 +36,12 @@ public:
   /// needed, use \c CodeGenResult ::null() instead.
   explicit CodeGenResult(std::unique_ptr<llvm::LLVMContext> &&llvmContext,
                          std::unique_ptr<llvm::Module> &&llvmModule,
-                         std::unique_ptr<llvm::TargetMachine> &&Target)
+                         std::unique_ptr<llvm::TargetMachine> &&Target,
+                         llvm::StringRef outputFilename,
+                         llvm::GlobalVariable *globalHash)
       : llvmContext(std::move(llvmContext)), llvmModule(std::move(llvmModule)),
-        llvmTargetMachine(std::move(llvmTargetMachine)) {}
+        llvmTargetMachine(std::move(llvmTargetMachine)),
+        outputFilename(outputFilename), globalHash(globalHash) {}
 
 public:
   explicit operator bool() const {
@@ -54,6 +59,8 @@ public:
     return llvmTargetMachine.get();
   }
   llvm::TargetMachine *GetTargetMachine() { return llvmTargetMachine.get(); }
+  llvm::StringRef GetOutputFilename() { return outputFilename; }
+  llvm::GlobalVariable* GetGlobalHash() { return globalHash; }
 
 public:
   /// Release ownership of the context and module to the caller, consuming
