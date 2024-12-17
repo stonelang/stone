@@ -116,8 +116,8 @@ private:
     /// Return the compiler
     CompilerInstance &GetCompilerInstance();
 
-  protected:
-    CompilerAction(CompilerInstance &instance);
+  public:
+    CompilerAction(CompilerInstance &instance) : instance(instance) {}
     virtual ~CompilerAction() {}
 
   public:
@@ -241,7 +241,7 @@ private:
   public:
     bool ExecuteAction() override;
 
-    CompilerActionKind GetDepActionKind() override {
+    CompilerActionKind GetDepActionKind() const override {
       return CompilerActionKind::Parse;
     }
 

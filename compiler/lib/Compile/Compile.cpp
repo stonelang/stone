@@ -63,12 +63,10 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishCompile();
   }
   }
-
   compiler.SetObservation(observation);
-
-  // if (compiler.HasObservation()) {
-  //   compiler.GetObservation()->CompletedCommandLineParsing(compiler);
-  // }
+  if (compiler.HasObservation()) {
+    compiler.GetObservation()->CompletedCommandLineParsing(compiler);
+  }
 
   // // Now, setup the compiler
   // if (!compiler.Setup()) {

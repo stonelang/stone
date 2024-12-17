@@ -52,7 +52,7 @@ bool CompilerInstance::ExecuteAction(CompilerAction &action) {
   return action.FinishAction();
 }
 
-std::unique_ptr<CompilerAction>
+std::unique_ptr<CompilerInstance::CompilerAction>
 CompilerInstance::ConstructAction(CompilerActionKind kind) {
   switch (kind) {
   // case CompilerActionKind::PrintHelp:
