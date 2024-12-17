@@ -234,6 +234,22 @@ private:
     }
   };
 
+  class EmitParseAction final : public ASTAction {
+  public:
+    EmitParseAction(CompilerInstance &instance) : ASTAction(instance) {}
+
+  public:
+    bool ExecuteAction() override;
+
+    CompilerActionKind GetDepActionKind() const override {
+      return CompilerActionKind::Parse;
+    }
+
+    CompilerActionKind GetSelfActionKind() const override {
+      return CompilerActionKind::EmitParse;
+    }
+  };
+
   class ResolveImportsAction final : public ASTAction {
   public:
     ResolveImportsAction(CompilerInstance &instance) : ASTAction(instance) {}
@@ -266,13 +282,45 @@ private:
     }
   };
 
+  class EmitASTAction final : public ASTAction {
+  public:
+    EmitASTAction(CompilerInstance &instance) : ASTAction(instance) {}
+
+  public:
+    bool ExecuteAction() override;
+
+  public:
+    CompilerActionKind GetDepActionKind() const override {
+      return CompilerActionKind::TypeCheck;
+    }
+    CompilerActionKind GetSelfActionKind() const override {
+      return CompilerActionKind::EmitAST;
+    }
+  };
+
   class EmitCodeAction : public ASTAction {
+
+  protected:
+    CodeGenResult *result;
+    llvm::GlobalVariable *globalHash;
+
   public:
     EmitCodeAction(CompilerInstance &instance) : ASTAction(instance) {}
   };
 
   class EmitIRAction final : public EmitCodeAction {
-    CodeGenResult *result;
+
+    CodeGenResult ExecuteAction(SourceFile &sourceFile,
+                                llvm::StringRef moduleName,
+                                const PrimaryFileSpecificPaths &sps,
+                                llvm::GlobalVariable *&globalHash);
+
+    ///\return the generated module
+    CodeGenResult ExecuteAction(ModuleDecl *moduleDecl,
+                                llvm::StringRef moduleName,
+                                const PrimaryFileSpecificPaths &sps,
+                                ArrayRef<std::string> parallelOutputFilenames,
+                                llvm::GlobalVariable *&globalHash);
 
   public:
     EmitIRAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
@@ -282,7 +330,7 @@ private:
 
   public:
     CompilerActionKind GetDepActionKind() const override {
-      return CompilerActionKind::ResolveImports;
+      return CompilerActionKind::TypeCheck;
     }
     CompilerActionKind GetSelfActionKind() const override {
       return CompilerActionKind::EmitIR;

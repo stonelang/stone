@@ -130,67 +130,6 @@ bool stone::PerformCompile(CompilerInstance &instance,
   return stone::PerformEmitCode(instance);
 }
 
-bool stone::PerformParse(CompilerInstance &instance) {
-  FrontendStatsTracer tracer(instance.GetStats(), "parse-source-file");
-
-  CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
-  if (instance.HasObservation()) {
-    codeCompletionCallbacks =
-        instance.GetObservation()->GetCodeCompletionCallbacks();
-  }
-  instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-    if (!stone::PerformParse(instance, sourceFile)) {
-      return false;
-    }
-    sourceFile.SetParsedStage();
-    if (codeCompletionCallbacks) {
-      codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
-    }
-  });
-
-  return true;
-}
-
-bool stone::PerformParse(CompilerInstance &instance, SourceFile &sourceFile) {
-  Parser parser(sourceFile, instance.GetASTContext());
-  if (!parser.ParseTopLevelDecls()) {
-    return false;
-  }
-  return true;
-}
-
-// \return true if syntax analysis is successful
-bool stone::PerformResolveImports(CompilerInstance &instance) { return false; }
-
-// \return true if syntax analysis is successful
-bool stone::PerformResolveImports(CompilerInstance &instance,
-                                  SourceFile &sourceFile) {
-  return false;
-}
-
-bool stone::PerformTypeCheck(CompilerInstance &instance) {
-
-  FrontendStatsTracer tracer(instance.GetStats(), "type-check");
-
-  instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
-    stone::PerformTypeCheck(instance, sourceFile);
-    sourceFile.SetTypeCheckedStage();
-  });
-}
-
-bool stone::PerformTypeCheck(CompilerInstance &instance,
-                             SourceFile &sourceFile) {
-
-  assert(sourceFile.HasParsed() &&
-         "Unable to type-check a source-file that was not parsed.");
-
-  TypeChecker checker(sourceFile);
-  if (!checker.TypeCheckTopLevelDecls()) {
-    return false;
-  }
-  return true;
-}
-
 // \return true if the code generation was successfull
 bool stone::PerformEmitCode(CompilerInstance &instance) {
 
@@ -341,6 +280,7 @@ bool CompilerInstance::ParseAction::ExecuteAction() {
 
   return true;
 }
+bool CompilerInstance::EmitParseAction::ExecuteAction() { return true; }
 
 bool CompilerInstance::ResolveImportsAction::ExecuteAction() {
 
@@ -384,6 +324,50 @@ bool CompilerInstance::TypeCheckAction::ExecuteAction() {
   return true;
 }
 
-bool CompilerInstance::EmitIRAction::ExecuteAction() {}
+bool CompilerInstance::EmitASTAction::ExecuteAction() { return true; }
 
-bool CompilerInstance::EmitObjectAction::ExecuteAction() {}
+bool CompilerInstance::EmitIRAction::ExecuteAction() {
+
+  if (instance.IsCompileForWholeModule()) {
+    // Perform whole modufle
+    const PrimaryFileSpecificPaths psps =
+        instance.GetInvocation()
+            .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+
+    std::vector<std::string> parallelOutputFilenames =
+        instance.GetInvocation()
+            .GetCompilerOptions()
+            .inputsAndOutputs.CopyOutputFilenames();
+    llvm::StringRef outputFilename = psps.outputFilename;
+
+    CodeGenResult result =
+        ExecuteAction(instance.GetMainModule(), outputFilename, psps,
+                      parallelOutputFilenames, globalHash);
+  }
+  if (instance.IsCompileForSourceFile()) {
+    instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
+      // Get the paths for the primary source file.
+      const PrimaryFileSpecificPaths psps =
+          instance.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
+              primarySourceFile);
+      llvm::StringRef outputFilename = psps.outputFilename;
+
+      CodeGenResult result =
+          ExecuteAction(primarySourceFile, outputFilename, psps, globalHash);
+    });
+  }
+  return true;
+}
+
+CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
+    SourceFile &sourceFile, llvm::StringRef moduleName,
+    const PrimaryFileSpecificPaths &sps, llvm::GlobalVariable *&globalHash) {}
+
+///\return the generated module
+CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
+    ModuleDecl *moduleDecl, llvm::StringRef moduleName,
+    const PrimaryFileSpecificPaths &sps,
+    ArrayRef<std::string> parallelOutputFilenames,
+    llvm::GlobalVariable *&globalHash) {}
+
+bool CompilerInstance::EmitObjectAction::ExecuteAction() { return true; }
