@@ -83,8 +83,6 @@ enum class ModuleAliasLookupOption {
 
 class ASTContext final {
 
-  ClangImporter &clangImporter;
-
   /// The search path options
   const SearchPathOptions &searchPathOpts;
 
@@ -94,10 +92,13 @@ class ASTContext final {
 
   Builtin builtin;
 
-  /// Table for all
-  IdentifierTable identifiers;
+  ClangImporter &clangImporter;
 
   mutable llvm::BumpPtrAllocator allocator;
+
+  using IdentifierTable =
+      llvm::StringMap<Identifier::Aligner, llvm::BumpPtrAllocator &>;
+  mutable IdentifierTable identifierTable;
 
   mutable DeclNameTable declNames;
 
@@ -143,8 +144,8 @@ public:
   ASTContext &operator=(const ASTContext &) = delete;
 
   ASTContext(LangOptions &langOpts, const SearchPathOptions &searchPathOpts,
-             ClangImporter &clangImporter, DiagnosticEngine &de,
-             StatsReporter *stats);
+             ClangImporter &clangImporter, DiagnosticEngine &DE,
+             StatsReporter *SR);
 
   ~ASTContext();
 
@@ -156,12 +157,11 @@ public:
 
 public:
   ClangImporter &GetClangImporter() { return clangImporter; }
-  ///
-  Identifier GetIdentifier(llvm::StringRef name);
+  Builtin &GetBuiltin() { return builtin; }
+
+  Identifier GetIdentifier(llvm::StringRef identifierText) const;
 
   DeclNameTable &GetDeclNameTable() { return declNames; }
-  ///
-  Builtin &GetBuiltin() { return builtin; }
 
   DiagnosticEngine &GetDiags() { return de; }
   ///
@@ -258,7 +258,7 @@ public:
   void Deallocate(void *Ptr) const {}
 
   /// Memory allocator
-  llvm::BumpPtrAllocator &GetAllocator() const { return allocator; }
+  llvm::BumpPtrAllocator &GetAllocator() const;
 
   /// The total amount of memory used
   size_t GetTotalMemoryAllocated() const {

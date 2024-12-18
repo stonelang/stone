@@ -16,7 +16,7 @@ ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
                        ClangImporter &clangImporter, DiagnosticEngine &de,
                        StatsReporter *stats)
     : langOpts(langOpts), searchPathOpts(spOpts), clangImporter(clangImporter),
-      de(de), stats(stats), identifiers(allocator), builtin(*this) {}
+      de(de), stats(stats), identifierTable(allocator), builtin(*this) {}
 
 ASTContext::~ASTContext() {
   for (auto &cleanup : cleanups) {
@@ -24,9 +24,17 @@ ASTContext::~ASTContext() {
   }
 }
 
-Identifier ASTContext::GetIdentifier(llvm::StringRef name) {
-  return identifiers.GetIdentifier(name);
+Identifier ASTContext::GetIdentifier(llvm::StringRef identifierText) const {
+
+  if ((identifierText.data() != nullptr) && !identifierText.empty() &&
+      identifierText.size() > 0) {
+    auto pair = std::make_pair(identifierText, Identifier::Aligner());
+    auto first = identifierTable.insert(pair).first;
+    return Identifier(first->getKeyData());
+  }
+  return Identifier(nullptr);
 }
+llvm::BumpPtrAllocator &ASTContext::GetAllocator() const { return allocator; }
 
 void ASTContext::AddLoadedModule(ModuleDecl *mod) {
   assert(mod);

@@ -74,14 +74,15 @@ CompilerInstance::ConstructAction(CompilerActionKind kind) {
   switch (kind) {
   case CompilerActionKind::PrintHelp:
     return std::make_unique<CompilerInstance::PrintHelpAction>(*this);
-  case CompilerActionKind::PrintHelpHidden:
-    return std::make_unique<CompilerInstance::PrintHelpHiddenAction>(*this);
-  case CompilerActionKind::PrintVersion:
-    return std::make_unique<CompilerInstance::PrintVersionAction>(*this);
-  case CompilerActionKind::PrintFeature:
-    return std::make_unique<CompilerInstance::PrintFeatureAction>(*this);
-  case CompilerActionKind::Parse:
-    return std::make_unique<CompilerInstance::ParseAction>(*this);
+    // case CompilerActionKind::PrintHelpHidden:
+    //   return
+    //   std::make_unique<CompilerInstance::PrintHelpHiddenAction>(*this);
+    // case CompilerActionKind::PrintVersion:
+    //   return std::make_unique<CompilerInstance::PrintVersionAction>(*this);
+    // case CompilerActionKind::PrintFeature:
+    //   return std::make_unique<CompilerInstance::PrintFeatureAction>(*this);
+    // case CompilerActionKind::Parse:
+    //   return std::make_unique<CompilerInstance::ParseAction>(*this);
     // case CompilerActionKind::EmitParse:
     //   return std::make_unique<CompilerInstance::EmitParseAction>(*this);
     // case CompilerActionKind::ResolveImports:

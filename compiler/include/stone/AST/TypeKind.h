@@ -25,12 +25,6 @@ enum class TypeSpecKind : uint8_t {
 #include "stone/AST/TypeKind.def"
 };
 
-enum class TypeRepKind : uint8_t {
-  None = 0,
-#define ABSTRACT_TYPE(ID, Parent) ID,
-#include "stone/AST/TypeKind.def"
-};
-
 enum class ScalarTypeKind {
   Pointer,
   BlockPointer,
@@ -42,6 +36,14 @@ enum class ScalarTypeKind {
   FloatingComplex,
   FixedPoint
 };
+
+enum class BuiltinTypeKind : std::underlying_type<TypeKind>::type {
+#define TYPE(id, parent)
+#define BUILTIN_TYPE(id, parent)                                               \
+  id = std::underlying_type<TypeKind>::type(TypeKind::id),
+#include "stone/AST/TypeKind.def"
+};
+
 
 } // namespace stone
 #endif

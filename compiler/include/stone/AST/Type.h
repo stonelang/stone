@@ -49,8 +49,8 @@ class QualType;
 class TypeWalker;
 class CanType;
 class SugarType;
-class Int8;
-class Int16;
+class Int8Type;
+class Int16Type;
 class FunType;
 class StructType;
 class ASTContext;
@@ -139,11 +139,11 @@ public:
 
   ///\return true if the type is int8
   bool IsInt8Type() const;
-  Int8 *GetInt8Type() const;
+  Int8Type *GetInt8Type() const;
 
   ///\return true if the type is int16
   bool IsInt16Type() const;
-  Int16 *GetInt16Type() const;
+  Int16Type *GetInt16Type() const;
 
   ///\return true if the type is int32
   bool IsInt32Type() const;

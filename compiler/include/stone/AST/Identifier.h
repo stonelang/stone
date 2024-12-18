@@ -30,27 +30,17 @@ class DeclNameTable;
 class Identifier;
 class ASTContext;
 
-enum class IdentifierStatus { Enabled, Disabled, Reserved };
-
-/// Identifier and other related classes are aligned to
-/// 8 bytes so that DeclName can use the lower 3 bits
-/// of a pointer to one of these classes.
-enum { IdentifierAlignment = 8 };
-
 /// One of these records is kept for each identifier that
 /// is lexed.  This contains information about whether the token was \#define'd,
 /// is a language keyword, or if it is a front-end token of some sort (e.g. a
 /// variable or function name).  The preprocessor keeps this information in a
 /// set, and all tok::identifier tokens have a pointer to one of these.
 /// It is aligned to 8 bytes because DeclName needs the lower 3 bits.
-class alignas(IdentifierAlignment) Identifier {
+class Identifier {
   friend class ASTContext;
   friend class DeclNameBase;
-  friend class IdentifierTable;
 
-  IdentifierStatus status;
   const char *dataPointer;
-  bool isSpecial;
 
 public:
   enum : size_t {
@@ -59,29 +49,18 @@ public:
     SpareBitMask = ((intptr_t)1 << NumLowBitsAvailable) - 1
   };
 
+  /// A type with the alignment expected of a valid \c Identifier::Pointer .
   struct alignas(uint64_t) Aligner {};
 
   static_assert(alignof(Aligner) >= RequiredAlignment,
                 "Identifier table will provide enough spare bits");
 
 private:
-  explicit Identifier(const char *dataPointer)
-      : dataPointer(dataPointer), status(IdentifierStatus::Enabled) {}
-
-private:
-  void Enable() { status = IdentifierStatus::Enabled; }
-  void Disable() {
-    if (IsKeyword())
-      status = IdentifierStatus::Disabled;
-  }
-  void Reserve() {
-    if (IsKeyword())
-      status = IdentifierStatus::Reserved;
-  }
+  explicit Identifier(const char *dataPtr) : dataPointer(dataPtr) {}
 
 public:
   explicit Identifier()
-      : dataPointer(nullptr), status(IdentifierStatus::Disabled) {}
+      : dataPointer(nullptr) {}
 
   const char *GetPointer() const { return dataPointer; }
 
@@ -93,7 +72,6 @@ public:
            "Tried getting length of empty identifier");
     return ::strlen(dataPointer);
   }
-  bool IsSpecial() { return isSpecial; }
   bool IsEmpty() const { return dataPointer == nullptr; }
   bool IsEqual(llvm::StringRef other) const {
     return GetString().equals(other);
@@ -212,28 +190,6 @@ public:
   }
 };
 
-/// Implements an efficient mapping from strings to Identifier nodes.
-///
-/// This has no other purpose, but this is an extremely performance-critical
-/// piece of the code, as each occurrence of every identifier goes through
-/// here when lexed.
-class IdentifierTable final {
-  friend ASTContext;
-
-  using Entries =
-      llvm::StringMap<Identifier::Aligner, llvm::BumpPtrAllocator &>;
-
-  mutable Entries entries;
-
-public:
-  /// Create the identifier table, populating it with info about the
-  /// language keywords for the language specified by \p LangOpts.
-  explicit IdentifierTable(llvm::BumpPtrAllocator &allocator);
-
-public:
-  Identifier GetIdentifier(llvm::StringRef identifierStr) const;
-};
-
 namespace detail {
 /// SpecialDeclName is used as a base of various uncommon special names.
 /// This class is needed since DeclName has not enough space to store
@@ -243,7 +199,7 @@ namespace detail {
 /// DeclName needs the lower 3 bits to store the kind of common names.
 /// DeclNameExtra is tightly coupled to DeclName and any change
 /// here is very likely to require changes in DeclName(Table).
-class alignas(IdentifierAlignment) SpecialDeclName {
+class SpecialDeclName {
   friend class stone::DeclName;
   friend class stone::DeclNameTable;
 

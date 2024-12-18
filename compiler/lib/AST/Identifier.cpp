@@ -65,22 +65,6 @@ using namespace stone;
 // #include "stone/Basic/TokenKind.def"
 // }
 
-IdentifierTable::IdentifierTable(llvm::BumpPtrAllocator &allocator)
-    : entries(allocator) {
-  // AddKeywords(langOpts);
-}
-
-Identifier IdentifierTable::GetIdentifier(llvm::StringRef identifierStr) const {
-
-  if ((identifierStr.data() != nullptr) && !identifierStr.empty() &&
-      identifierStr.size() > 0) {
-    auto pair = std::make_pair(identifierStr, Identifier::Aligner());
-    auto first = entries.insert(pair).first;
-    return Identifier(first->getKeyData());
-  }
-  return Identifier(nullptr);
-}
-
 //===----------------------------------------------------------------------===//
 // Stats
 //===----------------------------------------------------------------------===//

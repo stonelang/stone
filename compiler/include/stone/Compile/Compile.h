@@ -44,19 +44,19 @@ bool PerformResolveImports(CompilerInstance &instance);
 bool PerformResolveImports(CompilerInstance &instance, SourceFile &sourceFile);
 
 // \return true if semantic analysis is successful
-bool PerformTypeCheck(CompilerInstance &instance);
+bool PerformSemanticAnalysis(CompilerInstance &instance);
 
 // \return true if semantic analysis is successful
-bool PerformTypeCheck(CompilerInstance &instance, SourceFile &sourceFile);
+bool PerformSemanticAnalysis(CompilerInstance &instance, SourceFile &sourceFile);
 
 // \return true if emit-ast is true
 bool PerformEmitAST(CompilerInstance &instance);
 
 // \return true if the code generation was successfull
-bool PerformEmitCode(CompilerInstance &instance);
+bool CompletedSemanticAnalysis(CompilerInstance &instance);
 
 // \return true if the code generation was successfull
-bool PerformEmitCode(CompilerInstance &instance,
+bool CompletedSemanticAnalysis(CompilerInstance &instance,
                      ModuleDeclOrModuleFile moduleOrFile,
                      const PrimaryFileSpecificPaths &sps);
 

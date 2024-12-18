@@ -35,6 +35,7 @@ Builtin::Builtin(ASTContext &astContext)
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
   Builtin##Name##Identifier = astContext.GetIdentifier(IdStr);
 #include "stone/AST/BuiltinIdentifiers.def"
+  
 }
 
 Builtin::~Builtin() {}
