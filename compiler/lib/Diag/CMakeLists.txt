@@ -1,9 +1,10 @@
 set(stone_diag_sources
   DiagnosticEngine.cpp
-  
+  TextDiagnosticBuffering.cpp
+  TextDiagnosticPrinter.cpp
+  TextDiagnosticEmitter.cpp
 
   LINK_LIBS
-
   StoneBasic
 
   DEPENDS
