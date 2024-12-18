@@ -57,9 +57,19 @@ using namespace stone;
 
 namespace stone {
 
+/// Creates a TargetMachine from the IRGen opts and AST Context.
+std::unique_ptr<llvm::TargetMachine>
+CreateTargetMachine(const CodeGenOptions &codeGenOpts, ASTContext &AC);
+
 class CodeGenBackend final {
 
   CodeGenBackend() = delete;
+
+  static bool WriteOutputFile();
+
+  static bool TryOpenOputFile();
+
+  static void WriteEmptyOutputFiles();
 
 public:
   static bool EmitOutputFile(const CodeGenOptions &Opts, ASTContext &Ctx,
@@ -70,34 +80,13 @@ public:
                  llvm::sys::Mutex *DiagMutex, llvm::GlobalVariable *HashGlobal,
                  llvm::Module *Module, llvm::TargetMachine *TargetMachine,
                  StringRef OutputFilename, StatsReporter *Stats);
-
-  static bool WriteOutputFile();
 };
-
-bool EmitBackendOutput(const CodeGenOptions &Opts, ASTContext &Ctx,
-                       llvm::Module *Module, StringRef OutputFilename);
-
-bool EmitBackendOutput(const CodeGenOptions &Opts, DiagnosticEngine &Diags,
-                       llvm::sys::Mutex *DiagMutex,
-                       llvm::GlobalVariable *HashGlobal, llvm::Module *Module,
-                       llvm::TargetMachine *TargetMachine,
-                       StringRef OutputFilename, StatsReporter *Stats);
 
 void EmbedBitCode(const CodeGenOptions &Opts, llvm::Module *Module);
 
 void OptimizeLLVM(const CodeGenOptions &Opts, llvm::Module *Module,
                   llvm::TargetMachine *TargetMachine,
                   llvm::raw_pwrite_stream *out);
-
-bool WriteBackendOutputFile();
-
-bool TryOpenBackendOputFile();
-
-void WriteEmptyBackendOutputFiles();
-
-/// Creates a TargetMachine from the IRGen opts and AST Context.
-std::unique_ptr<llvm::TargetMachine>
-CreateTargetMachine(const CodeGenOptions &codeGenOpts, ASTContext &astContext);
 
 } // namespace stone
 

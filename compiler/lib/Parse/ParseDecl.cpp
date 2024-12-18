@@ -3,6 +3,8 @@
 
 using namespace stone;
 
+ParsingDeclSpec::~ParsingDeclSpec() {}
+
 bool Parser::IsStartOfDecl() {
   return curTok.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private,
                       tok::kw_fun, tok::kw_struct, tok::kw_class,
@@ -218,3 +220,5 @@ ParserResult<VarDecl> Parser::ParseVarDecl(ParsingDeclSpec &spec) {
 
 //   return DeclName();
 // }
+
+ParserResult<StructDecl> Parser::ParseStructDecl(ParsingDeclSpec &spec) {}

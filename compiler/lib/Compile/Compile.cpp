@@ -54,7 +54,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
     return FinishCompile(Status::Error());
   }
 
-  switch (compiler.GetPrimaryAction()) {
+  switch (compiler.GetPrimaryActionKind()) {
   case CompilerActionKind::PrintHelp:
   case CompilerActionKind::PrintHelpHidden:
   case CompilerActionKind::PrintVersion:
@@ -81,186 +81,186 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return FinishCompile();
 }
 
-bool CompilerInstance::ParseAction::ExecuteAction() {
-
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
-
-  CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
-  if (instance.HasObservation()) {
-    codeCompletionCallbacks =
-        instance.GetObservation()->GetCodeCompletionCallbacks();
-  }
-
-  auto PerformParse = [&](CompilerInstance &instance,
-                          SourceFile &sourceFile) -> bool {
-    Parser parser(sourceFile, instance.GetASTContext());
-    if (!parser.ParseTopLevelDecls()) {
-      return false;
-    }
-    return true;
-  };
-
-  instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-    if (!PerformParse(instance, sourceFile)) {
-      return false;
-    }
-    sourceFile.SetParsedStage();
-    if (codeCompletionCallbacks) {
-      codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
-    }
-  });
-
+bool CompilerInstance::PrintHelpAction::ExecuteAction() {
+  invocation.GetCompilerOptions().PrintHelp();
   return true;
 }
-bool CompilerInstance::EmitParseAction::ExecuteAction() {
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
-
+bool CompilerInstance::PrintHelpHiddenAction::ExecuteAction() {
+  invocation.GetCompilerOptions().PrintHelp(true);
   return true;
 }
 
-bool CompilerInstance::ResolveImportsAction::ExecuteAction() {
+// bool CompilerInstance::ParseAction::ExecuteAction() {
 
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
+//   FrontendStatsTracer actionTracer(instance.GetStats(),
+//                                    GetSelfActionKindString());
 
-  auto PeformResolveImports = [&](CompilerInstance &instance,
-                                  SourceFile &sourceFile) -> bool {
-    return true;
-  };
+//   CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
+//   if (instance.HasObservation()) {
+//     codeCompletionCallbacks =
+//         instance.GetObservation()->GetCodeCompletionCallbacks();
+//   }
 
-  instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-    if (!PeformResolveImports(instance, sourceFile)) {
-      return false;
-    }
-  });
+//   auto PerformParse = [&](CompilerInstance &instance,
+//                           SourceFile &sourceFile) -> bool {
+//     return Parser(sourceFile, instance.GetASTContext()).ParseTopLevelDecls();
+//   };
 
-  return true;
-}
-bool CompilerInstance::TypeCheckAction::ExecuteAction() {
+//   instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+//     if (!PerformParse(instance, sourceFile)) {
+//       return false;
+//     }
+//     sourceFile.SetParsedStage();
+//     if (codeCompletionCallbacks) {
+//       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
+//     }
+//   });
 
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
+//   return true;
+// }
+// bool CompilerInstance::EmitParseAction::ExecuteAction() {
+//   FrontendStatsTracer actionTracer(instance.GetStats(),
+//                                    GetSelfActionKindString());
 
-  auto PerformTypeChecking = [&](CompilerInstance &instance,
-                                 SourceFile &sourceFile) -> bool {
-    assert(sourceFile.HasParsed() &&
-           "Unable to type-check a source-file that was not parsed.");
+//   return true;
+// }
 
-    TypeChecker checker(sourceFile);
-    if (!checker.TypeCheckTopLevelDecls()) {
-      return false;
-    }
-    return true;
-  };
+// bool CompilerInstance::ResolveImportsAction::ExecuteAction() {
 
-  instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
-    if (!PerformTypeChecking(instance, sourceFile)) {
-      return false;
-    }
-    sourceFile.SetTypeCheckedStage();
-  });
-  return true;
-}
+//   FrontendStatsTracer actionTracer(instance.GetStats(),
+//                                    GetSelfActionKindString());
 
-bool CompilerInstance::EmitASTAction::ExecuteAction() {
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
+//   auto PeformResolveImports = [&](CompilerInstance &instance,
+//                                   SourceFile &sourceFile) -> bool {
+//     return true;
+//   };
 
-  return true;
-}
+//   instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+//     if (!PeformResolveImports(instance, sourceFile)) {
+//       return false;
+//     }
+//   });
 
-bool CompilerInstance::EmitIRAction::ExecuteAction() {
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
+//   return true;
+// }
+// bool CompilerInstance::TypeCheckAction::ExecuteAction() {
 
-  auto TryNotifyEmitCodeConsumer = [&](CodeGenResult *result) -> void {
-    if (HasConsumer()) {
-      if (auto emittedCodeConsumer =
-              llvm::cast<EmitCodeAction>(GetConsumer())) {
-        emittedCodeConsumer->ConsumeEmittedCode(result);
-      }
-    }
-  };
-  if (instance.IsCompileForWholeModule()) {
-    // Perform whole modufle
-    const PrimaryFileSpecificPaths psps =
-        instance.GetInvocation()
-            .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+//   FrontendStatsTracer actionTracer(instance.GetStats(),
+//                                    GetSelfActionKindString());
 
-    std::vector<std::string> parallelOutputFilenames =
-        instance.GetInvocation()
-            .GetCompilerOptions()
-            .inputsAndOutputs.CopyOutputFilenames();
-    llvm::StringRef outputFilename = psps.outputFilename;
+//   auto PerformTypeChecking = [&](CompilerInstance &instance,
+//                                  SourceFile &sourceFile) -> bool {
+//     assert(sourceFile.HasParsed() &&
+//            "Unable to type-check a source-file that was not parsed.");
 
-    CodeGenResult result =
-        ExecuteAction(instance.GetMainModule(), outputFilename, psps,
-                      parallelOutputFilenames, globalHash);
+//     return TypeChecker(sourceFile).TypeCheckTopLevelDecls();
+//   };
 
-    TryNotifyEmitCodeConsumer(&result);
-  }
-  if (instance.IsCompileForSourceFile()) {
-    instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
-      // Get the paths for the primary source file.
-      const PrimaryFileSpecificPaths psps =
-          instance.GetInvocation().GetPrimaryFileSpecificPathsForSyntaxFile(
-              primarySourceFile);
-      llvm::StringRef outputFilename = psps.outputFilename;
+//   instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
+//     if (!PerformTypeChecking(instance, sourceFile)) {
+//       return false;
+//     }
+//     sourceFile.SetTypeCheckedStage();
+//   });
+//   return true;
+// }
 
-      CodeGenResult result =
-          ExecuteAction(primarySourceFile, outputFilename, psps, globalHash);
-      TryNotifyEmitCodeConsumer(&result);
-    });
-  }
-  return true;
-}
+// bool CompilerInstance::EmitASTAction::ExecuteAction() {
+//   FrontendStatsTracer actionTracer(instance.GetStats(),
+//                                    GetSelfActionKindString());
 
-CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
-    SourceFile &primarySourceFile, llvm::StringRef moduleName,
-    const PrimaryFileSpecificPaths &sps, llvm::GlobalVariable *&globalHash) {
+//   return true;
+// }
 
-  assert(
-      primarySourceFile.HasTypeChecked() &&
-      "Unable to perform ir-gen on a source-file that was not type-checked.");
+// bool CompilerInstance::EmitIRAction::ExecuteAction() {
+//   FrontendStatsTracer actionTracer(instance.GetStats(),
+//                                    GetSelfActionKindString());
 
-  CodeGenContext codeGenContext(instance.GetInvocation().GetCodeGenOptions(),
-                                instance.GetASTContext());
+//   auto TryNotifyEmitCodeConsumer = [&](CodeGenResult *result) -> void {
+//     if (HasConsumer()) {
+//       if (auto emittedCodeConsumer =
+//               llvm::cast<EmitCodeAction>(GetConsumer())) {
+//         emittedCodeConsumer->ConsumeEmittedCode(result);
+//       }
+//     }
+//   };
+//   if (instance.IsCompileForWholeModule()) {
+//     // Perform whole modufle
+//     const PrimaryFileSpecificPaths psps =
+//         instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
 
-  ModuleNameAndOuptFileName moduleNameAndOuptFileName =
-      std::make_pair(moduleName, sps.outputFilename);
+//     std::vector<std::string> parallelOutputFilenames =
+//         instance.GetCopyOfOutputFilenames();
 
-  CodeGenModule codeGenModule(codeGenContext, nullptr,
-                              moduleNameAndOuptFileName);
-  codeGenModule.EmitSourceFile(primarySourceFile);
+//     llvm::StringRef outputFilename = psps.outputFilename;
 
-  return CodeGenResult(std::move(codeGenContext.llvmContext),
-                       std::unique_ptr<llvm::Module>{
-                           codeGenModule.GetClangCodeGen().ReleaseModule()},
-                       std::move(codeGenContext.llvmTargetMachine),
-                       sps.outputFilename, globalHash);
-}
+//     CodeGenResult result =
+//         ExecuteAction(instance.GetMainModule(), outputFilename, psps,
+//                       parallelOutputFilenames, globalHash);
 
-///\return the generated module
-CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
-    ModuleDecl *moduleDecl, llvm::StringRef moduleName,
-    const PrimaryFileSpecificPaths &sps,
-    ArrayRef<std::string> parallelOutputFilenames,
-    llvm::GlobalVariable *&globalHash) {}
+//     TryNotifyEmitCodeConsumer(&result);
+//   }
+//   if (instance.IsCompileForSourceFile()) {
+//     instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
+//       // Get the paths for the primary source file.
+//       const PrimaryFileSpecificPaths psps =
+//           instance.GetPrimaryFileSpecificPathsForSyntaxFile(primarySourceFile);
 
-bool CompilerInstance::EmitObjectAction::ExecuteAction() {
+//       llvm::StringRef outputFilename = psps.outputFilename;
 
-  FrontendStatsTracer emitObjectActionTracer(instance.GetStats(),
-                                             GetSelfActionKindString());
+//       CodeGenResult result =
+//           ExecuteAction(primarySourceFile, outputFilename, psps, globalHash);
+//       TryNotifyEmitCodeConsumer(&result);
+//     });
+//   }
+//   return true;
+// }
 
-  return true;
-}
+// CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
+//     SourceFile &primarySourceFile, llvm::StringRef moduleName,
+//     const PrimaryFileSpecificPaths &sps, llvm::GlobalVariable *&globalHash) {
 
-void CompilerInstance::EmitObjectAction::ConsumeEmittedCode(
-    CodeGenResult *result) {
+//   assert(
+//       primarySourceFile.HasTypeChecked() &&
+//       "Unable to perform ir-gen on a source-file that was not
+//       type-checked.");
 
-  CodeGenBackend::EmitOutputFile(
-      instance.GetInvocation().GetCodeGenOptions(), instance.GetASTContext(),
-      result->GetLLVMModule(), result->GetOutputFilename());
-}
+//   CodeGenContext codeGenContext(instance.GetInvocation().GetCodeGenOptions(),
+//                                 instance.GetASTContext());
+
+//   ModuleNameAndOuptFileName moduleNameAndOuptFileName =
+//       std::make_pair(moduleName, sps.outputFilename);
+
+//   CodeGenModule codeGenModule(codeGenContext, nullptr,
+//                               moduleNameAndOuptFileName);
+//   codeGenModule.EmitSourceFile(primarySourceFile);
+
+//   return CodeGenResult(std::move(codeGenContext.llvmContext),
+//                        std::unique_ptr<llvm::Module>{
+//                            codeGenModule.GetClangCodeGen().ReleaseModule()},
+//                        std::move(codeGenContext.llvmTargetMachine),
+//                        sps.outputFilename, globalHash);
+// }
+
+// ///\return the generated module
+// CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
+//     ModuleDecl *moduleDecl, llvm::StringRef moduleName,
+//     const PrimaryFileSpecificPaths &sps,
+//     ArrayRef<std::string> parallelOutputFilenames,
+//     llvm::GlobalVariable *&globalHash) {}
+
+// bool CompilerInstance::EmitObjectAction::ExecuteAction() {
+
+//   FrontendStatsTracer emitObjectActionTracer(instance.GetStats(),
+//                                              GetSelfActionKindString());
+
+//   return true;
+// }
+
+// void CompilerInstance::EmitObjectAction::ConsumeEmittedCode(
+//     CodeGenResult *result) {
+
+//   CodeGenBackend::EmitOutputFile(
+//       instance.GetInvocation().GetCodeGenOptions(), instance.GetASTContext(),
+//       result->GetLLVMModule(), result->GetOutputFilename());
+// }

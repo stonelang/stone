@@ -196,191 +196,196 @@ private:
     }
   };
 
-  class PrintVersionAction final : public CompilerAction {
+  // class PrintVersionAction final : public CompilerAction {
 
-  public:
-    PrintVersionAction(CompilerInstance &instance) : CompilerAction(instance) {}
+  // public:
+  //   PrintVersionAction(CompilerInstance &instance) : CompilerAction(instance)
+  //   {}
 
-  public:
-    bool ExecuteAction() override;
-    CompilerActionKind GetSelfActionKind() const override {
-      return CompilerActionKind::PrintVersion;
-    }
-  };
+  // public:
+  //   bool ExecuteAction() override;
+  //   CompilerActionKind GetSelfActionKind() const override {
+  //     return CompilerActionKind::PrintVersion;
+  //   }
+  // };
 
-  class PrintFeatureAction final : public CompilerAction {
-  public:
-    PrintFeatureAction(CompilerInstance &instance) : CompilerAction(instance) {}
+  // class PrintFeatureAction final : public CompilerAction {
+  // public:
+  //   PrintFeatureAction(CompilerInstance &instance) : CompilerAction(instance)
+  //   {}
 
-  public:
-    bool ExecuteAction() override;
-    CompilerActionKind GetSelfActionKind() const override {
-      return CompilerActionKind::PrintFeature;
-    }
-  };
-  class ASTAction : public CompilerAction {
-  public:
-    ASTAction(CompilerInstance &instance) : CompilerAction(instance) {}
-  };
+  // public:
+  //   bool ExecuteAction() override;
+  //   CompilerActionKind GetSelfActionKind() const override {
+  //     return CompilerActionKind::PrintFeature;
+  //   }
+  // };
+  // class ASTAction : public CompilerAction {
+  // public:
+  //   ASTAction(CompilerInstance &instance) : CompilerAction(instance) {}
+  // };
 
-  class ParseAction : public ASTAction {
-  public:
-    ParseAction(CompilerInstance &instance) : ASTAction(instance) {}
+  // class ParseAction : public ASTAction {
+  // public:
+  //   ParseAction(CompilerInstance &instance) : ASTAction(instance) {}
 
-  public:
-    bool ExecuteAction() override;
-    CompilerActionKind GetSelfActionKind() const override {
-      return CompilerActionKind::Parse;
-    }
-  };
+  // public:
+  //   bool ExecuteAction() override;
+  //   CompilerActionKind GetSelfActionKind() const override {
+  //     return CompilerActionKind::Parse;
+  //   }
+  // };
 
-  class EmitParseAction final : public ASTAction {
-  public:
-    EmitParseAction(CompilerInstance &instance) : ASTAction(instance) {}
+  // class EmitParseAction final : public ASTAction {
+  // public:
+  //   EmitParseAction(CompilerInstance &instance) : ASTAction(instance) {}
 
-  public:
-    bool ExecuteAction() override;
+  // public:
+  //   bool ExecuteAction() override;
 
-    CompilerActionKind GetDepActionKind() const override {
-      return CompilerActionKind::Parse;
-    }
+  //   CompilerActionKind GetDepActionKind() const override {
+  //     return CompilerActionKind::Parse;
+  //   }
 
-    CompilerActionKind GetSelfActionKind() const override {
-      return CompilerActionKind::EmitParse;
-    }
-  };
+  //   CompilerActionKind GetSelfActionKind() const override {
+  //     return CompilerActionKind::EmitParse;
+  //   }
+  // };
 
-  class ResolveImportsAction final : public ASTAction {
-  public:
-    ResolveImportsAction(CompilerInstance &instance) : ASTAction(instance) {}
+  // class ResolveImportsAction final : public ASTAction {
+  // public:
+  //   ResolveImportsAction(CompilerInstance &instance) : ASTAction(instance) {}
 
-  public:
-    bool ExecuteAction() override;
+  // public:
+  //   bool ExecuteAction() override;
 
-    CompilerActionKind GetDepActionKind() const override {
-      return CompilerActionKind::Parse;
-    }
+  //   CompilerActionKind GetDepActionKind() const override {
+  //     return CompilerActionKind::Parse;
+  //   }
 
-    CompilerActionKind GetSelfActionKind() const override {
-      return CompilerActionKind::ResolveImports;
-    }
-  };
+  //   CompilerActionKind GetSelfActionKind() const override {
+  //     return CompilerActionKind::ResolveImports;
+  //   }
+  // };
 
-  class TypeCheckAction final : public ASTAction {
-  public:
-    TypeCheckAction(CompilerInstance &instance) : ASTAction(instance) {}
+  // class TypeCheckAction final : public ASTAction {
+  // public:
+  //   TypeCheckAction(CompilerInstance &instance) : ASTAction(instance) {}
 
-  public:
-    bool ExecuteAction() override;
+  // public:
+  //   bool ExecuteAction() override;
 
-  public:
-    CompilerActionKind GetDepActionKind() const override {
-      return CompilerActionKind::ResolveImports;
-    }
-    CompilerActionKind GetSelfActionKind() const override {
-      return CompilerActionKind::TypeCheck;
-    }
-  };
+  // public:
+  //   CompilerActionKind GetDepActionKind() const override {
+  //     return CompilerActionKind::ResolveImports;
+  //   }
+  //   CompilerActionKind GetSelfActionKind() const override {
+  //     return CompilerActionKind::TypeCheck;
+  //   }
+  // };
 
-  class EmitASTAction final : public ASTAction {
-  public:
-    EmitASTAction(CompilerInstance &instance) : ASTAction(instance) {}
+  // class EmitASTAction final : public ASTAction {
+  // public:
+  //   EmitASTAction(CompilerInstance &instance) : ASTAction(instance) {}
 
-  public:
-    bool ExecuteAction() override;
+  // public:
+  //   bool ExecuteAction() override;
 
-  public:
-    CompilerActionKind GetDepActionKind() const override {
-      return CompilerActionKind::TypeCheck;
-    }
-    CompilerActionKind GetSelfActionKind() const override {
-      return CompilerActionKind::EmitAST;
-    }
-  };
+  // public:
+  //   CompilerActionKind GetDepActionKind() const override {
+  //     return CompilerActionKind::TypeCheck;
+  //   }
+  //   CompilerActionKind GetSelfActionKind() const override {
+  //     return CompilerActionKind::EmitAST;
+  //   }
+  // };
 
-  class EmitCodeAction : public ASTAction {
+  // class EmitCodeAction : public ASTAction {
 
-  protected:
-    CodeGenResult *result;
-    llvm::GlobalVariable *globalHash;
+  // protected:
+  //   CodeGenResult *result;
+  //   llvm::GlobalVariable *globalHash;
 
-  public:
-    EmitCodeAction(CompilerInstance &instance) : ASTAction(instance) {}
+  // public:
+  //   EmitCodeAction(CompilerInstance &instance) : ASTAction(instance) {}
 
-  public:
-    virtual void ConsumeEmittedCode(CodeGenResult *result) {}
-  };
+  // public:
+  //   virtual void ConsumeEmittedCode(CodeGenResult *result) {}
+  // };
 
-  class EmitIRAction final : public EmitCodeAction {
+  // class EmitIRAction final : public EmitCodeAction {
 
-    CodeGenResult ExecuteAction(SourceFile &primarySourceFile,
-                                llvm::StringRef moduleName,
-                                const PrimaryFileSpecificPaths &sps,
-                                llvm::GlobalVariable *&globalHash);
+  //   ///\return the generated module
+  //   CodeGenResult ExecuteAction(SourceFile &primarySourceFile,
+  //                               llvm::StringRef moduleName,
+  //                               const PrimaryFileSpecificPaths &sps,
+  //                               llvm::GlobalVariable *&globalHash);
 
-    ///\return the generated module
-    CodeGenResult ExecuteAction(ModuleDecl *moduleDecl,
-                                llvm::StringRef moduleName,
-                                const PrimaryFileSpecificPaths &sps,
-                                ArrayRef<std::string> parallelOutputFilenames,
-                                llvm::GlobalVariable *&globalHash);
+  //   ///\return the generated module
+  //   CodeGenResult ExecuteAction(ModuleDecl *moduleDecl,
+  //                               llvm::StringRef moduleName,
+  //                               const PrimaryFileSpecificPaths &sps,
+  //                               ArrayRef<std::string>
+  //                               parallelOutputFilenames, llvm::GlobalVariable
+  //                               *&globalHash);
 
-  public:
-    EmitIRAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
+  // public:
+  //   EmitIRAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
 
-  public:
-    bool ExecuteAction() override;
+  // public:
+  //   bool ExecuteAction() override;
 
-  public:
-    CompilerActionKind GetDepActionKind() const override {
-      return CompilerActionKind::TypeCheck;
-    }
-    CompilerActionKind GetSelfActionKind() const override {
-      return CompilerActionKind::EmitIR;
-    }
+  // public:
+  //   CompilerActionKind GetDepActionKind() const override {
+  //     return CompilerActionKind::TypeCheck;
+  //   }
+  //   CompilerActionKind GetSelfActionKind() const override {
+  //     return CompilerActionKind::EmitIR;
+  //   }
 
-  public:
-    CodeGenResult *GetCodeGenResult() { return result; }
+  // public:
+  //   CodeGenResult *GetCodeGenResult() { return result; }
 
-  public:
-    static bool classof(const CompilerAction *action) {
-      return action->IsEmitIRAction();
-    }
-  };
+  // public:
+  //   static bool classof(const CompilerAction *action) {
+  //     return action->IsEmitIRAction();
+  //   }
+  // };
 
-  class EmitObjectAction final : public EmitCodeAction {
-  public:
-    EmitObjectAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
+  // class EmitObjectAction final : public EmitCodeAction {
+  // public:
+  //   EmitObjectAction(CompilerInstance &instance) : EmitCodeAction(instance)
+  //   {}
 
-  public:
-    bool ExecuteAction() override;
+  // public:
+  //   bool ExecuteAction() override;
 
-  public:
-    CompilerActionKind GetDepActionKind() const override {
-      return CompilerActionKind::EmitIR;
-    }
-    CompilerActionKind GetSelfActionKind() const override {
-      return CompilerActionKind::EmitObject;
-    }
-    void ConsumeEmittedCode(CodeGenResult *result) override;
-  };
+  // public:
+  //   CompilerActionKind GetDepActionKind() const override {
+  //     return CompilerActionKind::EmitIR;
+  //   }
+  //   CompilerActionKind GetSelfActionKind() const override {
+  //     return CompilerActionKind::EmitObject;
+  //   }
+  //   void ConsumeEmittedCode(CodeGenResult *result) override;
+  // };
 
-  class EmitBCAction final : public EmitCodeAction {
-  public:
-    EmitBCAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
+  // class EmitBCAction final : public EmitCodeAction {
+  // public:
+  //   EmitBCAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
 
-  public:
-    bool ExecuteAction() override;
+  // public:
+  //   bool ExecuteAction() override;
 
-  public:
-    CompilerActionKind GetDepActionKind() const override {
-      return CompilerActionKind::EmitIR;
-    }
-    CompilerActionKind GetSelfActionKind() const override {
-      return CompilerActionKind::EmitBC;
-    }
-    void ConsumeEmittedCode(CodeGenResult *result) override;
-  };
+  // public:
+  //   CompilerActionKind GetDepActionKind() const override {
+  //     return CompilerActionKind::EmitIR;
+  //   }
+  //   CompilerActionKind GetSelfActionKind() const override {
+  //     return CompilerActionKind::EmitBC;
+  //   }
+  //   void ConsumeEmittedCode(CodeGenResult *result) override;
+  // };
 
 public:
   CompilerInstance(const CompilerInstance &) = delete;
@@ -411,7 +416,7 @@ public:
   StatsReporter *GetStats() { return stats.get(); }
 
   ///\the primary requested action
-  CompilerActionKind GetPrimaryAction() const {
+  CompilerActionKind GetPrimaryActionKind() const {
     return invocation.GetCompilerOptions().GetPrimaryAction();
   }
 
@@ -506,6 +511,23 @@ public:
     return GetInvocation()
         .GetCompilerOptions()
         .inputsAndOutputs.ShouldTreatAsLLVM();
+  }
+
+  std::vector<std::string> GetCopyOfOutputFilenames() const {
+    return invocation.GetCompilerOptions()
+        .inputsAndOutputs.CopyOutputFilenames();
+  }
+
+  const PrimaryFileSpecificPaths
+  GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode() const {
+    return invocation
+        .GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+  }
+
+  const PrimaryFileSpecificPaths
+  GetPrimaryFileSpecificPathsForSyntaxFile(SourceFile &primarySourceFile) {
+    return invocation.GetPrimaryFileSpecificPathsForSyntaxFile(
+        primarySourceFile);
   }
 
 public:

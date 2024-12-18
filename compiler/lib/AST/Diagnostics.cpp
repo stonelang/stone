@@ -1217,6 +1217,8 @@ DiagnosticInfo::FixIt::FixIt(CharSrcRange R, StringRef Str,
 TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &stream)
     : Stream(stream) {}
 
+TextDiagnosticPrinter::~TextDiagnosticPrinter() {}
+
 bool TextDiagnosticPrinter::finishProcessing() {
   // If there's an in-flight snippet, flush it.
   flush();
@@ -1248,3 +1250,5 @@ void TextDiagnosticPrinter::handleDiagnostic(SrcMgr &SM,
   }
   }
 }
+
+void TextDiagnosticPrinter::flush(bool includeTrailingBreak) {}

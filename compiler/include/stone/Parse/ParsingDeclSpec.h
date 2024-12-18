@@ -1,5 +1,5 @@
-#ifndef STONE_PARSE_DECL_SPEC_H
-#define STONE_PARSE_DECL_SPEC_H
+#ifndef STONE_PARSE_PARSING_DECL_SPEC_H
+#define STONE_PARSE_PARSING_DECL_SPEC_H
 
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/ParsingTypeSpec.h"

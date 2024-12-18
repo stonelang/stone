@@ -34,8 +34,25 @@ bool CompilerInstance::Setup() {
   return true;
 }
 
+CompilerActionKind CompilerInstance::CompilerAction::GetPrimaryActionKind() {
+  return instance.GetPrimaryActionKind();
+}
+
+bool CompilerInstance::CompilerAction::SetupAction() {
+  assert(HasSelfActionKind());
+  if (HasDepActionKind()) {
+    auto dep = instance.ConstructAction(GetDepActionKind());
+    assert(dep);
+    dep->SetConsumer(this);
+    if (!instance.ExecuteAction(*dep)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool CompilerInstance::ExecuteAction() {
-  return ExecuteAction(GetPrimaryAction());
+  return ExecuteAction(GetPrimaryActionKind());
 }
 
 bool CompilerInstance::ExecuteAction(CompilerActionKind kind) {
@@ -57,28 +74,29 @@ CompilerInstance::ConstructAction(CompilerActionKind kind) {
   switch (kind) {
   case CompilerActionKind::PrintHelp:
     return std::make_unique<CompilerInstance::PrintHelpAction>(*this);
-  case CompilerActionKind::PrintHelpHidden:
-    return std::make_unique<CompilerInstance::PrintHelpHiddenAction>(*this);
-  case CompilerActionKind::PrintVersion:
-    return std::make_unique<CompilerInstance::PrintVersionAction>(*this);
-  case CompilerActionKind::PrintFeature:
-    return std::make_unique<CompilerInstance::PrintFeatureAction>(*this);
-  case CompilerActionKind::Parse:
-    return std::make_unique<CompilerInstance::ParseAction>(*this);
-  // case CompilerActionKind::EmitParse:
-  //   return std::make_unique<CompilerInstance::EmitParseAction>(*this);
-  case CompilerActionKind::ResolveImports:
-    return std::make_unique<CompilerInstance::ResolveImportsAction>(*this);
-  case CompilerActionKind::TypeCheck:
-    return std::make_unique<CompilerInstance::TypeCheckAction>(*this);
-  case CompilerActionKind::EmitAST:
-    return std::make_unique<CompilerInstance::EmitASTAction>(*this);
-  case CompilerActionKind::EmitIR:
-    return std::make_unique<CompilerInstance::EmitIRAction>(*this);
-  // case CompilerActionKind::EmitBC:
-  //   return std::make_unique<CompilerInstance::EmitBCAction>(*this);
-  case CompilerActionKind::EmitObject:
-    return std::make_unique<CompilerInstance::EmitObjectAction>(*this);
+    // case CompilerActionKind::PrintHelpHidden:
+    //   return
+    //   std::make_unique<CompilerInstance::PrintHelpHiddenAction>(*this);
+    // case CompilerActionKind::PrintVersion:
+    //   return std::make_unique<CompilerInstance::PrintVersionAction>(*this);
+    // case CompilerActionKind::PrintFeature:
+    //   return std::make_unique<CompilerInstance::PrintFeatureAction>(*this);
+    // case CompilerActionKind::Parse:
+    //   return std::make_unique<CompilerInstance::ParseAction>(*this);
+    // case CompilerActionKind::EmitParse:
+    //   return std::make_unique<CompilerInstance::EmitParseAction>(*this);
+    // case CompilerActionKind::ResolveImports:
+    //   return std::make_unique<CompilerInstance::ResolveImportsAction>(*this);
+    // case CompilerActionKind::TypeCheck:
+    //   return std::make_unique<CompilerInstance::TypeCheckAction>(*this);
+    // case CompilerActionKind::EmitAST:
+    //   return std::make_unique<CompilerInstance::EmitASTAction>(*this);
+    // case CompilerActionKind::EmitIR:
+    //   return std::make_unique<CompilerInstance::EmitIRAction>(*this);
+    // case CompilerActionKind::EmitBC:
+    //   return std::make_unique<CompilerInstance::EmitBCAction>(*this);
+    // case CompilerActionKind::EmitObject:
+    //   return std::make_unique<CompilerInstance::EmitObjectAction>(*this);
     // case CompilerActionKind::EmitModule:
     //   return std::make_unique<EmitModuleAction>(*this);
     // case CompilerActionKind::MergeModules:

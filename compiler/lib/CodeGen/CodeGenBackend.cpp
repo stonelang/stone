@@ -51,32 +51,6 @@ stone::CreateTargetMachine(const CodeGenOptions &codeGenOpts,
   return std::unique_ptr<llvm::TargetMachine>(targetMachine);
 }
 
-bool stone::EmitBackendOutput(const CodeGenOptions &Opts, ASTContext &Ctx,
-                              llvm::Module *Module, StringRef OutputFilename) {
-
-  // Build TargetMachine.
-  auto targetMachine = stone::CreateTargetMachine(Opts, Ctx);
-  if (!targetMachine) {
-    return true;
-  }
-  Module->setDataLayout(Ctx.GetClangImporter()
-                            .GetClangInstance()
-                            .getTarget()
-                            .getDataLayoutString());
-
-  // stone::EmbedBitCode();
-}
-
-bool stone::EmitBackendOutput(const CodeGenOptions &Opts,
-                              DiagnosticEngine &Diags,
-                              llvm::sys::Mutex *DiagMutex,
-                              llvm::GlobalVariable *HashGlobal,
-                              llvm::Module *Module,
-                              llvm::TargetMachine *TargetMachine,
-                              StringRef OutputFilename, StatsReporter *Stats) {
-  return false;
-}
-
 void stone::OptimizeLLVM(const CodeGenOptions &Opts, llvm::Module *Module,
                          llvm::TargetMachine *TargetMachine,
                          llvm::raw_pwrite_stream *out) {
@@ -91,21 +65,29 @@ void stone::OptimizeLLVM(const CodeGenOptions &Opts, llvm::Module *Module,
 
 void stone::EmbedBitCode(const CodeGenOptions &Opts, llvm::Module *Module) {}
 
-bool stone::WriteBackendOutputFile() {}
-
-bool stone::TryOpenBackendOputFile() {}
-
-void stone::WriteEmptyBackendOutputFiles() {}
-
 /// Emit a backend file
-bool CodeGenBackend::EmitOutputFile(const CodeGenOptions &Opts, ASTContext &Ctx,
+bool CodeGenBackend::EmitOutputFile(const CodeGenOptions &Opts, ASTContext &AC,
                                     llvm::Module *Module,
-                                    StringRef OutputFilename) {}
+                                    StringRef OutputFilename) {
+
+  // Build TargetMachine.
+  auto targetMachine = stone::CreateTargetMachine(Opts, AC);
+  if (!targetMachine) {
+    return true;
+  }
+  Module->setDataLayout(AC.GetClangImporter()
+                            .GetClangInstance()
+                            .getTarget()
+                            .getDataLayoutString());
+}
 
 bool CodeGenBackend::EmitOutputFile(
     const CodeGenOptions &Opts, DiagnosticEngine &Diags,
     llvm::sys::Mutex *DiagMutex, llvm::GlobalVariable *HashGlobal,
     llvm::Module *Module, llvm::TargetMachine *TargetMachine,
-    StringRef OutputFilename, StatsReporter *Stats) {}
+    StringRef OutputFilename, StatsReporter *Stats) {
+
+  // AC.GetClangImporter().createOutputFile();
+}
 
 bool CodeGenBackend::WriteOutputFile() {}

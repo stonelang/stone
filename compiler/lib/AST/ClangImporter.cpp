@@ -30,6 +30,8 @@
 
 using namespace stone;
 
+ClangModuleImporter::ClangModuleImporter() {}
+
 ClangImporter::ClangImporter()
     : clangInstance(new clang::CompilerInstance()),
       fileMgr(GetFileSystemOptions()) {}
