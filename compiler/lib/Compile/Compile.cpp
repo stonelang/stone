@@ -78,11 +78,30 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 }
 
 bool CompilerInstance::PrintHelpAction::ExecuteAction() {
+  assert(GetSelfActionKind() == GetPrimaryActionKind() &&
+         "PrintHelpAction has to be the PrimaryAction!");
+
   instance.GetInvocation().GetCompilerOptions().PrintHelp();
   return true;
 }
 bool CompilerInstance::PrintHelpHiddenAction::ExecuteAction() {
+  assert(GetSelfActionKind() == GetPrimaryActionKind() &&
+         "PrintHelpAction has to be the PrimaryAction!");
+
   instance.GetInvocation().GetCompilerOptions().PrintHelp(true);
+  return true;
+}
+bool CompilerInstance::PrintVersionAction::ExecuteAction() {
+  assert(GetSelfActionKind() == GetPrimaryActionKind() &&
+         "PrintHelpAction has to be the PrimaryAction!");
+
+  return true;
+}
+
+bool CompilerInstance::PrintFeatureAction::ExecuteAction() {
+  assert(GetSelfActionKind() == GetPrimaryActionKind() &&
+         "PrintHelpAction has to be the PrimaryAction!");
+
   return true;
 }
 

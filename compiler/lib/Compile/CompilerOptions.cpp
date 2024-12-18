@@ -329,7 +329,7 @@ bool CompilerOptions::IsEmitAssemblyAction() const {
 
 bool CompilerOptions::IsImmediateAction() const {
   switch (primaryActionKind) {
-  case CompilerActionKind::None: //TODO : ??
+  case CompilerActionKind::None: // TODO : ??
   case CompilerActionKind::PrintVersion:
   case CompilerActionKind::PrintHelp:
   case CompilerActionKind::PrintHelpHidden:

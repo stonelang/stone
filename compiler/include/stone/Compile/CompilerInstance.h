@@ -196,30 +196,28 @@ private:
     }
   };
 
-  // class PrintVersionAction final : public CompilerAction {
+  class PrintVersionAction final : public CompilerAction {
 
-  // public:
-  //   PrintVersionAction(CompilerInstance &instance) : CompilerAction(instance)
-  //   {}
+  public:
+    PrintVersionAction(CompilerInstance &instance) : CompilerAction(instance) {}
 
-  // public:
-  //   bool ExecuteAction() override;
-  //   CompilerActionKind GetSelfActionKind() const override {
-  //     return CompilerActionKind::PrintVersion;
-  //   }
-  // };
+  public:
+    bool ExecuteAction() override;
+    CompilerActionKind GetSelfActionKind() const override {
+      return CompilerActionKind::PrintVersion;
+    }
+  };
 
-  // class PrintFeatureAction final : public CompilerAction {
-  // public:
-  //   PrintFeatureAction(CompilerInstance &instance) : CompilerAction(instance)
-  //   {}
+  class PrintFeatureAction final : public CompilerAction {
+  public:
+    PrintFeatureAction(CompilerInstance &instance) : CompilerAction(instance) {}
 
-  // public:
-  //   bool ExecuteAction() override;
-  //   CompilerActionKind GetSelfActionKind() const override {
-  //     return CompilerActionKind::PrintFeature;
-  //   }
-  // };
+  public:
+    bool ExecuteAction() override;
+    CompilerActionKind GetSelfActionKind() const override {
+      return CompilerActionKind::PrintFeature;
+    }
+  };
   // class ASTAction : public CompilerAction {
   // public:
   //   ASTAction(CompilerInstance &instance) : CompilerAction(instance) {}
