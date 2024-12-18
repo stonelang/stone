@@ -218,21 +218,21 @@ private:
       return CompilerActionKind::PrintFeature;
     }
   };
-  // class ASTAction : public CompilerAction {
-  // public:
-  //   ASTAction(CompilerInstance &instance) : CompilerAction(instance) {}
-  // };
+  class ASTAction : public CompilerAction {
+  public:
+    ASTAction(CompilerInstance &instance) : CompilerAction(instance) {}
+  };
 
-  // class ParseAction : public ASTAction {
-  // public:
-  //   ParseAction(CompilerInstance &instance) : ASTAction(instance) {}
+  class ParseAction : public ASTAction {
+  public:
+    ParseAction(CompilerInstance &instance) : ASTAction(instance) {}
 
-  // public:
-  //   bool ExecuteAction() override;
-  //   CompilerActionKind GetSelfActionKind() const override {
-  //     return CompilerActionKind::Parse;
-  //   }
-  // };
+  public:
+    bool ExecuteAction() override;
+    CompilerActionKind GetSelfActionKind() const override {
+      return CompilerActionKind::Parse;
+    }
+  };
 
   // class EmitParseAction final : public ASTAction {
   // public:

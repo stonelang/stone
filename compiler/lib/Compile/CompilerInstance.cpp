@@ -80,8 +80,8 @@ CompilerInstance::ConstructAction(CompilerActionKind kind) {
     return std::make_unique<CompilerInstance::PrintVersionAction>(*this);
   case CompilerActionKind::PrintFeature:
     return std::make_unique<CompilerInstance::PrintFeatureAction>(*this);
-    // case CompilerActionKind::Parse:
-    //   return std::make_unique<CompilerInstance::ParseAction>(*this);
+  case CompilerActionKind::Parse:
+    return std::make_unique<CompilerInstance::ParseAction>(*this);
     // case CompilerActionKind::EmitParse:
     //   return std::make_unique<CompilerInstance::EmitParseAction>(*this);
     // case CompilerActionKind::ResolveImports:

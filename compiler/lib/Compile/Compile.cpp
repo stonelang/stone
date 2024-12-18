@@ -86,53 +86,53 @@ bool CompilerInstance::PrintHelpAction::ExecuteAction() {
 }
 bool CompilerInstance::PrintHelpHiddenAction::ExecuteAction() {
   assert(GetSelfActionKind() == GetPrimaryActionKind() &&
-         "PrintHelpAction has to be the PrimaryAction!");
+         "PrintHelpHiddenAction has to be the PrimaryAction!");
 
   instance.GetInvocation().GetCompilerOptions().PrintHelp(true);
   return true;
 }
 bool CompilerInstance::PrintVersionAction::ExecuteAction() {
   assert(GetSelfActionKind() == GetPrimaryActionKind() &&
-         "PrintHelpAction has to be the PrimaryAction!");
+         "PrintVersionAction has to be the PrimaryAction!");
 
   return true;
 }
 
 bool CompilerInstance::PrintFeatureAction::ExecuteAction() {
   assert(GetSelfActionKind() == GetPrimaryActionKind() &&
-         "PrintHelpAction has to be the PrimaryAction!");
+         "PrintFeatureAction has to be the PrimaryAction!");
 
   return true;
 }
 
-// bool CompilerInstance::ParseAction::ExecuteAction() {
+bool CompilerInstance::ParseAction::ExecuteAction() {
 
-//   FrontendStatsTracer actionTracer(instance.GetStats(),
-//                                    GetSelfActionKindString());
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
 
-//   CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
-//   if (instance.HasObservation()) {
-//     codeCompletionCallbacks =
-//         instance.GetObservation()->GetCodeCompletionCallbacks();
-//   }
+  CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
+  if (instance.HasObservation()) {
+    codeCompletionCallbacks =
+        instance.GetObservation()->GetCodeCompletionCallbacks();
+  }
 
-//   auto PerformParse = [&](CompilerInstance &instance,
-//                           SourceFile &sourceFile) -> bool {
-//     return Parser(sourceFile, instance.GetASTContext()).ParseTopLevelDecls();
-//   };
+  auto PerformParse = [&](CompilerInstance &instance,
+                          SourceFile &sourceFile) -> bool {
+    return Parser(sourceFile, instance.GetASTContext()).ParseTopLevelDecls();
+  };
 
-//   instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-//     if (!PerformParse(instance, sourceFile)) {
-//       return false;
-//     }
-//     sourceFile.SetParsedStage();
-//     if (codeCompletionCallbacks) {
-//       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
-//     }
-//   });
+  instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+    if (!PerformParse(instance, sourceFile)) {
+      return false;
+    }
+    sourceFile.SetParsedStage();
+    if (codeCompletionCallbacks) {
+      codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
+    }
+  });
 
-//   return true;
-// }
+  return true;
+}
 // bool CompilerInstance::EmitParseAction::ExecuteAction() {
 //   FrontendStatsTracer actionTracer(instance.GetStats(),
 //                                    GetSelfActionKindString());
