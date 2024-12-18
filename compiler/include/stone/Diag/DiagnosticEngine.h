@@ -1,8 +1,8 @@
 #ifndef STONE_DIAG_DIAGNOSTIC_ENGINE_H
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
-#include "stone/Diag/DiagnosticLevel.h"
-#include "stone/Diag/DiagnosticInfo.h"
+
+#include "stone/Diag/DiagnosticClient.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -36,10 +36,6 @@ class DiagnosticClient;
 class Identifier;
 class LangOptions;
 
-class DiagnosticFixIt final {
-public:
-};
-
 struct DiagnosticStorage final {};
 
 enum class DiagnosticArgumentKind {
@@ -64,6 +60,8 @@ private:
 
 public:
   explicit DiagnosticEngine();
+
+public:
 };
 
 class DiagnosticErrorTrap {
@@ -77,7 +75,6 @@ public:
 class InFlightDiagnostic : public StreamingDiagnostic {
 public:
 };
-
 
 class StoredDiagnostic {
 public:

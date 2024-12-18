@@ -2,7 +2,7 @@
 #define STONE_DIAG_DIAGNOSTIC_EMITTER_H
 
 #include "stone/Basic/SrcLoc.h"
-#include "stone/Diag/DiagnosticLevel.h"
+#include "stone/Diag/DiagnosticClient.h"
 
 namespace stone {
 class SrcLoc;

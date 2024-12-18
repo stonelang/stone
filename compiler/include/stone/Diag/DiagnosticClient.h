@@ -1,17 +1,55 @@
 #ifndef STONE_DIAG_DIAGNOSTIC_CLIENT_H
 #define STONE_DIAG_DIAGNOSTIC_CLIENT_H
 
-#include "stone/Diag/DiagnosticLevel.h"
-#include "stone/Diag/DiagnosticInfo.h"
+#include "llvm/ADT/SmallVector.h"
 
 namespace stone {
 namespace diags {
 
-class DiagnosticClient {
+/// The level of the diagnostic, after it has been through mapping.
+enum class DiagnosticLevel {
+  None = 0,
+  /// Lowest
+  Ignored,
+  Note,
+  Remark,
+  Warning,
+  Error,
+  /// Highest
+  Fatal,
+};
+
+class FixIt final {
 public:
-  DiagnosticClient();
+};
+
+class DiagnosticInfo final {
+public:
+  /// Format this diagnostic into a string, substituting the
+  /// formal arguments into the %0 slots.
+  ///
+  /// The result is appended onto the \p OutStr array.
+  void FormatDiagnostic(llvm::SmallVectorImpl<char> &OutStr) const;
+
+  /// Format the given format-string into the output buffer using the
+  /// arguments stored in this diagnostic.
+  void FormatDiagnostic(const char *DiagStr, const char *DiagEnd,
+                        llvm::SmallVectorImpl<char> &OutStr) const;
+};
+
+class DiagnosticClient {
+
+protected:
+  unsigned NumWarnings = 0; ///< Number of warnings reported
+  unsigned NumErrors = 0;   ///< Number of errors reported
 
 public:
+  DiagnosticClient();
+  virtual ~DiagnosticClient();
+
+public:
+  virtual void Clear() { NumWarnings = NumErrors = 0; }
+
   /// Callback to inform the diagnostic client that processing of all
   /// source files has ended.
   virtual void FinishProcessing() {}
@@ -34,6 +72,10 @@ public:
 
 class BlankDiagnosticClient final : public DiagnosticClient {
 public:
+  void HandleDiagnostic(DiagnosticLevel DiagLevel,
+                        const DiagnosticInfo &Info) override {
+    // Just ignore it.
+  }
 };
 
 /// Diagnostic consumer that forwards diagnostics along to an
