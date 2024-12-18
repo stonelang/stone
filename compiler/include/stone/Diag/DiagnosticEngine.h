@@ -2,6 +2,7 @@
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
 #include "stone/Diag/DiagnosticLevel.h"
+#include "stone/Diag/DiagnosticInfo.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -77,9 +78,6 @@ class InFlightDiagnostic : public StreamingDiagnostic {
 public:
 };
 
-class DiagnosticInfo {
-public:
-};
 
 class StoredDiagnostic {
 public:
