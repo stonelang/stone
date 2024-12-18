@@ -70,7 +70,7 @@ public:
                                 const DiagnosticInfo &Info);
 };
 
-class BlankDiagnosticClient final : public DiagnosticClient {
+class NullDiagnosticClient final : public DiagnosticClient {
 public:
   void HandleDiagnostic(DiagnosticLevel DiagLevel,
                         const DiagnosticInfo &Info) override {
