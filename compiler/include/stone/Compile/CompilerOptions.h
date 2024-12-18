@@ -197,6 +197,9 @@ public:
   /// \return true if this is the EmitAssembly action
   bool IsEmitAssemblyAction() const;
 
+  /// \return true if this is an immediate action
+  bool IsImmediateAction() const;
+
   /// \return true if this is any action
   bool IsAction(CompilerActionKind k) const { return GetPrimaryAction() == k; }
 

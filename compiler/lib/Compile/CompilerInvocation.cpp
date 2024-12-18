@@ -184,11 +184,12 @@ Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
     return Status::Error();
   }
   // TODO: Pass MemoryBuffers in ParseCommandLine
-  if (ParseCompilerOptions(*inputArgList, langOpts, compilerOpts, GetDiags(),
-                           nullptr)
-          .IsError()) {
-    return Status::Error();
+  auto status = ParseCompilerOptions(*inputArgList, langOpts, compilerOpts,
+                                     GetDiags(), nullptr);
+  if (status.IsErrorOrHasCompletion()) {
+    return status;
   }
+
   if (GetCompilerOptions().DoesActionGenerateIR() ||
       GetCompilerOptions().DoesActionGenerateNativeCode()) {
     // TODO: hard coding -cc1 for now -- build out proper string.

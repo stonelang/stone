@@ -40,10 +40,9 @@ Status CompilerOptionsConverter::Convert(
     return Status::MakeHasCompletionAndIsError();
   }
 
-  // if(compilerOpts.IsHelpAction() || compilerOpts.IsHelpHiddenAction(){
-
-  // }
-
+  if (compilerOpts.IsImmediateAction()) {
+    return Status::MakeHasCompletion();
+  }
   // TODO: OK for now
   // assert(compilerOpts.inputsAndOutputs.HasInputs() &&
   //       "Inputs and Outputs should be empty");
@@ -52,6 +51,7 @@ Status CompilerOptionsConverter::Convert(
       CompilerInputsConverter(de, args, compilerOpts).Convert(buffers);
 
   if (!inputsAndOutputs) {
+    /// TODO: Diagnose
     return Status::MakeHasCompletionAndIsError();
   }
 
@@ -64,7 +64,6 @@ Status CompilerOptionsConverter::Convert(
   if (compilerOpts.GetInputsAndOutputs().HasInputs()) {
     assert(!inputsAndOutputs->HasInputs());
   } else {
-
     haveNewInputsAndOutputs = true;
     compilerOpts.GetInputsAndOutputs() = std::move(inputsAndOutputs).value();
 

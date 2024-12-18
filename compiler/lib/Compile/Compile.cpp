@@ -49,20 +49,16 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 
   CompilerInstance compiler(invocation);
 
-  if (compiler.HasPrimaryAction()) {
+  if (!compiler.HasPrimaryAction()) {
     // compiler.GetDiags().diagnose(diag::error_no_compile_action);
     return FinishCompile(Status::Error());
   }
 
-  switch (compiler.GetPrimaryActionKind()) {
-  case CompilerActionKind::PrintHelp:
-  case CompilerActionKind::PrintHelpHidden:
-  case CompilerActionKind::PrintVersion:
-  case CompilerActionKind::PrintFeature: {
+  if (compiler.GetInvocation().GetCompilerOptions().IsImmediateAction()) {
     compiler.ExecuteAction();
     return FinishCompile();
   }
-  }
+
   compiler.SetObservation(observation);
   if (compiler.HasObservation()) {
     compiler.GetObservation()->CompletedCommandLineParsing(compiler);

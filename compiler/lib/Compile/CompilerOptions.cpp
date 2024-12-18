@@ -327,6 +327,30 @@ bool CompilerOptions::IsEmitAssemblyAction() const {
   return primaryActionKind == CompilerActionKind::EmitAssembly;
 }
 
+bool CompilerOptions::IsImmediateAction() const {
+  switch (primaryActionKind) {
+  case CompilerActionKind::None: //TODO : ??
+  case CompilerActionKind::PrintVersion:
+  case CompilerActionKind::PrintHelp:
+  case CompilerActionKind::PrintHelpHidden:
+  case CompilerActionKind::PrintFeature:
+    return true;
+  case CompilerActionKind::Parse:
+  case CompilerActionKind::ResolveImports:
+  case CompilerActionKind::EmitParse:
+  case CompilerActionKind::TypeCheck:
+  case CompilerActionKind::EmitAST:
+  case CompilerActionKind::EmitIR:
+  case CompilerActionKind::EmitBC:
+  case CompilerActionKind::EmitModule:
+  case CompilerActionKind::MergeModules:
+  case CompilerActionKind::EmitObject:
+  case CompilerActionKind::EmitAssembly:
+    return false;
+  }
+  llvm_unreachable("Unhandled actionKind");
+}
+
 bool CompilerOptions::IsAnyAction(CompilerActionKind actionKind) {
   switch (actionKind) {
   case CompilerActionKind::None:
