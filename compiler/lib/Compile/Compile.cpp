@@ -82,11 +82,11 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
 }
 
 bool CompilerInstance::PrintHelpAction::ExecuteAction() {
-  invocation.GetCompilerOptions().PrintHelp();
+  instance.GetInvocation().GetCompilerOptions().PrintHelp();
   return true;
 }
 bool CompilerInstance::PrintHelpHiddenAction::ExecuteAction() {
-  invocation.GetCompilerOptions().PrintHelp(true);
+  instance.GetInvocation().GetCompilerOptions().PrintHelp(true);
   return true;
 }
 
