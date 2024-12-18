@@ -85,22 +85,6 @@ class StoredDiagnostic {
 public:
 };
 
-class DiagnosticClient {
-public:
-  DiagnosticClient();
-};
-
-class BlankDiagnosticClient : public DiagnosticClient {
-public:
-};
-
-/// Diagnostic consumer that forwards diagnostics along to an
-/// existing, already-initialized diagnostic consumer.
-///
-class ForwardingDiagnosticClient : public DiagnosticClient {
-
-public:
-};
 struct TemplateDiffTypes {};
 
 /// ProcessWarningOptions - Initialize the diagnostic client and process the

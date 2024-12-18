@@ -1,7 +1,7 @@
 #ifndef STONE_DIAG_DIAGNOSTIC_EMITTER_H
 #define STONE_DIAG_DIAGNOSTIC_EMITTER_H
 
-
+#include "stone/Basic/SrcLoc.h"
 #include "stone/Diag/DiagnosticLevel.h"
 
 namespace stone {
@@ -10,7 +10,7 @@ class LangOptions;
 class DiagnosticOptions;
 
 namespace diags {
-	
+
 /// DiagnosticRenderer in clang
 class DiagnosticEmitter {
 protected:

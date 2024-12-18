@@ -4,12 +4,11 @@
 #include "stone/Diag/DiagnosticEmitter.h"
 
 namespace stone {
- 
+
 namespace diags {
 
 class TextDiagnosticEmitter final : public DiagnosticEmitter {
 public:
-
 };
 
 } // namespace diags

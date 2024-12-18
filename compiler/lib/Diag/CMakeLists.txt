@@ -1,5 +1,6 @@
 set(stone_diag_sources
   DiagnosticEngine.cpp
+  DiagnosticClient.cpp
   TextDiagnosticBuffering.cpp
   TextDiagnosticPrinter.cpp
   TextDiagnosticEmitter.cpp
