@@ -44,6 +44,5 @@ enum class BuiltinTypeKind : std::underlying_type<TypeKind>::type {
 #include "stone/AST/TypeKind.def"
 };
 
-
 } // namespace stone
 #endif

@@ -59,8 +59,7 @@ private:
   explicit Identifier(const char *dataPtr) : dataPointer(dataPtr) {}
 
 public:
-  explicit Identifier()
-      : dataPointer(nullptr) {}
+  explicit Identifier() : dataPointer(nullptr) {}
 
   const char *GetPointer() const { return dataPointer; }
 
