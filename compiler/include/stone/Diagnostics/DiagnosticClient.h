@@ -2,9 +2,11 @@
 #define STONE_DIAG_DIAGNOSTIC_CLIENT_H
 
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/Support/raw_ostream.h"
 
 namespace stone {
 namespace diags {
+
 
 /// The level of the diagnostic, after it has been through mapping.
 enum class DiagnosticLevel {
@@ -17,6 +19,32 @@ enum class DiagnosticLevel {
   Error,
   /// Highest
   Fatal,
+};
+
+
+class DiagnosticOutputStream final {
+  friend class DiagnosticEngine;
+
+  bool showColors;
+
+  DiagnosticLevel Level;
+  llvm::raw_ostream &OS;
+
+public:
+  DiagnosticOutputStream(llvm::raw_ostream &OS);
+
+public:
+  void SetLevel(DiagnosticLevel L);
+  DiagnosticLevel GetLevel() { return Level; }
+
+  void ShowColors();
+  void HideColors();
+
+  void UseNoteColor();
+  void UseRemarkColor();
+  void UseWarningColor();
+  void UseErrorColor();
+  void UseFatalColor();
 };
 
 class FixIt final {

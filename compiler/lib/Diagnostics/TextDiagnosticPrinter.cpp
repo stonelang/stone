@@ -24,4 +24,39 @@ void diags::TextDiagnosticPrinter::HandleDiagnostic(
   llvm::SmallString<100> OutStr;
   Info.FormatDiagnostic(OutStr);
 
+  // Keeps track of the starting position of the location
+  // information (e.g., "foo.c:10:4:") that precedes the error
+  // message. We use this information to determine how long the
+  // file+line+column number prefix is.
+  uint64_t StartOfLocationInfo = OS.tell();
+
+  if (!Prefix.empty()) {
+    OS << Prefix << ": ";
+  }
+
+  // Use a dedicated, simpler path for diagnostics without a valid location.
+  // This is important as if the location is missing, we may be emitting
+  // diagnostics in a context that lacks language options, a source manager, or
+  // other infrastructure necessary when emitting more rich diagnostics.
+  // if (!Info.getLocation().isValid()) {
+  //   TextDiagnostic::printDiagnosticLevel(OS, Level, DiagOpts->ShowColors);
+  //   TextDiagnostic::printDiagnosticMessage(
+  //       OS, /*IsSupplemental=*/Level == DiagnosticsEngine::Note,
+  //       DiagMessageStream.str(), OS.tell() - StartOfLocationInfo,
+  //       DiagOpts->MessageLength, DiagOpts->ShowColors);
+  //   OS.flush();
+  //   return;
+  // }
+
+  // // Assert that the rest of our infrastructure is setup properly.
+  // assert(DiagOpts && "Unexpected diagnostic without options set");
+  // assert(Info.hasSourceManager() &&
+  //        "Unexpected diagnostic with no source manager");
+  // assert(TextDiag && "Unexpected diagnostic outside source file processing");
+
+  // GetEmitter().EmitDiagnostic(FullSrcLoc(Info.GetLoc(), Info.GetSrcMgr()),
+  //                             Level, DiagMessageStream.str(),
+  //                             Info.GetRanges(), Info.GetFixIts());
+
+  OS.flush();
 }

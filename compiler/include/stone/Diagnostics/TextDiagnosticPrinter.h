@@ -32,6 +32,8 @@ public:
                         bool OwnsOutputStream = false);
   ~TextDiagnosticPrinter() override;
 
+public:
+  TextDiagnosticEmitter &GetEmitter() { return *emitter; }
   /// SetPrefix - Set the diagnostic printer prefix string, which will be
   /// printed at the start of any diagnostics. If empty, no prefix string is
   /// used.
