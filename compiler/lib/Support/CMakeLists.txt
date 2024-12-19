@@ -8,7 +8,7 @@ set( LLVM_LINK_COMPONENTS
   IPO
   Option
  )
-set(Stone_support_sources
+set(stone_support_sources
   InputFile.cpp
   Statistics.cpp
   Options.cpp
@@ -20,8 +20,8 @@ set(Stone_support_sources
   StoneOptions
 
 )
-add_Stone_library(StoneSupport
-	${Stone_support_sources}
+add_stone_library(StoneSupport
+	${stone_support_sources}
 )
 
 if (TARGET obj.StoneSupport)
@@ -35,7 +35,7 @@ else()
   # libLLVM-*.so).
   add_llvm_library(StoneSupport_tablegen
     BUILDTREE_ONLY STATIC DISABLE_LLVM_LINK_LLVM_DYLIB
-    ${Stone_support_sources})
+    ${stone_support_sources})
 endif()
 
 
