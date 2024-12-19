@@ -9,6 +9,7 @@ set(stone_include_files
 	${STONE_SOURCE_DIR}/compiler/include/stone/CodeGen/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Support/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Sem/*.h
+	${STONE_SOURCE_DIR}/utils/stone-tblgen/*.h
 	
 	
 )
@@ -22,6 +23,7 @@ set(stone_lib_files
 	${STONE_SOURCE_DIR}/compiler/lib/Driver/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/CodeGen/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Support/*.cpp
+	${STONE_SOURCE_DIR}/utils/stone-tblgen/*.cpp
 	
 )
 set(stone_tools_files

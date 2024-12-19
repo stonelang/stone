@@ -19,6 +19,10 @@ include(StoneUnitTests)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+
+add_subdirectory(utils/stone-tblgen)
+
+
 include_directories(BEFORE
   ${CMAKE_CURRENT_BINARY_DIR}/compiler/include
   ${CMAKE_CURRENT_SOURCE_DIR}/compiler/include
@@ -43,4 +47,6 @@ option(STONE_BUILD_TOOLS
 add_subdirectory(compiler)
 add_subdirectory(tools)
 #add_subdirectory(tests)
+
+
 

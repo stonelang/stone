@@ -21,7 +21,8 @@ template <typename... ArgTypes> struct DiagWithArguments<void(ArgTypes...)> {
 } // end namespace detail
 
 // Declare common diagnostics objects with their appropriate types.
-#define DIAG(KIND, ID, Options, Text, Signature)                               \
+#define DIAG(ENUM, FLAGS, DEFAULT_MAPPING, DESC, GROUP, SFINAE, NOWERROR,      \
+             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
   extern detail::DiagWithArguments<void Signature>::type ID;
 #include "BasicDiagnostics.inc"
 

@@ -35,9 +35,6 @@ template <class... ArgTypes>
 using DiagArgTuple =
     std::tuple<typename detail::PassArgument<ArgTypes>::type...>;
 
-
-
-
 } // namespace diags
 } // namespace stone
 
