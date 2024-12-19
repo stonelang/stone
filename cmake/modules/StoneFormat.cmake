@@ -4,7 +4,7 @@ set(stone_include_files
 	${STONE_SOURCE_DIR}/compiler/include/stone/Parse/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Basic/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Compile/*.h
-	${STONE_SOURCE_DIR}/compiler/include/stone/Diag/*.h
+	${STONE_SOURCE_DIR}/compiler/include/stone/Diagnostics/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Driver/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/CodeGen/*.h
 	${STONE_SOURCE_DIR}/compiler/include/stone/Support/*.h
@@ -16,7 +16,7 @@ set(stone_lib_files
 	${STONE_SOURCE_DIR}/compiler/lib/AST/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Basic/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Compile/*.cpp
-	${STONE_SOURCE_DIR}/compiler/lib/Diag/*.cpp
+	${STONE_SOURCE_DIR}/compiler/lib/Diagnostics/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Parse/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Sem/*.cpp
 	${STONE_SOURCE_DIR}/compiler/lib/Driver/*.cpp

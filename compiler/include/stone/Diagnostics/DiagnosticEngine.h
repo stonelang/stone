@@ -2,7 +2,7 @@
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Diag/DiagnosticClient.h"
+#include "stone/Diagnostics/DiagnosticClient.h"
 #include "stone/Support/DiagnosticOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -226,7 +226,7 @@ class StoredDiagnostic {
   // FullSourceLoc Loc;
   std::string Message;
   // std::vector<CharSourceRange> Ranges;
-  
+
   std::vector<FixIt> FixIts;
 
 public:

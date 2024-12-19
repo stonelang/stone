@@ -1,6 +1,7 @@
 set(stone_diag_sources
   DiagnosticEngine.cpp
   DiagnosticClient.cpp
+  DiagnosticEmitter.cpp
   TextDiagnosticBuffering.cpp
   TextDiagnosticPrinter.cpp
   TextDiagnosticEmitter.cpp
@@ -11,7 +12,7 @@ set(stone_diag_sources
   DEPENDS
   StoneOptions
 )
-add_stone_library(StoneDiag
+add_stone_library(StoneDiagnostics
   ${stone_diag_sources}
 )
 

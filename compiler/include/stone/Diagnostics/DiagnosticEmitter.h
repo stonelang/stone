@@ -3,10 +3,9 @@
 
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Diag/DiagnosticClient.h"
+#include "stone/Diagnostics/DiagnosticClient.h"
 
 #include "llvm/ADT/PointerUnion.h"
-
 
 namespace stone {
 class SrcLoc;
@@ -77,6 +76,8 @@ class DiagnosticEmitter {
 protected:
   const LangOptions &LangOpts;
 
+  DiagnosticOptions &DiagOpts;
+
   /// The location of the previous diagnostic if known.
   ///
   /// This will be invalid in cases where there is no (known) previous
@@ -91,7 +92,8 @@ protected:
   DiagnosticLevel LastLevel = DiagnosticLevel::Ignored;
 
 protected:
-  DiagnosticEmitter(const LangOptions &LangOpts, DiagnosticOptions *DiagOpts);
+  DiagnosticEmitter(const LangOptions &LangOpts, DiagnosticOptions &DiagOpts);
+  virtual ~DiagnosticEmitter();
 
 protected:
   virtual void EmitDiagnosticMessage(FullSrcLoc Loc, PresumedLoc PLoc,
@@ -110,7 +112,9 @@ protected:
   virtual void EndDiagnostic(DiagnosticInfoOrStoredDiagnotic D,
                              DiagnosticLevel Level) {}
 
-  virtual ~DiagnosticEmitter();
+  virtual void EmitCodeContext(FullSrcLoc Loc, DiagnosticLevel Level,
+                               llvm::SmallVectorImpl<CharSrcRange> &Ranges,
+                               llvm::ArrayRef<FixIt> FixIts) = 0;
 };
 
 } // namespace diags

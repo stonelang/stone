@@ -1,4 +1,4 @@
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diagnostics/DiagnosticEngine.h"
 
 using namespace stone;
 
