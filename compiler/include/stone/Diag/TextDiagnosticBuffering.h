@@ -8,6 +8,10 @@ namespace stone {
 namespace diags {
 class DiagnosticEngine;
 class TextDiagnosticBuffering final : public DiagnosticClient {
+
+public:
+  TextDiagnosticBuffering();
+
 public:
   void HandleDiagnostic(DiagnosticLevel DiagLevel,
                         const DiagnosticInfo &Info) override;

@@ -12,7 +12,7 @@ set(stone_diag_sources
   DEPENDS
   StoneOptions
 )
-add_stone_library(StoneDiagnostics
+add_stone_library(StoneDiag
   ${stone_diag_sources}
 )
 

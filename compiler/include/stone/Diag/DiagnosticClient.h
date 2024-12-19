@@ -7,7 +7,6 @@
 namespace stone {
 namespace diags {
 
-
 /// The level of the diagnostic, after it has been through mapping.
 enum class DiagnosticLevel {
   None = 0,
@@ -20,7 +19,6 @@ enum class DiagnosticLevel {
   /// Highest
   Fatal,
 };
-
 
 class DiagnosticOutputStream final {
   friend class DiagnosticEngine;
