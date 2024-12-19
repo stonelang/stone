@@ -2,8 +2,8 @@
 #define STONE_DIAG_DIAGNOSTIC_PRINTER_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Diagnostics/DiagnosticClient.h"
-#include "stone/Diagnostics/TextDiagnosticEmitter.h"
+#include "stone/Diag/DiagnosticClient.h"
+#include "stone/Diag/TextDiagnosticEmitter.h"
 #include "stone/Support/DiagnosticOptions.h"
 
 #include <memory>

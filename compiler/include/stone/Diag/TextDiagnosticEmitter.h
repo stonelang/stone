@@ -1,7 +1,7 @@
 #ifndef STONE_DIAG_TEXT_DIAGNOSTIC_EMITTER_H
 #define STONE_DIAG_TEXT_DIAGNOSTIC_EMITTER_H
 
-#include "stone/Diagnostics/DiagnosticEmitter.h"
+#include "stone/Diag/DiagnosticEmitter.h"
 #include "llvm/Support/raw_ostream.h"
 
 namespace stone {

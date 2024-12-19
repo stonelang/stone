@@ -1,4 +1,4 @@
-#include "stone/Diagnostics/TextDiagnosticPrinter.h"
+#include "stone/Diag/TextDiagnosticPrinter.h"
 
 using namespace stone;
 

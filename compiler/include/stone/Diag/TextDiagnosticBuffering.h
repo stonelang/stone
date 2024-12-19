@@ -1,7 +1,7 @@
 #ifndef STONE_DIAG_TEXT_DIAGNOSTIC_BUFFERING_H
 #define STONE_DIAG_TEXT_DIAGNOSTIC_BUFFERING_H
 
-#include "stone/Diagnostics/DiagnosticClient.h"
+#include "stone/Diag/DiagnosticClient.h"
 
 namespace stone {
 

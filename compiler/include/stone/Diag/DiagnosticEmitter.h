@@ -3,7 +3,7 @@
 
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Diagnostics/DiagnosticClient.h"
+#include "stone/Diag/DiagnosticClient.h"
 
 #include "llvm/ADT/PointerUnion.h"
 

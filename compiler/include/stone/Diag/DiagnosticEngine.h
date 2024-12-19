@@ -2,7 +2,7 @@
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Diagnostics/DiagnosticClient.h"
+#include "stone/Diag/DiagnosticClient.h"
 #include "stone/Support/DiagnosticOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
