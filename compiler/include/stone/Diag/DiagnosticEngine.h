@@ -201,6 +201,8 @@ public:
   /// client.
   std::unique_ptr<DiagnosticClient> TakeClient();
 
+  void Clear(bool soft = false);
+
 public:
 };
 
@@ -217,6 +219,16 @@ public:
 };
 
 class StoredDiagnostic {
+
+  unsigned ID;
+
+  DiagnosticLevel Level;
+  // FullSourceLoc Loc;
+  std::string Message;
+  // std::vector<CharSourceRange> Ranges;
+  
+  std::vector<FixIt> FixIts;
+
 public:
 };
 
