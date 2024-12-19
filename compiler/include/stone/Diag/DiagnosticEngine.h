@@ -3,6 +3,7 @@
 
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/DiagnosticClient.h"
+#include "stone/Diag/DiagnosticID.h"
 #include "stone/Support/DiagnosticOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
