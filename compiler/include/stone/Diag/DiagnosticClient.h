@@ -38,17 +38,31 @@ public:
 };
 
 class DiagnosticClient {
+  friend class DiagnosticEngine;
+
+public:
+  enum class Ownership {
+    Default = 0,
+    DiagnosticEngine,
+  };
 
 protected:
   unsigned NumWarnings = 0; ///< Number of warnings reported
   unsigned NumErrors = 0;   ///< Number of errors reported
 
+  Ownership ownership;
+  void SetOwnership(Ownership inputOwnership) { ownership = inputOwnership; }
+
 public:
-  DiagnosticClient();
+  DiagnosticClient(Ownership inputOwnership = Ownership::Default);
   virtual ~DiagnosticClient();
 
 public:
   virtual void Clear() { NumWarnings = NumErrors = 0; }
+
+  Ownership GetOwnership() { return ownership; }
+
+  bool HasDefaultOwnership() { return GetOwnership() == Ownership::Default; }
 
   /// Callback to inform the diagnostic client that processing of all
   /// source files has ended.

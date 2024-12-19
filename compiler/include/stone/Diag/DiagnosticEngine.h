@@ -1,6 +1,7 @@
 #ifndef STONE_DIAG_DIAGNOSTIC_ENGINE_H
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
+#include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/DiagnosticClient.h"
 #include "stone/Support/DiagnosticOptions.h"
 
@@ -169,9 +170,10 @@ class DiagnosticEngine final {
 
   DiagnosticOptions &DiagOpts;
 
-  /// The diagnostic consumer(s) that will be responsible for actually
-  /// emitting diagnostics.
-  llvm::SmallVector<DiagnosticClient *, 2> Clients;
+  SrcMgr &SM;
+
+  DiagnosticClient *Client = nullptr;
+  std::unique_ptr<DiagnosticClient> ClientOwner;
 
 private:
   class DiagnosticState {
@@ -190,12 +192,14 @@ public:
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
 
-  explicit DiagnosticEngine(DiagnosticOptions &DiagOpts);
+  explicit DiagnosticEngine(DiagnosticOptions &DiagOpts, SrcMgr &SM);
   ~DiagnosticEngine();
 
 public:
-  void AddClient();
-
+  void SetClient(DiagnosticClient *client);
+  /// Return the current diagnostic client along with ownership of that
+  /// client.
+  std::unique_ptr<DiagnosticClient> TakeClient();
 
 public:
 };
