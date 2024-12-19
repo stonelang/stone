@@ -172,8 +172,9 @@ class DiagnosticEngine final {
 
   SrcMgr &SM;
 
-  DiagnosticClient *Client = nullptr;
-  std::unique_ptr<DiagnosticClient> ClientOwner;
+  /// The diagnostic consumer(s) that will be responsible for actually
+  /// emitting diagnostics.
+  llvm::SmallVector<DiagnosticClient *, 2> Clients;
 
 private:
   class DiagnosticState {
@@ -196,10 +197,17 @@ public:
   ~DiagnosticEngine();
 
 public:
-  void SetClient(DiagnosticClient *client);
+  void AddClient(DiagnosticClient *client);
+
+  /// Remove a specific DiagnosticConsumer.
+  void RemoveClient(DiagnosticClient *client) {
+    Clients.erase(std::remove(Clients.begin(), Clients.end(), client));
+  }
+
   /// Return the current diagnostic client along with ownership of that
   /// client.
-  std::unique_ptr<DiagnosticClient> TakeClient();
+  std::vector<DiagnosticClient *> TakeClients();
+  llvm::ArrayRef<DiagnosticClient *> GetClients() const { return Clients; }
 
   void Clear(bool soft = false);
 

@@ -24,25 +24,39 @@ class DiagnosticOutputStream final {
   friend class DiagnosticEngine;
 
   bool showColors;
-
-  DiagnosticLevel Level;
   llvm::raw_ostream &OS;
 
+  void ChangeColor(llvm::raw_ostream::Colors C) { OS.changeColor(C); }
+
 public:
+  DiagnosticOutputStream();
   DiagnosticOutputStream(llvm::raw_ostream &OS);
+  ~DiagnosticOutputStream();
 
 public:
-  void SetLevel(DiagnosticLevel L);
-  DiagnosticLevel GetLevel() { return Level; }
-
-  void ShowColors();
-  void HideColors();
+  void ShowColors() { showColors = true; }
+  void HideColors() { showColors = false; }
+  void ResetColors();
 
   void UseNoteColor();
   void UseRemarkColor();
   void UseWarningColor();
   void UseErrorColor();
   void UseFatalColor();
+
+  void UseFixItColor();
+  void UseCaretColor();
+  void UseTemplateColor();
+  void UseSavedColor();
+  void UseCommentColor();
+  void UseLiteralColor();
+  void UseKeywordColor();
+
+public:
+  DiagnosticOutputStream &operator<<(llvm::StringRef S) {
+    OS << S;
+    return *this;
+  }
 };
 
 class FixIt final {
@@ -66,29 +80,16 @@ public:
 class DiagnosticClient {
   friend class DiagnosticEngine;
 
-public:
-  enum class Ownership {
-    Default = 0,
-    DiagnosticEngine,
-  };
-
 protected:
   unsigned NumWarnings = 0; ///< Number of warnings reported
   unsigned NumErrors = 0;   ///< Number of errors reported
 
-  Ownership ownership;
-  void SetOwnership(Ownership inputOwnership) { ownership = inputOwnership; }
-
 public:
-  DiagnosticClient(Ownership inputOwnership = Ownership::Default);
+  DiagnosticClient();
   virtual ~DiagnosticClient();
 
 public:
   virtual void Clear() { NumWarnings = NumErrors = 0; }
-
-  Ownership GetOwnership() { return ownership; }
-
-  bool HasDefaultOwnership() { return GetOwnership() == Ownership::Default; }
 
   /// Callback to inform the diagnostic client that processing of all
   /// source files has ended.

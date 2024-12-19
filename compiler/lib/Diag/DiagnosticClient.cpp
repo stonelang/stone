@@ -2,8 +2,80 @@
 
 using namespace stone;
 
-diags::DiagnosticClient::DiagnosticClient(Ownership ownership)
-    : ownership(ownership) {}
+diags::DiagnosticOutputStream::DiagnosticOutputStream()
+    : DiagnosticOutputStream(llvm::outs()) {}
+
+diags::DiagnosticOutputStream::DiagnosticOutputStream(llvm::raw_ostream &OS)
+    : OS(OS), showColors(false) {
+  if (OS.has_colors()) {
+    UseNoteColor();
+  }
+}
+void diags::DiagnosticOutputStream::ResetColors() { OS.resetColor(); }
+
+void diags::DiagnosticOutputStream::UseNoteColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::CYAN);
+}
+
+void diags::DiagnosticOutputStream::UseRemarkColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::BLUE);
+}
+
+void diags::DiagnosticOutputStream::UseWarningColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::MAGENTA);
+}
+
+void diags::DiagnosticOutputStream::UseErrorColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::RED);
+}
+
+void diags::DiagnosticOutputStream::UseFatalColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::RED);
+}
+
+void diags::DiagnosticOutputStream::UseFixItColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::GREEN);
+}
+
+void diags::DiagnosticOutputStream::UseCaretColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::GREEN);
+}
+
+void diags::DiagnosticOutputStream::UseTemplateColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::CYAN);
+}
+
+void diags::DiagnosticOutputStream::UseSavedColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::SAVEDCOLOR);
+}
+
+void diags::DiagnosticOutputStream::UseCommentColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::YELLOW);
+}
+
+void diags::DiagnosticOutputStream::UseLiteralColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::GREEN);
+}
+
+void diags::DiagnosticOutputStream::UseKeywordColor() {
+  if (showColors)
+    ChangeColor(llvm::raw_ostream::Colors::BLUE);
+}
+
+diags::DiagnosticOutputStream::~DiagnosticOutputStream() { ResetColors(); }
+
+diags::DiagnosticClient::DiagnosticClient() {}
 
 diags::DiagnosticClient::~DiagnosticClient() = default;
 
