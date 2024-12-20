@@ -1,0 +1,22 @@
+# This file allows users to call find_package(Clang) and pick up our targets.
+
+@STONE_CONFIG_CODE@
+
+set(LLVM_VERSION @LLVM_VERSION_MAJOR@.@LLVM_VERSION_MINOR@.@LLVM_VERSION_PATCH@)
+find_package(LLVM ${LLVM_VERSION} EXACT REQUIRED CONFIG
+             HINTS "@STONE_CONFIG_LLVM_CMAKE_DIR@")
+
+set(STONE_EXPORTED_TARGETS "@STONE_EXPORTS@")
+set(STONE_CMAKE_DIR "@STONE_CONFIG_CMAKE_DIR@")
+set(STONE_INCLUDE_DIRS "@STONE_CONFIG_INCLUDE_DIRS@")
+set(STONE_LINK_STONE_DYLIB "@STONE_LINK_STONE_DYLIB@")
+
+# Provide all our library targets to users.
+@STONE_CONFIG_INCLUDE_EXPORTS@
+
+# By creating stone-tablegen-targets here, subprojects that depend on Clang's
+# tablegen-generated headers can always depend on this target whether building
+# in-tree with Clang or not.
+if(NOT TARGET stone-tablegen-targets)
+  add_custom_target(stone-tablegen-targets)
+endif()

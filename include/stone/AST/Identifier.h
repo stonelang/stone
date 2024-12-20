@@ -36,7 +36,7 @@ class ASTContext;
 /// variable or function name).  The preprocessor keeps this information in a
 /// set, and all tok::identifier tokens have a pointer to one of these.
 /// It is aligned to 8 bytes because DeclName needs the lower 3 bits.
-class Identifier {
+class Identifier final {
   friend class ASTContext;
   friend class DeclNameBase;
 

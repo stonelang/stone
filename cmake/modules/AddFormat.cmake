@@ -1,0 +1,50 @@
+set(stone_include_files
+	${STONE_SOURCE_DIR}/include/stone/*.h
+	${STONE_SOURCE_DIR}/include/stone/AST/*.h
+	${STONE_SOURCE_DIR}/include/stone/Parse/*.h
+	${STONE_SOURCE_DIR}/include/stone/Basic/*.h
+	${STONE_SOURCE_DIR}/include/stone/Compile/*.h
+	${STONE_SOURCE_DIR}/include/stone/Diag/*.h
+	${STONE_SOURCE_DIR}/include/stone/Driver/*.h
+	${STONE_SOURCE_DIR}/include/stone/CodeGen/*.h
+	${STONE_SOURCE_DIR}/include/stone/Support/*.h
+	${STONE_SOURCE_DIR}/include/stone/Sem/*.h
+	
+)
+set(stone_lib_files
+	${STONE_SOURCE_DIR}/lib/AST/*.cpp
+	${STONE_SOURCE_DIR}/lib/Basic/*.cpp
+	${STONE_SOURCE_DIR}/lib/Compile/*.cpp
+	${STONE_SOURCE_DIR}/lib/Diag/*.cpp
+	${STONE_SOURCE_DIR}/lib/Parse/*.cpp
+	${STONE_SOURCE_DIR}/lib/Sem/*.cpp
+	${STONE_SOURCE_DIR}/lib/Driver/*.cpp
+	${STONE_SOURCE_DIR}/lib/CodeGen/*.cpp
+	${STONE_SOURCE_DIR}/lib/Support/*.cpp
+	
+)
+set(stone_tools_files
+	${STONE_SOURCE_DIR}/tools/compile/*.cpp  
+	${STONE_SOURCE_DIR}/tools/driver/*.cpp  
+)
+set(stone_tests_files
+	${STONE_SOURCE_DIR}/tests/units/Basic/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/Gen/*.cpp 
+	${STONE_SOURCE_DIR}/tests/units/Compile/*.cpp 
+	${STONE_SOURCE_DIR}/tests/units/Drive/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/Parse/*.cpp 
+	#${STONE_SOURCE_DIR}/tests/units/Sem/*.cpp 
+	${STONE_SOURCE_DIR}/tests/units/Lex/*.cpp 
+	${STONE_SOURCE_DIR}/tests/units/Syntax/*.cpp 
+)
+find_program(CLANG_FORMAT clang-format)
+	if(CLANG_FORMAT)
+	add_custom_target(
+		stone-format
+		clang-format
+		-i
+		-style=llvm
+		${stone_lib_files}
+		${stone_include_files}
+	)
+endif()

@@ -4,7 +4,7 @@ set(LLVM_LINK_COMPONENTS
   Option
 )
 
-add_tablegen(stone-tblgen STONE
+add_tablegen(stone-tablegen STONE
   DESTINATION "${STONE_TOOLS_INSTALL_DIR}"
   EXPORT Stone
   
@@ -12,4 +12,4 @@ add_tablegen(stone-tblgen STONE
   main.cpp
   )
 
-target_link_libraries(stone-tblgen PRIVATE StoneSupport_tablegen)
+target_link_libraries(stone-tablegen PRIVATE StoneSupport_tablegen)

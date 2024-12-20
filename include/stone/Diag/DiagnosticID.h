@@ -3,7 +3,7 @@
 
 namespace stone {
 namespace diags {
-//enum DiagID : unsigned;
+// enum DiagID : unsigned;
 
 // // Enumeration describing all of possible diagnostics.
 // ///
