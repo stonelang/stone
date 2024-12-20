@@ -124,7 +124,7 @@ const StaticDiagInfoRec StaticDiagInfo[] = {
       diags::ENUM,                                                              \
       DEFAULT_SEVERITY,                                                        \
       CLASS,                                                                   \
-      DiagnosticIDs::SFINAE,                                                   \
+      diags::DiagIDContext::SFINAE,                                                   \
       CATEGORY,                                                                \
       NOWERROR,                                                                \
       SHOWINSYSHEADER,                                                         \

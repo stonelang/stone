@@ -16,6 +16,6 @@ public:
 
 } // namespace stone
 #define STR_SIZE(str, fieldTy)                                                 \
-  clang::StringSizerHelper<sizeof(str) - 1, fieldTy>::Size
+  stone::diags::StringSizerHelper<sizeof(str) - 1, fieldTy>::Size
 
 #endif

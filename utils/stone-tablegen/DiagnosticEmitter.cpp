@@ -1456,7 +1456,7 @@ void stone::EmitDiagnosticDefs(RecordKeeper &Records, raw_ostream &OS,
 
     OS << "DIAG(" << R.getName() << ", ";
     OS << R.getValueAsDef("Class")->getName();
-    OS << ", (unsigned)diag::Severity::"
+    OS << ", (unsigned)diags::Severity::"
        << R.getValueAsDef("DefaultSeverity")->getValueAsString("Name");
 
     // Description string.

@@ -46,7 +46,10 @@ enum class Flavor {
                   ///< compilation.
 };
 
-class DiagnosticMapping {};
+class DiagnosticMapping {
+public:
+
+};
 
 class DiagIDContext final {
 
@@ -78,6 +81,34 @@ public:
 
   /// Determine whether the given built-in diagnostic ID is a Note.
   static bool IsBuiltinNote(DiagID ID);
+
+public:
+  /// Enumeration describing how the emission of a diagnostic should
+  /// be treated when it occurs during C++ template argument deduction.
+  enum SFINAEResponse {
+    /// The diagnostic should not be reported, but it should cause
+    /// template argument deduction to fail.
+    ///
+    /// The vast majority of errors that occur during template argument
+    /// deduction fall into this category.
+    SFINAE_SubstitutionFailure,
+
+    /// The diagnostic should be suppressed entirely.
+    ///
+    /// Warnings generally fall into this category.
+    SFINAE_Suppress,
+
+    /// The diagnostic should be reported.
+    ///
+    /// The diagnostic should be reported. Various fatal errors (e.g.,
+    /// template instantiation depth exceeded) fall into this category.
+    SFINAE_Report,
+
+    /// The diagnostic is an access-control diagnostic, which will be
+    /// substitution failures in some contexts and reported in others.
+    SFINAE_AccessControl
+  };
+
 };
 
 } // namespace diags
