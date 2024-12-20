@@ -4,7 +4,6 @@
 #include "stone/Diag/DiagnosticClient.h"
 
 namespace stone {
-
 namespace diags {
 class DiagnosticEngine;
 class TextDiagnosticBuffering final : public DiagnosticClient {
@@ -22,7 +21,6 @@ public:
 };
 
 } // namespace diags
-
 } // namespace stone
 
 #endif

@@ -28,15 +28,12 @@ cl::opt<ActionType> Action(
                clEnumValN(GenDiagnosticIndexName, "gen-stone-diags-index-name",
                           "Generate Stone diagnostic name index"),
                clEnumValN(GenDiagnosticDocs, "gen-diag-docs",
-                   "Generate diagnostic documentation")));
-
+                          "Generate diagnostic documentation")));
 
 cl::opt<std::string>
-StoneComponent("stone-component",
-               cl::desc("Only use warnings from specified component"),
-               cl::value_desc("component"), cl::Hidden);
-
-
+    StoneComponent("stone-component",
+                   cl::desc("Only use warnings from specified component"),
+                   cl::value_desc("component"), cl::Hidden);
 
 bool StoneTableGenMain(raw_ostream &OS, RecordKeeper &Records) {
   switch (Action) {
@@ -49,7 +46,7 @@ bool StoneTableGenMain(raw_ostream &OS, RecordKeeper &Records) {
   case GenDiagnosticIndexName:
     EmitDiagnosticIndexName(Records, OS);
     break;
-   case GenDiagnosticDocs:
+  case GenDiagnosticDocs:
     EmitDiagnosticDocs(Records, OS);
     break;
   }

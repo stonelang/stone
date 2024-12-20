@@ -20,4 +20,4 @@ void EmitDiagnosticDocs(llvm::RecordKeeper &Records, llvm::raw_ostream &OS);
 
 } // namespace stone
 
-#endif 
+#endif

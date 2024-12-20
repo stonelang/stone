@@ -1,5 +1,6 @@
 set(stone_diag_sources
   DiagnosticEngine.cpp
+  DiagnosticID.cpp
   DiagnosticClient.cpp
   DiagnosticEmitter.cpp
   TextDiagnosticBuffering.cpp
@@ -8,9 +9,12 @@ set(stone_diag_sources
 
   LINK_LIBS
   StoneBasic
+  StoneSupport
 
   DEPENDS
+   omp_gen
   StoneOptions
+
 )
 add_stone_library(StoneDiag
   ${stone_diag_sources}

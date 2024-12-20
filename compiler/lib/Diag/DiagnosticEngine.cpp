@@ -20,3 +20,19 @@ std::vector<diags::DiagnosticClient *> diags::DiagnosticEngine::TakeClients() {
 }
 
 void diags::DiagnosticEngine::Clear(bool soft) {}
+
+
+
+void diags::DiagnosticInfo::FormatDiagnostic(llvm::SmallVectorImpl<char> &OutStr) const{
+
+
+}
+
+void diags::DiagnosticInfo::FormatDiagnostic(const char *DiagStr, const char *DiagEnd,
+                 llvm::SmallVectorImpl<char> &OutStr) const {
+
+
+   //switch (Kind) {
+    //}
+
+}
