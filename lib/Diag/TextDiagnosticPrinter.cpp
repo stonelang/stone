@@ -2,6 +2,12 @@
 
 using namespace stone;
 
+
+using namespace stone;
+
+
+
+
 diags::TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &OS,
                                                     const LangOptions &LO,
                                                     DiagnosticOptions &DiagOpts)
@@ -59,3 +65,15 @@ void diags::TextDiagnosticPrinter::HandleDiagnostic(
 
   OS.flush();
 }
+
+
+
+diags::TextDiagnosticEmitter::TextDiagnosticEmitter(llvm::raw_ostream &OS,
+                                                    const LangOptions &LangOpts,
+                                                    DiagnosticOptions &DiagOpts)
+    : DiagnosticEmitter(LangOpts, DiagOpts) {}
+
+diags::TextDiagnosticEmitter::~TextDiagnosticEmitter() {}
+
+
+

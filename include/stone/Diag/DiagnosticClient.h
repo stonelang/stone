@@ -3,6 +3,7 @@
 
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/raw_ostream.h"
+#include "stone/Support/DiagnosticOptions.h"
 
 namespace stone {
 namespace diags {

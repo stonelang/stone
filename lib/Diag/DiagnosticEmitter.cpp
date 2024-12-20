@@ -1,4 +1,4 @@
-#include "stone/Diag/TextDiagnosticEmitter.h"
+#include "stone/Diag/DiagnosticEmitter.h"
 
 using namespace stone;
 

@@ -12,7 +12,7 @@ set(stone_diag_sources
   DiagnosticEmitter.cpp
   TextDiagnosticBuffering.cpp
   TextDiagnosticPrinter.cpp
-  TextDiagnosticEmitter.cpp
+  DiagnosticEmitter.cpp
 
   LINK_LIBS
   StoneBasic
