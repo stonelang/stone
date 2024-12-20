@@ -5,7 +5,8 @@
 
 namespace stone {
 namespace diags {
-// enum DiagID : unsigned;
+enum class DiagnosticLevel;
+class DiagnosticMapping;
 
 // // Enumeration describing all of possible diagnostics.
 // ///
@@ -22,6 +23,38 @@ enum class DiagID : uint32_t;
 struct Diag {
   /// The diagnostic ID corresponding to this diagnostic.
   typedef DiagID ID;
+};
+
+class DiagIDContext final {
+
+public:
+  DiagIDContext();
+
+  ~DiagIDContext();
+
+public:
+  DiagID CreateCustomFromFormatString(DiagnosticLevel DiagLevel,
+                                      llvm::StringRef FormatString);
+
+  llvm::StringRef GetDescription(DiagID ID) const;
+
+public:
+  /// Return true if the unmapped diagnostic levelof the specified
+  /// diagnostic ID is a Warning or Extension.
+  ///
+  /// This only works on builtin diagnostics, not custom ones, and is not
+  /// legal to call on NOTEs.
+  static bool IsBuiltinWarningOrExtension(DiagID ID);
+
+  /// Return true if the specified diagnostic is mapped to errors by
+  /// default.
+  static bool IsDefaultMappingAsError(DiagID ID);
+
+  /// Get the default mapping for this diagnostic.
+  static diags::DiagnosticMapping GetDefaultMapping(DiagID ID);
+
+  /// Determine whether the given built-in diagnostic ID is a Note.
+  static bool IsBuiltinNote(DiagID ID);
 };
 
 } // namespace diags

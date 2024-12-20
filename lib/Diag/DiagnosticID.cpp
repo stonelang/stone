@@ -1,6 +1,6 @@
-#include "stone/Diag/DiagnosticID.h"
-#include "stone/Diag/AllDiagnosticKind.h"
 
+#include "stone/Diag/AllDiagnosticKind.h"
+#include "stone/Diag/DiagnosticEngine.h"
 using namespace stone;
 
 enum class diags::DiagID : uint32_t {
@@ -75,3 +75,15 @@ const uint32_t StaticDiagInfoDescriptionOffsets[] = {
 };
 
 } // namespace
+
+diags::DiagIDContext::DiagIDContext() {}
+
+diags::DiagIDContext::~DiagIDContext() {}
+
+diags::DiagID diags::DiagIDContext::CreateCustomFromFormatString(DiagnosticLevel DiagLevel,
+                                      llvm::StringRef FormatString){
+
+
+}
+
+llvm::StringRef diags::DiagIDContext::GetDescription(diags::DiagID ID) const {}

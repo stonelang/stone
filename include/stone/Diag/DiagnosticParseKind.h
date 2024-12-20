@@ -4,7 +4,7 @@
 #include "stone/Diag/DiagnosticBasicKind.h"
 
 namespace stone {
-namespace diags{
+namespace diags {
 #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
   extern Diag::ID ENUM;

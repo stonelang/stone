@@ -1,9 +1,9 @@
 #ifndef STONE_DIAG_DIAGNOSTICSCOMMON_H
 #define STONE_DIAG_DIAGNOSTICSCOMMON_H
 
-#include "stone/Diag/DiagnosticID.h"
 #include "stone/Basic/LLVM.h"
-// #include "stone/Config.h"
+#include "stone/Diag/DiagnosticID.h"
+
 
 namespace stone {
 namespace diags {

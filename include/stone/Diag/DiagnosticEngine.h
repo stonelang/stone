@@ -1,6 +1,7 @@
 #ifndef STONE_DIAG_DIAGNOSTIC_ENGINE_H
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
+#include "stone/AST/Identifier.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticID.h"
@@ -13,6 +14,7 @@
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/Compiler.h"
+
 #include <cassert>
 #include <cstdint>
 #include <limits>
@@ -31,14 +33,12 @@ class raw_ostream;
 } // namespace llvm
 
 namespace stone {
-class IdentifierInfo;
+class LangOptions;
 
 namespace diags {
 
 class InFlightDiagnostic;
 class DiagnosticClient;
-class Identifier;
-class LangOptions;
 
 struct DiagnosticStorage final {};
 
@@ -55,7 +55,7 @@ class DiagnosticArgument {
     int IntegerVal;
     unsigned UnsignedVal;
     llvm::StringRef StringVal;
-    IdentifierInfo *IdentifierVal;
+    Identifier IdentifierVal;
   };
 
 public:
@@ -68,7 +68,7 @@ public:
   DiagnosticArgument(unsigned I)
       : Kind(DiagnosticArgumentKind::Unsigned), UnsignedVal(I) {}
 
-  DiagnosticArgument(IdentifierInfo *I)
+  DiagnosticArgument(Identifier I)
       : Kind(DiagnosticArgumentKind::Identifier), IdentifierVal(I) {}
 
   /// Initializes a diagnostic argument using the underlying type of the
@@ -97,7 +97,7 @@ public:
     return UnsignedVal;
   }
 
-  IdentifierInfo *GetAsIdentifier() const {
+  Identifier GetAsIdentifier() const {
     assert(Kind == DiagnosticArgumentKind::Identifier);
     return IdentifierVal;
   }
@@ -177,6 +177,8 @@ class DiagnosticEngine final {
   /// emitting diagnostics.
   llvm::SmallVector<DiagnosticClient *, 2> Clients;
 
+  DiagIDContext diagIDContext;
+
 private:
   class DiagnosticState {
   public:
@@ -212,6 +214,8 @@ public:
 
   void Clear(bool soft = false);
 
+  DiagIDContext &GetDiagIDContext() { return diagIDContext; }
+
 public:
   void FinishProcessing();
 
@@ -232,7 +236,7 @@ public:
 
 class StoredDiagnostic {
 
-  unsigned ID;
+  DiagID ID;
 
   DiagnosticLevel Level;
   // FullSourceLoc Loc;
@@ -242,6 +246,8 @@ class StoredDiagnostic {
   std::vector<FixIt> FixIts;
 
 public:
+
+  DiagID GetDiagID() { return ID; }
 };
 
 struct TemplateDiffTypes {};

@@ -1,9 +1,8 @@
 #ifndef STONE_DIAG_ALL_DIAGNOSTICSCOMMON_H
 #define STONE_DIAG_ALL_DIAGNOSTICSCOMMON_H
 
-#include "stone/Diag/DiagnosticParseKind.h"
 #include "stone/Diag/DiagnosticBasicKind.h"
-
+#include "stone/Diag/DiagnosticParseKind.h"
 
 namespace stone {
 namespace diags {
