@@ -23,7 +23,7 @@ ModuleDecl::ModuleDecl(Identifier name, ASTContext &sc, ModuleDecl *parent)
       TypeDecl(DeclKind::Module, name, SrcLoc(), QualType(), &sc),
       parent(parent) {
 
-  SetVisibilityKind(VisibilityKind::Public);
+  SetVisibilityLevel(VisibilityLevel::Public);
 
   Bits.ModuleDecl.IsStaticLibrary = 0;
   Bits.ModuleDecl.IsTestingEnabled = 0;

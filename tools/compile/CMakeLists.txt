@@ -1,7 +1,7 @@
-add_stone_tool(stone-compile
+add_stone_tool(stonecompile
   main.cpp
 )
-target_link_libraries(stone-compile
+target_link_libraries(stonecompile
 	PRIVATE
 	StoneCompile
 )

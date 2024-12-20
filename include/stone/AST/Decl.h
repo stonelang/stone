@@ -379,7 +379,7 @@ public:
 class ValueDecl : public NamedDecl {
 
   QualType type;
-  VisibilityKind visibilityKind;
+  VisibilityLevel visibilityKind;
 
 public:
   ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, QualType type,
@@ -395,16 +395,16 @@ public:
   /// of an enum, struct or interface.
   bool IsInstanceMember() const;
 
-  bool HasVisibilityKind() { return visibilityKind != VisibilityKind::None; }
-  VisibilityKind GetVisibilityKind() const { return visibilityKind; }
+  bool HasVisibilityLevel() { return visibilityKind != VisibilityLevel::None; }
+  VisibilityLevel GetVisibilityLevel() const { return visibilityKind; }
 
-  void SetVisibilityKind(VisibilityKind visibilityKind) {
-    assert(!HasVisibilityKind() && "access already set");
+  void SetVisibilityLevel(VisibilityLevel visibilityKind) {
+    assert(!HasVisibilityLevel() && "access already set");
     OverwriteVisibility(visibilityKind);
   }
   // Overwrite the access of this declaration.
   // This is needed in the LLDB REPL.
-  void OverwriteVisibility(VisibilityKind inputLevel) {
+  void OverwriteVisibility(VisibilityLevel inputLevel) {
     visibilityKind = inputLevel;
   }
 

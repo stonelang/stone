@@ -256,7 +256,7 @@ public:
   bool PrintInternalAccessKeyword = true;
 
   /// Print all decls that have at least this level of access.
-  VisibilityKind AccessFilter = VisibilityKind::Private;
+  VisibilityLevel AccessFilter = VisibilityLevel::Private;
 
   /// Print IfConfigDecls.
   bool PrintIfConfig = true;
@@ -322,7 +322,7 @@ public:
 
 public:
   /// Retrieve the set of options suitable for diagnostics printing.
-  static PrintOptions CreateForDiagnostics(VisibilityKind accessFilter,
+  static PrintOptions CreateForDiagnostics(VisibilityLevel accessFilter,
                                            bool printFullConvention) {
     PrintOptions result = CreateForVerbose();
     result.PrintAccess = true;

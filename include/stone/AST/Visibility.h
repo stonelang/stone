@@ -13,7 +13,7 @@
 namespace stone {
 
 class DeclContext;
-enum class VisibilityKind : UInt8 {
+enum class VisibilityLevel : UInt8 {
   None = 0,
   Public,
   Private,
@@ -74,13 +74,13 @@ public:
   }
 
   /// Returns the associated access kind for diagnostic purposes.
-  VisibilityKind GetVisibilityKindForDiagnostics() const;
+  VisibilityLevel GetVisibilityLevelForDiagnostics() const;
 
   /// Returns the minimum access kind required to access
   /// associated DeclContext for diagnostic purposes.
-  VisibilityKind GetRequiredVisibilityForDiagnostics() const {
-    return IsFileScope() ? VisibilityKind::File
-                         : GetVisibilityKindForDiagnostics();
+  VisibilityLevel GetRequiredVisibilityForDiagnostics() const {
+    return IsFileScope() ? VisibilityLevel::File
+                         : GetVisibilityLevelForDiagnostics();
   }
 
   /// Returns the narrowest access scope if this and the specified access scope

@@ -86,18 +86,18 @@ bool VisibilityScope::IsInternal() const {
   assert(false && "Not implemented");
 }
 
-VisibilityKind VisibilityScope::GetVisibilityKindForDiagnostics() const {
+VisibilityLevel VisibilityScope::GetVisibilityLevelForDiagnostics() const {
   assert(false && "Not implemented");
   // if (isPublic())
-  //   return VisibilityKind::Public;
+  //   return VisibilityLevel::Public;
   // if (isa<ModuleDecl>(getDeclContext()))
-  //   return VisibilityKind::Internal;
+  //   return VisibilityLevel::Internal;
   // if (getDeclContext()->isModuleScopeContext()) {
-  //   return isPrivate() ? VisibilityKind::Private :
-  //   VisibilityKind::FilePrivate;
+  //   return isPrivate() ? VisibilityLevel::Private :
+  //   VisibilityLevel::FilePrivate;
   // }
 
-  return VisibilityKind::Private;
+  return VisibilityLevel::Private;
 }
 
 bool VisibilityScope::AllowsPrivateVisibility(const DeclContext *useDC,

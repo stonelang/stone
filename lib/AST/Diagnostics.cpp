@@ -980,11 +980,11 @@ void DiagnosticEngine::forwardTentativeDiagnosticsTo(
 /// This is always \c Public unless \p decl is a \c ValueDecl and its
 /// access level is below \c Public. (That can happen with @testable and
 /// @_private imports.)
-// static VisibilityKind getBufferVisibilityKind(const Decl *decl) {
-//   VisibilityKind level = VisibilityKind::Public;
+// static VisibilityLevel getBufferVisibilityLevel(const Decl *decl) {
+//   VisibilityLevel level = VisibilityLevel::Public;
 //   if (auto *VD = dyn_cast<ValueDecl>(decl))
 //     level = VD->getFormalVisibilityScope().accessLevelForDiagnostics();
-//   if (level > VisibilityKind::Public) level = VisibilityKind::Public;
+//   if (level > VisibilityLevel::Public) level = VisibilityLevel::Public;
 //   return level;
 // }
 

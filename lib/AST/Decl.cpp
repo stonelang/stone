@@ -196,8 +196,8 @@ bool FunDecl::HasReturn() const { return false; }
 //   //     collector.GetTypeSpecifierCollector().GetType(), parent);
 
 //   // // call apply on the collector
-//   // funDecl->SetVisibilityKind(
-//   //     collector.GetAccessSpecifierCollector().GetVisibilityKind());
+//   // funDecl->SetVisibilityLevel(
+//   //     collector.GetAccessSpecifierCollector().GetVisibilityLevel());
 //   // return funDecl;
 
 //   return nullptr;
