@@ -35,7 +35,7 @@ enum class ASTDescription : uint8_t {
   QualType,
 };
 
-struct ASTNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *, Type *> {
+struct ASTNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *> {
   // Inherit the constructors from PointerUnion.
   using PointerUnion::PointerUnion;
 
