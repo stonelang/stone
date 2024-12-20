@@ -48,7 +48,6 @@ enum class Flavor {
 
 class DiagnosticMapping {
 public:
-
 };
 
 class DiagIDContext final {
@@ -108,7 +107,6 @@ public:
     /// substitution failures in some contexts and reported in others.
     SFINAE_AccessControl
   };
-
 };
 
 } // namespace diags

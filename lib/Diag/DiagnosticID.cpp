@@ -32,6 +32,22 @@ enum LocalDiagID : uint32_t {
 
 namespace {
 
+static constexpr const char *const DiagnosticStrings[] = {
+#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
+             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)          \
+  DESC,
+#include "stone/Diag/AllDiagnosticKind.inc"
+    "<not a diagnostic>",
+};
+
+static constexpr const char *const DiagnosticIDStrings[] = {
+#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
+             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
+  #ENUM,
+#include "stone/Diag/AllDiagnosticKind.inc"
+    "<not a diagnostic>",
+};
+
 struct StaticDiagInfoRec;
 
 // Store the descriptions in a separate table to avoid pointers that need to
@@ -141,6 +157,17 @@ const StaticDiagInfoRec StaticDiagInfo[] = {
 } // namespace
 
 static const unsigned StaticDiagInfoSize = std::size(StaticDiagInfo);
+
+static const StaticDiagInfoRec *GetDiagInfo(diags::DiagID ID) {
+  const StaticDiagInfoRec *Found = &StaticDiagInfo[(unsigned)ID];
+  // If the diag id doesn't match we found a different diag, abort. This can
+  // happen when this function is called with an ID that points into a hole in
+  // the diagID space.
+  if (Found->ID != ID) {
+    return nullptr;
+  }
+  return Found;
+}
 
 diags::DiagIDContext::DiagIDContext() {}
 
