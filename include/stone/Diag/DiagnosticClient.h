@@ -52,11 +52,7 @@ public:
   void UseLiteralColor();
   void UseKeywordColor();
 
-public:
-  DiagnosticOutputStream &operator<<(llvm::StringRef S) {
-    OS << S;
-    return *this;
-  }
+  llvm::raw_ostream &GetOutputStream() { return OS; }
 };
 
 class FixIt final {

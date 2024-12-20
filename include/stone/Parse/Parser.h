@@ -11,7 +11,7 @@
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
 #include "stone/Basic/StableHasher.h"
-#include "stone/Diag/ParseDiagnostics.h"
+#include "stone/Diag/DiagnosticParseKind.h"
 
 #include "stone/Parse/CodeCompletionCallbacks.h"
 #include "stone/Parse/Lexer.h"

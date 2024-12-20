@@ -28,8 +28,7 @@ class TextDiagnosticPrinter final : public DiagnosticClient {
 
 public:
   TextDiagnosticPrinter(llvm::raw_ostream &OS, const LangOptions &LO,
-                        DiagnosticOptions &DiagOpts,
-                        bool OwnsOutputStream = false);
+                        DiagnosticOptions &DiagOpts);
   ~TextDiagnosticPrinter() override;
 
 public:

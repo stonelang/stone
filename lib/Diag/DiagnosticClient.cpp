@@ -3,7 +3,7 @@
 using namespace stone;
 
 diags::DiagnosticOutputStream::DiagnosticOutputStream()
-    : DiagnosticOutputStream(llvm::outs()) {}
+    : DiagnosticOutputStream(llvm::errs()) {}
 
 diags::DiagnosticOutputStream::DiagnosticOutputStream(llvm::raw_ostream &OS)
     : OS(OS), showColors(false) {

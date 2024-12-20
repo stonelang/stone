@@ -4,9 +4,8 @@ using namespace stone;
 
 diags::TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &OS,
                                                     const LangOptions &LO,
-                                                    DiagnosticOptions &DiagOpts,
-                                                    bool OwnsOutputStream)
-    : OS(OS), LO(LO), DiagOpts(DiagOpts), OwnsOutputStream(OwnsOutputStream),
+                                                    DiagnosticOptions &DiagOpts)
+    : OS(OS), LO(LO), DiagOpts(DiagOpts),
       emitter(new TextDiagnosticEmitter(OS, LO, DiagOpts)) {}
 
 diags::TextDiagnosticPrinter::~TextDiagnosticPrinter() {}

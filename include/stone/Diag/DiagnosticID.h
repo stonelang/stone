@@ -1,6 +1,8 @@
 #ifndef STONE_DIAG_DIAGNOSTICID_H
 #define STONE_DIAG_DIAGNOSTICID_H
 
+#include <stdint.h>
+
 namespace stone {
 namespace diags {
 // enum DiagID : unsigned;

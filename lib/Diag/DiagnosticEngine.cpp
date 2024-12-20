@@ -8,7 +8,7 @@ enum LocalDiagID : uint32_t {
 #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
   ENUM,
-#include "stone/AST/AllDiagnosticKind.inc"
+#include "stone/Diag/AllDiagnosticKind.inc"
   TotalDiags
 };
 
