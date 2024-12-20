@@ -213,6 +213,9 @@ public:
   void Clear(bool soft = false);
 
 public:
+  void FinishProcessing();
+
+public:
 };
 
 class DiagnosticErrorTrap {

@@ -3,15 +3,6 @@
 
 using namespace stone;
 
-// Get an official count of all of the diagnostics in the system
-enum LocalDiagID : uint32_t {
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
-  ENUM,
-#include "stone/Diag/AllDiagnosticKind.inc"
-  TotalDiags
-};
-
 diags::DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &DiagOpts,
                                           SrcMgr &SM)
     : DiagOpts(DiagOpts), SM(SM) {}
@@ -29,6 +20,8 @@ std::vector<diags::DiagnosticClient *> diags::DiagnosticEngine::TakeClients() {
 }
 
 void diags::DiagnosticEngine::Clear(bool soft) {}
+
+void diags::DiagnosticEngine::FinishProcessing() {}
 
 void diags::DiagnosticInfo::FormatDiagnostic(
     llvm::SmallVectorImpl<char> &OutStr) const {}
