@@ -1,4 +1,5 @@
 #include "stone/Diag/DiagnosticID.h"
+#include "stone/Diag/AllDiagnosticKind.h"
 
 using namespace stone;
 
@@ -18,7 +19,6 @@ namespace diags {
 } // namespace diags
 } // end namespace stone
 
-
 namespace {
 // Get an official count of all of the diagnostics in the system
 enum LocalDiagID : uint32_t {
@@ -28,7 +28,7 @@ enum LocalDiagID : uint32_t {
 #include "stone/Diag/AllDiagnosticKind.inc"
   TotalDiags
 };
-}
+} // namespace
 
 namespace {
 
@@ -49,7 +49,6 @@ struct StaticDiagInfoDescriptionStringTable {
 #undef DIAG
 };
 
-
 const StaticDiagInfoDescriptionStringTable StaticDiagInfoDescriptions = {
 #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
@@ -57,11 +56,22 @@ const StaticDiagInfoDescriptionStringTable StaticDiagInfoDescriptions = {
 // clang-format off
 #include "stone/Diag/DiagnosticBasicKind.inc"
 #include "stone/Diag/DiagnosticParseKind.inc"
-  // clang-format on
+// clang-format on
 #undef DIAG
 };
 
 extern const StaticDiagInfoRec StaticDiagInfo[];
-
+// Stored separately from StaticDiagInfoRec to pack better.  Otherwise,
+// StaticDiagInfoRec would have extra padding on 64-bit platforms.
+const uint32_t StaticDiagInfoDescriptionOffsets[] = {
+#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
+             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
+  offsetof(StaticDiagInfoDescriptionStringTable, ENUM##_desc),
+// clang-format off
+#include "stone/Diag/DiagnosticBasicKind.inc"
+#include "stone/Diag/DiagnosticParseKind.inc"
+// clang-format on
+#undef DIAG
+};
 
 } // namespace
