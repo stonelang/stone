@@ -2,17 +2,12 @@
 
 using namespace stone;
 
-
 using namespace stone;
 
-
-
-
-diags::TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &OS,
-                                                    const LangOptions &LO,
-                                                    DiagnosticOptions &DiagOpts)
-    : OS(OS), LO(LO), DiagOpts(DiagOpts),
-      emitter(new TextDiagnosticEmitter(OS, LO, DiagOpts)) {}
+diags::TextDiagnosticPrinter::TextDiagnosticPrinter(
+    DiagnosticOutputStream &OS, const LangOptions &LO,
+    const DiagnosticOptions &DiagOpts)
+    : emitter(new TextDiagnosticEmitter(OS, LO, DiagOpts)) {}
 
 diags::TextDiagnosticPrinter::~TextDiagnosticPrinter() {}
 
@@ -28,6 +23,9 @@ void diags::TextDiagnosticPrinter::HandleDiagnostic(
   // this later as we print out the diagnostic to the terminal.
   llvm::SmallString<100> OutStr;
   Info.FormatDiagnostic(OutStr);
+
+  llvm::raw_ostream &OS =
+      GetEmitter().GetDiagnosticOutputStream().GetOutputStream();
 
   // Keeps track of the starting position of the location
   // information (e.g., "foo.c:10:4:") that precedes the error
@@ -63,17 +61,12 @@ void diags::TextDiagnosticPrinter::HandleDiagnostic(
   //                             Level, DiagMessageStream.str(),
   //                             Info.GetRanges(), Info.GetFixIts());
 
-  OS.flush();
+  GetEmitter().GetDiagnosticOutputStream().Flush();
 }
 
-
-
-diags::TextDiagnosticEmitter::TextDiagnosticEmitter(llvm::raw_ostream &OS,
-                                                    const LangOptions &LangOpts,
-                                                    DiagnosticOptions &DiagOpts)
-    : DiagnosticEmitter(LangOpts, DiagOpts) {}
+diags::TextDiagnosticEmitter::TextDiagnosticEmitter(
+    DiagnosticOutputStream &OS, const LangOptions &LangOpts,
+    const DiagnosticOptions &DiagOpts)
+    : DiagnosticEmitter(OS, LangOpts, DiagOpts) {}
 
 diags::TextDiagnosticEmitter::~TextDiagnosticEmitter() {}
-
-
-

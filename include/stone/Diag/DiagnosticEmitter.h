@@ -74,9 +74,11 @@ using DiagnosticInfoOrStoredDiagnotic =
 /// DiagnosticRenderer in clang
 class DiagnosticEmitter {
 protected:
+  DiagnosticOutputStream &OS;
+
   const LangOptions &LangOpts;
 
-  DiagnosticOptions &DiagOpts;
+  const DiagnosticOptions &DiagOpts;
 
   /// The location of the previous diagnostic if known.
   ///
@@ -92,7 +94,8 @@ protected:
   DiagnosticLevel LastLevel = DiagnosticLevel::Ignored;
 
 protected:
-  DiagnosticEmitter(const LangOptions &LangOpts, DiagnosticOptions &DiagOpts);
+  DiagnosticEmitter(DiagnosticOutputStream &OS, const LangOptions &LangOpts,
+                    const DiagnosticOptions &DiagOpts);
   virtual ~DiagnosticEmitter();
 
 protected:
@@ -115,6 +118,11 @@ protected:
   virtual void EmitCodeContext(FullSrcLoc Loc, DiagnosticLevel Level,
                                llvm::SmallVectorImpl<CharSrcRange> &Ranges,
                                llvm::ArrayRef<FixIt> FixIts) = 0;
+
+public:
+  DiagnosticOutputStream &GetDiagnosticOutputStream() { return OS; }
+  const LangOptions &GetLangOptions() const { return LangOpts; }
+  const DiagnosticOptions &GetDiagOptions() const { return DiagOpts; }
 };
 
 } // namespace diags

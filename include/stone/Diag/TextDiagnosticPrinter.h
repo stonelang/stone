@@ -5,17 +5,15 @@
 #include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticEmitter.h"
 
-
 #include <memory>
 
 namespace stone {
 namespace diags {
 
-
 class TextDiagnosticEmitter final : public DiagnosticEmitter {
 public:
-  TextDiagnosticEmitter(llvm::raw_ostream &OS, const LangOptions &LangOpts,
-                        DiagnosticOptions &DiagOpts);
+  TextDiagnosticEmitter(DiagnosticOutputStream &OS, const LangOptions &LangOpts,
+                        const DiagnosticOptions &DiagOpts);
   ~TextDiagnosticEmitter() override;
 
 protected:
@@ -33,26 +31,16 @@ protected:
                        llvm::ArrayRef<FixIt> FixIts) override;
 };
 
-
 class TextDiagnosticPrinter final : public DiagnosticClient {
-
-  llvm::raw_ostream &OS;
-
-  const LangOptions &LO;
-
-  DiagnosticOptions &DiagOpts;
-
 
   std::unique_ptr<TextDiagnosticEmitter> emitter;
 
   /// A string to prefix to error messages.
   std::string Prefix;
 
-  unsigned OwnsOutputStream : 1;
-
 public:
-  TextDiagnosticPrinter(llvm::raw_ostream &OS, const LangOptions &LO,
-                        DiagnosticOptions &DiagOpts);
+  TextDiagnosticPrinter(DiagnosticOutputStream &OS, const LangOptions &LO,
+                        const DiagnosticOptions &DiagOpts);
   ~TextDiagnosticPrinter() override;
 
 public:

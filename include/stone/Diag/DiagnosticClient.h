@@ -1,9 +1,9 @@
 #ifndef STONE_DIAG_DIAGNOSTIC_CLIENT_H
 #define STONE_DIAG_DIAGNOSTIC_CLIENT_H
 
+#include "stone/Support/DiagnosticOptions.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/raw_ostream.h"
-#include "stone/Support/DiagnosticOptions.h"
 
 namespace stone {
 namespace diags {
@@ -52,8 +52,8 @@ public:
   void UseCommentColor();
   void UseLiteralColor();
   void UseKeywordColor();
-
   llvm::raw_ostream &GetOutputStream() { return OS; }
+  void Flush() { OS.flush(); }
 };
 
 class FixIt final {
