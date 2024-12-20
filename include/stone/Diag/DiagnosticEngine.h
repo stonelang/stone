@@ -218,7 +218,7 @@ public:
 
 
   //InFlightDiagnostic Diagnose(SourceLocation Loc, DiagID ID);
-  //InFlightDiagnostic Diagnose(DiagID ID);
+  InFlightDiagnostic Diagnose(DiagID ID);
 
 public:
   void FinishProcessing();
