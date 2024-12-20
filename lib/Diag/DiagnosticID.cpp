@@ -74,7 +74,73 @@ const uint32_t StaticDiagInfoDescriptionOffsets[] = {
 #undef DIAG
 };
 
+// Diagnostic classes.
+enum {
+  CLASS_NOTE = 0x01,
+  CLASS_REMARK = 0x02,
+  CLASS_WARNING = 0x03,
+  CLASS_EXTENSION = 0x04,
+  CLASS_ERROR = 0x05
+};
+
+struct StaticDiagInfoRec {
+  diags::DiagID ID;
+  uint8_t DefaultSeverity : 3;
+  uint8_t Class : 3;
+  uint8_t SFINAE : 2;
+  uint8_t Category : 6;
+  uint8_t WarnNoWerror : 1;
+  uint8_t WarnShowInSystemHeader : 1;
+  uint8_t WarnShowInSystemMacro : 1;
+
+  uint16_t OptionGroupIndex : 15;
+  uint16_t Deferrable : 1;
+
+  uint16_t DescriptionLen;
+
+  unsigned getOptionGroupIndex() const { return OptionGroupIndex; }
+
+  StringRef getDescription() const {
+    size_t MyIndex = this - &StaticDiagInfo[0];
+    uint32_t StringOffset = StaticDiagInfoDescriptionOffsets[MyIndex];
+    const char *Table =
+        reinterpret_cast<const char *>(&StaticDiagInfoDescriptions);
+    return StringRef(&Table[StringOffset], DescriptionLen);
+  }
+
+  diags::Flavor getFlavor() const {
+    return Class == CLASS_REMARK ? diags::Flavor::Remark
+                                 : diags::Flavor::WarningOrError;
+  }
+
+  bool operator<(const StaticDiagInfoRec &RHS) const { return ID < RHS.ID; }
+};
+
+const StaticDiagInfoRec StaticDiagInfo[] = {
+// clang-format off
+#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
+             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
+  {                                                                            \
+      diags::ENUM,                                                              \
+      DEFAULT_SEVERITY,                                                        \
+      CLASS,                                                                   \
+      DiagnosticIDs::SFINAE,                                                   \
+      CATEGORY,                                                                \
+      NOWERROR,                                                                \
+      SHOWINSYSHEADER,                                                         \
+      SHOWINSYSMACRO,                                                          \
+      GROUP,                                                                   \
+        DEFERRABLE,                                                              \
+      STR_SIZE(DESC, uint16_t)},
+#include "stone/Diag/DiagnosticBasicKind.inc"
+#include "stone/Diag/DiagnosticParseKind.inc"
+// clang-format on
+#undef DIAG
+};
+
 } // namespace
+
+static const unsigned StaticDiagInfoSize = std::size(StaticDiagInfo);
 
 diags::DiagIDContext::DiagIDContext() {}
 
@@ -89,6 +155,7 @@ bool diags::DiagIDContext::IsBuiltinWarningOrExtension(diags::DiagID ID) {}
 
 bool diags::DiagIDContext::IsDefaultMappingAsError(diags::DiagID ID) {}
 
-diags::DiagnosticMapping diags::DiagIDContext::GetDefaultMapping(diags::DiagID ID) {}
+diags::DiagnosticMapping
+diags::DiagIDContext::GetDefaultMapping(diags::DiagID ID) {}
 
 bool diags::DiagIDContext::IsBuiltinNote(diags::DiagID ID) {}

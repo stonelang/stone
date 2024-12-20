@@ -24,13 +24,29 @@ struct Diag {
   typedef DiagID ID;
 };
 
-
-
-class DiagnosticMapping {
-
-
+/// Enum values that allow the client to map NOTEs, WARNINGs, and EXTENSIONs
+/// to either Ignore (nothing), Remark (emit a remark), Warning
+/// (emit a warning) or Error (emit as an error).  It allows clients to
+/// map ERRORs to Error or Fatal (stop emitting diagnostics after this one).
+enum class Severity {
+  // NOTE: 0 means "uncomputed".
+  Ignored = 1, ///< Do not present this diagnostic, ignore it.
+  Remark = 2,  ///< Present this diagnostic as a remark.
+  Warning = 3, ///< Present this diagnostic as a warning.
+  Error = 4,   ///< Present this diagnostic as an error.
+  Fatal = 5    ///< Present this diagnostic as a fatal error.
 };
 
+/// Flavors of diagnostics we can emit. Used to filter for a particular
+/// kind of diagnostic (for instance, for -W/-R flags).
+enum class Flavor {
+  WarningOrError, ///< A diagnostic that indicates a problem or potential
+                  ///< problem. Can be made fatal by -Werror.
+  Remark          ///< A diagnostic that indicates normal progress through
+                  ///< compilation.
+};
+
+class DiagnosticMapping {};
 
 class DiagIDContext final {
 
@@ -63,9 +79,6 @@ public:
   /// Determine whether the given built-in diagnostic ID is a Note.
   static bool IsBuiltinNote(DiagID ID);
 };
-
-
-
 
 } // namespace diags
 } // namespace stone
