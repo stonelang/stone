@@ -246,7 +246,6 @@ class StoredDiagnostic {
   std::vector<FixIt> FixIts;
 
 public:
-
   DiagID GetDiagID() { return ID; }
 };
 

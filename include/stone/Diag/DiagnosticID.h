@@ -6,7 +6,6 @@
 namespace stone {
 namespace diags {
 enum class DiagnosticLevel;
-class DiagnosticMapping;
 
 // // Enumeration describing all of possible diagnostics.
 // ///
@@ -24,6 +23,14 @@ struct Diag {
   /// The diagnostic ID corresponding to this diagnostic.
   typedef DiagID ID;
 };
+
+
+
+class DiagnosticMapping {
+
+
+};
+
 
 class DiagIDContext final {
 
@@ -51,11 +58,14 @@ public:
   static bool IsDefaultMappingAsError(DiagID ID);
 
   /// Get the default mapping for this diagnostic.
-  static diags::DiagnosticMapping GetDefaultMapping(DiagID ID);
+  static DiagnosticMapping GetDefaultMapping(DiagID ID);
 
   /// Determine whether the given built-in diagnostic ID is a Note.
   static bool IsBuiltinNote(DiagID ID);
 };
+
+
+
 
 } // namespace diags
 } // namespace stone

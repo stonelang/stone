@@ -4,7 +4,6 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Diag/DiagnosticID.h"
 
-
 namespace stone {
 namespace diags {
 

@@ -80,10 +80,15 @@ diags::DiagIDContext::DiagIDContext() {}
 
 diags::DiagIDContext::~DiagIDContext() {}
 
-diags::DiagID diags::DiagIDContext::CreateCustomFromFormatString(DiagnosticLevel DiagLevel,
-                                      llvm::StringRef FormatString){
-
-
-}
+diags::DiagID diags::DiagIDContext::CreateCustomFromFormatString(
+    DiagnosticLevel DiagLevel, llvm::StringRef FormatString) {}
 
 llvm::StringRef diags::DiagIDContext::GetDescription(diags::DiagID ID) const {}
+
+bool diags::DiagIDContext::IsBuiltinWarningOrExtension(diags::DiagID ID) {}
+
+bool diags::DiagIDContext::IsDefaultMappingAsError(diags::DiagID ID) {}
+
+diags::DiagnosticMapping diags::DiagIDContext::GetDefaultMapping(diags::DiagID ID) {}
+
+bool diags::DiagIDContext::IsBuiltinNote(diags::DiagID ID) {}
