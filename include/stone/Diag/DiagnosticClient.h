@@ -12,18 +12,24 @@ namespace diags {
 class DiagnosticEngine;
 
 /// The level of the diagnostic, after it has been through mapping.
-enum class DiagnosticLevel {
+enum class DiagnosticLevel : uint8_t {
   None = 0,
-  /// Lowest
-  Ignored,
+  Ignore, /// Lowest
   Note,
   Remark,
   Warning,
   Error,
-  /// Highest
-  Fatal,
+  Fatal, /// Highest
 };
 
+/// This is just the kind of diagnostic being process -- this is not the same as
+/// the level.
+enum class DiagnosticKind : uint8_t {
+  Error = 0,
+  Note,
+  Remark,
+  Warning,
+};
 class DiagnosticOutputStream final {
   friend class DiagnosticEngine;
 

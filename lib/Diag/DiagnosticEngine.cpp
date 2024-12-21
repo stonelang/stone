@@ -4,15 +4,76 @@
 using namespace stone;
 
 namespace {
+
+// Maps to the Options element in the .def file
+enum class StoredDiagnosticOptions {
+  /// No options.
+  None = 0,
+  /// The location of this diagnostic points to the beginning of the first
+  /// token that the parser considers invalid.  If this token is located at the
+  /// beginning of the line, then the location is adjusted to point to the end
+  /// of the previous token.
+  ///
+  /// This behavior improves experience for "expected token X" diagnostics.
+  FirstBadToken,
+
+  /// After a fatal error subsequent diagnostics are suppressed.
+  Fatal,
+
+  /// A deprecation warning or error.
+  Deprecation,
+
+  /// A diagnostic warning about an unused element.
+  NotUsed,
+};
+
+struct StoredDiagnosticInfo {
+  diags::DiagnosticKind kind : 2;
+  bool firstBadToken : 1;
+  bool isFatal : 1;
+  bool isDeprecation : 1;
+  bool isNotUsed : 1;
+
+  constexpr StoredDiagnosticInfo(diags::DiagnosticKind k, bool firstBadToken,
+                                 bool isFatal, bool isDeprecation,
+                                 bool notUsed)
+      : kind(k), firstBadToken(firstBadToken), isFatal(isFatal),
+        isDeprecation(isDeprecation), isNotUsed(isNotUsed) {}
+
+  constexpr StoredDiagnosticInfo(diags::DiagnosticKind k, StoredDiagnosticOptions opts)
+      : StoredDiagnosticInfo(k, opts == StoredDiagnosticOptions::FirstBadToken,
+                             opts == StoredDiagnosticOptions::Fatal,
+                             opts == StoredDiagnosticOptions::Deprecation,
+                             opts == StoredDiagnosticOptions::NotUsed) {}
+};
+
 // Reproduce the DiagIDs, as we want both the size and access to the raw ids
 // themselves.
-enum LocalDiagID : uint32_t {
-#define DIAG(KIND, ID, Options, Text, Signature) ID,
-#include "stone/AST/Diagnostics.def"
+enum StoredDiagID : uint32_t {
+#define DIAG(KIND, ID, Options, Message, Signature) ID,
+#include "stone/Diag/DiagnosticEngine.def"
   TotalDiags
 };
 
 } // namespace
+
+// static const constexpr StoredDiagnosticInfo storedDiagnosticInfos[] = {
+// #define ERROR(ID, Options, Message, Signature)                                    \
+//   StoredDiagnosticInfo(diags::DiagnosticKind::Error, StoredDiagnosticOptions::Options),
+// #define WARNING(ID, Options, Message, Signature)                                  \
+//   StoredDiagnosticInfo(diags::DiagnosticKind::Warning,                                \
+//                        StoredDiagnosticOptions::Options),
+// #define NOTE(ID, Options, Message, Signature)                                     \
+//   StoredDiagnosticInfo(diags::DiagnosticKind::Note, StoredDiagnosticOptions::Options),
+// #define REMARK(ID, Options, Message, Signature)                                   \
+//   StoredDiagnosticInfo(diags::DiagnosticKind::Remark, StoredDiagnosticOptions::Options),
+// #include "stone/Diag/DiagnosticEngine.def"
+// };
+
+
+// static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo) ==
+//                   StoredDiagID::TotalDiags,
+//               "array size mismatch");
 
 diags::DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &DiagOpts,
                                           SrcMgr &SM)

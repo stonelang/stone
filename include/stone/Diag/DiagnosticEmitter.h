@@ -91,7 +91,7 @@ protected:
   ///
   /// The level of the last diagnostic emitted. Used to detect level changes
   /// which change the amount of information displayed.
-  DiagnosticLevel LastLevel = DiagnosticLevel::Ignored;
+  DiagnosticLevel LastLevel = DiagnosticLevel::Ignore;
 
 protected:
   DiagnosticEmitter(DiagnosticOutputStream &OS, const LangOptions &LangOpts,
