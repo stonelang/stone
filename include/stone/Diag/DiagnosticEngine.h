@@ -132,7 +132,45 @@ private:
   DiagnosticState(DiagnosticState &&) = default;
   DiagnosticState &operator=(DiagnosticState &&) = default;
 };
+class Diagnosis final {
+  friend class Diagnostic;
+  friend class DiagnosticEngine;
+  friend class InFlightDiagnostic;
 
+  DiagID ID;
+  SrcLoc Loc;
+  llvm::SmallVector<DiagnosticArgument, 3> Args;
+  llvm::SmallVector<CharSrcRange, 2> Ranges;
+  llvm::SmallVector<FixIt, 2> FixIts;
+  DiagnosticLevel LevelLimit = DiagnosticLevel::None;
+
+  // THINK: DiagnosticState State;
+
+  void SetLoc(SrcLoc loc) { Loc = loc; }
+  void SetLevelLimit(DiagnosticLevel limit) { LevelLimit = limit; }
+
+  void AddRange(CharSrcRange R) { Ranges.push_back(R); }
+  // Avoid copying the fix-it text more than necessary.
+  void AddArg(DiagnosticArgument &&A) { Args.push_back(std::move(A)); }
+  // Avoid copying the fix-it text more than necessary.
+  void AddFixIt(FixIt &&F) { FixIts.push_back(std::move(F)); }
+
+public:
+  Diagnosis(DiagID ID, SrcLoc Loc, ArrayRef<DiagnosticArgument> Args)
+      : ID(ID), Args(Args.begin(), Args.end()) {}
+
+  Diagnosis(DiagID ID, SrcLoc Loc) : Diagnosis(ID, Loc, {}) {}
+
+  Diagnosis(DiagID ID) : Diagnosis(ID, SrcLoc(), {}) {}
+
+public:
+  DiagID GetID() const { return ID; }
+  llvm::ArrayRef<DiagnosticArgument> GetArgs() const { return Args; }
+  llvm::ArrayRef<CharSrcRange> GetRanges() const { return Ranges; }
+  llvm::ArrayRef<FixIt> GetFixIts() const { return FixIts; }
+  SrcLoc GetLoc() const { return Loc; }
+  DiagnosticLevel GetLevelLimit() const { return LevelLimit; }
+};
 /// DiagnosticRenderer in clang
 class DiagnosticEngine final {
 
@@ -212,46 +250,6 @@ class DiagnosticEngine final {
   /// emitting diagnostics.
   llvm::SmallVector<DiagnosticClient *, 2> Clients;
 
-  class Diagnosis final {
-
-    friend DiagnosticEngine;
-    friend class InFlightDiagnostic;
-
-    DiagID ID;
-    SrcLoc Loc;
-    llvm::SmallVector<DiagnosticArgument, 3> Args;
-    llvm::SmallVector<CharSrcRange, 2> Ranges;
-    llvm::SmallVector<FixIt, 2> FixIts;
-    DiagnosticLevel LevelLimit = DiagnosticLevel::None;
-
-  public:
-    Diagnosis(DiagID ID, SrcLoc Loc, ArrayRef<DiagnosticArgument> Args)
-        : ID(ID), Args(Args.begin(), Args.end()) {}
-
-    Diagnosis(DiagID ID, SrcLoc Loc) : Diagnosis(ID, Loc, {}) {}
-
-    Diagnosis(DiagID ID) : Diagnosis(ID, SrcLoc(), {}) {}
-
-  public:
-    DiagID GetID() const { return ID; }
-    llvm::ArrayRef<DiagnosticArgument> GetArgs() const { return Args; }
-    llvm::ArrayRef<CharSrcRange> GetRanges() const { return Ranges; }
-    llvm::ArrayRef<FixIt> GetFixIts() const { return FixIts; }
-
-    SrcLoc GetLoc() const { return Loc; }
-    void SetLoc(SrcLoc loc) { Loc = loc; }
-
-    DiagnosticLevel GetLevelLimit() const { return LevelLimit; }
-    // void SetDecl(const class Decl *decl) { Decl = decl; }
-    void SetLevelLimit(DiagnosticLevel limit) { LevelLimit = limit; }
-
-    void AddRange(CharSrcRange R) { Ranges.push_back(R); }
-    // Avoid copying the fix-it text more than necessary.
-    void AddArg(DiagnosticArgument &&A) { Args.push_back(std::move(A)); }
-    // Avoid copying the fix-it text more than necessary.
-    void AddFixIt(FixIt &&F) { FixIts.push_back(std::move(F)); }
-  };
-
   DiagID ActiveDiagID;
   SrcLoc ActiveDiagLoc;
 
@@ -300,7 +298,7 @@ public:
   DiagID GetActiveDiagID() const { return ActiveDiagID; }
   SrcLoc GetActiveDiagLoc() const { return ActiveDiagLoc; }
 
-  bool HasActiveDiagnosis() { return !ActiveDiagnosis;}
+  bool HasActiveDiagnosis() { return !ActiveDiagnosis; }
 
   /// Get from diag options bool ShouldShowColors() { return }
 
@@ -331,7 +329,6 @@ public:
   static llvm::ArrayRef<DiagID> GetAllDiagnostics(DiagnosticKind Kind);
 
 private:
-
   /// ProcessDiag
   /// Used to report a diagnostic that is finally fully formed.
   ///
