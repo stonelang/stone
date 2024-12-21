@@ -14,7 +14,7 @@ class DiagnosticOptions;
 
 namespace diags {
 
-class DiagnosticInfo;
+class TopLevelDiagnostic;
 class StoredDiagnostic;
 
 class PresumedLoc {
@@ -68,8 +68,8 @@ class FullSrcLoc : public SrcLoc {
   // unsigned GetBufferID() const;
 };
 
-using DiagnosticInfoOrStoredDiagnotic =
-    llvm::PointerUnion<const DiagnosticInfo *, const StoredDiagnostic *>;
+using TopLevelDiagnosticOrStoredDiagnotic =
+    llvm::PointerUnion<const TopLevelDiagnostic *, const StoredDiagnostic *>;
 
 /// DiagnosticRenderer in clang
 class DiagnosticEmitter {
@@ -103,16 +103,16 @@ protected:
                                      DiagnosticLevel Level,
                                      llvm::StringRef Message,
                                      ArrayRef<CharSrcRange> Ranges,
-                                     DiagnosticInfoOrStoredDiagnotic Info) = 0;
+                                     TopLevelDiagnosticOrStoredDiagnotic Info) = 0;
 
   virtual void EmitDiagnosticLoc(FullSrcLoc Loc, PresumedLoc PLoc,
                                  DiagnosticLevel Level,
                                  ArrayRef<CharSrcRange> Ranges) = 0;
 
-  virtual void BeginDiagnostic(DiagnosticInfoOrStoredDiagnotic D,
+  virtual void BeginDiagnostic(TopLevelDiagnosticOrStoredDiagnotic D,
                                DiagnosticLevel Level) {}
 
-  virtual void EndDiagnostic(DiagnosticInfoOrStoredDiagnotic D,
+  virtual void EndDiagnostic(TopLevelDiagnosticOrStoredDiagnotic D,
                              DiagnosticLevel Level) {}
 
   virtual void EmitCodeContext(FullSrcLoc Loc, DiagnosticLevel Level,

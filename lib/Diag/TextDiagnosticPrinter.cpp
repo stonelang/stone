@@ -14,7 +14,7 @@ diags::TextDiagnosticPrinter::~TextDiagnosticPrinter() {}
 void diags::TextDiagnosticPrinter::Reset() { emitter.reset(); }
 
 void diags::TextDiagnosticPrinter::HandleDiagnostic(
-    DiagnosticLevel Level, const DiagnosticInfo &Info) {
+    DiagnosticLevel Level, const TopLevelDiagnostic &Info) {
 
   // Default implementation (Warnings/errors count).
   DiagnosticClient::HandleDiagnostic(Level, Info);

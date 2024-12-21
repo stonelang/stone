@@ -6,7 +6,7 @@ using namespace stone;
 diags::TextDiagnosticBuffering::TextDiagnosticBuffering() {}
 
 void diags::TextDiagnosticBuffering::HandleDiagnostic(
-    DiagnosticLevel Level, const DiagnosticInfo &Info) {
+    DiagnosticLevel Level, const TopLevelDiagnostic &Info) {
   // Default implementation (Warnings/errors count).
   DiagnosticClient::HandleDiagnostic(Level, Info);
 }

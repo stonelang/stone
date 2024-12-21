@@ -143,52 +143,19 @@ public:
   StringRef GetText() const { return Text; }
 };
 
-/// Information about a diagnostic passed to DiagnosticConsumers.
-// struct EmittableDiagnostic final {
-//   DiagID ID = DiagID(0);
-//   SrcLoc Loc;
-//   DiagnosticKind Kind;
-//   llvm::StringRef FormatString;
-//   llvm::ArrayRef<DiagnosticArgument> FormatArgs;
+// For client consumption only 
+class TopLevelDiagnostic final {
+  const DiagnosticEngine &DE;
 
-//   /// Extra source ranges that are attached to the diagnostic.
-//   ArrayRef<CharSrcRange> Ranges;
-
-//   /// Extra source ranges that are attached to the diagnostic.
-//   ArrayRef<FixIt> FixIts;
-
-//   EmittableDiagnostic() {}
-
-//   EmittableDiagnostic(DiagID ID, SrcLoc Loc, DiagnosticKind Kind,
-//                       StringRef FormatString,
-//                       ArrayRef<DiagnosticArgument> FormatArgs,
-//                       ArrayRef<CharSrcRange> Ranges, ArrayRef<FixIt> FixIts)
-//       : ID(ID), Loc(Loc), Kind(Kind), FormatString(FormatString),
-//         FormatArgs(FormatArgs), Ranges(Ranges), FixIts(FixIts) {}
-// };
-
-class DiagnosticInfo final {
-  const DiagnosticEngine *DE;
-  std::optional<llvm::StringRef> storedDiagMessage;
+  TopLevelDiagnostic(const TopLevelDiagnostic &) = delete;
+  TopLevelDiagnostic &operator=(const TopLevelDiagnostic &) = delete;
+  TopLevelDiagnostic &operator=(TopLevelDiagnostic &&) = delete;
 
 public:
-  explicit DiagnosticInfo(const DiagnosticEngine *DE)
-      : DiagnosticInfo(DE, llvm::StringRef()) {}
-
-  DiagnosticInfo(const DiagnosticEngine *DE, llvm::StringRef storedDiagMessage)
-      : DE(DE), storedDiagMessage(storedDiagMessage) {}
+  explicit TopLevelDiagnostic(const DiagnosticEngine &DE) : DE(DE) {}
 
 public:
-  const DiagnosticEngine *GetDiags() const { return DE; }
-  DiagID GetDiagID() const;
-
-  // const SourceLocation &getLocation() const { return DiagObj->CurDiagLoc; }
-  // bool hasSourceManager() const { return DiagObj->hasSourceManager(); }
-  // SourceManager &getSourceManager() const { return
-  // DiagObj->getSourceManager();}
-
-  // unsigned GetTotalArgs() const { return
-  // DE->GetDiagnosticStorage().TotalDiagArgs; }
+  const DiagnosticEngine &GetDiags() const { return DE; }
 
 public:
   /// Format this diagnostic into a string, substituting the
@@ -202,7 +169,7 @@ public:
   void FormatDiagnostic(const char *DiagStr, const char *DiagEnd,
                         llvm::SmallVectorImpl<char> &OutStr) const;
 
-  // DiagnosticInfo ConstructDiagnosticInfo();
+  // TopLevelDiagnostic ConstructTopLevelDiagnostic();
 };
 
 class DiagnosticStringFormatter {
@@ -265,7 +232,7 @@ public:
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
   virtual void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                                const DiagnosticInfo &ED);
+                                const TopLevelDiagnostic &ED);
 
   DiagnosticTracker &GetTracker() { return tracker; }
 };
@@ -273,7 +240,7 @@ public:
 class NullDiagnosticClient final : public DiagnosticClient {
 public:
   void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                        const DiagnosticInfo &ED) override {
+                        const TopLevelDiagnostic &ED) override {
     // Just ignore it.
   }
 };

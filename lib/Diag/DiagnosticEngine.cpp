@@ -29,7 +29,7 @@ enum class LocalDiagnosticOptions {
   /// A diagnostic warning about an unused element.
   NoUsage,
 };
-struct StoredDiagnosticInfo {
+struct StoredTopLevelDiagnostic {
   diags::DiagnosticKind kind : 2;
   bool pointsToFirstBadToken : 1;
   bool isFatal : 1;
@@ -37,15 +37,15 @@ struct StoredDiagnosticInfo {
   bool isDeprecation : 1;
   bool isNoUsage : 1;
 
-  constexpr StoredDiagnosticInfo(diags::DiagnosticKind k, bool firstBadToken,
+  constexpr StoredTopLevelDiagnostic(diags::DiagnosticKind k, bool firstBadToken,
                                  bool fatal, bool isAPIDigesterBreakage,
                                  bool deprecation, bool noUsage)
       : kind(k), pointsToFirstBadToken(firstBadToken), isFatal(fatal),
         isAPIDigesterBreakage(isAPIDigesterBreakage),
         isDeprecation(deprecation), isNoUsage(noUsage) {}
-  constexpr StoredDiagnosticInfo(diags::DiagnosticKind k,
+  constexpr StoredTopLevelDiagnostic(diags::DiagnosticKind k,
                                  LocalDiagnosticOptions opts)
-      : StoredDiagnosticInfo(
+      : StoredTopLevelDiagnostic(
             k, opts == LocalDiagnosticOptions::PointsToFirstBadToken,
             opts == LocalDiagnosticOptions::Fatal,
             opts == LocalDiagnosticOptions::APIDigesterBreakage,
@@ -63,23 +63,23 @@ enum LocalDiagID : uint32_t {
 } // end anonymous namespace
 
 // TODO: categorization
-static const constexpr StoredDiagnosticInfo storedDiagnosticInfos[] = {
+static const constexpr StoredTopLevelDiagnostic storedTopLevelDiagnostics[] = {
 #define ERROR(ID, Options, Message, Signature)                                 \
-  StoredDiagnosticInfo(diags::DiagnosticKind::Error,                           \
+  StoredTopLevelDiagnostic(diags::DiagnosticKind::Error,                           \
                        LocalDiagnosticOptions::Options),
 #define WARNING(ID, Options, Message, Signature)                               \
-  StoredDiagnosticInfo(diags::DiagnosticKind::Warning,                         \
+  StoredTopLevelDiagnostic(diags::DiagnosticKind::Warning,                         \
                        LocalDiagnosticOptions::Options),
 #define NOTE(ID, Options, Message, Signature)                                  \
-  StoredDiagnosticInfo(diags::DiagnosticKind::Note,                            \
+  StoredTopLevelDiagnostic(diags::DiagnosticKind::Note,                            \
                        LocalDiagnosticOptions::Options),
 #define REMARK(ID, Options, Message, Signature)                                \
-  StoredDiagnosticInfo(diags::DiagnosticKind::Remark,                          \
+  StoredTopLevelDiagnostic(diags::DiagnosticKind::Remark,                          \
                        LocalDiagnosticOptions::Options),
 #include "stone/Diag/DiagnosticEngine.def"
 };
 
-static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo) ==
+static_assert(sizeof(storedTopLevelDiagnostics) / sizeof(StoredTopLevelDiagnostic) ==
                   LocalDiagID::TotalDiags,
               "array size mismatch");
 
@@ -135,13 +135,13 @@ diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc) {
 diags::InFlightDiagnostic
 diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
                                   llvm::ArrayRef<DiagnosticArgument> Args) {
-  return Diagnose(Diagnosis(NextDiagID, NextDiagLoc, Args));
+  return Diagnose(ActiveDiagnostic(NextDiagID, NextDiagLoc, Args));
 }
 
 diags::InFlightDiagnostic
-diags::DiagnosticEngine::Diagnose(const Diagnosis &D) {
-  ActiveDiagnosis = D;
-  return InFlightDiagnostic(this);
+diags::DiagnosticEngine::Diagnose(const ActiveDiagnostic &AD) {
+  ActiveDiag = AD;
+  return InFlightDiagnostic(*this);
 }
 
 void diags::DiagnosticEngine::Clear(bool soft) {}
@@ -150,7 +150,7 @@ void diags::DiagnosticEngine::FinishProcessing() {}
 
 diags::DiagnosticKind
 diags::DiagnosticEngine::DeclaredDiagnosticKindForDiagID(const DiagID ID) {
-  return storedDiagnosticInfos[(unsigned)ID].kind;
+  return storedTopLevelDiagnostics[(unsigned)ID].kind;
 }
 
 llvm::StringRef diags::DiagnosticEngine::GetDiagnosticStringForDiagID(
@@ -164,10 +164,10 @@ diags::DiagnosticEngine::GetDiagnosticIDStringForDiagID(const DiagID ID) {
   return diagnosticIDStrings[(unsigned)ID];
 }
 
-void diags::DiagnosticInfo::FormatDiagnostic(
+void diags::TopLevelDiagnostic::FormatDiagnostic(
     llvm::SmallVectorImpl<char> &OutStr) const {}
 
-void diags::DiagnosticInfo::FormatDiagnostic(
+void diags::TopLevelDiagnostic::FormatDiagnostic(
     const char *DiagStr, const char *DiagEnd,
     llvm::SmallVectorImpl<char> &OutStr) const {
 
@@ -191,5 +191,7 @@ void diags::InFlightDiagnostic::FlushActiveDiagnostic() {
 }
 
 bool diags::DiagnosticEngine::FlushActiveDiagnostic(bool Force) {
+
+  ActiveDiag.reset();
   return false;
 }

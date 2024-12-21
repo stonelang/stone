@@ -36,15 +36,6 @@ namespace diags {
 class InFlightDiagnostic;
 class DiagnosticClient;
 
-struct DiagnosticStorage final {
-
-  llvm::SmallVector<DiagnosticArgument, 3> Args;
-  llvm::SmallVector<CharSrcRange, 2> Ranges;
-  llvm::SmallVector<FixIt, 2> FixIts;
-
-  DiagnosticStorage() = default;
-};
-
 class DiagnosticState final {
   /// Whether we should continue to emit diagnostics, even after a
   /// fatal error
@@ -132,8 +123,8 @@ private:
   DiagnosticState(DiagnosticState &&) = default;
   DiagnosticState &operator=(DiagnosticState &&) = default;
 };
-class Diagnosis final {
-  friend class Diagnostic;
+
+class ActiveDiagnostic final {
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
 
@@ -156,12 +147,12 @@ class Diagnosis final {
   void AddFixIt(FixIt &&F) { FixIts.push_back(std::move(F)); }
 
 public:
-  Diagnosis(DiagID ID, SrcLoc Loc, ArrayRef<DiagnosticArgument> Args)
+  ActiveDiagnostic(DiagID ID, SrcLoc Loc, ArrayRef<DiagnosticArgument> Args)
       : ID(ID), Args(Args.begin(), Args.end()) {}
 
-  Diagnosis(DiagID ID, SrcLoc Loc) : Diagnosis(ID, Loc, {}) {}
+  ActiveDiagnostic(DiagID ID, SrcLoc Loc) : ActiveDiagnostic(ID, Loc, {}) {}
 
-  Diagnosis(DiagID ID) : Diagnosis(ID, SrcLoc(), {}) {}
+  ActiveDiagnostic(DiagID ID) : ActiveDiagnostic(ID, SrcLoc(), {}) {}
 
 public:
   DiagID GetID() const { return ID; }
@@ -171,10 +162,69 @@ public:
   SrcLoc GetLoc() const { return Loc; }
   DiagnosticLevel GetLevelLimit() const { return LevelLimit; }
 };
+
+/// Primarily builds out the ActiveDiagnostic with fixit decorations. 
+class InFlightDiagnostic final {
+  friend class DiagnosticEngine;
+  DiagnosticEngine *DE;
+  /// Status variable indicating if this diagnostic is still active.
+  ///
+  // NOTE: This field is redundant with DiagObj (IsActive iff (DiagObj ==
+  // 0)), but LLVM is not currently smart enough to eliminate the null check
+  // that Emit() would end up with if we used that as our status variable.
+  mutable bool IsActive = false;
+
+  /// Flag indicating that this diagnostic is being emitted via a
+  /// call to ForceEmit.
+  mutable bool IsForceEmit = false;
+  /// Create a new in-flight diagnostic.
+  ///
+  /// This constructor is only available to the DiagnosticEngine.
+  InFlightDiagnostic(DiagnosticEngine &Engine)
+      : DE(&Engine), IsActive(true) { }
+
+  InFlightDiagnostic(const InFlightDiagnostic &) = delete;
+  InFlightDiagnostic &operator=(const InFlightDiagnostic &) = delete;
+  InFlightDiagnostic &operator=(InFlightDiagnostic &&) = delete;
+
+public:
+  /// Create an active but unattached in-flight diagnostic.
+  ///
+  /// The resulting diagnostic can be used as a dummy, accepting the
+  /// syntax to add additional information to a diagnostic without
+  /// actually emitting a diagnostic.
+  InFlightDiagnostic() : DE(0), IsActive(true) {}
+
+  /// Transfer an in-flight diagnostic to a new object, which is
+  /// typically used when returning in-flight diagnostics.
+  InFlightDiagnostic(InFlightDiagnostic &&Other)
+      : DE(Other.DE), IsActive(Other.IsActive) {
+    Other.IsActive = false;
+  }
+
+  /// Flush the active diagnostic to the diagnostic output engine.
+  void FlushActiveDiagnostic();
+  
+  void Clear() {
+    IsActive = false;
+    IsForceEmit = false;
+    DE = nullptr;
+  }
+
+public:
+  InFlightDiagnostic &FixItReplace(SrcRange R, llvm::StringRef Str);
+
+  /// Add a token-based range to the currently-active diagnostic.
+  InFlightDiagnostic &Highlight(SrcRange R);
+
+  /// Add a character-based range to the currently-active diagnostic.
+  InFlightDiagnostic &HighlightChars(SrcLoc Start, SrcLoc End);
+};
+
 /// DiagnosticRenderer in clang
 class DiagnosticEngine final {
 
-  friend class DiagnosticInfo;
+  friend class TopLevelDiagnostic;
   friend class InFlightDiagnostic;
   friend class DiagnosticErrorTrap;
   friend class InFlightPartialDiagnostic;
@@ -253,12 +303,9 @@ class DiagnosticEngine final {
   DiagID ActiveDiagID;
   SrcLoc ActiveDiagLoc;
 
-  std::optional<Diagnosis> ActiveDiagnosis;
+  std::optional<ActiveDiagnostic> ActiveDiag;
 
-private:
-  DiagnosticLevel GetDiagnosticLevel(DiagID ID, SrcLoc) const;
-
-  // DiagnosticSeverity GetDiagnosticSeverity(DiagID ID, SrcLoc) const;
+  ActiveDiagnostic &GetActiveDiagnostic() { return *ActiveDiag; }
 
 public:
   DiagnosticEngine(const DiagnosticEngine &) = delete;
@@ -266,6 +313,8 @@ public:
 
   explicit DiagnosticEngine(SrcMgr &SM, DiagnosticOptions &DiagOpts);
   ~DiagnosticEngine();
+  void Clear(bool soft = false);
+  void FinishProcessing();
 
 public:
   void AddClient(DiagnosticClient *client);
@@ -280,28 +329,19 @@ public:
   std::vector<DiagnosticClient *> TakeClients();
   llvm::ArrayRef<DiagnosticClient *> GetClients() const { return Clients; }
 
-  void Clear(bool soft = false);
-
-  // DiagIDContext &GetDiagIDContext() { return diagIDContext; }
-
+public:
   InFlightDiagnostic Diagnose(DiagID NextDiagID);
   InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc);
   InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
                               llvm::ArrayRef<DiagnosticArgument> args);
-  InFlightDiagnostic Diagnose(const Diagnosis &D);
+  InFlightDiagnostic Diagnose(const ActiveDiagnostic &D);
 
   /// Determine whethere there is already a diagnostic in flight.
-  bool IsInFlightDiagnostic() const {
-    return ActiveDiagID != std::numeric_limits<DiagID>::max();
-  }
+  bool IsInFlightDiagnostic() const { return !ActiveDiag; }
 
-  DiagID GetActiveDiagID() const { return ActiveDiagID; }
-  SrcLoc GetActiveDiagLoc() const { return ActiveDiagLoc; }
+  bool FlushActiveDiagnostic(bool Force = false);
 
-  bool HasActiveDiagnosis() { return !ActiveDiagnosis; }
-
-  /// Get from diag options bool ShouldShowColors() { return }
-
+public:
   DiagnosticKind DeclaredDiagnosticKindForDiagID(const DiagID ID);
 
   llvm::StringRef GetDiagnosticStringForDiagID(const DiagID ID,
@@ -312,33 +352,19 @@ public:
   DiagID GetCustomDiagID(DiagnosticLevel Level,
                          DiagnosticStringFormatter StringFormatter);
 
-  /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
-  // std::optional<DiagnosticInfo>
-  // CreeateDiagnosticInfoForDiagnostic(const Diagnostic &diagnostic);
+  /// Generate TopLevelDiagnostic for a Diagnostic to be passed to consumers.
+  // std::optional<TopLevelDiagnostic>
+  // CreeateTopLevelDiagnosticForDiagnostic(const Diagnostic &diagnostic);
 
   /// Given a diagnostic ID, return a description of the issue.
   llvm::StringRef GetDescriptionForDiagID(DiagID ID) const;
 
-  bool FlushActiveDiagnostic(bool Force = false);
-
-public:
-  void FinishProcessing();
-
-public:
   /// Get the set of all diagnostic IDs.
   static llvm::ArrayRef<DiagID> GetAllDiagnostics(DiagnosticKind Kind);
 
 private:
-  /// ProcessDiag
-  /// Used to report a diagnostic that is finally fully formed.
-  ///
-  /// \returns \c true if the diagnostic was emitted, \c false if it was
-  /// suppressed.
+  DiagnosticLevel GetDiagnosticLevel(DiagID ID, SrcLoc) const;
   bool FinishDiagnostic(DiagnosticEngine &Diag) const;
-
-  /// Used to emit a diagnostic that is finally fully formed,
-  /// ignoring suppression.
-  // void EmitDiagnsotic(DiagnosticLevel Level) const;
 };
 
 // class DiagnosticStateRAII {
@@ -388,72 +414,73 @@ public:
     TotalUnrecoverableErrors = DE.TrapTotalUnrecoverableErrorsOccurred;
   }
 };
-class StreamingDiagnostic {
+// class StreamingDiagnostic {
 
-protected:
-  // Provides access to DiagnosticStorage
-  mutable DiagnosticEngine *DE = nullptr;
+// protected:
+//   // Provides access to DiagnosticStorage
+//   mutable DiagnosticEngine *DE = nullptr;
 
-protected:
-  StreamingDiagnostic() = default;
+// protected:
+//   StreamingDiagnostic() = default;
 
-  /// Construct with an external storage not owned by itself. The allocator
-  /// is a null pointer in this case.
-  explicit StreamingDiagnostic(DiagnosticEngine *DE) : DE(DE) {}
+//   /// Construct with an external storage not owned by itself. The allocator
+//   /// is a null pointer in this case.
+//   explicit StreamingDiagnostic(DiagnosticEngine *DE) : DE(DE) {}
 
-public:
-};
+// public:
+// };
 
-class InFlightDiagnostic : public StreamingDiagnostic {
+// class InFlightDiagnostic : public StreamingDiagnostic {
 
-  friend class DiagnosticEngine;
-  friend class PartialInFlightDiagnostic;
+//   friend class DiagnosticEngine;
+//   friend class PartialInFlightDiagnostic;
 
-  /// Status variable indicating if this diagnostic is still active.
-  ///
-  // NOTE: This field is redundant with DiagObj (IsActive iff (DiagObj == 0)),
-  // but LLVM is not currently smart enough to eliminate the null check that
-  // Emit() would end up with if we used that as our status variable.
-  mutable bool IsActive = false;
+//   /// Status variable indicating if this diagnostic is still active.
+//   ///
+//   // NOTE: This field is redundant with DiagObj (IsActive iff (DiagObj ==
+//   0)),
+//   // but LLVM is not currently smart enough to eliminate the null check that
+//   // Emit() would end up with if we used that as our status variable.
+//   mutable bool IsActive = false;
 
-  /// Flag indicating that this diagnostic is being emitted via a
-  /// call to ForceEmit.
-  mutable bool IsForceEmit = false;
+//   /// Flag indicating that this diagnostic is being emitted via a
+//   /// call to ForceEmit.
+//   mutable bool IsForceEmit = false;
 
-public:
-  InFlightDiagnostic() = default;
+// public:
+//   InFlightDiagnostic() = default;
 
-  explicit InFlightDiagnostic(DiagnosticEngine *DE)
-      : StreamingDiagnostic(DE), IsActive(true) {
+//   explicit InFlightDiagnostic(DiagnosticEngine *DE)
+//       : StreamingDiagnostic(DE), IsActive(true) {
 
-    // assert(diagObj && "DiagnosticBuilder requires a valid
-    // DiagnosticsEngine!"); assert(DiagStorage &&
-    //        "DiagnosticBuilder requires a valid DiagnosticStorage!");
+//     // assert(diagObj && "DiagnosticBuilder requires a valid
+//     // DiagnosticsEngine!"); assert(DiagStorage &&
+//     //        "DiagnosticBuilder requires a valid DiagnosticStorage!");
 
-    // DiagStorage->TotalDiagArgs = 0;
-    // DiagStorage->DiagRanges.clear();
-    // DiagStorage->FixItHints.clear();
-  }
-  ~InFlightDiagnostic() { FlushActiveDiagnostic(); }
+//     // DiagStorage->TotalDiagArgs = 0;
+//     // DiagStorage->DiagRanges.clear();
+//     // DiagStorage->FixItHints.clear();
+//   }
+//   ~InFlightDiagnostic() { FlushActiveDiagnostic(); }
 
-public:
-  /// Flush the active diagnostic to the diagnostic output engine.
-  void FlushActiveDiagnostic();
-  void Clear() {
-    IsActive = false;
-    IsForceEmit = false;
-    DE = nullptr;
-  }
+// public:
+//   /// Flush the active diagnostic to the diagnostic output engine.
+//   void FlushActiveDiagnostic();
+//   void Clear() {
+//     IsActive = false;
+//     IsForceEmit = false;
+//     DE = nullptr;
+//   }
 
-public:
-  InFlightDiagnostic &FixItReplace(SrcRange R, llvm::StringRef Str);
+// public:
+//   InFlightDiagnostic &FixItReplace(SrcRange R, llvm::StringRef Str);
 
-  /// Add a token-based range to the currently-active diagnostic.
-  InFlightDiagnostic &Highlight(SrcRange R);
+//   /// Add a token-based range to the currently-active diagnostic.
+//   InFlightDiagnostic &Highlight(SrcRange R);
 
-  /// Add a character-based range to the currently-active diagnostic.
-  InFlightDiagnostic &HighlightChars(SrcLoc Start, SrcLoc End);
-};
+//   /// Add a character-based range to the currently-active diagnostic.
+//   InFlightDiagnostic &HighlightChars(SrcLoc Start, SrcLoc End);
+// };
 
 class StoredDiagnostic {
 

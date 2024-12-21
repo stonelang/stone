@@ -13,7 +13,7 @@ public:
 
 public:
   void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                        const DiagnosticInfo &Info) override;
+                        const TopLevelDiagnostic &Info) override;
 
   /// FlushDiagnostics - Flush the buffered diagnostics to an given
   /// diagnostic engine.

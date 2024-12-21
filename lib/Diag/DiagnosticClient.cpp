@@ -86,7 +86,7 @@ diags::DiagnosticClient::~DiagnosticClient() = default;
 bool diags::DiagnosticClient::UseInDiagnosticCounts() const { return true; }
 
 void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
-                                               const DiagnosticInfo &Info) {
+                                               const TopLevelDiagnostic &Info) {
   if (!UseInDiagnosticCounts()) {
     return;
   }
