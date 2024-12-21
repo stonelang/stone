@@ -31,7 +31,7 @@ protected:
   void EmitDiagnosticMessage(FullSrcLoc Loc, PresumedLoc PLoc,
                              DiagnosticLevel Level, llvm::StringRef Message,
                              ArrayRef<CharSrcRange> Ranges,
-                             TopLevelDiagnosticOrStoredDiagnotic Info) override;
+                             DiagnosticInfoOrStoredDiagnotic Info) override;
 
   void EmitDiagnosticLoc(FullSrcLoc Loc, PresumedLoc PLoc,
                          DiagnosticLevel Level,
@@ -96,7 +96,7 @@ public:
   void Reset();
 
   void HandleDiagnostic(DiagnosticLevel Level,
-                        const TopLevelDiagnostic &Info) override;
+                        const DiagnosticInfo &Info) override;
 };
 
 } // namespace diags

@@ -6,6 +6,8 @@
 namespace stone {
 namespace diags {
 class DiagnosticEngine;
+
+// THINK: This may not be needed
 class TextDiagnosticBuffering final : public DiagnosticClient {
 
 public:
@@ -13,7 +15,7 @@ public:
 
 public:
   void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                        const TopLevelDiagnostic &Info) override;
+                        const DiagnosticInfo &Info) override;
 
   /// FlushDiagnostics - Flush the buffered diagnostics to an given
   /// diagnostic engine.

@@ -10,6 +10,7 @@
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/Compiler.h"
+#include "llvm/Support/SaveAndRestore.h"
 
 #include <cassert>
 #include <cstdint>
@@ -32,35 +33,48 @@ namespace stone {
 class LangOptions;
 
 namespace diags {
-
+class Diagnostic;
 class InFlightDiagnostic;
 class DiagnosticClient;
 
 class DiagnosticState final {
+
+  // Suppress all diagnostics.
+  bool suppressAllDiagnostics = false;
+
+  // Color printing is enabled.
+  bool showColors = false;
+
   /// Whether we should continue to emit diagnostics, even after a
   /// fatal error
-  // bool showDiagnosticsAfterFatalError = false;
+  bool showDiagnosticsAfterFatalError = false;
 
-  // /// Don't emit any warnings
-  // bool suppressWarnings = false;
+  /// Don't emit any warnings
+  bool suppressWarnings = false;
 
-  // /// Don't emit any remarks
-  // bool suppressRemarks = false;
+  /// Don't emit any remarks
+  bool suppressRemarks = false;
 
-  // /// Emit all warnings as errors
-  // bool warningsAsErrors = false;
+  /// Emit all warnings as errors
+  bool warningsAsErrors = false;
 
-  // /// Whether a fatal error has occurred
-  // bool fatalErrorOccurred = false;
+  /// Whether a fatal error has occurred
+  bool fatalErrorOccurred = false;
 
-  // /// Whether any error diagnostics have been emitted.
-  // bool anyErrorOccurred = false;
+  /// Whether any error diagnostics have been emitted.
+  bool anyErrorOccurred = false;
 
-  // /// Track the previous emitted Behavior, useful for notes
-  // DiagnosticBehavior previousBehavior = DiagnosticBehavior::Unspecified;
+  /// Track the previous emitted Behavior, useful for notes
+  DiagnosticLevel previousLevel = DiagnosticLevel::None;
 
-  // /// Track which diagnostics should be ignored.
-  // llvm::BitVector ignoredDiagnostics;
+  /// Track which diagnostics should be ignored.
+  llvm::BitVector ignoredDiagnostics;
+
+  /// Track which diagnostics should be ignored.
+  llvm::BitVector errorDiagnostics;
+
+  /// Track which diagnostics should be ignored.
+  llvm::BitVector warningDiagnostics;
 
   friend class DiagnosticStateRAII;
 
@@ -69,51 +83,70 @@ public:
 
   /// Figure out the Behavior for the given diagnostic, taking current
   /// state such as fatality into account.
-  // DiagnosticBehavior determineBehavior(const Diagnostic &diag);
+  // DiagnosticLevel ComputeDiagnosticLevel(const Diagnostic &diag);
 
-  // bool hadAnyError() const { return anyErrorOccurred; }
-  // bool hasFatalErrorOccurred() const { return fatalErrorOccurred; }
+  /// Whether to skip emitting warnings
+  void SetSuppressAllDiagnostics(bool val) { suppressAllDiagnostics = val; }
+  bool GetSuppressAllDiagnostics() const { return suppressAllDiagnostics; }
 
-  // void setShowDiagnosticsAfterFatalError(bool val = true) {
-  //   showDiagnosticsAfterFatalError = val;
-  // }
-  // bool getShowDiagnosticsAfterFatalError() {
-  //   return showDiagnosticsAfterFatalError;
-  // }
+  /// Whether to skip emitting warnings
+  void SetShowColors(bool val) { showColors = val; }
+  bool GetShowColors() const { return showColors; }
+
+  bool HadAnyError() const { return anyErrorOccurred; }
+  bool HasFatalErrorOccurred() const { return fatalErrorOccurred; }
+
+  void SetShowDiagnosticsAfterFatalError(bool val = true) {
+    showDiagnosticsAfterFatalError = val;
+  }
+  bool GetShowDiagnosticsAfterFatalError() {
+    return showDiagnosticsAfterFatalError;
+  }
 
   // /// Whether to skip emitting warnings
-  // void setSuppressWarnings(bool val) { suppressWarnings = val; }
-  // bool getSuppressWarnings() const { return suppressWarnings; }
+  void SetSuppressWarnings(bool val) { suppressWarnings = val; }
+  bool GetSuppressWarnings() const { return suppressWarnings; }
 
   // /// Whether to skip emitting remarks
-  // void setSuppressRemarks(bool val) { suppressRemarks = val; }
-  // bool getSuppressRemarks() const { return suppressRemarks; }
+  void SetSuppressRemarks(bool val) { suppressRemarks = val; }
+  bool getSuppressRemarks() const { return suppressRemarks; }
 
   // /// Whether to treat warnings as errors
-  // void setWarningsAsErrors(bool val) { warningsAsErrors = val; }
-  // bool getWarningsAsErrors() const { return warningsAsErrors; }
+  void SetWarningsAsErrors(bool val) { warningsAsErrors = val; }
+  bool GetWarningsAsErrors() const { return warningsAsErrors; }
 
-  // void resetHadAnyError() {
-  //   anyErrorOccurred = false;
-  //   fatalErrorOccurred = false;
-  // }
+  void ResetHadAnyError() {
+    anyErrorOccurred = false;
+    fatalErrorOccurred = false;
+    errorDiagnostics.reset();
+  }
 
-  // /// Set whether a diagnostic should be ignored.
-  // void setIgnoredDiagnostic(DiagID id, bool ignored) {
-  //   ignoredDiagnostics[(unsigned)id] = ignored;
-  // }
+  /// Set whether a diagnostic should be ignored.
+  void SetIgnoredDiagnostic(DiagID ID, bool ignored) {
+    ignoredDiagnostics[(unsigned)ID] = ignored;
+  }
 
-  // void swap(DiagnosticState &other) {
-  //   std::swap(showDiagnosticsAfterFatalError,
-  //   other.showDiagnosticsAfterFatalError); std::swap(suppressWarnings,
-  //   other.suppressWarnings); std::swap(suppressRemarks,
-  //   other.suppressRemarks); std::swap(warningsAsErrors,
-  //   other.warningsAsErrors); std::swap(fatalErrorOccurred,
-  //   other.fatalErrorOccurred); std::swap(anyErrorOccurred,
-  //   other.anyErrorOccurred); std::swap(previousBehavior,
-  //   other.previousBehavior); std::swap(ignoredDiagnostics,
-  //   other.ignoredDiagnostics);
-  // }
+  void TrackWarning(DiagID ID) { warningDiagnostics.push_back((unsigned)ID); }
+  unsigned GetTotalWarnings() { return warningDiagnostics.size(); }
+
+  void TrackError(DiagID ID) { errorDiagnostics.push_back((unsigned)ID); }
+  unsigned GetTotalErrors() { return errorDiagnostics.size(); }
+
+  void swap(DiagnosticState &other) {
+    std::swap(showDiagnosticsAfterFatalError,
+              other.showDiagnosticsAfterFatalError);
+    std::swap(suppressWarnings, other.suppressWarnings);
+    std::swap(suppressRemarks, other.suppressRemarks);
+    std::swap(warningsAsErrors, other.warningsAsErrors);
+    std::swap(fatalErrorOccurred, other.fatalErrorOccurred);
+    std::swap(anyErrorOccurred, other.anyErrorOccurred);
+    std::swap(previousLevel, other.previousLevel);
+    std::swap(ignoredDiagnostics, other.ignoredDiagnostics);
+    std::swap(errorDiagnostics, other.errorDiagnostics);
+    std::swap(warningDiagnostics, other.warningDiagnostics);
+    std::swap(showColors, other.showColors);
+    std::swap(suppressAllDiagnostics, other.suppressAllDiagnostics);
+  }
 
 private:
   // Make the state movable only
@@ -124,12 +157,19 @@ private:
   DiagnosticState &operator=(DiagnosticState &&) = default;
 };
 
-class ActiveDiagnostic final {
+enum class DiagnosticStage {
+  None = 0,
+  Active,
+  Flushed,
+  Emitted,
+};
+class Diagnostic final {
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
 
   DiagID ID;
   SrcLoc Loc;
+  DiagnosticStage stage = DiagnosticStage::None;
   llvm::SmallVector<DiagnosticArgument, 3> Args;
   llvm::SmallVector<CharSrcRange, 2> Ranges;
   llvm::SmallVector<FixIt, 2> FixIts;
@@ -146,16 +186,21 @@ class ActiveDiagnostic final {
   // Avoid copying the fix-it text more than necessary.
   void AddFixIt(FixIt &&F) { FixIts.push_back(std::move(F)); }
 
+  /// Set the diagnostic stage
+  void SetStage(DiagnosticStage S) { stage = S; }
+
 public:
-  ActiveDiagnostic(DiagID ID, SrcLoc Loc, ArrayRef<DiagnosticArgument> Args)
-      : ID(ID), Args(Args.begin(), Args.end()) {}
+  Diagnostic(DiagID ID, SrcLoc Loc, ArrayRef<DiagnosticArgument> Args)
+      : ID(ID), Args(Args.begin(), Args.end()), stage(DiagnosticStage::Active) {
+  }
 
-  ActiveDiagnostic(DiagID ID, SrcLoc Loc) : ActiveDiagnostic(ID, Loc, {}) {}
+  Diagnostic(DiagID ID, SrcLoc Loc) : Diagnostic(ID, Loc, {}) {}
 
-  ActiveDiagnostic(DiagID ID) : ActiveDiagnostic(ID, SrcLoc(), {}) {}
+  Diagnostic(DiagID ID) : Diagnostic(ID, SrcLoc(), {}) {}
 
 public:
   DiagID GetID() const { return ID; }
+  DiagnosticStage GetStage() { return stage; }
   llvm::ArrayRef<DiagnosticArgument> GetArgs() const { return Args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return Ranges; }
   llvm::ArrayRef<FixIt> GetFixIts() const { return FixIts; }
@@ -163,7 +208,7 @@ public:
   DiagnosticLevel GetLevelLimit() const { return LevelLimit; }
 };
 
-/// Primarily builds out the ActiveDiagnostic with fixit decorations. 
+/// Primarily builds out the Diagnostic with fixit decorations.
 class InFlightDiagnostic final {
   friend class DiagnosticEngine;
   DiagnosticEngine *DE;
@@ -180,12 +225,17 @@ class InFlightDiagnostic final {
   /// Create a new in-flight diagnostic.
   ///
   /// This constructor is only available to the DiagnosticEngine.
-  InFlightDiagnostic(DiagnosticEngine &Engine)
-      : DE(&Engine), IsActive(true) { }
+  InFlightDiagnostic(DiagnosticEngine &Engine) : DE(&Engine), IsActive(true) {}
 
   InFlightDiagnostic(const InFlightDiagnostic &) = delete;
   InFlightDiagnostic &operator=(const InFlightDiagnostic &) = delete;
   InFlightDiagnostic &operator=(InFlightDiagnostic &&) = delete;
+
+  void Clear() {
+    IsActive = false;
+    IsForceEmit = false;
+    DE = nullptr;
+  }
 
 public:
   /// Create an active but unattached in-flight diagnostic.
@@ -204,11 +254,11 @@ public:
 
   /// Flush the active diagnostic to the diagnostic output engine.
   void FlushActiveDiagnostic();
-  
-  void Clear() {
-    IsActive = false;
-    IsForceEmit = false;
-    DE = nullptr;
+
+  /// Forces the diagnostic to be emitted.
+  const InFlightDiagnostic &SetForceEmitDiagnostic() const {
+    IsForceEmit = true;
+    return *this;
   }
 
 public:
@@ -224,10 +274,10 @@ public:
 /// DiagnosticRenderer in clang
 class DiagnosticEngine final {
 
-  friend class TopLevelDiagnostic;
+  friend class DiagnosticInfo;
   friend class InFlightDiagnostic;
   friend class DiagnosticErrorTrap;
-  friend class InFlightPartialDiagnostic;
+  friend class DiagnosticStateRAII;
 
   // Treat fatal errors like errors.
   bool FatalsAsError = false;
@@ -293,6 +343,9 @@ class DiagnosticEngine final {
   /// Totalber of errors reported
   unsigned TotalErrors;
 
+  /// Tracks diagnostic behaviors and state
+  DiagnosticState state;
+
   SrcMgr &SM;
 
   DiagnosticOptions &DiagOpts;
@@ -300,12 +353,31 @@ class DiagnosticEngine final {
   /// emitting diagnostics.
   llvm::SmallVector<DiagnosticClient *, 2> Clients;
 
-  DiagID ActiveDiagID;
-  SrcLoc ActiveDiagLoc;
+  /// The active dianostics
+  std::optional<Diagnostic> ActiveDiagnostic;
+  Diagnostic &GetActiveDiagnostic() { return *ActiveDiagnostic; }
 
-  std::optional<ActiveDiagnostic> ActiveDiag;
+  /// All diagnostics that have are no longer active but have not yet
+  /// been emitted due to an open transaction.
+  llvm::SmallVector<Diagnostic, 4> TentativeDiagnostics;
 
-  ActiveDiagnostic &GetActiveDiagnostic() { return *ActiveDiag; }
+  /// Requested by InFlightDiagnostic
+  void FlushActiveDiagnostic(bool ForceEmit = false);
+
+  /// Handle a new diagnostic, which will either be emitted, or added to an
+  /// active transaction.
+  void HandleDiagnostic(Diagnostic &&diagnostic);
+
+  /// Used to emit a diagnostic that is finally fully formed,
+  /// ignoring suppression.
+  void EmitDiagnostic(Diagnostic &diagnostic) const;
+
+  /// Clear any tentative diagnostics.
+  void ClearTentativeDiagnostics();
+
+  /// Send all tentative diagnostics to all diagnostic consumers and
+  /// delete them.
+  void EmitTentativeDiagnostics();
 
 public:
   DiagnosticEngine(const DiagnosticEngine &) = delete;
@@ -314,7 +386,8 @@ public:
   explicit DiagnosticEngine(SrcMgr &SM, DiagnosticOptions &DiagOpts);
   ~DiagnosticEngine();
   void Clear(bool soft = false);
-  void FinishProcessing();
+
+  bool FinishProcessing();
 
 public:
   void AddClient(DiagnosticClient *client);
@@ -323,23 +396,21 @@ public:
   void RemoveClient(DiagnosticClient *client) {
     Clients.erase(std::remove(Clients.begin(), Clients.end(), client));
   }
-
   /// Return the current diagnostic client along with ownership of that
   /// client.
   std::vector<DiagnosticClient *> TakeClients();
   llvm::ArrayRef<DiagnosticClient *> GetClients() const { return Clients; }
+  bool HasClients() const { return Clients.size() > 0; }
 
 public:
   InFlightDiagnostic Diagnose(DiagID NextDiagID);
   InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc);
   InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
                               llvm::ArrayRef<DiagnosticArgument> args);
-  InFlightDiagnostic Diagnose(const ActiveDiagnostic &D);
+  InFlightDiagnostic Diagnose(const Diagnostic &D);
 
   /// Determine whethere there is already a diagnostic in flight.
-  bool IsInFlightDiagnostic() const { return !ActiveDiag; }
-
-  bool FlushActiveDiagnostic(bool Force = false);
+  bool IsInFlightDiagnostic() const { return !ActiveDiagnostic; }
 
 public:
   DiagnosticKind DeclaredDiagnosticKindForDiagID(const DiagID ID);
@@ -352,9 +423,9 @@ public:
   DiagID GetCustomDiagID(DiagnosticLevel Level,
                          DiagnosticStringFormatter StringFormatter);
 
-  /// Generate TopLevelDiagnostic for a Diagnostic to be passed to consumers.
-  // std::optional<TopLevelDiagnostic>
-  // CreeateTopLevelDiagnosticForDiagnostic(const Diagnostic &diagnostic);
+  /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
+  // std::optional<DiagnosticInfo>
+  // CreeateDiagnosticInfoForDiagnostic(const Diagnostic &diagnostic);
 
   /// Given a diagnostic ID, return a description of the issue.
   llvm::StringRef GetDescriptionForDiagID(DiagID ID) const;
@@ -364,28 +435,34 @@ public:
 
 private:
   DiagnosticLevel GetDiagnosticLevel(DiagID ID, SrcLoc) const;
-  bool FinishDiagnostic(DiagnosticEngine &Diag) const;
 };
 
-// class DiagnosticStateRAII {
-//     llvm::SaveAndRestore<DiagnosticLevel> previousLevel;
+/// Remember details about the state of a diagnostic engine and restore them
+/// when the object is destroyed.
+///
+/// Diagnostic engines contain state about the most recent diagnostic emitted
+/// which influences subsequent emissions; in particular, if you try to emit
+/// a note and the previous diagnostic was ignored, the note will be ignored
+/// too. This can be a problem in code structured like:
+///
+///     D->diagnose(diag::an_error);
+///     if (conditionWhichMightEmitDiagnostics())
+///        D->diagnose(diag::a_note); // might be affected by diagnostics from
+///                                   // conditionWhichMightEmitDiagnostics()!
+///
+/// To prevent this, functions which are called for their return values but
+/// may emit diagnostics as a side effect can use \c DiagnosticStateRAII to
+/// ensure that their changes to diagnostic engine state don't leak out and
+/// affect the caller's diagnostics.
+class DiagnosticStateRAII {
+  llvm::SaveAndRestore<DiagnosticLevel> previousLevel;
 
-//   public:
-//     DiagnosticStateRAII(DiagnosticEngine &diags)
-//       : previousBehavior(diags.state.previousBehavior) {}
+public:
+  DiagnosticStateRAII(DiagnosticEngine &DE)
+      : previousLevel(DE.state.previousLevel) {}
 
-//     ~DiagnosticStateRAII() {}
-//   };
-
-//   class BufferIndirectlyCausingDiagnosticRAII {
-//   private:
-//     DiagnosticEngine &Diags;
-//   public:
-//     BufferIndirectlyCausingDiagnosticRAII(const SourceFile &SF);
-//     ~BufferIndirectlyCausingDiagnosticRAII() {
-//       Diags.resetBufferIndirectlyCausingDiagnostic();
-//     }
-//   };
+  ~DiagnosticStateRAII() {}
+};
 
 class DiagnosticErrorTrap final {
 
@@ -414,98 +491,6 @@ public:
     TotalUnrecoverableErrors = DE.TrapTotalUnrecoverableErrorsOccurred;
   }
 };
-// class StreamingDiagnostic {
-
-// protected:
-//   // Provides access to DiagnosticStorage
-//   mutable DiagnosticEngine *DE = nullptr;
-
-// protected:
-//   StreamingDiagnostic() = default;
-
-//   /// Construct with an external storage not owned by itself. The allocator
-//   /// is a null pointer in this case.
-//   explicit StreamingDiagnostic(DiagnosticEngine *DE) : DE(DE) {}
-
-// public:
-// };
-
-// class InFlightDiagnostic : public StreamingDiagnostic {
-
-//   friend class DiagnosticEngine;
-//   friend class PartialInFlightDiagnostic;
-
-//   /// Status variable indicating if this diagnostic is still active.
-//   ///
-//   // NOTE: This field is redundant with DiagObj (IsActive iff (DiagObj ==
-//   0)),
-//   // but LLVM is not currently smart enough to eliminate the null check that
-//   // Emit() would end up with if we used that as our status variable.
-//   mutable bool IsActive = false;
-
-//   /// Flag indicating that this diagnostic is being emitted via a
-//   /// call to ForceEmit.
-//   mutable bool IsForceEmit = false;
-
-// public:
-//   InFlightDiagnostic() = default;
-
-//   explicit InFlightDiagnostic(DiagnosticEngine *DE)
-//       : StreamingDiagnostic(DE), IsActive(true) {
-
-//     // assert(diagObj && "DiagnosticBuilder requires a valid
-//     // DiagnosticsEngine!"); assert(DiagStorage &&
-//     //        "DiagnosticBuilder requires a valid DiagnosticStorage!");
-
-//     // DiagStorage->TotalDiagArgs = 0;
-//     // DiagStorage->DiagRanges.clear();
-//     // DiagStorage->FixItHints.clear();
-//   }
-//   ~InFlightDiagnostic() { FlushActiveDiagnostic(); }
-
-// public:
-//   /// Flush the active diagnostic to the diagnostic output engine.
-//   void FlushActiveDiagnostic();
-//   void Clear() {
-//     IsActive = false;
-//     IsForceEmit = false;
-//     DE = nullptr;
-//   }
-
-// public:
-//   InFlightDiagnostic &FixItReplace(SrcRange R, llvm::StringRef Str);
-
-//   /// Add a token-based range to the currently-active diagnostic.
-//   InFlightDiagnostic &Highlight(SrcRange R);
-
-//   /// Add a character-based range to the currently-active diagnostic.
-//   InFlightDiagnostic &HighlightChars(SrcLoc Start, SrcLoc End);
-// };
-
-class StoredDiagnostic {
-
-  DiagID ID;
-
-  DiagnosticLevel Level;
-  // FullSourceLoc Loc;
-  std::string Message;
-  // std::vector<CharSourceRange> Ranges;
-
-  std::vector<FixIt> FixIts;
-
-public:
-  DiagID GetDiagID() { return ID; }
-};
-
-struct TemplateDiffTypes {};
-
-/// ProcessWarningOptions - Initialize the diagnostic client and process the
-/// warning options specified on the command line.
-// void ProcessWarningOptions(DiagnosticEngine &Diags,
-//                            const DiagnosticOptions &Opts,
-//                            bool ReportDiags = true);
-// void EscapeStringForDiagnostic(llvm::StringRef Str,
-// llvm::SmallVectorImpl<char> &OutStr);
 
 } // namespace diags
 } // namespace stone

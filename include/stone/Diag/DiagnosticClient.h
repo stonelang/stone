@@ -143,18 +143,25 @@ public:
   StringRef GetText() const { return Text; }
 };
 
-// For client consumption only 
-class TopLevelDiagnostic final {
+// For client consumption only
+class DiagnosticInfo final {
+
+  DiagnosticKind kind;
+  llvm::StringRef FormatString;
   const DiagnosticEngine &DE;
 
-  TopLevelDiagnostic(const TopLevelDiagnostic &) = delete;
-  TopLevelDiagnostic &operator=(const TopLevelDiagnostic &) = delete;
-  TopLevelDiagnostic &operator=(TopLevelDiagnostic &&) = delete;
+  DiagnosticInfo(const DiagnosticInfo &) = delete;
+  DiagnosticInfo &operator=(const DiagnosticInfo &) = delete;
+  DiagnosticInfo &operator=(DiagnosticInfo &&) = delete;
 
 public:
-  explicit TopLevelDiagnostic(const DiagnosticEngine &DE) : DE(DE) {}
+  explicit DiagnosticInfo(DiagnosticKind kind, llvm::StringRef FmtStr,
+                          const DiagnosticEngine &DE)
+      : kind(kind), FormatString(FmtStr), DE(DE) {}
 
 public:
+  DiagnosticKind GetKind() { return kind; }
+  llvm::StringRef GetFormatString() { return FormatString; }
   const DiagnosticEngine &GetDiags() const { return DE; }
 
 public:
@@ -169,35 +176,35 @@ public:
   void FormatDiagnostic(const char *DiagStr, const char *DiagEnd,
                         llvm::SmallVectorImpl<char> &OutStr) const;
 
-  // TopLevelDiagnostic ConstructTopLevelDiagnostic();
+  // DiagnosticInfo ConstructDiagnosticInfo();
 };
 
 class DiagnosticStringFormatter {
 public:
 };
 
-struct DiagnosticTracker final {
+// struct DiagnosticTracker final {
 
-  // Track the total amount of warnings plus the DiagID
-  llvm::BitVector TotalWarnings;
+//   // Track the total amount of warnings plus the DiagID
+//   llvm::BitVector TotalWarnings;
 
-  // Track the total amount of errors plus the DiagID
-  llvm::BitVector TotalErrors;
+//   // Track the total amount of errors plus the DiagID
+//   llvm::BitVector TotalErrors;
 
-  DiagnosticTracker();
-  ~DiagnosticTracker() { Clear(); }
+//   DiagnosticTracker();
+//   ~DiagnosticTracker() { Clear(); }
 
-  void TrackWarning(DiagID ID) { TotalWarnings.push_back((unsigned)ID); }
-  unsigned GetTotalWarnings() { return TotalWarnings.size(); }
+//   void TrackWarning(DiagID ID) { TotalWarnings.push_back((unsigned)ID); }
+//   unsigned GetTotalWarnings() { return TotalWarnings.size(); }
 
-  void TrackError(DiagID ID) { TotalErrors.push_back((unsigned)ID); }
-  unsigned GetTotalErrors() { return TotalErrors.size(); }
+//   void TrackError(DiagID ID) { TotalErrors.push_back((unsigned)ID); }
+//   unsigned GetTotalErrors() { return TotalErrors.size(); }
 
-  void Clear() {
-    TotalWarnings.reset();
-    TotalErrors.reset();
-  }
-};
+//   void Clear() {
+//     TotalWarnings.reset();
+//     TotalErrors.reset();
+//   }
+// };
 
 class DiagnosticClient {
   friend class DiagnosticEngine;
@@ -206,7 +213,7 @@ protected:
   unsigned TotalWarnings = 0; ///< Number of warnings reported
   unsigned TotalErrors = 0;   ///< Number of errors reported
 
-  DiagnosticTracker tracker;
+  // DiagnosticTracker tracker;
 
 public:
   DiagnosticClient();
@@ -232,15 +239,15 @@ public:
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
   virtual void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                                const TopLevelDiagnostic &ED);
+                                const DiagnosticInfo &ED);
 
-  DiagnosticTracker &GetTracker() { return tracker; }
+  // DiagnosticTracker &GetTracker() { return tracker; }
 };
 
 class NullDiagnosticClient final : public DiagnosticClient {
 public:
   void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                        const TopLevelDiagnostic &ED) override {
+                        const DiagnosticInfo &ED) override {
     // Just ignore it.
   }
 };

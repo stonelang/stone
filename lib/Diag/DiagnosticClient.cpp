@@ -86,7 +86,7 @@ diags::DiagnosticClient::~DiagnosticClient() = default;
 bool diags::DiagnosticClient::UseInDiagnosticCounts() const { return true; }
 
 void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
-                                               const TopLevelDiagnostic &Info) {
+                                               const DiagnosticInfo &Info) {
   if (!UseInDiagnosticCounts()) {
     return;
   }
@@ -100,3 +100,14 @@ void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
 // diags::DiagID diags::Diagnostic::GetDiagID() const {
 //   return DE->GetCurDiagID();
 // }
+
+void diags::DiagnosticInfo::FormatDiagnostic(
+    llvm::SmallVectorImpl<char> &OutStr) const {}
+
+void diags::DiagnosticInfo::FormatDiagnostic(
+    const char *DiagStr, const char *DiagEnd,
+    llvm::SmallVectorImpl<char> &OutStr) const {
+
+  // switch (Kind) {
+  // }
+}

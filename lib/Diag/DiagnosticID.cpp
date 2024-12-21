@@ -66,26 +66,28 @@ namespace diags {
 //     "<not a diagnostic>",
 // };
 
-// // static const constexpr StoredTopLevelDiagnostic StoredTopLevelDiagnostics[] = {
+// // static const constexpr StoredDiagnosticInfo
+// StoredDiagnosticInfos[] = {
 // // #define ERROR(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
 // NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
-// //   StoredTopLevelDiagnostic(DiagnosticKind::Error,
+// //   StoredDiagnosticInfo(DiagnosticKind::Error,
 // LocalDiagnosticOptions::Options),
 // // #define WARNING(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
 // NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
-// //   StoredTopLevelDiagnostic(DiagnosticKind::Warning, \
+// //   StoredDiagnosticInfo(DiagnosticKind::Warning, \
 // //                        LocalDiagnosticOptions::Options),
 // // #define NOTE(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
 // NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
-// //   StoredTopLevelDiagnostic(DiagnosticKind::Note,
+// //   StoredDiagnosticInfo(DiagnosticKind::Note,
 // LocalDiagnosticOptions::Options),
 // // #define REMARK(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
 // NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
-// //   StoredTopLevelDiagnostic(DiagnosticKind::Remark,
+// //   StoredDiagnosticInfo(DiagnosticKind::Remark,
 // LocalDiagnosticOptions::Options),
 // // #include "stone/Diag/AllDiagnosticKind.inc"
 // // };
-// // static_assert(sizeof(storedTopLevelDiagnostics) / sizeof(StoredTopLevelDiagnostic)
+// // static_assert(sizeof(storedDiagnosticInfos) /
+// sizeof(StoredDiagnosticInfo)
 // ==
 // //                   LocalDiagID::TotalDiags,
 // //               "array size mismatch");

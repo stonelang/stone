@@ -29,7 +29,7 @@ enum class LocalDiagnosticOptions {
   /// A diagnostic warning about an unused element.
   NoUsage,
 };
-struct StoredTopLevelDiagnostic {
+struct StoredDiagnosticInfo {
   diags::DiagnosticKind kind : 2;
   bool pointsToFirstBadToken : 1;
   bool isFatal : 1;
@@ -37,15 +37,15 @@ struct StoredTopLevelDiagnostic {
   bool isDeprecation : 1;
   bool isNoUsage : 1;
 
-  constexpr StoredTopLevelDiagnostic(diags::DiagnosticKind k, bool firstBadToken,
+  constexpr StoredDiagnosticInfo(diags::DiagnosticKind k, bool firstBadToken,
                                  bool fatal, bool isAPIDigesterBreakage,
                                  bool deprecation, bool noUsage)
       : kind(k), pointsToFirstBadToken(firstBadToken), isFatal(fatal),
         isAPIDigesterBreakage(isAPIDigesterBreakage),
         isDeprecation(deprecation), isNoUsage(noUsage) {}
-  constexpr StoredTopLevelDiagnostic(diags::DiagnosticKind k,
+  constexpr StoredDiagnosticInfo(diags::DiagnosticKind k,
                                  LocalDiagnosticOptions opts)
-      : StoredTopLevelDiagnostic(
+      : StoredDiagnosticInfo(
             k, opts == LocalDiagnosticOptions::PointsToFirstBadToken,
             opts == LocalDiagnosticOptions::Fatal,
             opts == LocalDiagnosticOptions::APIDigesterBreakage,
@@ -63,23 +63,23 @@ enum LocalDiagID : uint32_t {
 } // end anonymous namespace
 
 // TODO: categorization
-static const constexpr StoredTopLevelDiagnostic storedTopLevelDiagnostics[] = {
+static const constexpr StoredDiagnosticInfo storedDiagnosticInfos[] = {
 #define ERROR(ID, Options, Message, Signature)                                 \
-  StoredTopLevelDiagnostic(diags::DiagnosticKind::Error,                           \
+  StoredDiagnosticInfo(diags::DiagnosticKind::Error,                           \
                        LocalDiagnosticOptions::Options),
 #define WARNING(ID, Options, Message, Signature)                               \
-  StoredTopLevelDiagnostic(diags::DiagnosticKind::Warning,                         \
+  StoredDiagnosticInfo(diags::DiagnosticKind::Warning,                         \
                        LocalDiagnosticOptions::Options),
 #define NOTE(ID, Options, Message, Signature)                                  \
-  StoredTopLevelDiagnostic(diags::DiagnosticKind::Note,                            \
+  StoredDiagnosticInfo(diags::DiagnosticKind::Note,                            \
                        LocalDiagnosticOptions::Options),
 #define REMARK(ID, Options, Message, Signature)                                \
-  StoredTopLevelDiagnostic(diags::DiagnosticKind::Remark,                          \
+  StoredDiagnosticInfo(diags::DiagnosticKind::Remark,                          \
                        LocalDiagnosticOptions::Options),
 #include "stone/Diag/DiagnosticEngine.def"
 };
 
-static_assert(sizeof(storedTopLevelDiagnostics) / sizeof(StoredTopLevelDiagnostic) ==
+static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo) ==
                   LocalDiagID::TotalDiags,
               "array size mismatch");
 
@@ -108,6 +108,26 @@ static constexpr const char *const diagnosticIDStrings[] = {
 //     "<not a fix-it>",
 // };
 
+diags::DiagnosticState::DiagnosticState() {
+  ignoredDiagnostics.resize(LocalDiagID::TotalDiags);
+  errorDiagnostics.resize(LocalDiagID::TotalDiags);
+  warningDiagnostics.resize(LocalDiagID::TotalDiags);
+}
+// static DiagnosticLevel
+// DiagnosticState::ComputeDiagnosticLevel(DiagnosticKind kind, bool isFatal) {
+//   switch (kind) {
+//   case DiagnosticKind::Note:
+//     return DiagnosticLevel::Note;
+//   case DiagnosticKind::Error:
+//     return isFatal ? DiagnosticLevel::Fatal : DiagnosticLevel::Error;
+//   case DiagnosticKind::Warning:
+//     return DiagnosticLevel::Warning;
+//   case DiagnosticKind::Remark:
+//     return DiagnosticLevel::Remark;
+//   }
+//   llvm_unreachable("Unhandled DiagnosticKind in switch.");
+// }
+
 diags::DiagnosticEngine::DiagnosticEngine(SrcMgr &SM,
                                           DiagnosticOptions &DiagOpts)
     : SM(SM), DiagOpts(DiagOpts) {}
@@ -135,22 +155,29 @@ diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc) {
 diags::InFlightDiagnostic
 diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
                                   llvm::ArrayRef<DiagnosticArgument> Args) {
-  return Diagnose(ActiveDiagnostic(NextDiagID, NextDiagLoc, Args));
+  return Diagnose(Diagnostic(NextDiagID, NextDiagLoc, Args));
 }
 
 diags::InFlightDiagnostic
-diags::DiagnosticEngine::Diagnose(const ActiveDiagnostic &AD) {
-  ActiveDiag = AD;
+diags::DiagnosticEngine::Diagnose(const Diagnostic &diagnostic) {
+  assert(!ActiveDiagnostic && "Already have an active diagnostic");
+  ActiveDiagnostic = diagnostic;
   return InFlightDiagnostic(*this);
 }
 
 void diags::DiagnosticEngine::Clear(bool soft) {}
 
-void diags::DiagnosticEngine::FinishProcessing() {}
+bool diags::DiagnosticEngine::FinishProcessing() {
+  // hasError
+  // for (auto &Client : Clients) {
+  //   hasError |= Client->FinishProcessing();
+  // }
+  // return hasError;
+}
 
 diags::DiagnosticKind
 diags::DiagnosticEngine::DeclaredDiagnosticKindForDiagID(const DiagID ID) {
-  return storedTopLevelDiagnostics[(unsigned)ID].kind;
+  return storedDiagnosticInfos[(unsigned)ID].kind;
 }
 
 llvm::StringRef diags::DiagnosticEngine::GetDiagnosticStringForDiagID(
@@ -164,34 +191,34 @@ diags::DiagnosticEngine::GetDiagnosticIDStringForDiagID(const DiagID ID) {
   return diagnosticIDStrings[(unsigned)ID];
 }
 
-void diags::TopLevelDiagnostic::FormatDiagnostic(
-    llvm::SmallVectorImpl<char> &OutStr) const {}
-
-void diags::TopLevelDiagnostic::FormatDiagnostic(
-    const char *DiagStr, const char *DiagEnd,
-    llvm::SmallVectorImpl<char> &OutStr) const {
-
-  // switch (Kind) {
-  // }
-}
-
-diags::DiagnosticTracker::DiagnosticTracker() {
-  TotalWarnings.resize(LocalDiagID::TotalDiags);
-  TotalErrors.resize(LocalDiagID::TotalDiags);
-}
+// diags::DiagnosticTracker::DiagnosticTracker() {
+//   TotalWarnings.resize(LocalDiagID::TotalDiags);
+//   TotalErrors.resize(LocalDiagID::TotalDiags);
+// }
 
 void diags::InFlightDiagnostic::FlushActiveDiagnostic() {
   if (!IsActive) {
     return;
   }
   if (DE) {
-    DE->FlushActiveDiagnostic();
+    DE->FlushActiveDiagnostic(IsForceEmit);
   }
   Clear();
 }
 
-bool diags::DiagnosticEngine::FlushActiveDiagnostic(bool Force) {
+void diags::DiagnosticEngine::FlushActiveDiagnostic(bool ForceEmit) {
+  assert(ActiveDiagnostic && "No active diagnostic to flush");
+  HandleDiagnostic(std::move(*ActiveDiagnostic));
+  ActiveDiagnostic.reset();
+}
 
-  ActiveDiag.reset();
-  return false;
+/// Handle a new diagnostic, which will either be emitted, or added to an
+/// active transaction.
+void diags::DiagnosticEngine::HandleDiagnostic(Diagnostic &&diagnostic) {
+
+  EmitDiagnostic(diagnostic);
+}
+
+void diags::DiagnosticEngine::EmitDiagnostic(Diagnostic &diagnostic) const {
+  assert(!HasClients() && "No DiagnosticClients. Unable to emit!");
 }
