@@ -1,8 +1,11 @@
 #ifndef STONE_DIAG_DIAGNOSTIC_CLIENT_H
 #define STONE_DIAG_DIAGNOSTIC_CLIENT_H
 
+#include "stone/AST/Identifier.h"
+#include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/DiagnosticID.h"
 #include "stone/Support/DiagnosticOptions.h"
+
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/raw_ostream.h"
 
@@ -30,6 +33,67 @@ enum class DiagnosticKind : uint8_t {
   Remark,
   Warning,
 };
+enum class DiagnosticArgumentKind {
+  None = 0,
+  Integer,
+  Unsigned,
+  String,
+  Identifier,
+};
+class DiagnosticArgument final {
+  DiagnosticArgumentKind Kind;
+  union {
+    int IntegerVal;
+    unsigned UnsignedVal;
+    llvm::StringRef StringVal;
+    Identifier IdentifierVal;
+  };
+
+public:
+  DiagnosticArgument(llvm::StringRef S)
+      : Kind(DiagnosticArgumentKind::String), StringVal(S) {}
+
+  DiagnosticArgument(int I)
+      : Kind(DiagnosticArgumentKind::Integer), IntegerVal(I) {}
+
+  DiagnosticArgument(unsigned I)
+      : Kind(DiagnosticArgumentKind::Unsigned), UnsignedVal(I) {}
+
+  DiagnosticArgument(Identifier I)
+      : Kind(DiagnosticArgumentKind::Identifier), IdentifierVal(I) {}
+
+  /// Initializes a diagnostic argument using the underlying type of the
+  /// given enum.
+  template <
+      typename EnumType,
+      typename std::enable_if<std::is_enum<EnumType>::value>::type * = nullptr>
+  DiagnosticArgument(EnumType value)
+      : DiagnosticArgument(
+            static_cast<typename std::underlying_type<EnumType>::type>(value)) {
+  }
+
+public:
+  llvm::StringRef GetAsString() const {
+    assert(Kind == DiagnosticArgumentKind::String);
+    return StringVal;
+  }
+
+  int GetAsInteger() const {
+    assert(Kind == DiagnosticArgumentKind::Integer);
+    return IntegerVal;
+  }
+
+  unsigned GetAsUnsigned() const {
+    assert(Kind == DiagnosticArgumentKind::Unsigned);
+    return UnsignedVal;
+  }
+
+  Identifier GetAsIdentifier() const {
+    assert(Kind == DiagnosticArgumentKind::Identifier);
+    return IdentifierVal;
+  }
+};
+
 class DiagnosticOutputStream final {
   friend class DiagnosticEngine;
 
@@ -66,9 +130,17 @@ public:
 };
 
 class FixIt final {
-public:
-};
+  CharSrcRange Range;
+  std::string Text;
 
+public:
+  FixIt(CharSrcRange R, StringRef Str, llvm::ArrayRef<DiagnosticArgument> Args);
+
+  CharSrcRange &GetRange() { return Range; }
+  const CharSrcRange &GetRange() const { return Range; }
+
+  StringRef GetText() const { return Text; }
+};
 class DiagnosticInfo final {
   const DiagnosticEngine *DE;
   std::optional<llvm::StringRef> storedDiagMessage;
@@ -109,15 +181,15 @@ class DiagnosticClient {
   friend class DiagnosticEngine;
 
 protected:
-  unsigned NumWarnings = 0; ///< Number of warnings reported
-  unsigned NumErrors = 0;   ///< Number of errors reported
+  unsigned TotalWarnings = 0; ///< Number of warnings reported
+  unsigned TotalErrors = 0;   ///< Number of errors reported
 
 public:
   DiagnosticClient();
   virtual ~DiagnosticClient();
 
 public:
-  virtual void Clear() { NumWarnings = NumErrors = 0; }
+  virtual void Clear() { TotalWarnings = TotalErrors = 0; }
 
   /// Callback to inform the diagnostic client that processing of all
   /// source files has ended.

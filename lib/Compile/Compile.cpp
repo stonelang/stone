@@ -36,10 +36,11 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   std::unique_ptr<diags::TextDiagnosticBuffering> BDC(
       new diags::TextDiagnosticBuffering());
 
-  diags::DiagnosticEngine BDE(invocation.GetDiagnosticOptions(),
-                              invocation.GetSrcMgr());
+  diags::DiagnosticEngine BDE(invocation.GetSrcMgr(),
+                              invocation.GetDiagnosticOptions());
   BDE.AddClient(BDC.get());
   // BDE.Diagnose(diags::err_compile_no_intputs);
+
   BDC->FlushDiagnostics(BDE);
   BDC->FinishProcessing();
 

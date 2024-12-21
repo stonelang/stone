@@ -1,11 +1,7 @@
 #ifndef STONE_DIAG_DIAGNOSTIC_ENGINE_H
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
-#include "stone/AST/Identifier.h"
-#include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/DiagnosticClient.h"
-#include "stone/Diag/DiagnosticID.h"
-#include "stone/Support/DiagnosticOptions.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -41,67 +37,6 @@ class InFlightDiagnostic;
 class DiagnosticClient;
 
 struct DiagnosticStorage final {};
-
-enum class DiagnosticArgumentKind {
-  None = 0,
-  Integer,
-  Unsigned,
-  String,
-  Identifier,
-};
-class DiagnosticArgument {
-  DiagnosticArgumentKind Kind;
-  union {
-    int IntegerVal;
-    unsigned UnsignedVal;
-    llvm::StringRef StringVal;
-    Identifier IdentifierVal;
-  };
-
-public:
-  DiagnosticArgument(llvm::StringRef S)
-      : Kind(DiagnosticArgumentKind::String), StringVal(S) {}
-
-  DiagnosticArgument(int I)
-      : Kind(DiagnosticArgumentKind::Integer), IntegerVal(I) {}
-
-  DiagnosticArgument(unsigned I)
-      : Kind(DiagnosticArgumentKind::Unsigned), UnsignedVal(I) {}
-
-  DiagnosticArgument(Identifier I)
-      : Kind(DiagnosticArgumentKind::Identifier), IdentifierVal(I) {}
-
-  /// Initializes a diagnostic argument using the underlying type of the
-  /// given enum.
-  template <
-      typename EnumType,
-      typename std::enable_if<std::is_enum<EnumType>::value>::type * = nullptr>
-  DiagnosticArgument(EnumType value)
-      : DiagnosticArgument(
-            static_cast<typename std::underlying_type<EnumType>::type>(value)) {
-  }
-
-public:
-  llvm::StringRef GetAsString() const {
-    assert(Kind == DiagnosticArgumentKind::String);
-    return StringVal;
-  }
-
-  int GetAsInteger() const {
-    assert(Kind == DiagnosticArgumentKind::Integer);
-    return IntegerVal;
-  }
-
-  unsigned GetAsUnsigned() const {
-    assert(Kind == DiagnosticArgumentKind::Unsigned);
-    return UnsignedVal;
-  }
-
-  Identifier GetAsIdentifier() const {
-    assert(Kind == DiagnosticArgumentKind::Identifier);
-    return IdentifierVal;
-  }
-};
 
 /// DiagnosticRenderer in clang
 class DiagnosticEngine final {
@@ -175,10 +110,9 @@ class DiagnosticEngine final {
   /// Totalber of errors reported
   unsigned TotalErrors;
 
-  DiagnosticOptions &DiagOpts;
-
   SrcMgr &SM;
 
+  DiagnosticOptions &DiagOpts;
   /// The diagnostic consumer(s) that will be responsible for actually
   /// emitting diagnostics.
   llvm::SmallVector<DiagnosticClient *, 2> Clients;
@@ -209,7 +143,7 @@ public:
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
 
-  explicit DiagnosticEngine(DiagnosticOptions &DiagOpts, SrcMgr &SM);
+  explicit DiagnosticEngine(SrcMgr &SM, DiagnosticOptions &DiagOpts);
   ~DiagnosticEngine();
 
 public:
@@ -322,6 +256,12 @@ class InFlightDiagnostic : public StreamingDiagnostic {
 
 public:
   // InFlightDiagnostic &FixItReplace(SrcRange R, StringRef Str);
+
+  /// Add a token-based range to the currently-active diagnostic.
+  InFlightDiagnostic &Highlight(SrcRange R);
+
+  /// Add a character-based range to the currently-active diagnostic.
+  InFlightDiagnostic &HighlightChars(SrcLoc Start, SrcLoc End);
 };
 
 class StoredDiagnostic {

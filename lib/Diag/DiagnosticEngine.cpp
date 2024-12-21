@@ -1,4 +1,5 @@
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DiagnosticBasicKind.h"
 #include "stone/Diag/DiagnosticClient.h"
 
 using namespace stone;
@@ -35,12 +36,12 @@ struct StoredDiagnosticInfo {
   bool isNotUsed : 1;
 
   constexpr StoredDiagnosticInfo(diags::DiagnosticKind k, bool firstBadToken,
-                                 bool isFatal, bool isDeprecation,
-                                 bool notUsed)
+                                 bool isFatal, bool isDeprecation, bool notUsed)
       : kind(k), firstBadToken(firstBadToken), isFatal(isFatal),
         isDeprecation(isDeprecation), isNotUsed(isNotUsed) {}
 
-  constexpr StoredDiagnosticInfo(diags::DiagnosticKind k, StoredDiagnosticOptions opts)
+  constexpr StoredDiagnosticInfo(diags::DiagnosticKind k,
+                                 StoredDiagnosticOptions opts)
       : StoredDiagnosticInfo(k, opts == StoredDiagnosticOptions::FirstBadToken,
                              opts == StoredDiagnosticOptions::Fatal,
                              opts == StoredDiagnosticOptions::Deprecation,
@@ -58,26 +59,53 @@ enum StoredDiagID : uint32_t {
 } // namespace
 
 // static const constexpr StoredDiagnosticInfo storedDiagnosticInfos[] = {
-// #define ERROR(ID, Options, Message, Signature)                                    \
-//   StoredDiagnosticInfo(diags::DiagnosticKind::Error, StoredDiagnosticOptions::Options),
-// #define WARNING(ID, Options, Message, Signature)                                  \
-//   StoredDiagnosticInfo(diags::DiagnosticKind::Warning,                                \
+// #define ERROR(ID, Options, Message, Signature) \
+//   StoredDiagnosticInfo(diags::DiagnosticKind::Error,
+//   StoredDiagnosticOptions::Options),
+// #define WARNING(ID, Options, Message, Signature) \
+//   StoredDiagnosticInfo(diags::DiagnosticKind::Warning, \
 //                        StoredDiagnosticOptions::Options),
-// #define NOTE(ID, Options, Message, Signature)                                     \
-//   StoredDiagnosticInfo(diags::DiagnosticKind::Note, StoredDiagnosticOptions::Options),
-// #define REMARK(ID, Options, Message, Signature)                                   \
-//   StoredDiagnosticInfo(diags::DiagnosticKind::Remark, StoredDiagnosticOptions::Options),
+// #define NOTE(ID, Options, Message, Signature) \
+//   StoredDiagnosticInfo(diags::DiagnosticKind::Note,
+//   StoredDiagnosticOptions::Options),
+// #define REMARK(ID, Options, Message, Signature) \
+//   StoredDiagnosticInfo(diags::DiagnosticKind::Remark,
+//   StoredDiagnosticOptions::Options),
 // #include "stone/Diag/DiagnosticEngine.def"
 // };
-
 
 // static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo) ==
 //                   StoredDiagID::TotalDiags,
 //               "array size mismatch");
 
-diags::DiagnosticEngine::DiagnosticEngine(DiagnosticOptions &DiagOpts,
-                                          SrcMgr &SM)
-    : DiagOpts(DiagOpts), SM(SM) {}
+static constexpr const char *const diagnosticStrings[] = {
+#define DIAG(KIND, ID, Options, Message, Signature) Message,
+#include "stone/Diag/DiagnosticEngine.def"
+    "<not a diagnostic>",
+};
+
+static constexpr const char *const debugDiagnosticStrings[] = {
+#define DIAG(KIND, ID, Options, Message, Signature) Message " [" #ID "]",
+#include "stone/Diag/DiagnosticEngine.def"
+    "<not a diagnostic>",
+};
+
+static constexpr const char *const diagnosticIDStrings[] = {
+#define DIAG(KIND, ID, Options, Message, Signature) #ID,
+#include "stone/Diag/DiagnosticEngine.def"
+    "<not a diagnostic>",
+};
+
+// static constexpr const char *const fixItStrings[] = {
+// #define DIAG(KIND, ID, Options, Message, Signature)
+// #define FIXIT(ID, Message, Signature) Message,
+// #include "stone/Diag/DiagnosticEngine.def"
+//     "<not a fix-it>",
+// };
+
+diags::DiagnosticEngine::DiagnosticEngine(SrcMgr &SM,
+                                          DiagnosticOptions &DiagOpts)
+    : SM(SM), DiagOpts(DiagOpts) {}
 
 diags::DiagnosticEngine::~DiagnosticEngine() {}
 
