@@ -44,6 +44,8 @@ public:
     }
     return allocator.Allocate(bytes, alignment);
   }
+public:
+
 };
 
 } // namespace stone

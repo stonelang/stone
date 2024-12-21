@@ -164,7 +164,7 @@ public:
   // DiagIDContext &GetDiagIDContext() { return diagIDContext; }
 
   InFlightDiagnostic Diagnose(DiagID NextDiagID);
-  InFlightDiagnostic Diagnose(SrcLoc NextDiagLoc, DiagID NextDiagID);
+  InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc);
 
   /// Determine whethere there is already a diagnostic in flight.
   bool IsInFlightDiagnostic() const {
@@ -174,6 +174,21 @@ public:
   DiagID GetCurDiagID() const { return CurDiagID; }
   SrcLoc GetDiagLoc() const { return CurDiagLoc; }
   /// Get from diag options bool ShouldShowColors() { return }
+
+  DiagnosticKind DeclaredDiagnosticKindForDiagID(const DiagID ID);
+
+  llvm::StringRef GetDiagnosticStringForDiagID(const DiagID ID,
+                                               bool printDiagnosticNames);
+
+  static llvm::StringRef GetDiagnosticIDStringForDiagID(const DiagID ID);
+
+  DiagID GetCustomDiagID(DiagnosticLevel Level,
+                         DiagnosticStringFormatter StringFormatter);
+
+
+   /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
+  //std::optional<DiagnosticInfo>
+  //CreeateDiagnosticInfoForDiagnostic(const Diagnostic &diagnostic);
 
 public:
   void FinishProcessing();

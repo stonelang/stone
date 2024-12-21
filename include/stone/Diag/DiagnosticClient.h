@@ -6,6 +6,7 @@
 #include "stone/Diag/DiagnosticID.h"
 #include "stone/Support/DiagnosticOptions.h"
 
+#include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/raw_ostream.h"
 
@@ -177,12 +178,41 @@ public:
                         llvm::SmallVectorImpl<char> &OutStr) const;
 };
 
+class DiagnosticStringFormatter {
+public:
+};
+
+struct DiagnosticTracker final {
+
+  // Track the total amount of warnings plus the DiagID
+  llvm::BitVector TotalWarnings;
+
+  // Track the total amount of errors plus the DiagID
+  llvm::BitVector TotalErrors;
+
+  DiagnosticTracker();
+  ~DiagnosticTracker() { Clear(); }
+
+  void TrackWarning(DiagID ID) { TotalWarnings.push_back((unsigned)ID); }
+  unsigned GetTotalWarnings() { return TotalWarnings.size(); }
+
+  void TrackError(DiagID ID) { TotalErrors.push_back((unsigned)ID); }
+  unsigned GetTotalErrors() { return TotalErrors.size(); }
+
+  void Clear() {
+    TotalWarnings.reset();
+    TotalErrors.reset();
+  }
+};
+
 class DiagnosticClient {
   friend class DiagnosticEngine;
 
 protected:
   unsigned TotalWarnings = 0; ///< Number of warnings reported
   unsigned TotalErrors = 0;   ///< Number of errors reported
+
+  DiagnosticTracker tracker;
 
 public:
   DiagnosticClient();
@@ -209,6 +239,8 @@ public:
   /// warnings and errors.
   virtual void HandleDiagnostic(DiagnosticLevel DiagLevel,
                                 const DiagnosticInfo &Info);
+
+  DiagnosticTracker &GetTracker() { return tracker; }
 };
 
 class NullDiagnosticClient final : public DiagnosticClient {
