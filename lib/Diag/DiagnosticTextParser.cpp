@@ -1,9 +1,9 @@
-#include "stone/Diag/DiagnosticTextParser.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Diag/DiagnosticTextParser.h"
 
 using namespace stone;
 
-diags::TextParser::TextParser(unsigned BufferID, SrcMgr &SM)
+diags::DiagnosticTextParser::DiagnosticTextParser(unsigned BufferID, SrcMgr &SM)
     : BufferID(BufferID), SM(SM) {
 
   unsigned EndOffset = SM.getRangeForBuffer(BufferID).getByteLength();
@@ -11,7 +11,8 @@ diags::TextParser::TextParser(unsigned BufferID, SrcMgr &SM)
   Initialize(/*Offset=*/0, EndOffset);
 }
 
-void diags::TextParser::Initialize(unsigned Offset, unsigned EndOffset) {
+void diags::DiagnosticTextParser::Initialize(unsigned Offset,
+                                             unsigned EndOffset) {
 
   assert(Offset <= EndOffset);
 
@@ -49,42 +50,42 @@ void diags::TextParser::Initialize(unsigned Offset, unsigned EndOffset) {
   //        "or we should be lexing from the middle of the buffer");
 }
 
-void diags::TextParser::TextParser::Lex() {
+void diags::DiagnosticTextParser::Lex() {
 
   assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
          "Current pointer out of range!");
 
-  // const char *LeadingTriviaStart = CurPtr;
+  const char *LeadingTriviaStart = CurPtr;
 
-  // if (CurPtr == BufferStart) {
-  //   if (BufferStart < ContentStart) {
-  //     size_t BOMLen = ContentStart - BufferStart;
-  //     assert(BOMLen == 3 && "UTF-8 BOM is 3 bytes");
-  //     CurPtr += BOMLen;
-  //   }
-  //   NextToken.SetAtStartOfLine(true);
-  // } else {
-  //   NextToken.SetAtStartOfLine(false);
-  // }
+  if (CurPtr == BufferStart) {
+    if (BufferStart < ContentStart) {
+      size_t BOMLen = ContentStart - BufferStart;
+      assert(BOMLen == 3 && "UTF-8 BOM is 3 bytes");
+      CurPtr += BOMLen;
+    }
+    NextToken.SetAtStartOfLine(true);
+  } else {
+    NextToken.SetAtStartOfLine(false);
+  }
 
   // LeadingTrivia = lexTrivia(/*IsForTrailingTrivia=*/false,
   // LeadingTriviaStart);
 
   // // Remember the start of the token so we can form the text range.
-  // const char *TokStart = CurPtr;
+  const char *TokStart = CurPtr;
 
   // if (LexerCutOffPoint && CurPtr >= LexerCutOffPoint) {
-  //   return formToken(tok::eof, TokStart);
+  //   return formToken(TextTokenKind::eof, TokStart);
   // }
 
-  // switch (*CurPtr++) {
-  // default: {
-  // }
-  // }
+  switch (*CurPtr++) {
+  default: {
+  }
+  }
 }
 
-void diags::TextParser::TextParser::ParseText() {}
+void diags::DiagnosticTextParser::Parse() {}
 
-void diags::TextParser::TextParser::ParseIdentifier() {}
+void diags::DiagnosticTextParser::ParseIdentifier() {}
 
-void diags::TextParser::TextParser::ParseSelect() {}
+void diags::DiagnosticTextParser::ParseSelect() {}

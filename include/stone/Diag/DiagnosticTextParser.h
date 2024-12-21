@@ -18,9 +18,28 @@ class SrcMgr;
 namespace diags {
 
 enum class TextTokenKind {
+  None = 0,
   Identifier,
   Select,
-  Total,
+  S,
+  Pipe,
+  LBrace,
+  RBrace,
+  LParen,
+  RParen,
+  Percent,
+  IntegerLiteral,
+  Char,
+  MultiChar,
+  StringLiteral,
+  Tick,
+  Comma,
+  Bool,
+  Unsigned,
+  Decl,
+  Const,
+  Star,
+  eof,
 };
 
 class TextToken {
@@ -53,12 +72,22 @@ public:
         multilineString(false), customDelimiterLen(0),
         commentLength(commentLength), text(text) {}
 
-  TextToken() : TextToken(TextTokenKind::Total, {}, 0) {}
+  TextToken() : TextToken(TextTokenKind::eof, {}, 0) {}
+
+public:
+  /// Determine whether this token occurred at the start of a line.
+  bool IsAtStartOfLine() const { return atStartOfLine; }
+
+  /// Set whether this token occurred at the start of a line.
+  void SetAtStartOfLine(bool value) { atStartOfLine = value; }
+
+public:
+  bool IsSelect() const { return kind == TextTokenKind::Select; }
 };
 /// May want to think about creating a source buffer using SrcMgr
 // and treating this like a source file to parse with tokens and identifiers
-// TextParserToken TextParserTokenKind
-class TextParser final {
+// DiagnosticTextParserToken DiagnosticTextParserTokenKind
+class DiagnosticTextParser final {
   unsigned BufferID;
   SrcMgr &SM;
 
@@ -106,8 +135,8 @@ private:
   }
 
 public:
-  TextParser(unsigned BufferID, SrcMgr &SM);
-  void ParseText();
+  DiagnosticTextParser(unsigned BufferID, SrcMgr &SM);
+  void Parse();
   void ParseIdentifier();
   void ParseSelect();
 };
