@@ -97,6 +97,6 @@ void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
   //   ++NumErrors;
 }
 
-diags::DiagID diags::DiagnosticInfo::GetDiagID() const {
-  return DE->GetCurDiagID();
-}
+// diags::DiagID diags::Diagnostic::GetDiagID() const {
+//   return DE->GetCurDiagID();
+// }
