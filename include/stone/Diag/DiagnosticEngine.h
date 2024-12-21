@@ -268,7 +268,7 @@ public:
   InFlightDiagnostic &Highlight(SrcRange R);
 
   /// Add a character-based range to the currently-active diagnostic.
-  InFlightDiagnostic &HighlightChars(SrcLoc Start, SrcLoc End);
+  InFlightDiagnostic &HighlightChars(SrcLoc StartLoc, SrcLoc EndLoc);
 };
 
 /// DiagnosticRenderer in clang

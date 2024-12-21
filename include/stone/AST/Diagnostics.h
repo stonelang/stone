@@ -721,6 +721,10 @@ private:
 
 public:
   InFlightDiagnostic &AddArg(bool val);
+
+  // void AddArg(DiagnosticArgument &&A) { Args.push_back(std::move(A)); }
+  // // Avoid copying the fix-it text more than necessary.
+  // void AddFixIt(FixIt &&F) { FixIts.push_back(std::move(F)); }
 };
 
 /// Class to track, map, and remap diagnostic severity and fatality
