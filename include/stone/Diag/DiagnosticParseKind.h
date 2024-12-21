@@ -5,10 +5,11 @@
 
 namespace stone {
 namespace diags {
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
-  extern Diag::ID ENUM;
-#include "stone/Diag/DiagnosticParseKind.inc"
+// Declare common diagnostics objects with their appropriate types.
+#define DIAG(KIND, ID, Options, Text, Signature)                               \
+  extern stone::diags::DiagWithArguments<void Signature>::type ID;
+#include "DiagnosticParseKind.def"
+
 } // namespace diags
 } // namespace stone
 

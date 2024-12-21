@@ -1,205 +1,232 @@
 
-#include "stone/Diag/AllDiagnosticKind.h"
-#include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DiagnosticBasicKind.h"
 using namespace stone;
 
 enum class diags::DiagID : uint32_t {
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
-  ENUM,
-#include "stone/Diag/AllDiagnosticKind.inc"
+#define DIAG(KIND, ID, Options, Message, Signature) ID,
+#include "stone/Diag/DiagnosticEngine.def"
 };
+static_assert(static_cast<uint32_t>(stone::diags::DiagID::invalid_diagnostic) ==
+                  0,
+              "0 is not the invalid diagnostic ID");
 
+// Define all of the diagnostic objects and initialize them with their
+// diagnostic IDs.
 namespace stone {
 namespace diags {
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
-  Diag::ID ENUM = {DiagID::ENUM};
-#include "stone/Diag/AllDiagnosticKind.inc"
+#define DIAG(KIND, ID, Options, Message, Signature)                            \
+  DiagWithArguments<void Signature>::type ID = {DiagID::ID};
+
+#include "stone/Diag/DiagnosticEngine.def"
 } // namespace diags
 } // end namespace stone
 
-namespace {
-// Get an official count of all of the diagnostics in the system
-enum LocalDiagID : uint32_t {
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
-  ENUM,
-#include "stone/Diag/AllDiagnosticKind.inc"
-  TotalDiags
-};
-} // namespace
-
-namespace {
-
-static constexpr const char *const DiagnosticStrings[] = {
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)          \
-  DESC,
-#include "stone/Diag/AllDiagnosticKind.inc"
-    "<not a diagnostic>",
-};
-
-static constexpr const char *const DiagnosticIDStrings[] = {
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
-  #ENUM,
-#include "stone/Diag/AllDiagnosticKind.inc"
-    "<not a diagnostic>",
-};
-
-
-// static const constexpr StoredDiagnosticInfo StoredDiagnosticInfos[] = {
-// #define ERROR(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)                                    \
-//   StoredDiagnosticInfo(DiagnosticKind::Error, LocalDiagnosticOptions::Options),
-// #define WARNING(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)                                  \
-//   StoredDiagnosticInfo(DiagnosticKind::Warning,                                \
-//                        LocalDiagnosticOptions::Options),
-// #define NOTE(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)                                     \
-//   StoredDiagnosticInfo(DiagnosticKind::Note, LocalDiagnosticOptions::Options),
-// #define REMARK(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)                                   \
-//   StoredDiagnosticInfo(DiagnosticKind::Remark, LocalDiagnosticOptions::Options),
+// enum class diags::DiagID : uint32_t {
+// #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR, \
+//              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   ENUM,
 // #include "stone/Diag/AllDiagnosticKind.inc"
 // };
-// static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo) ==
-//                   LocalDiagID::TotalDiags,
-//               "array size mismatch");
 
-struct StaticDiagInfoRec;
+// namespace stone {
+// namespace diags {
+// #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR, \
+//              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   Diag::ID ENUM = {DiagID::ENUM};
+// #include "stone/Diag/AllDiagnosticKind.inc"
+// } // namespace diags
+// } // end namespace stone
 
-// Store the descriptions in a separate table to avoid pointers that need to
-// be relocated, and also decrease the amount of data needed on 64-bit
-// platforms. See "How To Write Shared Libraries" by Ulrich Drepper.
-struct StaticDiagInfoDescriptionStringTable {
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
-  char ENUM##_desc[sizeof(DESC)];
-  // clang-format off
-#include "stone/Diag/DiagnosticBasicKind.inc"
-#include "stone/Diag/DiagnosticParseKind.inc"
+// namespace {
+// // Get an official count of all of the diagnostics in the system
+// enum LocalDiagID : uint32_t {
+// #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR, \
+//              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   ENUM,
+// #include "stone/Diag/AllDiagnosticKind.inc"
+//   TotalDiags
+// };
+// } // namespace
 
-  // clang-format on
-#undef DIAG
-};
+// namespace {
 
-const StaticDiagInfoDescriptionStringTable StaticDiagInfoDescriptions = {
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
-  DESC,
-// clang-format off
-#include "stone/Diag/DiagnosticBasicKind.inc"
-#include "stone/Diag/DiagnosticParseKind.inc"
-// clang-format on
-#undef DIAG
-};
+// static constexpr const char *const DiagnosticStrings[] = {
+// #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR, \
+//              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   DESC,
+// #include "stone/Diag/AllDiagnosticKind.inc"
+//     "<not a diagnostic>",
+// };
 
-extern const StaticDiagInfoRec StaticDiagInfo[];
-// Stored separately from StaticDiagInfoRec to pack better.  Otherwise,
-// StaticDiagInfoRec would have extra padding on 64-bit platforms.
-const uint32_t StaticDiagInfoDescriptionOffsets[] = {
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
-  offsetof(StaticDiagInfoDescriptionStringTable, ENUM##_desc),
-// clang-format off
-#include "stone/Diag/DiagnosticBasicKind.inc"
-#include "stone/Diag/DiagnosticParseKind.inc"
-// clang-format on
-#undef DIAG
-};
+// static constexpr const char *const DiagnosticIDStrings[] = {
+// #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR, \
+//              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   #ENUM,
+// #include "stone/Diag/AllDiagnosticKind.inc"
+//     "<not a diagnostic>",
+// };
 
-// Diagnostic classes.
-enum {
-  CLASS_NOTE = 0x01,
-  CLASS_REMARK = 0x02,
-  CLASS_WARNING = 0x03,
-  CLASS_EXTENSION = 0x04,
-  CLASS_ERROR = 0x05
-};
+// // static const constexpr StoredDiagnosticInfo StoredDiagnosticInfos[] = {
+// // #define ERROR(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
+// NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+// //   StoredDiagnosticInfo(DiagnosticKind::Error,
+// LocalDiagnosticOptions::Options),
+// // #define WARNING(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
+// NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+// //   StoredDiagnosticInfo(DiagnosticKind::Warning, \
+// //                        LocalDiagnosticOptions::Options),
+// // #define NOTE(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
+// NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+// //   StoredDiagnosticInfo(DiagnosticKind::Note,
+// LocalDiagnosticOptions::Options),
+// // #define REMARK(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
+// NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+// //   StoredDiagnosticInfo(DiagnosticKind::Remark,
+// LocalDiagnosticOptions::Options),
+// // #include "stone/Diag/AllDiagnosticKind.inc"
+// // };
+// // static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo)
+// ==
+// //                   LocalDiagID::TotalDiags,
+// //               "array size mismatch");
 
-struct StaticDiagInfoRec {
-  diags::DiagID ID;
-  uint8_t DefaultSeverity : 3;
-  uint8_t Class : 3;
-  uint8_t SFINAE : 2;
-  uint8_t Category : 6;
-  uint8_t WarnNoWerror : 1;
-  uint8_t WarnShowInSystemHeader : 1;
-  uint8_t WarnShowInSystemMacro : 1;
+// struct StaticDiagInfoRec;
 
-  uint16_t OptionGroupIndex : 15;
-  uint16_t Deferrable : 1;
+// // Store the descriptions in a separate table to avoid pointers that need to
+// // be relocated, and also decrease the amount of data needed on 64-bit
+// // platforms. See "How To Write Shared Libraries" by Ulrich Drepper.
+// struct StaticDiagInfoDescriptionStringTable {
+// #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR, \
+//              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   char ENUM##_desc[sizeof(DESC)];
+//   // clang-format off
+// #include "stone/Diag/DiagnosticBasicKind.inc"
+// #include "stone/Diag/DiagnosticParseKind.inc"
 
-  uint16_t DescriptionLen;
+//   // clang-format on
+// #undef DIAG
+// };
 
-  unsigned getOptionGroupIndex() const { return OptionGroupIndex; }
+// const StaticDiagInfoDescriptionStringTable StaticDiagInfoDescriptions = {
+// #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR, \
+//              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   DESC,
+// // clang-format off
+// #include "stone/Diag/DiagnosticBasicKind.inc"
+// #include "stone/Diag/DiagnosticParseKind.inc"
+// // clang-format on
+// #undef DIAG
+// };
 
-  StringRef getDescription() const {
-    size_t MyIndex = this - &StaticDiagInfo[0];
-    uint32_t StringOffset = StaticDiagInfoDescriptionOffsets[MyIndex];
-    const char *Table =
-        reinterpret_cast<const char *>(&StaticDiagInfoDescriptions);
-    return StringRef(&Table[StringOffset], DescriptionLen);
-  }
+// extern const StaticDiagInfoRec StaticDiagInfo[];
+// // Stored separately from StaticDiagInfoRec to pack better.  Otherwise,
+// // StaticDiagInfoRec would have extra padding on 64-bit platforms.
+// const uint32_t StaticDiagInfoDescriptionOffsets[] = {
+// #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR, \
+//              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   offsetof(StaticDiagInfoDescriptionStringTable, ENUM##_desc),
+// // clang-format off
+// #include "stone/Diag/DiagnosticBasicKind.inc"
+// #include "stone/Diag/DiagnosticParseKind.inc"
+// // clang-format on
+// #undef DIAG
+// };
 
-  diags::Flavor getFlavor() const {
-    return Class == CLASS_REMARK ? diags::Flavor::Remark
-                                 : diags::Flavor::WarningOrError;
-  }
+// // Diagnostic classes.
+// enum {
+//   CLASS_NOTE = 0x01,
+//   CLASS_REMARK = 0x02,
+//   CLASS_WARNING = 0x03,
+//   CLASS_EXTENSION = 0x04,
+//   CLASS_ERROR = 0x05
+// };
 
-  bool operator<(const StaticDiagInfoRec &RHS) const { return ID < RHS.ID; }
-};
+// struct StaticDiagInfoRec {
+//   diags::DiagID ID;
+//   uint8_t DefaultSeverity : 3;
+//   uint8_t Class : 3;
+//   uint8_t SFINAE : 2;
+//   uint8_t Category : 6;
+//   uint8_t WarnNoWerror : 1;
+//   uint8_t WarnShowInSystemHeader : 1;
+//   uint8_t WarnShowInSystemMacro : 1;
 
-const StaticDiagInfoRec StaticDiagInfo[] = {
-// clang-format off
-#define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
-  {                                                                            \
-      diags::ENUM,                                                              \
-      DEFAULT_SEVERITY,                                                        \
-      CLASS,                                                                   \
-      diags::DiagIDContext::SFINAE,                                                   \
-      CATEGORY,                                                                \
-      NOWERROR,                                                                \
-      SHOWINSYSHEADER,                                                         \
-      SHOWINSYSMACRO,                                                          \
-      GROUP,                                                                   \
-        DEFERRABLE,                                                              \
-      STR_SIZE(DESC, uint16_t)},
-#include "stone/Diag/DiagnosticBasicKind.inc"
-#include "stone/Diag/DiagnosticParseKind.inc"
-// clang-format on
-#undef DIAG
-};
+//   uint16_t OptionGroupIndex : 15;
+//   uint16_t Deferrable : 1;
 
-} // namespace
+//   uint16_t DescriptionLen;
 
-static const unsigned StaticDiagInfoSize = std::size(StaticDiagInfo);
+//   unsigned getOptionGroupIndex() const { return OptionGroupIndex; }
 
-static const StaticDiagInfoRec *GetDiagInfo(diags::DiagID ID) {
-  const StaticDiagInfoRec *Found = &StaticDiagInfo[(unsigned)ID];
-  // If the diag id doesn't match we found a different diag, abort. This can
-  // happen when this function is called with an ID that points into a hole in
-  // the diagID space.
-  if (Found->ID != ID) {
-    return nullptr;
-  }
-  return Found;
-}
+//   StringRef getDescription() const {
+//     size_t MyIndex = this - &StaticDiagInfo[0];
+//     uint32_t StringOffset = StaticDiagInfoDescriptionOffsets[MyIndex];
+//     const char *Table =
+//         reinterpret_cast<const char *>(&StaticDiagInfoDescriptions);
+//     return StringRef(&Table[StringOffset], DescriptionLen);
+//   }
 
-diags::DiagIDContext::DiagIDContext() {}
+//   diags::Flavor getFlavor() const {
+//     return Class == CLASS_REMARK ? diags::Flavor::Remark
+//                                  : diags::Flavor::WarningOrError;
+//   }
 
-diags::DiagIDContext::~DiagIDContext() {}
+//   bool operator<(const StaticDiagInfoRec &RHS) const { return ID < RHS.ID; }
+// };
 
-diags::DiagID diags::DiagIDContext::CreateCustomFromFormatString(
-    DiagnosticLevel DiagLevel, llvm::StringRef FormatString) {}
+// const StaticDiagInfoRec StaticDiagInfo[] = {
+// // clang-format off
+// #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR, \
+//              SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   { \
+//       diags::ENUM, \
+//       DEFAULT_SEVERITY, \
+//       CLASS, \
+//       diags::DiagIDContext::SFINAE, \
+//       CATEGORY, \
+//       NOWERROR, \
+//       SHOWINSYSHEADER, \
+//       SHOWINSYSMACRO, \
+//       GROUP, \
+//         DEFERRABLE, \
+//       STR_SIZE(DESC, uint16_t)},
+// #include "stone/Diag/DiagnosticBasicKind.inc"
+// #include "stone/Diag/DiagnosticParseKind.inc"
+// // clang-format on
+// #undef DIAG
+// };
 
-llvm::StringRef diags::DiagIDContext::GetDescription(diags::DiagID ID) const {}
+// } // namespace
 
-bool diags::DiagIDContext::IsBuiltinWarningOrExtension(diags::DiagID ID) {}
+// static const unsigned StaticDiagInfoSize = std::size(StaticDiagInfo);
 
-bool diags::DiagIDContext::IsDefaultMappingAsError(diags::DiagID ID) {}
+// static const StaticDiagInfoRec *GetDiagInfo(diags::DiagID ID) {
+//   const StaticDiagInfoRec *Found = &StaticDiagInfo[(unsigned)ID];
+//   // If the diag id doesn't match we found a different diag, abort. This can
+//   // happen when this function is called with an ID that points into a hole
+//   in
+//   // the diagID space.
+//   if (Found->ID != ID) {
+//     return nullptr;
+//   }
+//   return Found;
+// }
 
-diags::DiagnosticMapping
-diags::DiagIDContext::GetDefaultMapping(diags::DiagID ID) {}
+// diags::DiagIDContext::DiagIDContext() {}
 
-bool diags::DiagIDContext::IsBuiltinNote(diags::DiagID ID) {}
+// diags::DiagIDContext::~DiagIDContext() {}
+
+// diags::DiagID diags::DiagIDContext::CreateCustomFromFormatString(
+//     DiagnosticLevel DiagLevel, llvm::StringRef FormatString) {}
+
+// llvm::StringRef diags::DiagIDContext::GetDescription(diags::DiagID ID) const
+// {}
+
+// bool diags::DiagIDContext::IsBuiltinWarningOrExtension(diags::DiagID ID) {}
+
+// bool diags::DiagIDContext::IsDefaultMappingAsError(diags::DiagID ID) {}
+
+// diags::DiagnosticMapping
+// diags::DiagIDContext::GetDefaultMapping(diags::DiagID ID) {}
+
+// bool diags::DiagIDContext::IsBuiltinNote(diags::DiagID ID) {}

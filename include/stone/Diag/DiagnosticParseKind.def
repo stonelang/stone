@@ -1,0 +1,13 @@
+//==============================================================================
+// Lexing 
+//==============================================================================
+#define DEFINE_DIAGNOSTIC_MACROS
+#include "DiagnosticMacroKind.h"
+
+WARNING(warn_null_character,none,
+        "null character embedded in middle of file", ())
+
+#define UNDEFINE_DIAGNOSTIC_MACROS
+#include "DiagnosticMacroKind.h"
+
+

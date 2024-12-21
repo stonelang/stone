@@ -177,7 +177,7 @@ class DiagnosticEngine final {
   /// emitting diagnostics.
   llvm::SmallVector<DiagnosticClient *, 2> Clients;
 
-  DiagIDContext diagIDContext;
+  // DiagIDContext diagIDContext;
 
 private:
   class DiagnosticState {
@@ -214,10 +214,9 @@ public:
 
   void Clear(bool soft = false);
 
-  DiagIDContext &GetDiagIDContext() { return diagIDContext; }
+  // DiagIDContext &GetDiagIDContext() { return diagIDContext; }
 
-
-  //InFlightDiagnostic Diagnose(SourceLocation Loc, DiagID ID);
+  // InFlightDiagnostic Diagnose(SourceLocation Loc, DiagID ID);
   InFlightDiagnostic Diagnose(DiagID ID);
 
 public:
@@ -236,7 +235,7 @@ public:
 
 class InFlightDiagnostic : public StreamingDiagnostic {
 public:
-  //InFlightDiagnostic &FixItReplace(SrcRange R, StringRef Str);
+  // InFlightDiagnostic &FixItReplace(SrcRange R, StringRef Str);
 };
 
 class StoredDiagnostic {

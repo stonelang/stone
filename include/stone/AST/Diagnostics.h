@@ -349,7 +349,7 @@ template <typename... ArgTypes> struct StructuredFixIt {
 
 /// Diagnostic - This is a specific instance of a diagnostic along with all of
 /// the DiagnosticArguments that it requires.
-/// This is converted to a DiagnosticInfo object and sent to the client. 
+/// This is converted to a DiagnosticInfo object and sent to the client.
 class Diagnostic {
 public:
   typedef DiagnosticInfo::FixIt FixIt;
