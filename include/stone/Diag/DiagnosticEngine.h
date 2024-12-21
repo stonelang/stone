@@ -105,6 +105,12 @@ public:
 
 /// DiagnosticRenderer in clang
 class DiagnosticEngine final {
+
+  friend class DiagnosticInfo;
+  friend class InFlightDiagnostic;
+  friend class DiagnosticErrorTrap;
+  friend class InFlightPartialDiagnostic;
+
   // Treat fatal errors like errors.
   bool FatalsAsError = false;
 
@@ -128,7 +134,7 @@ class DiagnosticEngine final {
   //
   // The value here is the number of candidates to show in the first nontrivial
   // error.  Future errors may show a different number of candidates.
-  unsigned NumOverloadsToShow = 32;
+  unsigned TotalOverloadsToShow = 32;
 
   // Cap of # errors emitted, 0 -> no limit.
   unsigned ErrorLimit = 0;
@@ -154,8 +160,8 @@ class DiagnosticEngine final {
 
   /// Counts for DiagnosticErrorTrap to check whether an error occurred
   /// during a parsing section, e.g. during parsing a function.
-  unsigned TrapNumErrorsOccurred;
-  unsigned TrapNumUnrecoverableErrorsOccurred;
+  unsigned TrapTotalErrorsOccurred;
+  unsigned TrapTotalUnrecoverableErrorsOccurred;
 
   /// The level of the last diagnostic emitted.
   ///
@@ -163,11 +169,11 @@ class DiagnosticEngine final {
   /// diagnostic that they follow.
   DiagnosticLevel LastDiagLevel;
 
-  /// Number of warnings reported
-  unsigned NumWarnings;
+  /// Totalber of warnings reported
+  unsigned TotalWarnings;
 
-  /// Number of errors reported
-  unsigned NumErrors;
+  /// Totalber of errors reported
+  unsigned TotalErrors;
 
   DiagnosticOptions &DiagOpts;
 
@@ -232,6 +238,8 @@ public:
   }
 
   DiagID GetCurDiagID() const { return CurDiagID; }
+  SrcLoc GetDiagLoc() const { return CurDiagLoc; }
+  /// Get from diag options bool ShouldShowColors() { return }
 
 public:
   void FinishProcessing();
@@ -239,10 +247,33 @@ public:
 public:
 };
 
-class DiagnosticErrorTrap {
-public:
-};
+class DiagnosticErrorTrap final {
 
+  DiagnosticEngine &DE;
+  unsigned TotalErrors;
+  unsigned TotalUnrecoverableErrors;
+
+public:
+  explicit DiagnosticErrorTrap(DiagnosticEngine &DE) : DE(DE) { reset(); }
+
+  /// Determine whether any errors have occurred since this
+  /// object instance was created.
+  bool HasErrorOccurred() const {
+    return DE.TrapTotalErrorsOccurred > TotalErrors;
+  }
+
+  /// Determine whether any unrecoverable errors have occurred since this
+  /// object instance was created.
+  bool HasUnrecoverableErrorOccurred() const {
+    return DE.TrapTotalUnrecoverableErrorsOccurred > TotalUnrecoverableErrors;
+  }
+
+  /// Set to initial state of "no errors occurred".
+  void reset() {
+    TotalErrors = DE.TrapTotalErrorsOccurred;
+    TotalUnrecoverableErrors = DE.TrapTotalUnrecoverableErrorsOccurred;
+  }
+};
 class StreamingDiagnostic {
 
 protected:
@@ -284,7 +315,7 @@ class InFlightDiagnostic : public StreamingDiagnostic {
     // DiagnosticsEngine!"); assert(DiagStorage &&
     //        "DiagnosticBuilder requires a valid DiagnosticStorage!");
 
-    // DiagStorage->NumDiagArgs = 0;
+    // DiagStorage->TotalDiagArgs = 0;
     // DiagStorage->DiagRanges.clear();
     // DiagStorage->FixItHints.clear();
   }

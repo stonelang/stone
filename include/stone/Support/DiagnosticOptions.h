@@ -45,7 +45,7 @@ public:
   bool printTemplateTree = false;
 
   /// Indicates whether textual diagnostics should use color.
-  bool useColor = false;
+  bool showColors = false;
   // Which overload candidates to show.
   // OverloadsShown ShowOverloads = Ovl_All;
 
