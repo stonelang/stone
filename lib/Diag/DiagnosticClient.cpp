@@ -1,5 +1,5 @@
 #include "stone/Diag/DiagnosticClient.h"
-
+#include "stone/Diag/DiagnosticEngine.h"
 using namespace stone;
 
 diags::DiagnosticOutputStream::DiagnosticOutputStream()
@@ -95,4 +95,8 @@ void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
   //   ++NumWarnings;
   // else if (DiagLevel >= DiagnosticsEngine::Error)
   //   ++NumErrors;
+}
+
+diags::DiagID diags::DiagnosticInfo::GetDiagID() const {
+  return DE->GetCurDiagID();
 }

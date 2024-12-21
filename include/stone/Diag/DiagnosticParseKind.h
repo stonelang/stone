@@ -6,8 +6,8 @@
 namespace stone {
 namespace diags {
 // Declare common diagnostics objects with their appropriate types.
-#define DIAG(KIND, ID, Options, Text, Signature)                               \
-  extern stone::diags::DiagWithArguments<void Signature>::type ID;
+#define DIAG(KIND, ID, Options, Message, Signature)                            \
+  extern DiagWithArguments<void Signature>::type ID;
 #include "DiagnosticParseKind.def"
 
 } // namespace diags

@@ -1,8 +1,8 @@
 #ifndef STONE_DIAG_DIAGNOSTICID_H
 #define STONE_DIAG_DIAGNOSTICID_H
 
-#include <tuple>
 #include <stdint.h>
+#include <tuple>
 
 namespace stone {
 namespace diags {
@@ -33,8 +33,7 @@ template <typename T> struct PassArgument {
 };
 
 template <class... ArgTypes>
-using DiagArgTuple =
-    std::tuple<typename PassArgument<ArgTypes>::type...>;
+using DiagArgTuple = std::tuple<typename PassArgument<ArgTypes>::type...>;
 
 } // namespace diags
 } // namespace stone

@@ -1,12 +1,15 @@
 #ifndef STONE_DIAG_DIAGNOSTIC_CLIENT_H
 #define STONE_DIAG_DIAGNOSTIC_CLIENT_H
 
+#include "stone/Diag/DiagnosticID.h"
 #include "stone/Support/DiagnosticOptions.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/raw_ostream.h"
 
 namespace stone {
 namespace diags {
+
+class DiagnosticEngine;
 
 /// The level of the diagnostic, after it has been through mapping.
 enum class DiagnosticLevel {
@@ -61,6 +64,28 @@ public:
 };
 
 class DiagnosticInfo final {
+  const DiagnosticEngine *DE;
+  std::optional<llvm::StringRef> storedDiagMessage;
+
+public:
+  explicit DiagnosticInfo(const DiagnosticEngine *DE)
+      : DiagnosticInfo(DE, llvm::StringRef()) {}
+
+  DiagnosticInfo(const DiagnosticEngine *DE, llvm::StringRef storedDiagMessage)
+      : DE(DE), storedDiagMessage(storedDiagMessage) {}
+
+public:
+  const DiagnosticEngine *GetDiags() const { return DE; }
+  DiagID GetDiagID() const;
+
+  // const SourceLocation &getLocation() const { return DiagObj->CurDiagLoc; }
+  // bool hasSourceManager() const { return DiagObj->hasSourceManager(); }
+  // SourceManager &getSourceManager() const { return
+  // DiagObj->getSourceManager();}
+
+  // unsigned GetTotalArgs() const { return
+  // DE->GetDiagnosticStorage().TotalDiagArgs; }
+
 public:
   /// Format this diagnostic into a string, substituting the
   /// formal arguments into the %0 slots.

@@ -9,22 +9,22 @@
 #endif
 
 #ifndef ERROR
-#define ERROR(ID, Options, Message, Signature)                                    \
+#define ERROR(ID, Options, Message, Signature)                                 \
   DIAG(ERROR, ID, Options, Message, Signature)
 #endif
 
 #ifndef WARNING
-#define WARNING(ID, Options, Message, Signature)                                  \
+#define WARNING(ID, Options, Message, Signature)                               \
   DIAG(WARNING, ID, Options, Message, Signature)
 #endif
 
 #ifndef NOTE
-#define NOTE(ID, Options, Message, Signature)                                     \
+#define NOTE(ID, Options, Message, Signature)                                  \
   DIAG(NOTE, ID, Options, Message, Signature)
 #endif
 
 #ifndef REMARK
-#define REMARK(ID, Options, Message, Signature)                                   \
+#define REMARK(ID, Options, Message, Signature)                                \
   DIAG(REMARK, ID, Options, Message, Signature)
 #endif
 

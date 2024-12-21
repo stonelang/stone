@@ -179,6 +179,13 @@ class DiagnosticEngine final {
 
   // DiagIDContext diagIDContext;
 
+  /// The ID of the current diagnostic that is in flight.
+  ///
+  /// This is set to std::numeric_limits<unsigned>::max() when there is no
+  /// diagnostic in flight.
+  DiagID CurDiagID;
+  SrcLoc CurDiagLoc;
+
 private:
   class DiagnosticState {
   public:
@@ -216,8 +223,15 @@ public:
 
   // DiagIDContext &GetDiagIDContext() { return diagIDContext; }
 
-  // InFlightDiagnostic Diagnose(SourceLocation Loc, DiagID ID);
-  InFlightDiagnostic Diagnose(DiagID ID);
+  InFlightDiagnostic Diagnose(DiagID NextDiagID);
+  InFlightDiagnostic Diagnose(SrcLoc NextDiagLoc, DiagID NextDiagID);
+
+  /// Determine whethere there is already a diagnostic in flight.
+  bool IsInFlightDiagnostic() const {
+    return CurDiagID != std::numeric_limits<DiagID>::max();
+  }
+
+  DiagID GetCurDiagID() const { return CurDiagID; }
 
 public:
   void FinishProcessing();
@@ -230,10 +244,51 @@ public:
 };
 
 class StreamingDiagnostic {
+
+protected:
+  // Provides access to DiagnosticStorage
+  mutable DiagnosticEngine *DE = nullptr;
+
+protected:
+  StreamingDiagnostic() = default;
+
+  /// Construct with an external storage not owned by itself. The allocator
+  /// is a null pointer in this case.
+  explicit StreamingDiagnostic(DiagnosticEngine *DE) : DE(DE) {}
+
 public:
 };
 
 class InFlightDiagnostic : public StreamingDiagnostic {
+
+  friend class DiagnosticEngine;
+  friend class PartialInFlightDiagnostic;
+
+  /// Status variable indicating if this diagnostic is still active.
+  ///
+  // NOTE: This field is redundant with DiagObj (IsActive iff (DiagObj == 0)),
+  // but LLVM is not currently smart enough to eliminate the null check that
+  // Emit() would end up with if we used that as our status variable.
+  mutable bool IsActive = false;
+
+  /// Flag indicating that this diagnostic is being emitted via a
+  /// call to ForceEmit.
+  mutable bool IsForceEmit = false;
+
+  InFlightDiagnostic() = default;
+
+  explicit InFlightDiagnostic(DiagnosticEngine *DE)
+      : StreamingDiagnostic(DE), IsActive(true) {
+
+    // assert(diagObj && "DiagnosticBuilder requires a valid
+    // DiagnosticsEngine!"); assert(DiagStorage &&
+    //        "DiagnosticBuilder requires a valid DiagnosticStorage!");
+
+    // DiagStorage->NumDiagArgs = 0;
+    // DiagStorage->DiagRanges.clear();
+    // DiagStorage->FixItHints.clear();
+  }
+
 public:
   // InFlightDiagnostic &FixItReplace(SrcRange R, StringRef Str);
 };
