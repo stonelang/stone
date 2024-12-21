@@ -20,10 +20,40 @@ namespace diags {
 enum class TextTokenKind {
   Identifier,
   Select,
+  Total,
 };
 
 class TextToken {
+  /// The token kind
+  TextTokenKind kind;
+
+  /// Whether this token is the first token on the line.
+  unsigned atStartOfLine : 1;
+
+  /// Whether this token is an escaped `identifier` token.
+  unsigned escapedIdentifier : 1;
+
+  /// Modifiers for string literals
+  unsigned multilineString : 1;
+
+  /// Length of custom delimiter of "raw" string literals
+  unsigned customDelimiterLen : 8;
+
+  // Padding bits == 32 - 11;
+
+  /// The length of the comment that precedes the token.
+  unsigned commentLength;
+
+  /// text - The actual string covered by the token in the source buffer.
+  llvm::StringRef text;
+
 public:
+  TextToken(TextTokenKind kind, StringRef text, unsigned commentLength = 0)
+      : kind(kind), atStartOfLine(false), escapedIdentifier(false),
+        multilineString(false), customDelimiterLen(0),
+        commentLength(commentLength), text(text) {}
+
+  TextToken() : TextToken(TextTokenKind::Total, {}, 0) {}
 };
 /// May want to think about creating a source buffer using SrcMgr
 // and treating this like a source file to parse with tokens and identifiers
