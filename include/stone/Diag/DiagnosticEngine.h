@@ -193,10 +193,10 @@ class Diagnostic final : public DiagnosticAllocation<Diagnostic> {
   llvm::SmallVector<DiagnosticArgument, 3> Args;
   llvm::SmallVector<CharSrcRange, 2> Ranges;
   llvm::SmallVector<FixIt, 2> FixIts;
-  DiagnosticLevel LevelLimit = DiagnosticLevel::None;
+  DiagnosticLevel Level = DiagnosticLevel::None;
 
   void SetLoc(SrcLoc loc) { Loc = loc; }
-  void SetLevelLimit(DiagnosticLevel limit) { LevelLimit = limit; }
+  void SetLevel(DiagnosticLevel level) { Level = level; }
 
   void AddRange(CharSrcRange R) { Ranges.push_back(R); }
   // Avoid copying the fix-it text more than necessary.
@@ -208,10 +208,15 @@ class Diagnostic final : public DiagnosticAllocation<Diagnostic> {
   void SetStage(DiagnosticStage S) { Stage = S; }
 
 public:
-  Diagnostic(DiagID ID, SrcLoc Loc, ArrayRef<DiagnosticArgument> Args)
-      : ID(ID), Args(Args.begin(), Args.end()), Stage(DiagnosticStage::Active) {
-  }
+  Diagnostic(DiagID ID, SrcLoc Loc, llvm::ArrayRef<DiagnosticArgument> Args,
+             llvm::ArrayRef<FixIt> FixIts)
+      : ID(ID), Args(Args.begin(), Args.end()),
+        FixIts(FixIts.begin(), FixIts.end()), Stage(DiagnosticStage::Active),
+        Message(llvm::StringRef()) {}
 
+  Diagnostic(DiagID ID, SrcLoc Loc, llvm::ArrayRef<DiagnosticArgument> Args)
+      : Diagnostic(ID, Loc, Args, {}) {}
+      
   Diagnostic(DiagID ID, SrcLoc Loc) : Diagnostic(ID, Loc, {}) {}
 
   Diagnostic(DiagID ID) : Diagnostic(ID, SrcLoc(), {}) {}
@@ -224,7 +229,7 @@ public:
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return Ranges; }
   llvm::ArrayRef<FixIt> GetFixIts() const { return FixIts; }
   SrcLoc GetLoc() const { return Loc; }
-  DiagnosticLevel GetLevelLimit() const { return LevelLimit; }
+  DiagnosticLevel GetLevel() const { return Level; }
   llvm::StringRef GetMessage() const { return Message; }
   bool IsFromCache() { return FromCache; }
 

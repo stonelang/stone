@@ -214,6 +214,7 @@ void diags::DiagnosticFormatParser::Parse() {
   }
 }
 void diags::DiagnosticFormatParser::Lex() {}
+
 void diags::DiagnosticFormatParser::ParseIdentifier() {}
 
 void diags::DiagnosticFormatParser::ParseSelect() {}

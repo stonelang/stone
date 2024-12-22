@@ -158,7 +158,7 @@ public:
 // };
 
 // For client consumption only
-// class Diagnostic final {
+// class DiagnosticInfo final {
 
 //   DiagnosticKind kind;
 //   llvm::StringRef FormatString;
