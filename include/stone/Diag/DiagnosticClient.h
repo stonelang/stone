@@ -3,8 +3,8 @@
 
 #include "stone/AST/Identifier.h"
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Diag/DiagnosticFormatParser.h"
 #include "stone/Diag/DiagnosticID.h"
-#include "stone/Diag/DiagnosticTextParser.h"
 #include "stone/Support/DiagnosticOptions.h"
 
 #include "llvm/ADT/BitVector.h"

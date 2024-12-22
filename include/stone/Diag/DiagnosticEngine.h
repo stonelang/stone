@@ -2,7 +2,7 @@
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
 #include "stone/Diag/DiagnosticClient.h"
-#include "stone/Diag/DiagnosticTextParser.h"
+#include "stone/Diag/DiagnosticFormatParser.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"

@@ -101,9 +101,8 @@ void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
 //   return DE->GetCurDiagID();
 // }
 
-
 void diags::DiagnosticInfo::FormatDiagnostic(
     llvm::raw_ostream &Out, DiagnosticFormatOptions FormatOpts) const {
 
-    //DiagnosticEngine::FormatDiagnosticText()
+  // DiagnosticEngine::FormatDiagnosticText()
 }
