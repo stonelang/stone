@@ -68,12 +68,13 @@ enum class DiagnosticFormatTokenKind {
   Const,
   Star,
   eof,
+  Invalid,
 };
 
 struct DiagnosticFormatToken final {
 
   /// The token kind
-  DiagnosticFormatTokenKind Kind;
+  DiagnosticFormatTokenKind Kind = DiagnosticFormatTokenKind::Invalid;
 
   /// Whether this token is the first token on the line.
   unsigned AtStartOfLine : 1;
@@ -90,6 +91,7 @@ struct DiagnosticFormatToken final {
   bool IsSelect() const { return Kind == DiagnosticFormatTokenKind::Select; }
   bool IsS() const { return Kind == DiagnosticFormatTokenKind::S; }
   bool IsLBrace() const { return Kind == DiagnosticFormatTokenKind::LBrace; }
+  bool IsInvalid() const { return Kind == DiagnosticFormatTokenKind::Invalid; }
 };
 
 class DiagnosticFormatLexer final {
@@ -126,11 +128,29 @@ class DiagnosticFormatLexer final {
 
   DiagnosticFormatToken NextToken;
 
+  /// The current leading trivia for the next token.
+  ///
+  /// The StringRef points into the source buffer that is currently being lexed.
+  llvm::StringRef LeadingTrivia;
+
+  /// The current trailing trivia for the next token.
+  /// The StringRef points into the source buffer that is currently being lexed.
+  llvm::StringRef TrailingTrivia;
+
+  /// If this is not \c nullptr, all tokens after this point are treated as eof.
+  /// Used to cut off lexing early when we detect that the nesting level is too
+  /// deep.
+  const char *LexerCutOffPoint = nullptr;
+
+  DiagnosticFormatLexer(unsigned BufferID, llvm::StringRef InText, SrcMgr &SM);
   void Initialize(unsigned Offset, unsigned EndOffset);
   void Lex();
 
 public:
   DiagnosticFormatLexer(llvm::StringRef InText, SrcMgr &SM);
+
+public:
+  DiagnosticFormatToken PrevToken;
 
 public:
   //   void Lex(TextToken &Result) {
@@ -147,8 +167,7 @@ public:
   //     Lex();
   //   }
 
-  DiagnosticFormatToken ContructToken(DiagnosticFormatTokenKind Kind,
-                                      StringRef Text);
+  void ConstructToken(DiagnosticFormatTokenKind Kind, const char *TokStart);
 };
 
 /// May want to think about creating a source buffer using SrcMgr

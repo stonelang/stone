@@ -3,93 +3,113 @@
 
 using namespace stone;
 
-diags::DiagnosticFormatLexer::DiagnosticFormatLexer(llvm::StringRef InText,
+diags::DiagnosticFormatLexer::DiagnosticFormatLexer(unsigned BufferID,
+                                                    llvm::StringRef InText,
                                                     SrcMgr &SM)
-    : InText(InText), SM(SM) {
+    : BufferID(BufferID), InText(InText), SM(SM) {
 
-  // unsigned EndOffset = SM.getRangeForBuffer(BufferID).getByteLength();
-
-  // Initialize(/*Offset=*/0, EndOffset);
+  auto EndOffset = SM.getRangeForBuffer(BufferID).getByteLength();
+  Initialize(/*Offset=*/0, EndOffset);
 }
 
-// void diags::DiagnosticTextLexer::Initialize(unsigned Offset,
-//                                             unsigned EndOffset) {
+diags::DiagnosticFormatLexer::DiagnosticFormatLexer(llvm::StringRef InText,
+                                                    SrcMgr &SM)
+    : DiagnosticFormatLexer(SM.addMemBufferCopy(InText), InText, SM) {}
 
-//   assert(Offset <= EndOffset);
+void diags::DiagnosticFormatLexer::Initialize(unsigned Offset,
+                                              unsigned EndOffset) {
 
-//   // Initialize buffer pointers.
-//   StringRef Text = SM.extractText(SM.getRangeForBuffer(BufferID));
-//   BufferStart = Text.data();
-//   BufferEnd = Text.data() + Text.size();
+  assert(Offset <= EndOffset);
 
-//   assert(*BufferEnd == 0);
-//   assert(BufferStart + Offset <= BufferEnd);
-//   assert(BufferStart + EndOffset <= BufferEnd);
+  // Initialize buffer pointers.
+  StringRef Text = SM.extractText(SM.getRangeForBuffer(BufferID));
+  BufferStart = Text.data();
+  BufferEnd = Text.data() + Text.size();
 
-//   // Check for Unicode BOM at start of file (Only UTF-8 BOM supported now).
-//   size_t BOMLength = Text.starts_with("\xEF\xBB\xBF") ? 3 : 0;
+  assert(*BufferEnd == 0);
+  assert(BufferStart + Offset <= BufferEnd);
+  assert(BufferStart + EndOffset <= BufferEnd);
 
-//   // Keep information about existance of UTF-8 BOM for transparency source
-//   code
-//   // editing with libSyntax.
-//   ContentStart = BufferStart + BOMLength;
+  // Check for Unicode BOM at start of file (Only UTF-8 BOM supported now).
+  size_t BOMLength = Text.starts_with("\xEF\xBB\xBF") ? 3 : 0;
 
-//   // Initialize code completion.
-//   if (BufferID == SM.getCodeCompletionBufferID()) {
-//     const char *Ptr = BufferStart + SM.getCodeCompletionOffset();
-//     if (Ptr >= BufferStart && Ptr <= BufferEnd) {
-//       CodeCompletionPtr = Ptr;
-//     }
-//   }
+  // Keep information about existance of UTF-8 BOM for transparency
+  //  source code editing with libSyntax.
+  ContentStart = BufferStart + BOMLength;
 
-//   ArtificialEOF = BufferStart + EndOffset;
-//   CurPtr = BufferStart + Offset;
+  // Initialize code completion.
+  if (BufferID == SM.getCodeCompletionBufferID()) {
+    const char *Ptr = BufferStart + SM.getCodeCompletionOffset();
+    if (Ptr >= BufferStart && Ptr <= BufferEnd) {
+      CodeCompletionPtr = Ptr;
+    }
+  }
 
-//   // assert(NextToken.Is(tok::LAST));
-//   Lex();
-//   // assert((NextToken.IsAtStartOfLine() || CurPtr != BufferStart) &&
-//   //        "The token should be at the beginning of the line, "
-//   //        "or we should be lexing from the middle of the buffer");
-// }
+  ArtificialEOF = BufferStart + EndOffset;
+  CurPtr = BufferStart + Offset;
 
-// void diags::DiagnosticTextLexer::Lex() {
+  assert(NextToken.IsInvalid());
+  Lex();
+  assert((NextToken.AtStartOfLine || CurPtr != BufferStart) &&
+         "The token should be at the beginning of the line, "
+         "or we should be lexing from the middle of the buffer");
+}
 
-//   assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
-//          "Current pointer out of range!");
+void diags::DiagnosticFormatLexer::Lex() {
 
-//   const char *LeadingTriviaStart = CurPtr;
+  assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
+         "Current pointer out of range!");
 
-//   if (CurPtr == BufferStart) {
-//     if (BufferStart < ContentStart) {
-//       size_t BOMLen = ContentStart - BufferStart;
-//       assert(BOMLen == 3 && "UTF-8 BOM is 3 bytes");
-//       CurPtr += BOMLen;
-//     }
-//     NextToken.SetAtStartOfLine(true);
-//   } else {
-//     NextToken.SetAtStartOfLine(false);
-//   }
+  const char *LeadingTriviaStart = CurPtr;
 
-//   // LeadingTrivia = lexTrivia(/*IsForTrailingTrivia=*/false,
-//   // LeadingTriviaStart);
+  if (CurPtr == BufferStart) {
+    if (BufferStart < ContentStart) {
+      size_t BOMLen = ContentStart - BufferStart;
+      assert(BOMLen == 3 && "UTF-8 BOM is 3 bytes");
+      CurPtr += BOMLen;
+    }
+    NextToken.AtStartOfLine = true;
+  } else {
+    NextToken.AtStartOfLine = false;
+  }
 
-//   // // Remember the start of the token so we can form the text range.
-//   const char *TokStart = CurPtr;
+  // LeadingTrivia = LexTrivia(/*IsForTrailingTrivia=*/false,
+  // LeadingTriviaStart);
 
-//   // if (LexerCutOffPoint && CurPtr >= LexerCutOffPoint) {
-//   //   return formToken(TextTokenKind::eof, TokStart);
-//   // }
+  // // Remember the start of the token so we can form the text range.
+  const char *TokStart = CurPtr;
+  if (LexerCutOffPoint && CurPtr >= LexerCutOffPoint) {
+    return ConstructToken(DiagnosticFormatTokenKind::eof, TokStart);
+  }
+  switch (*CurPtr++) {
+  default: {
+  }
+  }
+}
 
-//   switch (*CurPtr++) {
-//   default: {
-//   }
-//   }
-// }
+void diags::DiagnosticFormatLexer::ConstructToken(
+    DiagnosticFormatTokenKind Kind, const char *TokStart) {
 
-diags::DiagnosticFormatToken
-diags::DiagnosticFormatLexer::ContructToken(DiagnosticFormatTokenKind Kind,
-                                            StringRef Text) {
-  return DiagnosticFormatToken(Kind, Text);
+  assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
+         "Current pointer out of range!");
+
+  // // When we are lexing a subrange from the middle of a file buffer, we will
+  // // run past the end of the range, but will stay within the file.  Check if
+  // // we are past the imaginary EOF, and synthesize a tok::eof in this case.
+  if (Kind != DiagnosticFormatTokenKind::eof && TokStart >= ArtificialEOF) {
+    Kind = DiagnosticFormatTokenKind::eof;
+  }
+
+  StringRef TokenText{TokStart, static_cast<size_t>(CurPtr - TokStart)};
+
+  // if (TriviaRetention == TriviaRetentionMode::WithTrivia && Kind != tok::eof)
+  // {
+  //   TrailingTrivia = lexTrivia(/*IsForTrailingTrivia=*/true, CurPtr);
+  // } else {
+  //   TrailingTrivia = StringRef();
+  // }
+  PrevToken = NextToken;
+  NextToken = DiagnosticFormatToken(Kind, TokenText);
 }
 
 diags::DiagnosticFormatParser::DiagnosticFormatParser(
