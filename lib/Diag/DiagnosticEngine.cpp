@@ -263,3 +263,10 @@ diags::Diagnostic::Create(diags::DiagnosticEngine &DE, diags::DiagID ID,
                           ArrayRef<diags::DiagnosticArgument> Args) {
   return new (DE) diags::Diagnostic(ID, Loc, Args);
 }
+
+diags::Diagnostic *diags::Diagnostic::Create(DiagnosticEngine &DE, DiagID ID,
+                                             SrcLoc Loc,
+                                             ArrayRef<DiagnosticArgument> Args,
+                                             ArrayRef<FixIt> FixIts) {
+  return new (DE) diags::Diagnostic(ID, Loc, Args, FixIts);
+}

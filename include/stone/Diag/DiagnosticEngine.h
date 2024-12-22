@@ -216,7 +216,7 @@ public:
 
   Diagnostic(DiagID ID, SrcLoc Loc, llvm::ArrayRef<DiagnosticArgument> Args)
       : Diagnostic(ID, Loc, Args, {}) {}
-      
+
   Diagnostic(DiagID ID, SrcLoc Loc) : Diagnostic(ID, Loc, {}) {}
 
   Diagnostic(DiagID ID) : Diagnostic(ID, SrcLoc(), {}) {}
@@ -238,6 +238,9 @@ public:
   static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc);
   static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
                             ArrayRef<DiagnosticArgument> Args);
+  static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
+                            ArrayRef<DiagnosticArgument> Args,
+                            ArrayRef<FixIt> FixIts);
 };
 
 /// Primarily builds out the Diagnostic with fixit decorations.
