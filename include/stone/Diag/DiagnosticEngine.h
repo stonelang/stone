@@ -237,13 +237,15 @@ public:
   //  bool IsFromCache() { return FromCache; }
 
 public:
-  static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID);
-  static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc);
-  static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
-                            ArrayRef<DiagnosticArgument> Args);
-  static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
-                            ArrayRef<DiagnosticArgument> Args,
-                            ArrayRef<FixIt> FixIts);
+  static Diagnostic *Create(DiagnosticEngine &DE, Diag<> ID);
+
+  
+  // static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc);
+  // static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
+  //                           ArrayRef<DiagnosticArgument> Args);
+  // static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
+  //                           ArrayRef<DiagnosticArgument> Args,
+  //                           ArrayRef<FixIt> FixIts);
 };
 
 /// Primarily builds out the Diagnostic with fixit decorations.
@@ -419,10 +421,10 @@ public:
   bool HasClients() const { return Clients.size() > 0; }
 
 public:
-  InFlightDiagnostic Diagnose(DiagID NextDiagID);
-  InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc);
-  InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
-                              llvm::ArrayRef<DiagnosticArgument> args);
+  InFlightDiagnostic Diagnose(Diag<> NextDiagID);
+  // InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc);
+  // InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
+  //                             llvm::ArrayRef<DiagnosticArgument> args);
   InFlightDiagnostic Diagnose(const Diagnostic *D);
 
   bool HasActiveDiagnsotic() const { return ActiveDiagnostic != nullptr; }

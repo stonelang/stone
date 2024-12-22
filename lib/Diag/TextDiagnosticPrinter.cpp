@@ -4,36 +4,33 @@ using namespace stone;
 
 using namespace stone;
 
-diags::TextDiagnosticPrinter::TextDiagnosticPrinter(
-    DiagnosticOutputStream &OS, const LangOptions &LO,
-    const DiagnosticOptions &DiagOpts)
-    : emitter(new TextDiagnosticEmitter(OS, LO, DiagOpts)) {}
+diags::TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &stream)
+    : OS(stream) {}
 
-diags::TextDiagnosticPrinter::~TextDiagnosticPrinter() {}
+diags::TextDiagnosticPrinter::~TextDiagnosticPrinter() { OS.Flush(); }
 
-void diags::TextDiagnosticPrinter::Reset() { emitter.reset(); }
-
-void diags::TextDiagnosticPrinter::HandleDiagnostic(const DiagnosticImpl &DI) {
+void diags::TextDiagnosticPrinter::HandleDiagnostic(SrcMgr &SM,
+                                                    const DiagnosticImpl &DI) {
 
   // Default implementation (Warnings/errors count).
-  DiagnosticClient::HandleDiagnostic(DI);
+  DiagnosticClient::HandleDiagnostic(SM, DI);
 
-  llvm::raw_ostream &OS =
-      GetEmitter().GetDiagnosticOutputStream().GetOutputStream();
+  // llvm::raw_ostream &OS =
+  //     GetEmitter().GetDiagnosticOutputStream().GetOutputStream();
 
-  // Render the diagnostic message into a temporary buffer eagerly. We'll use
-  // this later as we print out the diagnostic to the terminal.
-  DI.FormatDiagnostic(OS);
+  // // Render the diagnostic message into a temporary buffer eagerly. We'll use
+  // // this later as we print out the diagnostic to the terminal.
+  // DI.FormatDiagnostic(OS);
 
-  // Keeps track of the starting position of the location
-  // information (e.g., "foo.c:10:4:") that precedes the error
-  // message. We use this information to determine how long the
-  // file+line+column number prefix is.
-  uint64_t StartOfLocationInfo = OS.tell();
+  // // Keeps track of the starting position of the location
+  // // information (e.g., "foo.c:10:4:") that precedes the error
+  // // message. We use this information to determine how long the
+  // // file+line+column number prefix is.
+  // uint64_t StartOfLocationInfo = OS.tell();
 
-  if (!Prefix.empty()) {
-    OS << Prefix << ": ";
-  }
+  // if (!Prefix.empty()) {
+  //   OS << Prefix << ": ";
+  // }
 
   // Use a dedicated, simpler path for diagnostics without a valid location.
   // This is important as if the location is missing, we may be emitting
@@ -59,12 +56,16 @@ void diags::TextDiagnosticPrinter::HandleDiagnostic(const DiagnosticImpl &DI) {
   //                             Level, DiagMessageStream.str(),
   //                             Info.GetRanges(), Info.GetFixIts());
 
-  GetEmitter().GetDiagnosticOutputStream().Flush();
+  // GetEmitter().GetDiagnosticOutputStream().Flush();
 }
 
-diags::TextDiagnosticEmitter::TextDiagnosticEmitter(
-    DiagnosticOutputStream &OS, const LangOptions &LangOpts,
-    const DiagnosticOptions &DiagOpts)
-    : DiagnosticEmitter(OS, LangOpts, DiagOpts) {}
+diags::TextDiagnosticPrinterImpl::TextDiagnosticPrinterImpl() {}
 
-diags::TextDiagnosticEmitter::~TextDiagnosticEmitter() {}
+diags::TextDiagnosticPrinterImpl::~TextDiagnosticPrinterImpl() {}
+
+void diags::TextDiagnosticPrinterImpl::HandleDiagnostic(
+    SrcMgr &SM, const DiagnosticImpl &DI) {
+
+  // Default implementation (Warnings/errors count).
+  diags::TextDiagnosticPrinter::HandleDiagnostic(SM, DI);
+}

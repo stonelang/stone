@@ -236,7 +236,6 @@ class CustomDiagnostic {};
 class DiagnosticClient {
   friend class DiagnosticEngine;
 
-protected:
   unsigned TotalWarnings = 0; ///< Number of warnings reported
   unsigned TotalErrors = 0;   ///< Number of errors reported
 
@@ -265,14 +264,14 @@ public:
   ///
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
-  virtual void HandleDiagnostic(const DiagnosticImpl &DI);
+  virtual void HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI);
 
   // DiagnosticTracker &GetTracker() { return tracker; }
 };
 
 class NullDiagnosticClient final : public DiagnosticClient {
 public:
-  void HandleDiagnostic(const DiagnosticImpl &DI) override {
+  void HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) override {
     // Just ignore it.
   }
 };
@@ -283,6 +282,9 @@ public:
 class ForwardingDiagnosticClient final : public DiagnosticClient {
 
 public:
+  void HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) override {
+    // Just ignore it.
+  }
 };
 
 } // namespace diags

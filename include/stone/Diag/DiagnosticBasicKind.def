@@ -1,7 +1,7 @@
 #define DEFINE_DIAGNOSTIC_MACROS
 #include "DiagnosticMacroKind.h"
 
-ERROR(invalid_diagnostic,None,
+ERROR(error_invalid_diagnostic,None,
       "INTERNAL ERROR: this diagnostic should not be produced", ())
 
 #define UNDEFINE_DIAGNOSTIC_MACROS

@@ -6,8 +6,7 @@ enum class diags::DiagID : uint32_t {
 #define DIAG(KIND, ID, Options, Message, Signature) ID,
 #include "stone/Diag/DiagnosticEngine.def"
 };
-static_assert(static_cast<uint32_t>(stone::diags::DiagID::invalid_diagnostic) ==
-                  0,
+static_assert(static_cast<uint32_t>(diags::DiagID::error_invalid_diagnostic) == 0,
               "0 is not the invalid diagnostic ID");
 
 // Define all of the diagnostic objects and initialize them with their

@@ -1,5 +1,6 @@
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticBasicKind.h"
+#include "stone/Diag/DiagnosticParseKind.h"
 #include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticFormatParser.h"
 
@@ -150,19 +151,20 @@ std::vector<diags::DiagnosticClient *> diags::DiagnosticEngine::TakeClients() {
   return clients;
 }
 
-diags::InFlightDiagnostic diags::DiagnosticEngine::Diagnose(DiagID NextDiagID) {
-  return Diagnose(NextDiagID, SrcLoc());
+diags::InFlightDiagnostic diags::DiagnosticEngine::Diagnose(Diag<> NextDiagID) {
+  return Diagnose(Diagnostic::Create(*this, NextDiagID));
+
 }
 
-diags::InFlightDiagnostic
-diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc) {
-  return Diagnose(NextDiagID, NextDiagLoc, {});
-}
-diags::InFlightDiagnostic
-diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
-                                  llvm::ArrayRef<DiagnosticArgument> Args) {
-  return Diagnose(Diagnostic::Create(*this, NextDiagID, NextDiagLoc, Args));
-}
+// diags::InFlightDiagnostic
+// diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc) {
+//   return Diagnose(NextDiagID, NextDiagLoc, {});
+// }
+// diags::InFlightDiagnostic
+// diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
+//                                   llvm::ArrayRef<DiagnosticArgument> Args) {
+//   return Diagnose(Diagnostic::Create(*this, NextDiagID, NextDiagLoc, Args));
+// }
 
 diags::InFlightDiagnostic
 diags::DiagnosticEngine::Diagnose(const Diagnostic *diagnostic) {
@@ -271,7 +273,6 @@ diags::DiagnosticEngine::ConstructDiagnosticImpl(const Diagnostic *diagnostic) {
   if (Level == DiagnosticLevel::Ignore) {
     return std::nullopt;
   }
-
   return diags::DiagnosticImpl(
       ComputeDiagnosticKind(Level),
       GetDiagnosticStringForDiagID(diagnostic->GetID()), diagnostic);
@@ -336,20 +337,20 @@ diags::Diagnostic *diags::Diagnostic::Create(diags::DiagnosticEngine &DE,
                                              diags::DiagID ID) {
   return new (DE) diags::Diagnostic(ID);
 }
-diags::Diagnostic *diags::Diagnostic::Create(diags::DiagnosticEngine &DE,
-                                             diags::DiagID ID, SrcLoc Loc) {
-  return new (DE) diags::Diagnostic(ID, Loc);
-}
-diags::Diagnostic *
-diags::Diagnostic::Create(diags::DiagnosticEngine &DE, diags::DiagID ID,
-                          SrcLoc Loc,
-                          ArrayRef<diags::DiagnosticArgument> Args) {
-  return new (DE) diags::Diagnostic(ID, Loc, Args);
-}
+// diags::Diagnostic *diags::Diagnostic::Create(diags::DiagnosticEngine &DE,
+//                                              diags::DiagID ID, SrcLoc Loc) {
+//   return new (DE) diags::Diagnostic(ID, Loc);
+// }
+// diags::Diagnostic *
+// diags::Diagnostic::Create(diags::DiagnosticEngine &DE, diags::DiagID ID,
+//                           SrcLoc Loc,
+//                           ArrayRef<diags::DiagnosticArgument> Args) {
+//   return new (DE) diags::Diagnostic(ID, Loc, Args);
+// }
 
-diags::Diagnostic *diags::Diagnostic::Create(DiagnosticEngine &DE, DiagID ID,
-                                             SrcLoc Loc,
-                                             ArrayRef<DiagnosticArgument> Args,
-                                             ArrayRef<FixIt> FixIts) {
-  return new (DE) diags::Diagnostic(ID, Loc, Args, FixIts);
-}
+// diags::Diagnostic *diags::Diagnostic::Create(DiagnosticEngine &DE, DiagID ID,
+//                                              SrcLoc Loc,
+//                                              ArrayRef<DiagnosticArgument> Args,
+//                                              ArrayRef<FixIt> FixIts) {
+//   return new (DE) diags::Diagnostic(ID, Loc, Args, FixIts);
+// }

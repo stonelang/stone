@@ -7,19 +7,19 @@ namespace stone {
 namespace diags {
 class DiagnosticEngine;
 
-// THINK: This may not be needed
-class TextDiagnosticBuffering final : public DiagnosticClient {
+// // THINK: This may not be needed
+// class TextDiagnosticBuffering final : public DiagnosticClient {
 
-public:
-  TextDiagnosticBuffering();
+// public:
+//   TextDiagnosticBuffering();
 
-public:
-  void HandleDiagnostic(const DiagnosticImpl &DI) override;
+// public:
+//   void HandleDiagnostic(const DiagnosticImpl &DI) override;
 
-  /// FlushDiagnostics - Flush the buffered diagnostics to an given
-  /// diagnostic engine.
-  void FlushDiagnostics(DiagnosticEngine &Diags) const;
-};
+//   /// FlushDiagnostics - Flush the buffered diagnostics to an given
+//   /// diagnostic engine.
+//   void FlushDiagnostics(DiagnosticEngine &Diags) const;
+// };
 
 } // namespace diags
 } // namespace stone

@@ -15,8 +15,9 @@
 #include "stone/Sem/TypeChecker.h"
 #include "stone/Support/Statistics.h"
 
+#include "stone/Diag/DiagnosticID.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/TextDiagnosticBuffering.h"
+#include "stone/Diag/DiagnosticParseKind.h"
 #include "stone/Diag/TextDiagnosticPrinter.h"
 
 #include "stone/Support/Statistics.h"
@@ -33,16 +34,26 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   CompilerInvocation invocation;
   // invocation.AddDiagnosticConsumer(printer);
 
-  std::unique_ptr<diags::TextDiagnosticBuffering> BDC(
-      new diags::TextDiagnosticBuffering());
+  // std::unique_ptr<diags::TextDiagnosticBuffering> BDC(
+  //     new diags::TextDiagnosticBuffering());
 
-  diags::DiagnosticEngine BDE(invocation.GetSrcMgr(),
-                              invocation.GetDiagnosticOptions());
-  BDE.AddClient(BDC.get());
-  // BDE.Diagnose(diags::err_compile_no_intputs);
+  // diags::DiagnosticEngine BDE(invocation.GetSrcMgr(),
+  //                             invocation.GetDiagnosticOptions());
+  // BDE.AddClient(BDC.get());
+  // // BDE.Diagnose(diags::err_compile_no_intputs);
 
-  BDC->FlushDiagnostics(BDE);
-  BDC->FinishProcessing();
+  // BDC->FlushDiagnostics(BDE);
+  // BDC->FinishProcessing();
+
+  std::unique_ptr<diags::TextDiagnosticPrinterImpl> DC(
+      new diags::TextDiagnosticPrinterImpl());
+
+  diags::DiagnosticEngine DE(invocation.GetSrcMgr(),
+                             invocation.GetDiagnosticOptions());
+
+  DE.AddClient(DC.get());
+  DE.Diagnose(diags::warning_null_character);
+  DE.FinishProcessing();
 
   // auto FinishCompile = [&](Status status = Status::Success()) -> int {
   //   return (status.IsError() ? status.GetFlag()
