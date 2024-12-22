@@ -1,6 +1,7 @@
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticBasicKind.h"
 #include "stone/Diag/DiagnosticClient.h"
+#include "stone/Diag/DiagnosticTextParser.h"
 
 using namespace stone;
 
@@ -61,6 +62,11 @@ enum LocalDiagID : uint32_t {
   TotalDiags
 };
 } // end anonymous namespace
+
+/// Get the set of all diagnostic IDs.
+unsigned diags::DiagnosticEngine::GetTotalDiagnostics() {
+  return LocalDiagID::TotalDiags;
+}
 
 // TODO: categorization
 static const constexpr StoredDiagnosticInfo storedDiagnosticInfos[] = {
@@ -221,4 +227,24 @@ void diags::DiagnosticEngine::HandleDiagnostic(Diagnostic &&diagnostic) {
 
 void diags::DiagnosticEngine::EmitDiagnostic(Diagnostic &diagnostic) const {
   assert(!HasClients() && "No DiagnosticClients. Unable to emit!");
+}
+
+/// Format the given diagnostic text and place the result in the given
+/// buffer.
+void diags::DiagnosticEngine::FormatDiagnosticText(
+    llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
+    DiagnosticFormatOptions FormatOpts) {
+
+  FormatDiagnosticText(Out, Text, SM, {}, FormatOpts);
+}
+
+/// Format the given diagnostic text and place the result in the given
+/// buffer.
+void diags::DiagnosticEngine::FormatDiagnosticText(
+    llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
+    ArrayRef<DiagnosticArgument> Args, DiagnosticFormatOptions FormatOpts) {
+
+  // unsigned BufferID = SM.addMemBufferCopy(Text);
+  // DiagnosticTextParser textParser(BufferID, SM);
+  // textParser.Parse();
 }

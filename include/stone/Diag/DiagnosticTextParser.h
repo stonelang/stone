@@ -17,6 +17,33 @@ namespace stone {
 class SrcMgr;
 namespace diags {
 
+struct DiagnosticFormatOptions {
+  const std::string OpeningQuotationMark;
+  const std::string ClosingQuotationMark;
+  const std::string AKAFormatString;
+  const std::string OpaqueResultFormatString;
+
+  DiagnosticFormatOptions(std::string OpeningQuotationMark,
+                          std::string ClosingQuotationMark,
+                          std::string AKAFormatString,
+                          std::string OpaqueResultFormatString)
+      : OpeningQuotationMark(OpeningQuotationMark),
+        ClosingQuotationMark(ClosingQuotationMark),
+        AKAFormatString(AKAFormatString),
+        OpaqueResultFormatString(OpaqueResultFormatString) {}
+
+  DiagnosticFormatOptions()
+      : OpeningQuotationMark("'"), ClosingQuotationMark("'"),
+        AKAFormatString("'%s' (aka '%s')"),
+        OpaqueResultFormatString("'%s' (%s of '%s')") {}
+
+  /// When formatting fix-it arguments, don't include quotes or other
+  /// additions which would result in invalid code.
+  static DiagnosticFormatOptions formatForFixIts() {
+    return DiagnosticFormatOptions("", "", "%s", "%s");
+  }
+};
+
 enum class TextTokenKind {
   None = 0,
   Identifier,
@@ -59,20 +86,15 @@ class TextToken {
   unsigned customDelimiterLen : 8;
 
   // Padding bits == 32 - 11;
-
-  /// The length of the comment that precedes the token.
-  unsigned commentLength;
-
   /// text - The actual string covered by the token in the source buffer.
   llvm::StringRef text;
 
 public:
-  TextToken(TextTokenKind kind, StringRef text, unsigned commentLength = 0)
+  TextToken(TextTokenKind kind, StringRef text)
       : kind(kind), atStartOfLine(false), escapedIdentifier(false),
-        multilineString(false), customDelimiterLen(0),
-        commentLength(commentLength), text(text) {}
+        multilineString(false), customDelimiterLen(0), text(text) {}
 
-  TextToken() : TextToken(TextTokenKind::eof, {}, 0) {}
+  TextToken() : TextToken(TextTokenKind::eof, StringRef()) {}
 
 public:
   /// Determine whether this token occurred at the start of a line.

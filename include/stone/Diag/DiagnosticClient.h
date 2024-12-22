@@ -4,6 +4,7 @@
 #include "stone/AST/Identifier.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/DiagnosticID.h"
+#include "stone/Diag/DiagnosticTextParser.h"
 #include "stone/Support/DiagnosticOptions.h"
 
 #include "llvm/ADT/BitVector.h"
@@ -165,46 +166,28 @@ public:
   const DiagnosticEngine &GetDiags() const { return DE; }
 
 public:
-  /// Format this diagnostic into a string, substituting the
-  /// formal arguments into the %0 slots.
+  /// NOTE: use DiagnosticEngine::FormatDiagnosticText
+  ///  Format this diagnostic into a string, substituting the
+  ///  formal arguments into the %0 slots.
   ///
-  /// The result is appended onto the \p OutStr array.
-  void FormatDiagnostic(llvm::SmallVectorImpl<char> &OutStr) const;
+  ///  The result is appended onto the \p OutStr array.
+  // void FormatDiagnostic(llvm::SmallVectorImpl<char> &OutStr) const;
 
-  /// Format the given format-string into the output buffer using the
-  /// arguments stored in this diagnostic.
-  void FormatDiagnostic(const char *DiagStr, const char *DiagEnd,
-                        llvm::SmallVectorImpl<char> &OutStr) const;
+  // /// Format the given format-string into the output buffer using the
+  // /// arguments stored in this diagnostic.
+  // void FormatDiagnostic(const char *DiagStr, const char *DiagEnd,
+  //                       llvm::SmallVectorImpl<char> &OutStr) const;
 
   // DiagnosticInfo ConstructDiagnosticInfo();
+
+  void FormatDiagnostic(
+      llvm::raw_ostream &Out,
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
 };
 
 class DiagnosticStringFormatter {
 public:
 };
-
-// struct DiagnosticTracker final {
-
-//   // Track the total amount of warnings plus the DiagID
-//   llvm::BitVector TotalWarnings;
-
-//   // Track the total amount of errors plus the DiagID
-//   llvm::BitVector TotalErrors;
-
-//   DiagnosticTracker();
-//   ~DiagnosticTracker() { Clear(); }
-
-//   void TrackWarning(DiagID ID) { TotalWarnings.push_back((unsigned)ID); }
-//   unsigned GetTotalWarnings() { return TotalWarnings.size(); }
-
-//   void TrackError(DiagID ID) { TotalErrors.push_back((unsigned)ID); }
-//   unsigned GetTotalErrors() { return TotalErrors.size(); }
-
-//   void Clear() {
-//     TotalWarnings.reset();
-//     TotalErrors.reset();
-//   }
-// };
 
 class DiagnosticClient {
   friend class DiagnosticEngine;

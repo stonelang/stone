@@ -101,13 +101,9 @@ void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
 //   return DE->GetCurDiagID();
 // }
 
-void diags::DiagnosticInfo::FormatDiagnostic(
-    llvm::SmallVectorImpl<char> &OutStr) const {}
 
 void diags::DiagnosticInfo::FormatDiagnostic(
-    const char *DiagStr, const char *DiagEnd,
-    llvm::SmallVectorImpl<char> &OutStr) const {
+    llvm::raw_ostream &Out, DiagnosticFormatOptions FormatOpts) const {
 
-  // switch (Kind) {
-  // }
+    //DiagnosticEngine::FormatDiagnosticText()
 }

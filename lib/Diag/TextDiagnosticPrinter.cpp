@@ -19,13 +19,12 @@ void diags::TextDiagnosticPrinter::HandleDiagnostic(
   // Default implementation (Warnings/errors count).
   DiagnosticClient::HandleDiagnostic(Level, Info);
 
-  // Render the diagnostic message into a temporary buffer eagerly. We'll use
-  // this later as we print out the diagnostic to the terminal.
-  llvm::SmallString<100> OutStr;
-  Info.FormatDiagnostic(OutStr);
-
   llvm::raw_ostream &OS =
       GetEmitter().GetDiagnosticOutputStream().GetOutputStream();
+
+  // Render the diagnostic message into a temporary buffer eagerly. We'll use
+  // this later as we print out the diagnostic to the terminal.
+  Info.FormatDiagnostic(OS);
 
   // Keeps track of the starting position of the location
   // information (e.g., "foo.c:10:4:") that precedes the error

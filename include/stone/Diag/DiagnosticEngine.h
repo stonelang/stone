@@ -2,6 +2,7 @@
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
 #include "stone/Diag/DiagnosticClient.h"
+#include "stone/Diag/DiagnosticTextParser.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -39,6 +40,8 @@ class DiagnosticClient;
 
 class DiagnosticState final {
 
+  friend class DiagnosticEngine;
+
   // Suppress all diagnostics.
   bool suppressAllDiagnostics = false;
 
@@ -63,6 +66,16 @@ class DiagnosticState final {
 
   /// Whether any error diagnostics have been emitted.
   bool anyErrorOccurred = false;
+
+  /// Sticky flag set to \c true when an "uncompilable error" occurs.
+  /// I.e. an error that was not upgraded from a warning by -Werror.
+  bool uncompilableErrorOccurred = false;
+
+  /// Indicates that an unrecoverable error has occurred.
+  bool unrecoverableErrorOccurred = false;
+
+  // Treat fatal errors like errors.
+  bool treatFatalErrorsLikeErrors = false;
 
   /// Track the previous emitted Behavior, useful for notes
   DiagnosticLevel previousLevel = DiagnosticLevel::None;
@@ -279,20 +292,11 @@ class DiagnosticEngine final {
   friend class DiagnosticErrorTrap;
   friend class DiagnosticStateRAII;
 
-  // Treat fatal errors like errors.
-  bool FatalsAsError = false;
-
-  // Suppress all diagnostics.
-  bool SuppressAllDiagnostics = false;
-
   // Elide common types of templates.
   bool ElideType = true;
 
   // Print a tree when comparing templates.
   bool PrintTemplateTree = false;
-
-  // Color printing is enabled.
-  bool ShowColors = false;
 
   // Which overload candidates to show.
   // OverloadsShown ShowOverloads = Ovl_All;
@@ -313,35 +317,10 @@ class DiagnosticEngine final {
   // Cap on depth of constexpr evaluation backtrace stack, 0 -> no limit.
   unsigned ConstexprBacktraceLimit = 0;
 
-  /// Sticky flag set to \c true when an error is emitted.
-  bool ErrorOccurred;
-
-  /// Sticky flag set to \c true when an "uncompilable error" occurs.
-  /// I.e. an error that was not upgraded from a warning by -Werror.
-  bool UncompilableErrorOccurred;
-
-  /// Sticky flag set to \c true when a fatal error is emitted.
-  bool FatalErrorOccurred;
-
-  /// Indicates that an unrecoverable error has occurred.
-  bool UnrecoverableErrorOccurred;
-
   /// Counts for DiagnosticErrorTrap to check whether an error occurred
   /// during a parsing section, e.g. during parsing a function.
   unsigned TrapTotalErrorsOccurred;
   unsigned TrapTotalUnrecoverableErrorsOccurred;
-
-  /// The level of the last diagnostic emitted.
-  ///
-  /// This is used to emit continuation diagnostics with the same level as the
-  /// diagnostic that they follow.
-  DiagnosticLevel LastDiagLevel;
-
-  /// Totalber of warnings reported
-  unsigned TotalWarnings;
-
-  /// Totalber of errors reported
-  unsigned TotalErrors;
 
   /// Tracks diagnostic behaviors and state
   DiagnosticState state;
@@ -431,7 +410,24 @@ public:
   llvm::StringRef GetDescriptionForDiagID(DiagID ID) const;
 
   /// Get the set of all diagnostic IDs.
-  static llvm::ArrayRef<DiagID> GetAllDiagnostics(DiagnosticKind Kind);
+  static llvm::ArrayRef<DiagID> GetDiagnostics(DiagnosticKind Kind);
+
+  /// Get the total amount of diagnostics -- this may be need for creating
+  /// custom diags
+  static unsigned GetTotalDiagnostics();
+
+  /// Format the given diagnostic text and place the result in the given
+  /// buffer.
+  static void FormatDiagnosticText(
+      llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
+
+  /// Format the given diagnostic text and place the result in the given
+  /// buffer.
+  static void FormatDiagnosticText(
+      llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
+      ArrayRef<DiagnosticArgument> Args,
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 
 private:
   DiagnosticLevel GetDiagnosticLevel(DiagID ID, SrcLoc) const;

@@ -1,5 +1,5 @@
-#include "stone/Basic/SrcMgr.h"
 #include "stone/Diag/DiagnosticTextParser.h"
+#include "stone/Basic/SrcMgr.h"
 
 using namespace stone;
 
