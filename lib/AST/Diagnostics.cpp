@@ -1214,8 +1214,7 @@ DiagnosticInfo::FixIt::FixIt(CharSrcRange R, StringRef Str,
 
 // These must come after the declaration of AnnotatedSourceSnippet due to the
 // `currentSnippet` member.
-TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &stream)
-    : Stream(stream) {}
+TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &OS) : OS(OS) {}
 
 TextDiagnosticPrinter::~TextDiagnosticPrinter() {}
 

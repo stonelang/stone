@@ -82,11 +82,84 @@ void diags::DiagnosticFormatLexer::Lex() {
     return ConstructToken(DiagnosticFormatTokenKind::eof, TokStart);
   }
   switch (*CurPtr++) {
+
+  case '{':
+    return ConstructToken(DiagnosticFormatTokenKind::LBrace, TokStart);
+  case '[':
+    return ConstructToken(DiagnosticFormatTokenKind::LSquare, TokStart);
+  case '(':
+    return ConstructToken(DiagnosticFormatTokenKind::LParen, TokStart);
+  case '}':
+    return ConstructToken(DiagnosticFormatTokenKind::RBrace, TokStart);
+  case ']':
+    return ConstructToken(DiagnosticFormatTokenKind::RSquare, TokStart);
+  case ')':
+    return ConstructToken(DiagnosticFormatTokenKind::RParen, TokStart);
+  case ',':
+    return ConstructToken(DiagnosticFormatTokenKind::Comma, TokStart);
+  case ';':
+    return ConstructToken(DiagnosticFormatTokenKind::Semi, TokStart);
+  case '%':
+    return ConstructToken(DiagnosticFormatTokenKind::Percent, TokStart);
+  case 'A':
+  case 'B':
+  case 'C':
+  case 'D':
+  case 'E':
+  case 'F':
+  case 'G':
+  case 'H':
+  case 'I':
+  case 'J':
+  case 'K':
+  case 'L':
+  case 'M':
+  case 'N':
+  case 'O':
+  case 'P':
+  case 'Q':
+  case 'R':
+  case 'S':
+  case 'T':
+  case 'U':
+  case 'V':
+  case 'W':
+  case 'X':
+  case 'Y':
+  case 'Z':
+  case 'a':
+  case 'b':
+  case 'c':
+  case 'd':
+  case 'e':
+  case 'f':
+  case 'g':
+  case 'h':
+  case 'i':
+  case 'j':
+  case 'k':
+  case 'l':
+  case 'm':
+  case 'n':
+  case 'o':
+  case 'p':
+  case 'q':
+  case 'r':
+  case 's':
+  case 't':
+  case 'u':
+  case 'v':
+  case 'w':
+  case 'x':
+  case 'y':
+  case 'z':
+  case '_':
+    return LexIdentifier();
   default: {
   }
   }
 }
-
+void diags::DiagnosticFormatLexer::LexIdentifier() {}
 void diags::DiagnosticFormatLexer::ConstructToken(
     DiagnosticFormatTokenKind Kind, const char *TokStart) {
 
@@ -117,8 +190,30 @@ diags::DiagnosticFormatParser::DiagnosticFormatParser(
     DiagnosticFormatOptions &FormatOpts)
     : Lexer(InText, SM), Out(Out), FormatOpts(FormatOpts) {}
 
-void diags::DiagnosticFormatParser::Parse() {}
+void diags::DiagnosticFormatParser::Parse() {
 
+  while (CurTok.Kind != DiagnosticFormatTokenKind::eof) {
+    Lex();
+    switch (CurTok.Kind) {
+    case DiagnosticFormatTokenKind::Percent:
+      break;
+    case DiagnosticFormatTokenKind::LBrace:
+      break;
+    case DiagnosticFormatTokenKind::RBrace:
+      break;
+    case DiagnosticFormatTokenKind::Identifier:
+      break;
+    case DiagnosticFormatTokenKind::LSquare:
+      return;
+    case DiagnosticFormatTokenKind::RSquare:
+      return;
+    default: {
+      // Not aware of this token ...
+    }
+    }
+  }
+}
+void diags::DiagnosticFormatParser::Lex() {}
 void diags::DiagnosticFormatParser::ParseIdentifier() {}
 
 void diags::DiagnosticFormatParser::ParseSelect() {}

@@ -179,10 +179,16 @@ enum class DiagnosticStage {
 class Diagnostic final {
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
+  friend class DiagnosticFormatter;
 
   DiagID ID;
   SrcLoc Loc;
-  DiagnosticStage stage = DiagnosticStage::None;
+  llvm::StringRef Message;
+  bool FromCache;
+
+  DiagnosticStage Stage = DiagnosticStage::None;
+  // DiagnosticState State;
+
   llvm::SmallVector<DiagnosticArgument, 3> Args;
   llvm::SmallVector<CharSrcRange, 2> Ranges;
   llvm::SmallVector<FixIt, 2> FixIts;
@@ -200,11 +206,11 @@ class Diagnostic final {
   void AddFixIt(FixIt &&F) { FixIts.push_back(std::move(F)); }
 
   /// Set the diagnostic stage
-  void SetStage(DiagnosticStage S) { stage = S; }
+  void SetStage(DiagnosticStage S) { Stage = S; }
 
 public:
   Diagnostic(DiagID ID, SrcLoc Loc, ArrayRef<DiagnosticArgument> Args)
-      : ID(ID), Args(Args.begin(), Args.end()), stage(DiagnosticStage::Active) {
+      : ID(ID), Args(Args.begin(), Args.end()), Stage(DiagnosticStage::Active) {
   }
 
   Diagnostic(DiagID ID, SrcLoc Loc) : Diagnostic(ID, Loc, {}) {}
@@ -213,12 +219,15 @@ public:
 
 public:
   DiagID GetID() const { return ID; }
-  DiagnosticStage GetStage() { return stage; }
+  DiagnosticStage GetStage() { return Stage; }
+  // DiagnosticState& GetState() { return State;}
   llvm::ArrayRef<DiagnosticArgument> GetArgs() const { return Args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return Ranges; }
   llvm::ArrayRef<FixIt> GetFixIts() const { return FixIts; }
   SrcLoc GetLoc() const { return Loc; }
   DiagnosticLevel GetLevelLimit() const { return LevelLimit; }
+  llvm::StringRef GetMessage() const { return Message; }
+  bool IsFromCache() { return FromCache; }
 };
 
 /// Primarily builds out the Diagnostic with fixit decorations.

@@ -54,6 +54,8 @@ enum class DiagnosticFormatTokenKind {
   RBrace,
   LParen,
   RParen,
+  LSquare,
+  RSquare,
   Percent,
   IntegerLiteral,
   Char,
@@ -67,6 +69,7 @@ enum class DiagnosticFormatTokenKind {
   QualType,
   Const,
   Star,
+  Semi,
   eof,
   Invalid,
 };
@@ -131,11 +134,11 @@ class DiagnosticFormatLexer final {
   /// The current leading trivia for the next token.
   ///
   /// The StringRef points into the source buffer that is currently being lexed.
-  llvm::StringRef LeadingTrivia;
+  // llvm::StringRef LeadingTrivia;
 
   /// The current trailing trivia for the next token.
   /// The StringRef points into the source buffer that is currently being lexed.
-  llvm::StringRef TrailingTrivia;
+  // llvm::StringRef TrailingTrivia;
 
   /// If this is not \c nullptr, all tokens after this point are treated as eof.
   /// Used to cut off lexing early when we detect that the nesting level is too
@@ -167,6 +170,7 @@ public:
   //     Lex();
   //   }
 
+  void LexIdentifier();
   void ConstructToken(DiagnosticFormatTokenKind Kind, const char *TokStart);
 };
 
@@ -190,7 +194,7 @@ public:
 public:
   DiagnosticFormatParser(llvm::raw_ostream &Out, llvm::StringRef InText,
                          SrcMgr &SM, DiagnosticFormatOptions &FormatOpts);
-
+  void Lex();
   void Parse();
 };
 

@@ -144,6 +144,19 @@ public:
   StringRef GetText() const { return Text; }
 };
 
+// class DiagnosticFormatter {
+
+//   llvm::SmallVectorImpl<char> &OutString;
+
+// public:
+//   DiagnosticFormatter(llvm::SmallVectorImpl<char> &OutString)
+//       : OutString(OutString) {}
+
+//   DiagnosticFormatter()
+//       : DiagnosticFormatter(llvm::SmallString<64> OutString =
+//       llvm::SmallString()) {}
+// };
+
 // For client consumption only
 class DiagnosticInfo final {
 

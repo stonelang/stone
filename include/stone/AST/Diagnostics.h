@@ -1661,7 +1661,7 @@ public:
 
 /// Diagnostic consumer that displays diagnostics to standard error.
 class TextDiagnosticPrinter final : public DiagnosticConsumer {
-  llvm::raw_ostream &Stream;
+  llvm::raw_ostream &OS;
   bool ForceColors = false;
   bool PrintEducationalNotes = false;
   bool EmitMacroExpansionFiles = false;
@@ -1688,7 +1688,7 @@ class TextDiagnosticPrinter final : public DiagnosticConsumer {
   llvm::DenseMap<std::pair<SrcMgr *, unsigned>, void *> sourceFileSyntax;
 
 public:
-  TextDiagnosticPrinter(llvm::raw_ostream &stream = llvm::errs());
+  TextDiagnosticPrinter(llvm::raw_ostream &OS = llvm::errs());
   ~TextDiagnosticPrinter();
 
   virtual void handleDiagnostic(SrcMgr &SM,
