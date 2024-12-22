@@ -2,6 +2,7 @@
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
 #include "stone/Diag/DiagnosticClient.h"
+#include "stone/Diag/DiagnosticAllocation.h"
 #include "stone/Diag/DiagnosticFormatParser.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -176,7 +177,7 @@ enum class DiagnosticStage {
   Flushed,
   Emitted,
 };
-class Diagnostic final {
+class Diagnostic final : public DiagnosticAllocation<Diagnostic> {
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
   friend class DiagnosticFormatter;
@@ -187,14 +188,13 @@ class Diagnostic final {
   bool FromCache;
 
   DiagnosticStage Stage = DiagnosticStage::None;
-  // DiagnosticState State;
+  //DiagnosticState State;
 
   llvm::SmallVector<DiagnosticArgument, 3> Args;
   llvm::SmallVector<CharSrcRange, 2> Ranges;
   llvm::SmallVector<FixIt, 2> FixIts;
   DiagnosticLevel LevelLimit = DiagnosticLevel::None;
 
-  // THINK: DiagnosticState State;
 
   void SetLoc(SrcLoc loc) { Loc = loc; }
   void SetLevelLimit(DiagnosticLevel limit) { LevelLimit = limit; }
@@ -300,6 +300,9 @@ class DiagnosticEngine final {
   friend class InFlightDiagnostic;
   friend class DiagnosticErrorTrap;
   friend class DiagnosticStateRAII;
+
+  /// The allocator used to create Diagnostics -- released only when the DiagnosticEngine is destroyed
+  mutable llvm::BumpPtrAllocator allocator;
 
   // Elide common types of templates.
   bool ElideType = true;
@@ -440,6 +443,16 @@ public:
 
 private:
   DiagnosticLevel GetDiagnosticLevel(DiagID ID, SrcLoc) const;
+
+public:
+  llvm::BumpPtrAllocator &GetAllocator() { return allocator; }
+  /// Allocate - Allocate memory from the Driver bump pointer.
+  void *Allocate(unsigned long Bytes, unsigned Alignment = 8) const {
+    if (Bytes == 0) {
+      return nullptr;
+    }
+    return allocator.Allocate(Bytes, Alignment);
+  }
 };
 
 /// Remember details about the state of a diagnostic engine and restore them
