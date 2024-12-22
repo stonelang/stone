@@ -272,7 +272,9 @@ diags::DiagnosticEngine::ConstructDiagnosticImpl(const Diagnostic *diagnostic) {
     return std::nullopt;
   }
 
-  return diags::DiagnosticImpl(ComputeDiagnosticKind(Level), diagnostic);
+  return diags::DiagnosticImpl(
+      ComputeDiagnosticKind(Level),
+      GetDiagnosticStringForDiagID(diagnostic->GetID()), diagnostic);
 }
 
 static diags::DiagnosticLevel

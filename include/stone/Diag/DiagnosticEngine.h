@@ -185,8 +185,8 @@ class Diagnostic : public DiagnosticAllocation<Diagnostic> {
 protected:
   DiagID ID;
   SrcLoc Loc;
-  llvm::StringRef Message;
-  bool FromCache;
+  // llvm::StringRef Message;
+  // bool FromCache;
 
   DiagnosticStage Stage = DiagnosticStage::None;
   // DiagnosticState State;
@@ -212,8 +212,7 @@ public:
   Diagnostic(DiagID ID, SrcLoc Loc, llvm::ArrayRef<DiagnosticArgument> Args,
              llvm::ArrayRef<FixIt> FixIts)
       : ID(ID), Args(Args.begin(), Args.end()),
-        FixIts(FixIts.begin(), FixIts.end()), Stage(DiagnosticStage::Active),
-        Message(llvm::StringRef()) {}
+        FixIts(FixIts.begin(), FixIts.end()), Stage(DiagnosticStage::Active) {}
 
   Diagnostic(DiagID ID, SrcLoc Loc, llvm::ArrayRef<DiagnosticArgument> Args)
       : Diagnostic(ID, Loc, Args, {}) {}
@@ -221,6 +220,9 @@ public:
   Diagnostic(DiagID ID, SrcLoc Loc) : Diagnostic(ID, Loc, {}) {}
 
   Diagnostic(DiagID ID) : Diagnostic(ID, SrcLoc(), {}) {}
+
+  /// Evaluates true when this object stores a diagnostic.
+  // explicit operator bool() const { return !Diag->Message.empty(); }
 
 public:
   DiagID GetID() const { return ID; }
@@ -231,8 +233,8 @@ public:
   llvm::ArrayRef<FixIt> GetFixIts() const { return FixIts; }
   SrcLoc GetLoc() const { return Loc; }
   DiagnosticLevel GetLevel() const { return Level; }
-  llvm::StringRef GetMessage() const { return Message; }
-  bool IsFromCache() { return FromCache; }
+  // llvm::StringRef GetMessage() const { return Message; }
+  //  bool IsFromCache() { return FromCache; }
 
 public:
   static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID);
@@ -390,6 +392,9 @@ class DiagnosticEngine final {
   /// delete them.
   void EmitTentativeDiagnostics();
 
+  /// Send all diagnostics to the queue
+  void QueueDiagnostic(const Diagnostic *diagnostic);
+
 public:
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
@@ -427,8 +432,9 @@ public:
 public:
   DiagnosticKind DeclaredDiagnosticKindForDiagID(const DiagID ID);
 
-  llvm::StringRef GetDiagnosticStringForDiagID(const DiagID ID,
-                                               bool printDiagnosticNames);
+  llvm::StringRef
+  GetDiagnosticStringForDiagID(const DiagID ID,
+                               bool printDiagnosticNames = false);
 
   static llvm::StringRef GetDiagnosticIDStringForDiagID(const DiagID ID);
 

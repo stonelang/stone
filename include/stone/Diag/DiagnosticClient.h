@@ -203,19 +203,23 @@ public:
 };
 
 class DiagnosticImpl final {
-  const Diagnostic *Diag;
-  llvm::raw_ostream &OS;
+
   DiagnosticKind Kind;
+  llvm::StringRef Message;
+  const Diagnostic *Info;
+  llvm::raw_ostream &OS;
 
 public:
-  DiagnosticImpl(DiagnosticKind Kind, const Diagnostic *Diag);
-  DiagnosticImpl(DiagnosticKind Kind, const Diagnostic *Diag,
-                 llvm::raw_ostream &OS);
+  DiagnosticImpl(DiagnosticKind Kind, llvm::StringRef Message,
+                 const Diagnostic *Info);
+  DiagnosticImpl(DiagnosticKind Kind, llvm::StringRef Message,
+                 const Diagnostic *Info, llvm::raw_ostream &OS);
 
 public:
   DiagnosticKind GetKind() { return Kind; }
-  /// Evaluates true when this object stores a diagnostic.
-  // explicit operator bool() const { return !Diag->Message.empty(); }
+  llvm::StringRef GetMessage() { return Message; }
+  const Diagnostic *GetInfo() const { return Info; }
+  explicit operator bool() const { return !Message.empty(); }
 
 public:
   void FormatDiagnostic(

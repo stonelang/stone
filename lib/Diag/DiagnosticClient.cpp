@@ -101,13 +101,15 @@ void diags::DiagnosticClient::HandleDiagnostic(const DiagnosticImpl &DI) {
 // }
 
 diags::DiagnosticImpl::DiagnosticImpl(DiagnosticKind Kind,
-                                      const Diagnostic *Diag)
-    : DiagnosticImpl(Kind, Diag, llvm::errs()) {}
+                                      llvm::StringRef Message,
+                                      const Diagnostic *Info)
+    : DiagnosticImpl(Kind, Message, Info, llvm::errs()) {}
 
 diags::DiagnosticImpl::DiagnosticImpl(DiagnosticKind Kind,
-                                      const Diagnostic *Diag,
+                                      llvm::StringRef Message,
+                                      const Diagnostic *Info,
                                       llvm::raw_ostream &OS)
-    : Kind(Kind), Diag(Diag), OS(OS) {}
+    : Kind(Kind), Message(Message), Info(Info), OS(OS) {}
 
 void diags::DiagnosticImpl::FormatDiagnostic(
     DiagnosticFormatOptions FormatOpts) const {
