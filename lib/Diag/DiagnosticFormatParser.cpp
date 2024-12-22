@@ -3,14 +3,14 @@
 
 using namespace stone;
 
-// diags::DiagnosticTextLexer::DiagnosticTextLexer(unsigned BufferID, SrcMgr
-// &SM)
-//     : BufferID(BufferID), SM(SM) {
+diags::DiagnosticFormatLexer::DiagnosticFormatLexer(llvm::StringRef InText,
+                                                    SrcMgr &SM)
+    : InText(InText), SM(SM) {
 
-//   unsigned EndOffset = SM.getRangeForBuffer(BufferID).getByteLength();
+  // unsigned EndOffset = SM.getRangeForBuffer(BufferID).getByteLength();
 
-//   Initialize(/*Offset=*/0, EndOffset);
-// }
+  // Initialize(/*Offset=*/0, EndOffset);
+}
 
 // void diags::DiagnosticTextLexer::Initialize(unsigned Offset,
 //                                             unsigned EndOffset) {
@@ -86,9 +86,16 @@ using namespace stone;
 //   }
 // }
 
+diags::DiagnosticFormatToken
+diags::DiagnosticFormatLexer::ContructToken(DiagnosticFormatTokenKind Kind,
+                                            StringRef Text) {
+  return DiagnosticFormatToken(Kind, Text);
+}
+
 diags::DiagnosticFormatParser::DiagnosticFormatParser(
     llvm::raw_ostream &Out, llvm::StringRef InText, SrcMgr &SM,
-    DiagnosticFormatOptions &FormatOpts) {}
+    DiagnosticFormatOptions &FormatOpts)
+    : Lexer(InText, SM), Out(Out), FormatOpts(FormatOpts) {}
 
 void diags::DiagnosticFormatParser::Parse() {}
 

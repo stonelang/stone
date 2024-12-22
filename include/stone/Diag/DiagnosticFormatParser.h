@@ -44,136 +44,135 @@ struct DiagnosticFormatOptions {
   }
 };
 
-// enum class TextTokenKind {
-//   None = 0,
-//   Identifier,
-//   Select,
-//   S,
-//   Pipe,
-//   LBrace,
-//   RBrace,
-//   LParen,
-//   RParen,
-//   Percent,
-//   IntegerLiteral,
-//   Char,
-//   MultiChar,
-//   StringLiteral,
-//   Tick,
-//   Comma,
-//   Bool,
-//   Unsigned,
-//   Decl,
-//   Const,
-//   Star,
-//   eof,
-// };
+enum class DiagnosticFormatTokenKind {
+  None = 0,
+  Identifier,
+  Select,
+  S,
+  Pipe,
+  LBrace,
+  RBrace,
+  LParen,
+  RParen,
+  Percent,
+  IntegerLiteral,
+  Char,
+  MultiChar,
+  StringLiteral,
+  Tick,
+  Comma,
+  Bool,
+  Unsigned,
+  Decl,
+  QualType,
+  Const,
+  Star,
+  eof,
+};
 
-// class TextToken {
-//   /// The token kind
-//   TextTokenKind kind;
+struct DiagnosticFormatToken final {
 
-//   /// Whether this token is the first token on the line.
-//   unsigned atStartOfLine : 1;
+  /// The token kind
+  DiagnosticFormatTokenKind Kind;
 
-//   /// Whether this token is an escaped `identifier` token.
-//   unsigned escapedIdentifier : 1;
+  /// Whether this token is the first token on the line.
+  unsigned AtStartOfLine : 1;
 
-//   /// Modifiers for string literals
-//   unsigned multilineString : 1;
+  /// text - The actual string covered by the token in the source buffer.
+  llvm::StringRef InText;
 
-//   /// Length of custom delimiter of "raw" string literals
-//   unsigned customDelimiterLen : 8;
+  DiagnosticFormatToken(DiagnosticFormatTokenKind kind, StringRef InText)
+      : Kind(Kind), AtStartOfLine(false), InText(InText) {}
 
-//   // Padding bits == 32 - 11;
-//   /// text - The actual string covered by the token in the source buffer.
-//   llvm::StringRef text;
+  DiagnosticFormatToken()
+      : DiagnosticFormatToken(DiagnosticFormatTokenKind::eof, StringRef()) {}
 
-// public:
-//   TextToken(TextTokenKind kind, StringRef text)
-//       : kind(kind), atStartOfLine(false), escapedIdentifier(false),
-//         multilineString(false), customDelimiterLen(0), text(text) {}
+  bool IsSelect() const { return Kind == DiagnosticFormatTokenKind::Select; }
+  bool IsS() const { return Kind == DiagnosticFormatTokenKind::S; }
+  bool IsLBrace() const { return Kind == DiagnosticFormatTokenKind::LBrace; }
+};
 
-//   TextToken() : TextToken(TextTokenKind::eof, StringRef()) {}
+class DiagnosticFormatLexer final {
 
-// public:
-//   /// Determine whether this token occurred at the start of a line.
-//   bool IsAtStartOfLine() const { return atStartOfLine; }
+  llvm::StringRef InText;
 
-//   /// Set whether this token occurred at the start of a line.
-//   void SetAtStartOfLine(bool value) { atStartOfLine = value; }
+  SrcMgr &SM;
 
-// public:
-//   bool IsSelect() const { return kind == TextTokenKind::Select; }
-// };
+  /// The ID of the source in the SrcMgr
+  unsigned BufferID;
 
-// class DiagnosticTextLexer final {
-//   unsigned BufferID;
-//   SrcMgr &SM;
-//   // Pointer to the first character of the buffer, even in a lexer that
-//   /// scans a subrange of the buffer.
-//   const char *BufferStart;
+  /// Pointer to the first character of the buffer, even in a lexer that
+  /// scans a subrange of the buffer.
+  const char *BufferStart;
 
-//   /// Pointer to one past the end character of the buffer, even in a lexer
-//   /// that scans a subrange of the buffer.  Because the buffer is always
-//   /// NUL-terminated, this points to the NUL terminator.
-//   const char *BufferEnd;
+  /// Pointer to one past the end character of the buffer, even in a lexer
+  /// that scans a subrange of the buffer.  Because the buffer is always
+  /// NUL-terminated, this points to the NUL terminator.
+  const char *BufferEnd;
 
-//   /// Pointer to the artificial EOF that is located before BufferEnd.  Useful
-//   /// for lexing subranges of a buffer.
-//   const char *ArtificialEOF = nullptr;
+  /// Pointer to the artificial EOF that is located before BufferEnd.  Useful
+  /// for lexing subranges of a buffer.
+  const char *ArtificialEOF = nullptr;
 
-//   /// If non-null, points to the '\0' character in the buffer where we should
-//   /// produce a code completion token.
-//   const char *CodeCompletionPtr = nullptr;
+  /// If non-null, points to the '\0' character in the buffer where we should
+  /// produce a code completion token.
+  const char *CodeCompletionPtr = nullptr;
 
-//   /// Points to BufferStart or past the end of UTF-8 BOM sequence if it
-//   exists. const char *ContentStart;
+  /// Points to BufferStart or past the end of UTF-8 BOM sequence if it exists.
+  const char *ContentStart;
 
-//   /// Pointer to the next not consumed character.
-//   const char *CurPtr;
+  /// Pointer to the next not consumed character.
+  const char *CurPtr;
 
-//   TextToken NextToken;
+  DiagnosticFormatToken NextToken;
 
-// private:
-//   void Initialize(unsigned Offset, unsigned EndOffset);
-//   void Lex();
+  void Initialize(unsigned Offset, unsigned EndOffset);
+  void Lex();
 
-// public:
-//   DiagnosticTextLexer(unsigned BufferID, SrcMgr &SM);
+public:
+  DiagnosticFormatLexer(llvm::StringRef InText, SrcMgr &SM);
 
-//   void Lex(TextToken &Result) {
-//     Result = NextToken;
-//     // if (Result.IsNot(tok::eof)){
-//     //   Lex();
-//     // }
-//   }
-//   /// Reset the lexer's buffer pointer to \p Offset bytes after the buffer
-//   /// start.
-//   void ResetToOffset(size_t Offset) {
-//     assert(BufferStart + Offset <= BufferEnd && "Offset after buffer end");
-//     CurPtr = BufferStart + Offset;
-//     Lex();
-//   }
-// };
+public:
+  //   void Lex(TextToken &Result) {
+  //     Result = NextToken;
+  //     // if (Result.IsNot(tok::eof)){
+  //     //   Lex();
+  //     // }
+  //   }
+  //   /// Reset the lexer's buffer pointer to \p Offset bytes after the buffer
+  //   /// start.
+  //   void ResetToOffset(size_t Offset) {
+  //     assert(BufferStart + Offset <= BufferEnd && "Offset after buffer end");
+  //     CurPtr = BufferStart + Offset;
+  //     Lex();
+  //   }
+
+  DiagnosticFormatToken ContructToken(DiagnosticFormatTokenKind Kind,
+                                      StringRef Text);
+};
 
 /// May want to think about creating a source buffer using SrcMgr
 // and treating this like a source file to parse with tokens and identifiers
 // DiagnosticTextParserToken DiagnosticTextParserTokenKind
 class DiagnosticFormatParser final {
-  // TextToken CurTok;
 
-  // DiagnosticFormatLexer lexer;
+  DiagnosticFormatToken CurTok;
+  DiagnosticFormatLexer Lexer;
+
+  void ParseIdentifier();
+  void ParseSelect();
+  void AddToken(DiagnosticFormatToken Token) { Tokens.push_back(Token); }
+
+public:
+  llvm::raw_ostream &Out;
+  DiagnosticFormatOptions &FormatOpts;
+  llvm::SmallVector<DiagnosticFormatToken> Tokens;
 
 public:
   DiagnosticFormatParser(llvm::raw_ostream &Out, llvm::StringRef InText,
                          SrcMgr &SM, DiagnosticFormatOptions &FormatOpts);
-  void Parse();
-  void ParseIdentifier();
-  void ParseSelect();
 
-  // TextToken GetCurTok() { return CurTok; }
-  // TextToken PeekNextTok();
+  void Parse();
 };
 
 } // namespace diags
