@@ -86,7 +86,7 @@ diags::DiagnosticClient::~DiagnosticClient() = default;
 bool diags::DiagnosticClient::UseInDiagnosticCounts() const { return true; }
 
 void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
-                                               const DiagnosticInfo &Info) {
+                                               const DiagnosticImpl &DI) {
   if (!UseInDiagnosticCounts()) {
     return;
   }
@@ -101,7 +101,20 @@ void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
 //   return DE->GetCurDiagID();
 // }
 
-void diags::DiagnosticInfo::FormatDiagnostic(
+diags::DiagnosticImpl::DiagnosticImpl(const Diagnostic *Diag)
+    : DiagnosticImpl(Diag, llvm::errs()) {}
+
+diags::DiagnosticImpl::DiagnosticImpl(const Diagnostic *Diag,
+                                      llvm::raw_ostream &OS)
+    : Diag(Diag), OS(OS) {}
+
+void diags::DiagnosticImpl::FormatDiagnostic(
+    DiagnosticFormatOptions FormatOpts) const {
+
+  FormatDiagnostic(OS);
+}
+
+void diags::DiagnosticImpl::FormatDiagnostic(
     llvm::raw_ostream &Out, DiagnosticFormatOptions FormatOpts) const {
 
   // DiagnosticEngine::FormatDiagnosticText()

@@ -161,13 +161,12 @@ diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc) {
 diags::InFlightDiagnostic
 diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
                                   llvm::ArrayRef<DiagnosticArgument> Args) {
-  return Diagnose(Diagnostic(NextDiagID, NextDiagLoc, Args));
+  return Diagnose(Diagnostic::Create(*this, NextDiagID, NextDiagLoc, Args));
 }
 
 diags::InFlightDiagnostic
-diags::DiagnosticEngine::Diagnose(const Diagnostic &diagnostic) {
+diags::DiagnosticEngine::Diagnose(const Diagnostic *diagnostic) {
   assert(!ActiveDiagnostic && "Already have an active diagnostic");
-  ActiveDiagnostic = diagnostic;
   return InFlightDiagnostic(*this);
 }
 
@@ -214,18 +213,19 @@ void diags::InFlightDiagnostic::FlushActiveDiagnostic() {
 
 void diags::DiagnosticEngine::FlushActiveDiagnostic(bool ForceEmit) {
   assert(ActiveDiagnostic && "No active diagnostic to flush");
-  HandleDiagnostic(std::move(*ActiveDiagnostic));
-  ActiveDiagnostic.reset();
+  HandleDiagnostic(ActiveDiagnostic);
+  ActiveDiagnostic = nullptr;
 }
 
 /// Handle a new diagnostic, which will either be emitted, or added to an
 /// active transaction.
-void diags::DiagnosticEngine::HandleDiagnostic(Diagnostic &&diagnostic) {
+void diags::DiagnosticEngine::HandleDiagnostic(const Diagnostic *diagnostic) {
 
   EmitDiagnostic(diagnostic);
 }
 
-void diags::DiagnosticEngine::EmitDiagnostic(Diagnostic &diagnostic) const {
+void diags::DiagnosticEngine::EmitDiagnostic(
+    const Diagnostic *diagnostic) const {
   assert(!HasClients() && "No DiagnosticClients. Unable to emit!");
 }
 
@@ -247,4 +247,19 @@ void diags::DiagnosticEngine::FormatDiagnosticText(
   // unsigned BufferID = SM.addMemBufferCopy(Text);
   // DiagnosticTextParser textParser(BufferID, SM);
   // textParser.Parse();
+}
+
+diags::Diagnostic *diags::Diagnostic::Create(diags::DiagnosticEngine &DE,
+                                             diags::DiagID ID) {
+  return new (DE) diags::Diagnostic(ID);
+}
+diags::Diagnostic *diags::Diagnostic::Create(diags::DiagnosticEngine &DE,
+                                             diags::DiagID ID, SrcLoc Loc) {
+  return new (DE) diags::Diagnostic(ID, Loc);
+}
+diags::Diagnostic *
+diags::Diagnostic::Create(diags::DiagnosticEngine &DE, diags::DiagID ID,
+                          SrcLoc Loc,
+                          ArrayRef<diags::DiagnosticArgument> Args) {
+  return new (DE) diags::Diagnostic(ID, Loc, Args);
 }

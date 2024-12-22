@@ -13,18 +13,18 @@ diags::TextDiagnosticPrinter::~TextDiagnosticPrinter() {}
 
 void diags::TextDiagnosticPrinter::Reset() { emitter.reset(); }
 
-void diags::TextDiagnosticPrinter::HandleDiagnostic(
-    DiagnosticLevel Level, const DiagnosticInfo &Info) {
+void diags::TextDiagnosticPrinter::HandleDiagnostic(DiagnosticLevel Level,
+                                                    const DiagnosticImpl &DI) {
 
   // Default implementation (Warnings/errors count).
-  DiagnosticClient::HandleDiagnostic(Level, Info);
+  DiagnosticClient::HandleDiagnostic(Level, DI);
 
   llvm::raw_ostream &OS =
       GetEmitter().GetDiagnosticOutputStream().GetOutputStream();
 
   // Render the diagnostic message into a temporary buffer eagerly. We'll use
   // this later as we print out the diagnostic to the terminal.
-  Info.FormatDiagnostic(OS);
+  DI.FormatDiagnostic(OS);
 
   // Keeps track of the starting position of the location
   // information (e.g., "foo.c:10:4:") that precedes the error

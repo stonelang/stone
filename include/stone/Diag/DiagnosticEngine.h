@@ -1,8 +1,8 @@
 #ifndef STONE_DIAG_DIAGNOSTIC_ENGINE_H
 #define STONE_DIAG_DIAGNOSTIC_ENGINE_H
 
-#include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticAllocation.h"
+#include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticFormatParser.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -180,7 +180,7 @@ enum class DiagnosticStage {
 class Diagnostic final : public DiagnosticAllocation<Diagnostic> {
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
-  friend class DiagnosticFormatter;
+  friend class DiagnosticImpl;
 
   DiagID ID;
   SrcLoc Loc;
@@ -188,13 +188,12 @@ class Diagnostic final : public DiagnosticAllocation<Diagnostic> {
   bool FromCache;
 
   DiagnosticStage Stage = DiagnosticStage::None;
-  //DiagnosticState State;
+  // DiagnosticState State;
 
   llvm::SmallVector<DiagnosticArgument, 3> Args;
   llvm::SmallVector<CharSrcRange, 2> Ranges;
   llvm::SmallVector<FixIt, 2> FixIts;
   DiagnosticLevel LevelLimit = DiagnosticLevel::None;
-
 
   void SetLoc(SrcLoc loc) { Loc = loc; }
   void SetLevelLimit(DiagnosticLevel limit) { LevelLimit = limit; }
@@ -228,6 +227,12 @@ public:
   DiagnosticLevel GetLevelLimit() const { return LevelLimit; }
   llvm::StringRef GetMessage() const { return Message; }
   bool IsFromCache() { return FromCache; }
+
+public:
+  static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID);
+  static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc);
+  static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
+                            ArrayRef<DiagnosticArgument> Args);
 };
 
 /// Primarily builds out the Diagnostic with fixit decorations.
@@ -296,12 +301,13 @@ public:
 /// DiagnosticRenderer in clang
 class DiagnosticEngine final {
 
-  friend class DiagnosticInfo;
+  friend class Diagnostic;
   friend class InFlightDiagnostic;
   friend class DiagnosticErrorTrap;
   friend class DiagnosticStateRAII;
 
-  /// The allocator used to create Diagnostics -- released only when the DiagnosticEngine is destroyed
+  /// The allocator used to create Diagnostics -- released only when the
+  /// DiagnosticEngine is destroyed
   mutable llvm::BumpPtrAllocator allocator;
 
   // Elide common types of templates.
@@ -345,8 +351,8 @@ class DiagnosticEngine final {
   llvm::SmallVector<DiagnosticClient *, 2> Clients;
 
   /// The active dianostics
-  std::optional<Diagnostic> ActiveDiagnostic;
-  Diagnostic &GetActiveDiagnostic() { return *ActiveDiagnostic; }
+  Diagnostic *ActiveDiagnostic = nullptr;
+  Diagnostic *GetActiveDiagnostic() { return ActiveDiagnostic; }
 
   /// All diagnostics that have are no longer active but have not yet
   /// been emitted due to an open transaction.
@@ -357,11 +363,11 @@ class DiagnosticEngine final {
 
   /// Handle a new diagnostic, which will either be emitted, or added to an
   /// active transaction.
-  void HandleDiagnostic(Diagnostic &&diagnostic);
+  void HandleDiagnostic(const Diagnostic *diagnostic);
 
   /// Used to emit a diagnostic that is finally fully formed,
   /// ignoring suppression.
-  void EmitDiagnostic(Diagnostic &diagnostic) const;
+  void EmitDiagnostic(const Diagnostic *diagnostic) const;
 
   /// Clear any tentative diagnostics.
   void ClearTentativeDiagnostics();
@@ -398,10 +404,11 @@ public:
   InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc);
   InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
                               llvm::ArrayRef<DiagnosticArgument> args);
-  InFlightDiagnostic Diagnose(const Diagnostic &D);
+  InFlightDiagnostic Diagnose(const Diagnostic *D);
 
+  bool HasActiveDiagnsotic() const { return ActiveDiagnostic != nullptr; }
   /// Determine whethere there is already a diagnostic in flight.
-  bool IsInFlightDiagnostic() const { return !ActiveDiagnostic; }
+  bool IsInFlightDiagnostic() const { return HasActiveDiagnsotic(); }
 
 public:
   DiagnosticKind DeclaredDiagnosticKindForDiagID(const DiagID ID);
@@ -414,9 +421,9 @@ public:
   DiagID GetCustomDiagID(DiagnosticLevel Level,
                          DiagnosticStringFormatter StringFormatter);
 
-  /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
-  // std::optional<DiagnosticInfo>
-  // CreeateDiagnosticInfoForDiagnostic(const Diagnostic &diagnostic);
+  /// Generate Diagnostic for a Diagnostic to be passed to consumers.
+  // std::optional<Diagnostic>
+  // CreeateDiagnosticForDiagnostic(const Diagnostic &diagnostic);
 
   /// Given a diagnostic ID, return a description of the issue.
   llvm::StringRef GetDescriptionForDiagID(DiagID ID) const;

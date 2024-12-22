@@ -13,7 +13,7 @@
 
 namespace stone {
 namespace diags {
-
+class Diagnostic;
 class DiagnosticEngine;
 
 /// The level of the diagnostic, after it has been through mapping.
@@ -158,48 +158,64 @@ public:
 // };
 
 // For client consumption only
-class DiagnosticInfo final {
+// class Diagnostic final {
 
-  DiagnosticKind kind;
-  llvm::StringRef FormatString;
-  const DiagnosticEngine &DE;
+//   DiagnosticKind kind;
+//   llvm::StringRef FormatString;
+//   const DiagnosticEngine &DE;
 
-  DiagnosticInfo(const DiagnosticInfo &) = delete;
-  DiagnosticInfo &operator=(const DiagnosticInfo &) = delete;
-  DiagnosticInfo &operator=(DiagnosticInfo &&) = delete;
+//   Diagnostic(const Diagnostic &) = delete;
+//   Diagnostic &operator=(const Diagnostic &) = delete;
+//   Diagnostic &operator=(Diagnostic &&) = delete;
 
-public:
-  explicit DiagnosticInfo(DiagnosticKind kind, llvm::StringRef FmtStr,
-                          const DiagnosticEngine &DE)
-      : kind(kind), FormatString(FmtStr), DE(DE) {}
+// public:
+//   explicit Diagnostic(DiagnosticKind kind, llvm::StringRef FmtStr,
+//                           const DiagnosticEngine &DE)
+//       : kind(kind), FormatString(FmtStr), DE(DE) {}
 
-public:
-  DiagnosticKind GetKind() { return kind; }
-  llvm::StringRef GetFormatString() { return FormatString; }
-  const DiagnosticEngine &GetDiags() const { return DE; }
+// public:
+//   DiagnosticKind GetKind() { return kind; }
+//   llvm::StringRef GetFormatString() { return FormatString; }
+//   const DiagnosticEngine &GetDiags() const { return DE; }
 
-public:
-  /// NOTE: use DiagnosticEngine::FormatDiagnosticText
-  ///  Format this diagnostic into a string, substituting the
-  ///  formal arguments into the %0 slots.
-  ///
-  ///  The result is appended onto the \p OutStr array.
-  // void FormatDiagnostic(llvm::SmallVectorImpl<char> &OutStr) const;
+// public:
+/// NOTE: use DiagnosticEngine::FormatDiagnosticText
+///  Format this diagnostic into a string, substituting the
+///  formal arguments into the %0 slots.
+///
+///  The result is appended onto the \p OutStr array.
+// void FormatDiagnostic(llvm::SmallVectorImpl<char> &OutStr) const;
 
-  // /// Format the given format-string into the output buffer using the
-  // /// arguments stored in this diagnostic.
-  // void FormatDiagnostic(const char *DiagStr, const char *DiagEnd,
-  //                       llvm::SmallVectorImpl<char> &OutStr) const;
+// /// Format the given format-string into the output buffer using the
+// /// arguments stored in this diagnostic.
+// void FormatDiagnostic(const char *DiagStr, const char *DiagEnd,
+//                       llvm::SmallVectorImpl<char> &OutStr) const;
 
-  // DiagnosticInfo ConstructDiagnosticInfo();
+// Diagnostic ConstructDiagnostic();
 
-  void FormatDiagnostic(
-      llvm::raw_ostream &Out,
-      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
-};
+//   void FormatDiagnostic(
+//       llvm::raw_ostream &Out,
+//       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
+// };
 
 class DiagnosticStringFormatter {
 public:
+};
+
+class DiagnosticImpl final {
+  const Diagnostic *Diag;
+  llvm::raw_ostream &OS;
+
+public:
+  DiagnosticImpl(const Diagnostic *Diag);
+  DiagnosticImpl(const Diagnostic *Diag, llvm::raw_ostream &OS);
+
+public:
+  void FormatDiagnostic(
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
+  void FormatDiagnostic(
+      llvm::raw_ostream &OS,
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
 };
 
 class DiagnosticClient {
@@ -235,7 +251,7 @@ public:
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
   virtual void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                                const DiagnosticInfo &ED);
+                                const DiagnosticImpl &DI);
 
   // DiagnosticTracker &GetTracker() { return tracker; }
 };
@@ -243,7 +259,7 @@ public:
 class NullDiagnosticClient final : public DiagnosticClient {
 public:
   void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                        const DiagnosticInfo &ED) override {
+                        const DiagnosticImpl &DI) override {
     // Just ignore it.
   }
 };
