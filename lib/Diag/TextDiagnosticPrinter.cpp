@@ -13,11 +13,10 @@ diags::TextDiagnosticPrinter::~TextDiagnosticPrinter() {}
 
 void diags::TextDiagnosticPrinter::Reset() { emitter.reset(); }
 
-void diags::TextDiagnosticPrinter::HandleDiagnostic(DiagnosticLevel Level,
-                                                    const DiagnosticImpl &DI) {
+void diags::TextDiagnosticPrinter::HandleDiagnostic(const DiagnosticImpl &DI) {
 
   // Default implementation (Warnings/errors count).
-  DiagnosticClient::HandleDiagnostic(Level, DI);
+  DiagnosticClient::HandleDiagnostic(DI);
 
   llvm::raw_ostream &OS =
       GetEmitter().GetDiagnosticOutputStream().GetOutputStream();

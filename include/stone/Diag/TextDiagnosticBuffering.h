@@ -14,8 +14,7 @@ public:
   TextDiagnosticBuffering();
 
 public:
-  void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                        const DiagnosticImpl &DI) override;
+  void HandleDiagnostic(const DiagnosticImpl &DI) override;
 
   /// FlushDiagnostics - Flush the buffered diagnostics to an given
   /// diagnostic engine.

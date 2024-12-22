@@ -95,8 +95,7 @@ public:
   /// Reset the TextDiagnosticEmitter
   void Reset();
 
-  void HandleDiagnostic(DiagnosticLevel Level,
-                        const DiagnosticImpl &DI) override;
+  void HandleDiagnostic(const DiagnosticImpl &DI) override;
 };
 
 } // namespace diags

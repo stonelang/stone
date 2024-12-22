@@ -85,8 +85,7 @@ diags::DiagnosticClient::~DiagnosticClient() = default;
 ///  reported by DiagnosticsEngine.
 bool diags::DiagnosticClient::UseInDiagnosticCounts() const { return true; }
 
-void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
-                                               const DiagnosticImpl &DI) {
+void diags::DiagnosticClient::HandleDiagnostic(const DiagnosticImpl &DI) {
   if (!UseInDiagnosticCounts()) {
     return;
   }

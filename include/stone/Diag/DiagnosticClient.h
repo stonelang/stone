@@ -261,16 +261,14 @@ public:
   ///
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
-  virtual void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                                const DiagnosticImpl &DI);
+  virtual void HandleDiagnostic(const DiagnosticImpl &DI);
 
   // DiagnosticTracker &GetTracker() { return tracker; }
 };
 
 class NullDiagnosticClient final : public DiagnosticClient {
 public:
-  void HandleDiagnostic(DiagnosticLevel DiagLevel,
-                        const DiagnosticImpl &DI) override {
+  void HandleDiagnostic(const DiagnosticImpl &DI) override {
     // Just ignore it.
   }
 };

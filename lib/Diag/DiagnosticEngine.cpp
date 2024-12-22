@@ -230,8 +230,7 @@ void diags::DiagnosticEngine::HandleDiagnostic(const Diagnostic *diagnostic) {
   EmitDiagnostic(diagnostic);
 }
 
-void diags::DiagnosticEngine::EmitDiagnostic(
-    const Diagnostic *diagnostic)  {
+void diags::DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
   assert(!HasClients() && "No DiagnosticClients. Unable to emit!");
 
   if (auto impl = ConstructDiagnosticImpl(diagnostic)) {
