@@ -170,6 +170,12 @@ diags::DiagnosticEngine::Diagnose(const Diagnostic *diagnostic) {
   return InFlightDiagnostic(*this);
 }
 
+diags::InFlightDiagnostic &
+diags::InFlightDiagnostic::SetDiagnosticLevel(DiagnosticLevel Level) {
+  DE->GetActiveDiagnostic()->SetLevel(Level);
+  return *this;
+}
+
 void diags::DiagnosticEngine::Clear(bool soft) {}
 
 bool diags::DiagnosticEngine::FinishProcessing() {
@@ -225,8 +231,84 @@ void diags::DiagnosticEngine::HandleDiagnostic(const Diagnostic *diagnostic) {
 }
 
 void diags::DiagnosticEngine::EmitDiagnostic(
-    const Diagnostic *diagnostic) const {
+    const Diagnostic *diagnostic)  {
   assert(!HasClients() && "No DiagnosticClients. Unable to emit!");
+
+  if (auto impl = ConstructDiagnosticImpl(diagnostic)) {
+
+    // for (auto &consumer : Clients) {
+    //   consumer->HandleDiagnostic(SourceMgr, *info);
+    // }
+  }
+  // Get the Level
+}
+
+static diags::DiagnosticKind
+ComputeDiagnosticKind(diags::DiagnosticLevel Level) {
+  switch (Level) {
+  case diags::DiagnosticLevel::None:
+    llvm_unreachable("unspecified diagnostic level");
+  case diags::DiagnosticLevel::Ignore:
+    llvm_unreachable("trying to map an ignored diagnostic");
+  case diags::DiagnosticLevel::Error:
+  case diags::DiagnosticLevel::Fatal:
+    return diags::DiagnosticKind::Error;
+  case diags::DiagnosticLevel::Note:
+    return diags::DiagnosticKind::Note;
+  case diags::DiagnosticLevel::Warning:
+    return diags::DiagnosticKind::Warning;
+  case diags::DiagnosticLevel::Remark:
+    return diags::DiagnosticKind::Remark;
+  }
+
+  llvm_unreachable("Unhandled DiagnosticKind in switch.");
+}
+
+/// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
+std::optional<diags::DiagnosticImpl>
+diags::DiagnosticEngine::ConstructDiagnosticImpl(const Diagnostic *diagnostic) {
+
+  auto Level = state.ComputeDiagnosticLevel(diagnostic);
+  if (Level == DiagnosticLevel::Ignore) {
+    return std::nullopt;
+  }
+
+  return diags::DiagnosticImpl(ComputeDiagnosticKind(Level), diagnostic);
+}
+
+static diags::DiagnosticLevel
+ComputeDiagnosticLevelImpl(diags::DiagnosticKind kind, bool isFatal) {
+  switch (kind) {
+  case diags::DiagnosticKind::Note:
+    return diags::DiagnosticLevel::Note;
+  case diags::DiagnosticKind::Error:
+    return isFatal ? diags::DiagnosticLevel::Fatal
+                   : diags::DiagnosticLevel::Error;
+  case diags::DiagnosticKind::Warning:
+    return diags::DiagnosticLevel::Warning;
+  case diags::DiagnosticKind::Remark:
+    return diags::DiagnosticLevel::Remark;
+  }
+  llvm_unreachable("Unhandled DiagnosticKind in switch.");
+}
+
+diags::DiagnosticLevel
+diags::DiagnosticState::ComputeDiagnosticLevel(const Diagnostic *diag) {
+
+  auto stroedDiagInfo = storedDiagnosticInfos[(unsigned)diag->GetID()];
+  diags::DiagnosticLevel Level = std::max(
+      ComputeDiagnosticLevelImpl(stroedDiagInfo.kind, stroedDiagInfo.isFatal),
+      diag->GetLevel());
+
+  assert(Level != DiagnosticLevel::None);
+
+  if (previousLevel == diags::DiagnosticLevel::Ignore &&
+      Level == diags::DiagnosticLevel::Note) {
+  }
+  Level = diags::DiagnosticLevel::Ignore;
+
+  previousLevel = Level;
+  return Level;
 }
 
 /// Format the given diagnostic text and place the result in the given

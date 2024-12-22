@@ -101,12 +101,14 @@ void diags::DiagnosticClient::HandleDiagnostic(DiagnosticLevel DiagLevel,
 //   return DE->GetCurDiagID();
 // }
 
-diags::DiagnosticImpl::DiagnosticImpl(const Diagnostic *Diag)
-    : DiagnosticImpl(Diag, llvm::errs()) {}
+diags::DiagnosticImpl::DiagnosticImpl(DiagnosticKind Kind,
+                                      const Diagnostic *Diag)
+    : DiagnosticImpl(Kind, Diag, llvm::errs()) {}
 
-diags::DiagnosticImpl::DiagnosticImpl(const Diagnostic *Diag,
+diags::DiagnosticImpl::DiagnosticImpl(DiagnosticKind Kind,
+                                      const Diagnostic *Diag,
                                       llvm::raw_ostream &OS)
-    : Diag(Diag), OS(OS) {}
+    : Kind(Kind), Diag(Diag), OS(OS) {}
 
 void diags::DiagnosticImpl::FormatDiagnostic(
     DiagnosticFormatOptions FormatOpts) const {

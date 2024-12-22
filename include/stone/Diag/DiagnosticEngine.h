@@ -95,9 +95,9 @@ class DiagnosticState final {
 public:
   DiagnosticState();
 
-  /// Figure out the Behavior for the given diagnostic, taking current
+  /// Figure out the Level for the given diagnostic, taking current
   /// state such as fatality into account.
-  // DiagnosticLevel ComputeDiagnosticLevel(const Diagnostic &diag);
+  DiagnosticLevel ComputeDiagnosticLevel(const Diagnostic *diag);
 
   /// Whether to skip emitting warnings
   void SetSuppressAllDiagnostics(bool val) { suppressAllDiagnostics = val; }
@@ -177,11 +177,12 @@ enum class DiagnosticStage {
   Flushed,
   Emitted,
 };
-class Diagnostic final : public DiagnosticAllocation<Diagnostic> {
+class Diagnostic : public DiagnosticAllocation<Diagnostic> {
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
   friend class DiagnosticImpl;
 
+protected:
   DiagID ID;
   SrcLoc Loc;
   llvm::StringRef Message;
@@ -296,6 +297,11 @@ public:
     return *this;
   }
 
+  /// Prevent the diagnostic from behaving more severely than \p limit. For
+  /// instance, if \c DiagnosticBehavior::Warning is passed, an error will be
+  /// emitted as a warning, but a note will still be emitted as a note.
+  InFlightDiagnostic &SetDiagnosticLevel(DiagnosticLevel Level);
+
 public:
   InFlightDiagnostic &FixItReplace(SrcRange R, llvm::StringRef Str);
 
@@ -375,7 +381,7 @@ class DiagnosticEngine final {
 
   /// Used to emit a diagnostic that is finally fully formed,
   /// ignoring suppression.
-  void EmitDiagnostic(const Diagnostic *diagnostic) const;
+  void EmitDiagnostic(const Diagnostic *diagnostic);
 
   /// Clear any tentative diagnostics.
   void ClearTentativeDiagnostics();
@@ -429,9 +435,9 @@ public:
   DiagID GetCustomDiagID(DiagnosticLevel Level,
                          DiagnosticStringFormatter StringFormatter);
 
-  /// Generate Diagnostic for a Diagnostic to be passed to consumers.
-  // std::optional<Diagnostic>
-  // CreeateDiagnosticForDiagnostic(const Diagnostic &diagnostic);
+  /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
+  std::optional<DiagnosticImpl>
+  ConstructDiagnosticImpl(const Diagnostic *diagnostic);
 
   /// Given a diagnostic ID, return a description of the issue.
   llvm::StringRef GetDescriptionForDiagID(DiagID ID) const;

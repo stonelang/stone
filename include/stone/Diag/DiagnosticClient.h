@@ -205,18 +205,29 @@ public:
 class DiagnosticImpl final {
   const Diagnostic *Diag;
   llvm::raw_ostream &OS;
+  DiagnosticKind Kind;
 
 public:
-  DiagnosticImpl(const Diagnostic *Diag);
-  DiagnosticImpl(const Diagnostic *Diag, llvm::raw_ostream &OS);
+  DiagnosticImpl(DiagnosticKind Kind, const Diagnostic *Diag);
+  DiagnosticImpl(DiagnosticKind Kind, const Diagnostic *Diag,
+                 llvm::raw_ostream &OS);
+
+public:
+  DiagnosticKind GetKind() { return Kind; }
+  /// Evaluates true when this object stores a diagnostic.
+  // explicit operator bool() const { return !Diag->Message.empty(); }
 
 public:
   void FormatDiagnostic(
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
+
   void FormatDiagnostic(
       llvm::raw_ostream &OS,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
 };
+
+/// Diagnostic
+class CustomDiagnostic {};
 
 class DiagnosticClient {
   friend class DiagnosticEngine;

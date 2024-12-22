@@ -5,6 +5,6 @@ using namespace stone;
 diags::DiagnosticEmitter::DiagnosticEmitter(DiagnosticOutputStream &OS,
                                             const LangOptions &LangOpts,
                                             const DiagnosticOptions &DiagOpts)
-    : OS(OS), LangOpts(LangOpts), DiagOpts(DiagOpts), LastLevel() {}
+    : OS(OS), LangOpts(LangOpts), DiagOpts(DiagOpts) {}
 
 diags::DiagnosticEmitter::~DiagnosticEmitter() = default;
