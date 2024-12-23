@@ -29,19 +29,9 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-  // TextDiagnosticPrinter printer;
+  TextDiagnosticPrinter printer;
   CompilerInvocation invocation;
-  // invocation.AddDiagnosticConsumer(printer);
-
-  std::unique_ptr<diags::TextDiagnosticBuffering> BDC(
-      new diags::TextDiagnosticBuffering());
-
-  diags::DiagnosticEngine BDE(invocation.GetDiagnosticOptions(),
-                              invocation.GetSrcMgr());
-  BDE.AddClient(BDC.get());
-  // BDE.Diagnose(diags::err_compile_no_intputs);
-  BDC->FlushDiagnostics(BDE);
-  BDC->FinishProcessing();
+  invocation.AddDiagnosticConsumer(printer);
 
   // auto FinishCompile = [&](Status status = Status::Success()) -> int {
   //   return (status.IsError() ? status.GetFlag()
