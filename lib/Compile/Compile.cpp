@@ -15,12 +15,6 @@
 #include "stone/Sem/TypeChecker.h"
 #include "stone/Support/Statistics.h"
 
-#include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/TextDiagnosticBuffering.h"
-#include "stone/Diag/TextDiagnosticPrinter.h"
-
-#include "stone/Support/Statistics.h"
-
 using namespace stone;
 
 int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
@@ -48,42 +42,44 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   assert(invocation.GetCompilerOptions().HasMainExecutableName() &&
          "Did not find an executable name!");
 
-  // auto status = invocation.ParseCommandLine(args);
-  // if (status.IsError()) {
-  //   return FinishCompile(Status::Error());
-  // }
+  if(args.empty()){
+    invocation.GetDiags().diagnose(SrcLoc(), diag::error_no_input_files);
+    return FinishCompile(Status::Error());
+  }
+
+  auto status = invocation.ParseArgs(args);
+  if (status.IsError()) {
+    return FinishCompile(Status::Error());
+  }
 
   CompilerInstance compiler(invocation);
-  compiler.GetInvocation().GetDiags().diagnose(
-      SrcLoc(), diag::error_invalid_arg_combination, "test", "test");
-  compiler.GetInvocation().GetDiags().finishProcessing();
 
-  // if (!compiler.HasPrimaryAction()) {
-  //   // compiler.GetDiags().diagnose(diag::error_no_compile_action);
-  //   return FinishCompile(Status::Error());
-  // }
+  if (!compiler.HasPrimaryAction()) {
+    // compiler.GetDiags().diagnose(diag::error_no_compile_action);
+    return FinishCompile(Status::Error());
+  }
 
-  // if (compiler.GetInvocation().GetCompilerOptions().IsImmediateAction()) {
-  //   compiler.ExecuteAction();
-  //   return FinishCompile();
-  // }
+  if (compiler.GetInvocation().GetCompilerOptions().IsImmediateAction()) {
+    compiler.ExecuteAction();
+    return FinishCompile();
+  }
 
-  // compiler.SetObservation(observation);
-  // if (compiler.HasObservation()) {
-  //   compiler.GetObservation()->CompletedCommandLineParsing(compiler);
-  // }
-  // // Now, setup the compiler
-  // if (!compiler.Setup()) {
-  //   return FinishCompile(Status::Error());
-  // }
+  compiler.SetObservation(observation);
+  if (compiler.HasObservation()) {
+    compiler.GetObservation()->CompletedCommandLineParsing(compiler);
+  }
+  // Now, setup the compiler
+  if (!compiler.Setup()) {
+    return FinishCompile(Status::Error());
+  }
 
-  // if (compiler.HasObservation()) {
-  //   compiler.GetObservation()->CompletedConfiguration(compiler);
-  // }
-  // if (!compiler.ExecuteAction()) {
-  //   return FinishCompile(Status::Error());
-  // }
-  // return FinishCompile();
+  if (compiler.HasObservation()) {
+    compiler.GetObservation()->CompletedConfiguration(compiler);
+  }
+  if (!compiler.ExecuteAction()) {
+    return FinishCompile(Status::Error());
+  }
+  return FinishCompile();
 }
 
 bool CompilerInstance::PrintHelpAction::ExecuteAction() {

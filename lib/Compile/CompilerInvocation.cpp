@@ -154,7 +154,7 @@ static Status ParseCodeGenOptions(llvm::opt::InputArgList &ial,
   return Status();
 }
 
-Status CompilerInvocation::ParseCommandLine(llvm::ArrayRef<const char *> args) {
+Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
 
   inputArgList =
       std::make_unique<llvm::opt::InputArgList>(GetOptTable().ParseArgs(

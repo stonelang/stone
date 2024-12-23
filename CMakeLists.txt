@@ -476,7 +476,7 @@ option(STONE_ENABLE_HLSL "Include HLSL build products" Off)
 # While HLSL support is experimental this should stay hidden.
 mark_as_advanced(STONE_ENABLE_HLSL)
 
-add_subdirectory(utils/stone-tablegen)
+#add_subdirectory(utils/stone-tablegen)
 
 # Export STONE_TABLEGEN_EXE for use by flang docs.
 set(STONE_TABLEGEN_EXE "${STONE_TABLEGEN_EXE}" CACHE INTERNAL "")

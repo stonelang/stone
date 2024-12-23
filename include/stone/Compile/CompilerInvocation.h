@@ -153,7 +153,7 @@ public:
   GetPrimaryFileSpecificPathsForSyntaxFile(const SourceFile &sf) const;
 
 public:
-  Status ParseCommandLine(llvm::ArrayRef<const char *> args);
+  Status ParseArgs(llvm::ArrayRef<const char *> args);
 };
 
 } // namespace stone

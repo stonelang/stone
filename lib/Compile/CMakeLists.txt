@@ -12,7 +12,6 @@ set(stone_compile_sources
   StoneCodeGen
   StoneParse
   StoneSem
-  StoneDiag
   StoneSupport
   clangFrontend
 
