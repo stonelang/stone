@@ -3,21 +3,18 @@
 
 using namespace stone;
 
-diags::DiagnosticFormatLexer::DiagnosticFormatLexer(unsigned BufferID,
-                                                    llvm::StringRef InText,
-                                                    SrcMgr &SM)
+DiagnosticFormatLexer::DiagnosticFormatLexer(unsigned BufferID,
+                                             llvm::StringRef InText, SrcMgr &SM)
     : BufferID(BufferID), InText(InText), SM(SM) {
 
   auto EndOffset = SM.getRangeForBuffer(BufferID).getByteLength();
   Initialize(/*Offset=*/0, EndOffset);
 }
 
-diags::DiagnosticFormatLexer::DiagnosticFormatLexer(llvm::StringRef InText,
-                                                    SrcMgr &SM)
+DiagnosticFormatLexer::DiagnosticFormatLexer(llvm::StringRef InText, SrcMgr &SM)
     : DiagnosticFormatLexer(SM.addMemBufferCopy(InText), InText, SM) {}
 
-void diags::DiagnosticFormatLexer::Initialize(unsigned Offset,
-                                              unsigned EndOffset) {
+void DiagnosticFormatLexer::Initialize(unsigned Offset, unsigned EndOffset) {
 
   assert(Offset <= EndOffset);
 
@@ -55,7 +52,7 @@ void diags::DiagnosticFormatLexer::Initialize(unsigned Offset,
          "or we should be lexing from the middle of the buffer");
 }
 
-void diags::DiagnosticFormatLexer::Lex() {
+void DiagnosticFormatLexer::Lex() {
 
   assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
          "Current pointer out of range!");
@@ -159,9 +156,9 @@ void diags::DiagnosticFormatLexer::Lex() {
   }
   }
 }
-void diags::DiagnosticFormatLexer::LexIdentifier() {}
-void diags::DiagnosticFormatLexer::ConstructToken(
-    DiagnosticFormatTokenKind Kind, const char *TokStart) {
+void DiagnosticFormatLexer::LexIdentifier() {}
+void DiagnosticFormatLexer::ConstructToken(DiagnosticFormatTokenKind Kind,
+                                           const char *TokStart) {
 
   assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
          "Current pointer out of range!");
@@ -185,12 +182,12 @@ void diags::DiagnosticFormatLexer::ConstructToken(
   NextToken = DiagnosticFormatToken(Kind, TokenText);
 }
 
-diags::DiagnosticFormatParser::DiagnosticFormatParser(
+DiagnosticFormatParser::DiagnosticFormatParser(
     llvm::raw_ostream &Out, llvm::StringRef InText, SrcMgr &SM,
     DiagnosticFormatOptions &FormatOpts)
     : Lexer(InText, SM), Out(Out), FormatOpts(FormatOpts) {}
 
-void diags::DiagnosticFormatParser::Parse() {
+void DiagnosticFormatParser::Parse() {
 
   while (CurTok.Kind != DiagnosticFormatTokenKind::eof) {
     Lex();
@@ -213,8 +210,8 @@ void diags::DiagnosticFormatParser::Parse() {
     }
   }
 }
-void diags::DiagnosticFormatParser::Lex() {}
+void DiagnosticFormatParser::Lex() {}
 
-void diags::DiagnosticFormatParser::ParseIdentifier() {}
+void DiagnosticFormatParser::ParseIdentifier() {}
 
-void diags::DiagnosticFormatParser::ParseSelect() {}
+void DiagnosticFormatParser::ParseSelect() {}

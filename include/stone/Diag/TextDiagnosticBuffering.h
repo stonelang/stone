@@ -4,7 +4,7 @@
 #include "stone/Diag/DiagnosticClient.h"
 
 namespace stone {
-namespace diags {
+
 class DiagnosticEngine;
 
 // // THINK: This may not be needed
@@ -21,7 +21,6 @@ class DiagnosticEngine;
 //   void FlushDiagnostics(DiagnosticEngine &Diags) const;
 // };
 
-} // namespace diags
 } // namespace stone
 
 #endif

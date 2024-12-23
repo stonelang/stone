@@ -12,7 +12,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 namespace stone {
-namespace diags {
+
 class Diagnostic;
 class DiagnosticEngine;
 
@@ -202,28 +202,34 @@ class DiagnosticStringFormatter {
 public:
 };
 
-class DiagnosticImpl final {
-
+/// Information about a diagnostic passed to DiagnosticConsumers.
+struct DiagnosticImpl final {
+  DiagID ID = DiagID(0);
+  SrcLoc Loc;
   DiagnosticKind Kind;
-  llvm::StringRef Message;
-  const Diagnostic *Info;
-  llvm::raw_ostream &OS;
+  StringRef FormatString;
+  ArrayRef<DiagnosticArgument> FormatArgs;
 
-public:
-  DiagnosticImpl(DiagnosticKind Kind, llvm::StringRef Message,
-                 const Diagnostic *Info);
-  DiagnosticImpl(DiagnosticKind Kind, llvm::StringRef Message,
-                 const Diagnostic *Info, llvm::raw_ostream &OS);
+  /// DiagnosticInfo of notes which are children of this diagnostic, if any
+  llvm::ArrayRef<Diagnostic *> ChildDiagnostics;
 
-public:
-  DiagnosticKind GetKind() { return Kind; }
-  llvm::StringRef GetMessage() { return Message; }
-  const Diagnostic *GetInfo() const { return Info; }
-  explicit operator bool() const { return !Message.empty(); }
+  /// Extra source ranges that are attached to the diagnostic.
+  llvm::ArrayRef<CharSrcRange> Ranges;
 
-public:
-  void FormatDiagnostic(
-      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
+  /// Extra source ranges that are attached to the diagnostic.
+  llvm::ArrayRef<FixIt> FixIts;
+
+  DiagnosticImpl(DiagID ID, SrcLoc Loc, DiagnosticKind Kind,
+                 StringRef FormatString,
+                 ArrayRef<DiagnosticArgument> FormatArgs,
+                 ArrayRef<Diagnostic *> ChildDiagnostics,
+                 ArrayRef<CharSrcRange> Ranges, ArrayRef<FixIt> FixIts)
+      : ID(ID), Loc(Loc), Kind(Kind), FormatString(FormatString),
+        FormatArgs(FormatArgs), ChildDiagnostics(ChildDiagnostics),
+        Ranges(Ranges), FixIts(FixIts) {}
+
+  // void FormatDiagnostic(
+  //     DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
 
   void FormatDiagnostic(
       llvm::raw_ostream &OS,
@@ -231,7 +237,7 @@ public:
 };
 
 /// Diagnostic
-class CustomDiagnostic {};
+// class CustomDiagnostic {};
 
 class DiagnosticClient {
   friend class DiagnosticEngine;
@@ -286,8 +292,6 @@ public:
     // Just ignore it.
   }
 };
-
-} // namespace diags
 
 } // namespace stone
 

@@ -2,91 +2,90 @@
 #include "stone/Diag/DiagnosticEngine.h"
 using namespace stone;
 
-diags::DiagnosticOutputStream::DiagnosticOutputStream()
+DiagnosticOutputStream::DiagnosticOutputStream()
     : DiagnosticOutputStream(llvm::errs()) {}
 
-diags::DiagnosticOutputStream::DiagnosticOutputStream(llvm::raw_ostream &OS)
+DiagnosticOutputStream::DiagnosticOutputStream(llvm::raw_ostream &OS)
     : OS(OS), showColors(false) {
   if (OS.has_colors()) {
     UseNoteColor();
   }
 }
-void diags::DiagnosticOutputStream::ResetColors() { OS.resetColor(); }
+void DiagnosticOutputStream::ResetColors() { OS.resetColor(); }
 
-void diags::DiagnosticOutputStream::UseNoteColor() {
+void DiagnosticOutputStream::UseNoteColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::CYAN);
 }
 
-void diags::DiagnosticOutputStream::UseRemarkColor() {
+void DiagnosticOutputStream::UseRemarkColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::BLUE);
 }
 
-void diags::DiagnosticOutputStream::UseWarningColor() {
+void DiagnosticOutputStream::UseWarningColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::MAGENTA);
 }
 
-void diags::DiagnosticOutputStream::UseErrorColor() {
+void DiagnosticOutputStream::UseErrorColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::RED);
 }
 
-void diags::DiagnosticOutputStream::UseFatalColor() {
+void DiagnosticOutputStream::UseFatalColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::RED);
 }
 
-void diags::DiagnosticOutputStream::UseFixItColor() {
+void DiagnosticOutputStream::UseFixItColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::GREEN);
 }
 
-void diags::DiagnosticOutputStream::UseCaretColor() {
+void DiagnosticOutputStream::UseCaretColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::GREEN);
 }
 
-void diags::DiagnosticOutputStream::UseTemplateColor() {
+void DiagnosticOutputStream::UseTemplateColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::CYAN);
 }
 
-void diags::DiagnosticOutputStream::UseSavedColor() {
+void DiagnosticOutputStream::UseSavedColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::SAVEDCOLOR);
 }
 
-void diags::DiagnosticOutputStream::UseCommentColor() {
+void DiagnosticOutputStream::UseCommentColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::YELLOW);
 }
 
-void diags::DiagnosticOutputStream::UseLiteralColor() {
+void DiagnosticOutputStream::UseLiteralColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::GREEN);
 }
 
-void diags::DiagnosticOutputStream::UseKeywordColor() {
+void DiagnosticOutputStream::UseKeywordColor() {
   if (showColors)
     ChangeColor(llvm::raw_ostream::Colors::BLUE);
 }
 
-diags::DiagnosticOutputStream::~DiagnosticOutputStream() { ResetColors(); }
+DiagnosticOutputStream::~DiagnosticOutputStream() { ResetColors(); }
 
-diags::DiagnosticClient::DiagnosticClient() {}
+DiagnosticClient::DiagnosticClient() {}
 
-diags::DiagnosticClient::~DiagnosticClient() = default;
+DiagnosticClient::~DiagnosticClient() = default;
 
 /// IncludeInDiagnosticCounts - This method (whose default implementation
 ///  returns true) indicates whether the diagnostics handled by this
 ///  DiagnosticConsumer should be included in the number of diagnostics
 ///  reported by DiagnosticsEngine.
-bool diags::DiagnosticClient::UseInDiagnosticCounts() const { return true; }
+bool DiagnosticClient::UseInDiagnosticCounts() const { return true; }
 
-void diags::DiagnosticClient::HandleDiagnostic(SrcMgr &SM,
-                                               const DiagnosticImpl &DI) {
+void DiagnosticClient::HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) {
   if (!UseInDiagnosticCounts()) {
     return;
   }
@@ -97,28 +96,17 @@ void diags::DiagnosticClient::HandleDiagnostic(SrcMgr &SM,
   //   ++NumErrors;
 }
 
-// diags::DiagID diags::Diagnostic::GetDiagID() const {
+// DiagID Diagnostic::GetDiagID() const {
 //   return DE->GetCurDiagID();
 // }
 
-diags::DiagnosticImpl::DiagnosticImpl(DiagnosticKind Kind,
-                                      llvm::StringRef Message,
-                                      const Diagnostic *Info)
-    : DiagnosticImpl(Kind, Message, Info, llvm::errs()) {}
+// void DiagnosticImpl::FormatDiagnostic(
+//     DiagnosticFormatOptions FormatOpts) const {
 
-diags::DiagnosticImpl::DiagnosticImpl(DiagnosticKind Kind,
-                                      llvm::StringRef Message,
-                                      const Diagnostic *Info,
-                                      llvm::raw_ostream &OS)
-    : Kind(Kind), Message(Message), Info(Info), OS(OS) {}
+//   //FormatDiagnostic(OS);
+// }
 
-void diags::DiagnosticImpl::FormatDiagnostic(
-    DiagnosticFormatOptions FormatOpts) const {
-
-  FormatDiagnostic(OS);
-}
-
-void diags::DiagnosticImpl::FormatDiagnostic(
+void DiagnosticImpl::FormatDiagnostic(
     llvm::raw_ostream &Out, DiagnosticFormatOptions FormatOpts) const {
 
   // DiagnosticEngine::FormatDiagnosticText()

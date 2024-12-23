@@ -1,6 +1,7 @@
 #include "stone/Compile/Compile.h"
-#include "stone/AST/Diagnostics.h"
-#include "stone/AST/DiagnosticsCompile.h"
+// #include "stone/AST/Diagnostics.h"
+// #include "stone/AST/DiagnosticsCompile.h"
+
 #include "stone/Basic/About.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
@@ -15,8 +16,8 @@
 #include "stone/Sem/TypeChecker.h"
 #include "stone/Support/Statistics.h"
 
-#include "stone/Diag/DiagnosticID.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DiagnosticID.h"
 #include "stone/Diag/DiagnosticParseKind.h"
 #include "stone/Diag/TextDiagnosticPrinter.h"
 
@@ -52,7 +53,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                              invocation.GetDiagnosticOptions());
 
   DE.AddClient(DC.get());
-  DE.Diagnose(diags::warning_null_character);
+  DE.Diagnose(diag::warning_null_character);
   DE.FinishProcessing();
 
   // auto FinishCompile = [&](Status status = Status::Success()) -> int {

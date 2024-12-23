@@ -5,7 +5,6 @@
 #include <tuple>
 
 namespace stone {
-namespace diags {
 // Enumeration describing all of possible diagnostics.
 ///
 /// Each of the diagnostics described in Diagnostics.def has an entry in
@@ -23,6 +22,7 @@ template <typename... ArgTypes> struct Diag {
   DiagID ID;
 };
 
+namespace detail {
 /// Describes how to pass a diagnostic argument of the given type.
 ///
 /// By default, diagnostic arguments are passed by value, because they
@@ -31,11 +31,12 @@ template <typename... ArgTypes> struct Diag {
 template <typename T> struct PassArgument {
   typedef T type;
 };
+} // namespace detail
 
 template <class... ArgTypes>
-using DiagArgTuple = std::tuple<typename PassArgument<ArgTypes>::type...>;
+using DiagArgTuple =
+    std::tuple<typename detail::PassArgument<ArgTypes>::type...>;
 
-} // namespace diags
 } // namespace stone
 
 #endif

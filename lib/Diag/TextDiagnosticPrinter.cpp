@@ -2,15 +2,13 @@
 
 using namespace stone;
 
-using namespace stone;
-
-diags::TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &stream)
+TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &stream)
     : OS(stream) {}
 
-diags::TextDiagnosticPrinter::~TextDiagnosticPrinter() { OS.Flush(); }
+TextDiagnosticPrinter::~TextDiagnosticPrinter() { OS.Flush(); }
 
-void diags::TextDiagnosticPrinter::HandleDiagnostic(SrcMgr &SM,
-                                                    const DiagnosticImpl &DI) {
+void TextDiagnosticPrinter::HandleDiagnostic(SrcMgr &SM,
+                                             const DiagnosticImpl &DI) {
 
   // Default implementation (Warnings/errors count).
   DiagnosticClient::HandleDiagnostic(SM, DI);
@@ -59,13 +57,13 @@ void diags::TextDiagnosticPrinter::HandleDiagnostic(SrcMgr &SM,
   // GetEmitter().GetDiagnosticOutputStream().Flush();
 }
 
-diags::TextDiagnosticPrinterImpl::TextDiagnosticPrinterImpl() {}
+TextDiagnosticPrinterImpl::TextDiagnosticPrinterImpl() {}
 
-diags::TextDiagnosticPrinterImpl::~TextDiagnosticPrinterImpl() {}
+TextDiagnosticPrinterImpl::~TextDiagnosticPrinterImpl() {}
 
-void diags::TextDiagnosticPrinterImpl::HandleDiagnostic(
-    SrcMgr &SM, const DiagnosticImpl &DI) {
+void TextDiagnosticPrinterImpl::HandleDiagnostic(SrcMgr &SM,
+                                                 const DiagnosticImpl &DI) {
 
   // Default implementation (Warnings/errors count).
-  diags::TextDiagnosticPrinter::HandleDiagnostic(SM, DI);
+  TextDiagnosticPrinter::HandleDiagnostic(SM, DI);
 }

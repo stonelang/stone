@@ -8,8 +8,6 @@
 #include <memory>
 
 namespace stone {
-namespace diags {
-
 
 class TextDiagnosticPrinter : public DiagnosticClient {
 
@@ -40,8 +38,6 @@ public:
 public:
   void HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) override;
 };
-
-} // namespace diags
 
 } // namespace stone
 

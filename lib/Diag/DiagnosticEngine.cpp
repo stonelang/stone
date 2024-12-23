@@ -1,8 +1,8 @@
 #include "stone/Diag/DiagnosticEngine.h"
 #include "stone/Diag/DiagnosticBasicKind.h"
-#include "stone/Diag/DiagnosticParseKind.h"
 #include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticFormatParser.h"
+#include "stone/Diag/DiagnosticParseKind.h"
 
 using namespace stone;
 
@@ -32,21 +32,20 @@ enum class LocalDiagnosticOptions {
   NoUsage,
 };
 struct StoredDiagnosticInfo {
-  diags::DiagnosticKind kind : 2;
+  DiagnosticKind kind : 2;
   bool pointsToFirstBadToken : 1;
   bool isFatal : 1;
   bool isAPIDigesterBreakage : 1;
   bool isDeprecation : 1;
   bool isNoUsage : 1;
 
-  constexpr StoredDiagnosticInfo(diags::DiagnosticKind k, bool firstBadToken,
+  constexpr StoredDiagnosticInfo(DiagnosticKind k, bool firstBadToken,
                                  bool fatal, bool isAPIDigesterBreakage,
                                  bool deprecation, bool noUsage)
       : kind(k), pointsToFirstBadToken(firstBadToken), isFatal(fatal),
         isAPIDigesterBreakage(isAPIDigesterBreakage),
         isDeprecation(deprecation), isNoUsage(noUsage) {}
-  constexpr StoredDiagnosticInfo(diags::DiagnosticKind k,
-                                 LocalDiagnosticOptions opts)
+  constexpr StoredDiagnosticInfo(DiagnosticKind k, LocalDiagnosticOptions opts)
       : StoredDiagnosticInfo(
             k, opts == LocalDiagnosticOptions::PointsToFirstBadToken,
             opts == LocalDiagnosticOptions::Fatal,
@@ -65,24 +64,21 @@ enum LocalDiagID : uint32_t {
 } // end anonymous namespace
 
 /// Get the set of all diagnostic IDs.
-unsigned diags::DiagnosticEngine::GetTotalDiagnostics() {
+unsigned DiagnosticEngine::GetTotalDiagnostics() {
   return LocalDiagID::TotalDiags;
 }
 
 // TODO: categorization
 static const constexpr StoredDiagnosticInfo storedDiagnosticInfos[] = {
 #define ERROR(ID, Options, Message, Signature)                                 \
-  StoredDiagnosticInfo(diags::DiagnosticKind::Error,                           \
-                       LocalDiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Error, LocalDiagnosticOptions::Options),
 #define WARNING(ID, Options, Message, Signature)                               \
-  StoredDiagnosticInfo(diags::DiagnosticKind::Warning,                         \
+  StoredDiagnosticInfo(DiagnosticKind::Warning,                                \
                        LocalDiagnosticOptions::Options),
 #define NOTE(ID, Options, Message, Signature)                                  \
-  StoredDiagnosticInfo(diags::DiagnosticKind::Note,                            \
-                       LocalDiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Note, LocalDiagnosticOptions::Options),
 #define REMARK(ID, Options, Message, Signature)                                \
-  StoredDiagnosticInfo(diags::DiagnosticKind::Remark,                          \
-                       LocalDiagnosticOptions::Options),
+  StoredDiagnosticInfo(DiagnosticKind::Remark, LocalDiagnosticOptions::Options),
 #include "stone/Diag/DiagnosticEngine.def"
 };
 
@@ -115,7 +111,7 @@ static constexpr const char *const diagnosticIDStrings[] = {
 //     "<not a fix-it>",
 // };
 
-diags::DiagnosticState::DiagnosticState() {
+DiagnosticState::DiagnosticState() {
   ignoredDiagnostics.resize(LocalDiagID::TotalDiags);
   errorDiagnostics.resize(LocalDiagID::TotalDiags);
   warningDiagnostics.resize(LocalDiagID::TotalDiags);
@@ -135,52 +131,49 @@ diags::DiagnosticState::DiagnosticState() {
 //   llvm_unreachable("Unhandled DiagnosticKind in switch.");
 // }
 
-diags::DiagnosticEngine::DiagnosticEngine(SrcMgr &SM,
-                                          DiagnosticOptions &DiagOpts)
+DiagnosticEngine::DiagnosticEngine(SrcMgr &SM, DiagnosticOptions &DiagOpts)
     : SM(SM), DiagOpts(DiagOpts) {}
 
-diags::DiagnosticEngine::~DiagnosticEngine() {}
+DiagnosticEngine::~DiagnosticEngine() {}
 
-void diags::DiagnosticEngine::AddClient(diags::DiagnosticClient *client) {
+void DiagnosticEngine::AddClient(DiagnosticClient *client) {
   Clients.push_back(client);
 }
-std::vector<diags::DiagnosticClient *> diags::DiagnosticEngine::TakeClients() {
+std::vector<DiagnosticClient *> DiagnosticEngine::TakeClients() {
   auto clients =
-      std::vector<diags::DiagnosticClient *>(Clients.begin(), Clients.end());
+      std::vector<DiagnosticClient *>(Clients.begin(), Clients.end());
   Clients.clear();
   return clients;
 }
 
-diags::InFlightDiagnostic diags::DiagnosticEngine::Diagnose(Diag<> NextDiagID) {
-  return Diagnose(Diagnostic::Create(*this, NextDiagID));
-
+InFlightDiagnostic DiagnosticEngine::Diagnose(DiagID NextDiagID) {
+  // return Diagnose(Diagnostic::Create(*this, NextDiagID));
 }
 
-// diags::InFlightDiagnostic
-// diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc) {
-//   return Diagnose(NextDiagID, NextDiagLoc, {});
-// }
-// diags::InFlightDiagnostic
-// diags::DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
+InFlightDiagnostic DiagnosticEngine::Diagnose(SrcLoc NextDiagLoc,
+                                              DiagID NextDiagID) {
+  // return Diagnose(Diagnostic::Create(*this, NextDiagLoc, NextDiagID));
+}
+// InFlightDiagnostic
+// DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
 //                                   llvm::ArrayRef<DiagnosticArgument> Args) {
 //   return Diagnose(Diagnostic::Create(*this, NextDiagID, NextDiagLoc, Args));
 // }
 
-diags::InFlightDiagnostic
-diags::DiagnosticEngine::Diagnose(const Diagnostic *diagnostic) {
+InFlightDiagnostic DiagnosticEngine::Diagnose(const Diagnostic *diagnostic) {
   assert(!ActiveDiagnostic && "Already have an active diagnostic");
   return InFlightDiagnostic(*this);
 }
 
-diags::InFlightDiagnostic &
-diags::InFlightDiagnostic::SetDiagnosticLevel(DiagnosticLevel Level) {
+InFlightDiagnostic &
+InFlightDiagnostic::SetDiagnosticLevel(DiagnosticLevel Level) {
   DE->GetActiveDiagnostic()->SetLevel(Level);
   return *this;
 }
 
-void diags::DiagnosticEngine::Clear(bool soft) {}
+void DiagnosticEngine::Clear(bool soft) {}
 
-bool diags::DiagnosticEngine::FinishProcessing() {
+bool DiagnosticEngine::FinishProcessing() {
   // hasError
   // for (auto &Client : Clients) {
   //   hasError |= Client->FinishProcessing();
@@ -188,28 +181,29 @@ bool diags::DiagnosticEngine::FinishProcessing() {
   // return hasError;
 }
 
-diags::DiagnosticKind
-diags::DiagnosticEngine::DeclaredDiagnosticKindForDiagID(const DiagID ID) {
+DiagnosticKind
+DiagnosticEngine::DeclaredDiagnosticKindForDiagID(const DiagID ID) {
   return storedDiagnosticInfos[(unsigned)ID].kind;
 }
 
-llvm::StringRef diags::DiagnosticEngine::GetDiagnosticStringForDiagID(
-    const DiagID ID, bool printDiagnosticNames) {
+llvm::StringRef
+DiagnosticEngine::GetDiagnosticStringForDiagID(const DiagID ID,
+                                               bool printDiagnosticNames) {
   return printDiagnosticNames ? debugDiagnosticStrings[(unsigned)ID]
                               : diagnosticStrings[(unsigned)ID];
 }
 
 llvm::StringRef
-diags::DiagnosticEngine::GetDiagnosticIDStringForDiagID(const DiagID ID) {
+DiagnosticEngine::GetDiagnosticIDStringForDiagID(const DiagID ID) {
   return diagnosticIDStrings[(unsigned)ID];
 }
 
-// diags::DiagnosticTracker::DiagnosticTracker() {
+// DiagnosticTracker::DiagnosticTracker() {
 //   TotalWarnings.resize(LocalDiagID::TotalDiags);
 //   TotalErrors.resize(LocalDiagID::TotalDiags);
 // }
 
-void diags::InFlightDiagnostic::FlushActiveDiagnostic() {
+void InFlightDiagnostic::FlushActiveDiagnostic() {
   if (!IsActive) {
     return;
   }
@@ -219,7 +213,7 @@ void diags::InFlightDiagnostic::FlushActiveDiagnostic() {
   Clear();
 }
 
-void diags::DiagnosticEngine::FlushActiveDiagnostic(bool ForceEmit) {
+void DiagnosticEngine::FlushActiveDiagnostic(bool ForceEmit) {
   assert(ActiveDiagnostic && "No active diagnostic to flush");
   HandleDiagnostic(ActiveDiagnostic);
   ActiveDiagnostic = nullptr;
@@ -227,12 +221,12 @@ void diags::DiagnosticEngine::FlushActiveDiagnostic(bool ForceEmit) {
 
 /// Handle a new diagnostic, which will either be emitted, or added to an
 /// active transaction.
-void diags::DiagnosticEngine::HandleDiagnostic(const Diagnostic *diagnostic) {
+void DiagnosticEngine::HandleDiagnostic(const Diagnostic *diagnostic) {
 
   EmitDiagnostic(diagnostic);
 }
 
-void diags::DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
+void DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
   assert(!HasClients() && "No DiagnosticClients. Unable to emit!");
 
   if (auto impl = ConstructDiagnosticImpl(diagnostic)) {
@@ -244,70 +238,71 @@ void diags::DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
   // Get the Level
 }
 
-static diags::DiagnosticKind
-ComputeDiagnosticKind(diags::DiagnosticLevel Level) {
+static DiagnosticKind ComputeDiagnosticKind(DiagnosticLevel Level) {
   switch (Level) {
-  case diags::DiagnosticLevel::None:
+  case DiagnosticLevel::None:
     llvm_unreachable("unspecified diagnostic level");
-  case diags::DiagnosticLevel::Ignore:
+  case DiagnosticLevel::Ignore:
     llvm_unreachable("trying to map an ignored diagnostic");
-  case diags::DiagnosticLevel::Error:
-  case diags::DiagnosticLevel::Fatal:
-    return diags::DiagnosticKind::Error;
-  case diags::DiagnosticLevel::Note:
-    return diags::DiagnosticKind::Note;
-  case diags::DiagnosticLevel::Warning:
-    return diags::DiagnosticKind::Warning;
-  case diags::DiagnosticLevel::Remark:
-    return diags::DiagnosticKind::Remark;
+  case DiagnosticLevel::Error:
+  case DiagnosticLevel::Fatal:
+    return DiagnosticKind::Error;
+  case DiagnosticLevel::Note:
+    return DiagnosticKind::Note;
+  case DiagnosticLevel::Warning:
+    return DiagnosticKind::Warning;
+  case DiagnosticLevel::Remark:
+    return DiagnosticKind::Remark;
   }
 
   llvm_unreachable("Unhandled DiagnosticKind in switch.");
 }
 
 /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
-std::optional<diags::DiagnosticImpl>
-diags::DiagnosticEngine::ConstructDiagnosticImpl(const Diagnostic *diagnostic) {
+std::optional<DiagnosticImpl>
+DiagnosticEngine::ConstructDiagnosticImpl(const Diagnostic *diagnostic) {
 
   auto Level = state.ComputeDiagnosticLevel(diagnostic);
   if (Level == DiagnosticLevel::Ignore) {
     return std::nullopt;
   }
-  return diags::DiagnosticImpl(
-      ComputeDiagnosticKind(Level),
-      GetDiagnosticStringForDiagID(diagnostic->GetID()), diagnostic);
+
+  auto fixIts = diagnostic->GetFixIts();
+  return DiagnosticImpl(
+      diagnostic->GetID(), diagnostic->GetLoc(), ComputeDiagnosticKind(Level),
+      GetDiagnosticStringForDiagID(diagnostic->GetID()), diagnostic->GetArgs(),
+      /* no children now*/ {}, diagnostic->GetRanges(), fixIts);
 }
 
-static diags::DiagnosticLevel
-ComputeDiagnosticLevelImpl(diags::DiagnosticKind kind, bool isFatal) {
+static DiagnosticLevel ComputeDiagnosticLevelImpl(DiagnosticKind kind,
+                                                  bool isFatal) {
   switch (kind) {
-  case diags::DiagnosticKind::Note:
-    return diags::DiagnosticLevel::Note;
-  case diags::DiagnosticKind::Error:
-    return isFatal ? diags::DiagnosticLevel::Fatal
-                   : diags::DiagnosticLevel::Error;
-  case diags::DiagnosticKind::Warning:
-    return diags::DiagnosticLevel::Warning;
-  case diags::DiagnosticKind::Remark:
-    return diags::DiagnosticLevel::Remark;
+  case DiagnosticKind::Note:
+    return DiagnosticLevel::Note;
+  case DiagnosticKind::Error:
+    return isFatal ? DiagnosticLevel::Fatal : DiagnosticLevel::Error;
+  case DiagnosticKind::Warning:
+    return DiagnosticLevel::Warning;
+  case DiagnosticKind::Remark:
+    return DiagnosticLevel::Remark;
   }
   llvm_unreachable("Unhandled DiagnosticKind in switch.");
 }
 
-diags::DiagnosticLevel
-diags::DiagnosticState::ComputeDiagnosticLevel(const Diagnostic *diag) {
+DiagnosticLevel
+DiagnosticState::ComputeDiagnosticLevel(const Diagnostic *diag) {
 
   auto stroedDiagInfo = storedDiagnosticInfos[(unsigned)diag->GetID()];
-  diags::DiagnosticLevel Level = std::max(
+  DiagnosticLevel Level = std::max(
       ComputeDiagnosticLevelImpl(stroedDiagInfo.kind, stroedDiagInfo.isFatal),
       diag->GetLevel());
 
   assert(Level != DiagnosticLevel::None);
 
-  if (previousLevel == diags::DiagnosticLevel::Ignore &&
-      Level == diags::DiagnosticLevel::Note) {
+  if (previousLevel == DiagnosticLevel::Ignore &&
+      Level == DiagnosticLevel::Note) {
   }
-  Level = diags::DiagnosticLevel::Ignore;
+  Level = DiagnosticLevel::Ignore;
 
   previousLevel = Level;
   return Level;
@@ -315,7 +310,7 @@ diags::DiagnosticState::ComputeDiagnosticLevel(const Diagnostic *diag) {
 
 /// Format the given diagnostic text and place the result in the given
 /// buffer.
-void diags::DiagnosticEngine::FormatDiagnosticText(
+void DiagnosticEngine::FormatDiagnosticText(
     llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
     DiagnosticFormatOptions FormatOpts) {
 
@@ -324,7 +319,7 @@ void diags::DiagnosticEngine::FormatDiagnosticText(
 
 /// Format the given diagnostic text and place the result in the given
 /// buffer.
-void diags::DiagnosticEngine::FormatDiagnosticText(
+void DiagnosticEngine::FormatDiagnosticText(
     llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
     ArrayRef<DiagnosticArgument> Args, DiagnosticFormatOptions FormatOpts) {
 
@@ -333,24 +328,22 @@ void diags::DiagnosticEngine::FormatDiagnosticText(
   // textParser.Parse();
 }
 
-diags::Diagnostic *diags::Diagnostic::Create(diags::DiagnosticEngine &DE,
-                                             diags::DiagID ID) {
-  return new (DE) diags::Diagnostic(ID);
-}
-// diags::Diagnostic *diags::Diagnostic::Create(diags::DiagnosticEngine &DE,
-//                                              diags::DiagID ID, SrcLoc Loc) {
-//   return new (DE) diags::Diagnostic(ID, Loc);
+// Diagnostic *Diagnostic::Create(DiagnosticEngine &DE, DiagID ID) {
+//   return Diagnostic::Create(DE, SrcLoc(), ID);
 // }
-// diags::Diagnostic *
-// diags::Diagnostic::Create(diags::DiagnosticEngine &DE, diags::DiagID ID,
+// Diagnostic *Diagnostic::Create(DiagnosticEngine &DE, SrcLoc Loc, DiagID ID) {
+//   return new (DE) Diagnostic(DE, ID, Loc);
+// }
+// Diagnostic *
+// Diagnostic::Create(DiagnosticEngine &DE, DiagID ID,
 //                           SrcLoc Loc,
-//                           ArrayRef<diags::DiagnosticArgument> Args) {
-//   return new (DE) diags::Diagnostic(ID, Loc, Args);
+//                           ArrayRef<DiagnosticArgument> Args) {
+//   return new (DE) Diagnostic(ID, Loc, Args);
 // }
 
-// diags::Diagnostic *diags::Diagnostic::Create(DiagnosticEngine &DE, DiagID ID,
+// Diagnostic *Diagnostic::Create(DiagnosticEngine &DE, DiagID ID,
 //                                              SrcLoc Loc,
-//                                              ArrayRef<DiagnosticArgument> Args,
-//                                              ArrayRef<FixIt> FixIts) {
-//   return new (DE) diags::Diagnostic(ID, Loc, Args, FixIts);
+//                                              ArrayRef<DiagnosticArgument>
+//                                              Args, ArrayRef<FixIt> FixIts) {
+//   return new (DE) Diagnostic(ID, Loc, Args, FixIts);
 // }

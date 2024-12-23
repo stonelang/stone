@@ -34,7 +34,6 @@ class raw_ostream;
 namespace stone {
 class LangOptions;
 
-namespace diags {
 class Diagnostic;
 class InFlightDiagnostic;
 class DiagnosticClient;
@@ -177,6 +176,7 @@ enum class DiagnosticStage {
   Flushed,
   Emitted,
 };
+
 class Diagnostic : public DiagnosticAllocation<Diagnostic> {
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
@@ -185,8 +185,6 @@ class Diagnostic : public DiagnosticAllocation<Diagnostic> {
 protected:
   DiagID ID;
   SrcLoc Loc;
-  // llvm::StringRef Message;
-  // bool FromCache;
 
   DiagnosticStage Stage = DiagnosticStage::None;
   // DiagnosticState State;
@@ -209,17 +207,18 @@ protected:
   void SetStage(DiagnosticStage S) { Stage = S; }
 
 public:
-  Diagnostic(DiagID ID, SrcLoc Loc, llvm::ArrayRef<DiagnosticArgument> Args,
-             llvm::ArrayRef<FixIt> FixIts)
-      : ID(ID), Args(Args.begin(), Args.end()),
-        FixIts(FixIts.begin(), FixIts.end()), Stage(DiagnosticStage::Active) {}
+  // All constructors are intentionally implicit.
+  template <typename... ArgTypes>
+  Diagnostic(Diag<ArgTypes...> ID,
+             typename detail::PassArgument<ArgTypes>::type... VArgs)
+      : ID(ID.ID) {
+    DiagnosticArgument DiagArgs[] = {DiagnosticArgument(0),
+                                     std::move(VArgs)...};
+    Args.append(DiagArgs + 1, DiagArgs + 1 + sizeof...(VArgs));
+  }
 
-  Diagnostic(DiagID ID, SrcLoc Loc, llvm::ArrayRef<DiagnosticArgument> Args)
-      : Diagnostic(ID, Loc, Args, {}) {}
-
-  Diagnostic(DiagID ID, SrcLoc Loc) : Diagnostic(ID, Loc, {}) {}
-
-  Diagnostic(DiagID ID) : Diagnostic(ID, SrcLoc(), {}) {}
+  Diagnostic(DiagID ID, llvm::ArrayRef<DiagnosticArgument> Args)
+      : ID(ID), Args(Args.begin(), Args.end()) {}
 
   /// Evaluates true when this object stores a diagnostic.
   // explicit operator bool() const { return !Diag->Message.empty(); }
@@ -237,12 +236,12 @@ public:
   //  bool IsFromCache() { return FromCache; }
 
 public:
-  static Diagnostic *Create(DiagnosticEngine &DE, Diag<> ID);
+  static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID);
+  static Diagnostic *Create(DiagnosticEngine &DE, SrcLoc Loc, DiagID ID);
 
-  
-  // static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc);
   // static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
   //                           ArrayRef<DiagnosticArgument> Args);
+
   // static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
   //                           ArrayRef<DiagnosticArgument> Args,
   //                           ArrayRef<FixIt> FixIts);
@@ -421,10 +420,13 @@ public:
   bool HasClients() const { return Clients.size() > 0; }
 
 public:
-  InFlightDiagnostic Diagnose(Diag<> NextDiagID);
+  InFlightDiagnostic Diagnose(DiagID NextDiagID);
+  InFlightDiagnostic Diagnose(SrcLoc Loc, DiagID NextDiagID);
+
   // InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc);
   // InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
-  //                             llvm::ArrayRef<DiagnosticArgument> args);
+  //                               llvm::ArrayRef<DiagnosticArgument> args);
+
   InFlightDiagnostic Diagnose(const Diagnostic *D);
 
   bool HasActiveDiagnsotic() const { return ActiveDiagnostic != nullptr; }
@@ -538,8 +540,6 @@ public:
     TotalUnrecoverableErrors = DE.TrapTotalUnrecoverableErrorsOccurred;
   }
 };
-
-} // namespace diags
 } // namespace stone
 
 #endif

@@ -12,8 +12,6 @@ class SrcLoc;
 class LangOptions;
 class DiagnosticOptions;
 
-namespace diags {
-
 class Diagnostic;
 class StoredDiagnostic;
 
@@ -124,8 +122,6 @@ public:
   const LangOptions &GetLangOptions() const { return LangOpts; }
   const DiagnosticOptions &GetDiagOptions() const { return DiagOpts; }
 };
-
-} // namespace diags
 
 } // namespace stone
 

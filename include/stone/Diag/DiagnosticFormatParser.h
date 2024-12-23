@@ -15,7 +15,6 @@
 
 namespace stone {
 class SrcMgr;
-namespace diags {
 
 struct DiagnosticFormatOptions {
   const std::string OpeningQuotationMark;
@@ -198,6 +197,5 @@ public:
   void Parse();
 };
 
-} // namespace diags
 } // namespace stone
 #endif
