@@ -7,24 +7,25 @@ TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &stream)
 
 TextDiagnosticPrinter::~TextDiagnosticPrinter() { OS.Flush(); }
 
+void TextDiagnosticPrinter::PrintDiagnostic() {}
+
+void TextDiagnosticPrinter::EmitDiagnostic() {}
+
 void TextDiagnosticPrinter::HandleDiagnostic(SrcMgr &SM,
                                              const DiagnosticImpl &DI) {
-
-  // Default implementation (Warnings/errors count).
+  // 1. Format message
+  //  Default implementation (Warnings/errors count).
   DiagnosticClient::HandleDiagnostic(SM, DI);
-
-  // llvm::raw_ostream &OS =
-  //     GetEmitter().GetDiagnosticOutputStream().GetOutputStream();
-
   // // Render the diagnostic message into a temporary buffer eagerly. We'll use
   // // this later as we print out the diagnostic to the terminal.
-  // DI.FormatDiagnostic(OS);
+  DI.FormatDiagnostic(OS.GetOutputStream());
 
-  // // Keeps track of the starting position of the location
-  // // information (e.g., "foo.c:10:4:") that precedes the error
-  // // message. We use this information to determine how long the
-  // // file+line+column number prefix is.
-  // uint64_t StartOfLocationInfo = OS.tell();
+  // 2. Print message
+  //  // Keeps track of the starting position of the location
+  //  // information (e.g., "foo.c:10:4:") that precedes the error
+  //  // message. We use this information to determine how long the
+  //  // file+line+column number prefix is.
+  //  uint64_t StartOfLocationInfo = OS.tell();
 
   // if (!Prefix.empty()) {
   //   OS << Prefix << ": ";
@@ -66,4 +67,8 @@ void TextDiagnosticPrinterImpl::HandleDiagnostic(SrcMgr &SM,
 
   // Default implementation (Warnings/errors count).
   TextDiagnosticPrinter::HandleDiagnostic(SM, DI);
+
+  // PrintDiagnostic(); if there are certain conditions
+
+  EmitDiagnostic();
 }

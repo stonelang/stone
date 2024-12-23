@@ -4,6 +4,10 @@
 ERROR(error_invalid_diagnostic,None,
       "INTERNAL ERROR: this diagnostic should not be produced", ())
 
+
+ERROR(error_duplicate_input_file,None,
+      "duplicate input file '%0'", (StringRef))
+
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DiagnosticMacroKind.h"
 

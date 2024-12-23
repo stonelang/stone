@@ -42,6 +42,7 @@ enum class DiagnosticArgumentKind {
   String,
   Identifier,
 };
+
 class DiagnosticArgument final {
   DiagnosticArgumentKind Kind;
   union {
@@ -202,11 +203,15 @@ class DiagnosticStringFormatter {
 public:
 };
 
+enum class DiagnosticReason : uint8_t { None = 0 };
+
 /// Information about a diagnostic passed to DiagnosticConsumers.
 struct DiagnosticImpl final {
+  DiagnosticEngine *DE; //???
   DiagID ID = DiagID(0);
   SrcLoc Loc;
   DiagnosticKind Kind;
+  DiagnosticReason Reason;
   StringRef FormatString;
   ArrayRef<DiagnosticArgument> FormatArgs;
 
@@ -219,14 +224,17 @@ struct DiagnosticImpl final {
   /// Extra source ranges that are attached to the diagnostic.
   llvm::ArrayRef<FixIt> FixIts;
 
+  /// Evaluates true when this object stores a diagnostic.
+  explicit operator bool() const { return !FormatString.empty(); }
+
   DiagnosticImpl(DiagID ID, SrcLoc Loc, DiagnosticKind Kind,
-                 StringRef FormatString,
+                 DiagnosticReason Reason, StringRef FormatString,
                  ArrayRef<DiagnosticArgument> FormatArgs,
                  ArrayRef<Diagnostic *> ChildDiagnostics,
                  ArrayRef<CharSrcRange> Ranges, ArrayRef<FixIt> FixIts)
-      : ID(ID), Loc(Loc), Kind(Kind), FormatString(FormatString),
-        FormatArgs(FormatArgs), ChildDiagnostics(ChildDiagnostics),
-        Ranges(Ranges), FixIts(FixIts) {}
+      : ID(ID), Loc(Loc), Kind(Kind), Reason(Reason),
+        FormatString(FormatString), FormatArgs(FormatArgs),
+        ChildDiagnostics(ChildDiagnostics), Ranges(Ranges), FixIts(FixIts) {}
 
   // void FormatDiagnostic(
   //     DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
@@ -234,6 +242,13 @@ struct DiagnosticImpl final {
   void FormatDiagnostic(
       llvm::raw_ostream &OS,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
+
+  bool IsNote() const { return Kind == DiagnosticKind::Note; }
+  bool IsWarning() const { return Kind == DiagnosticKind::Warning; }
+  bool IsRemark() const { return Kind == DiagnosticKind::Remark; }
+  bool IsError() const { return Kind == DiagnosticKind::Error; }
+  bool HasFixIts() const { return FixIts.size() > 0; }
+  bool HasArgs() const { return FormatArgs.size() > 0; }
 };
 
 /// Diagnostic

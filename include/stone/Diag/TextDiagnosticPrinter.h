@@ -26,7 +26,19 @@ public:
   void SetFormattingStyle(DiagnosticOptions::FormattingStyle fmtStyle) {
     FmtStyle = fmtStyle;
   }
+
+  void PrintDiagnostic();
+  void EmitDiagnostic();
+  void EmitDiagnosticMessage();
+  void EmitDiagnosticCaret();
+
   void HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) override;
+
+  /// \returns true if an error occurred while finishing-up.
+  // virtual bool FinishProcessing() { return false; }
+
+  // /// Flush any in-flight diagnostics.
+  // virtual void FlushInflightDiagnostic() {}
 };
 
 class TextDiagnosticPrinterImpl final : public TextDiagnosticPrinter {

@@ -86,14 +86,16 @@ DiagnosticClient::~DiagnosticClient() = default;
 bool DiagnosticClient::UseInDiagnosticCounts() const { return true; }
 
 void DiagnosticClient::HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) {
-  if (!UseInDiagnosticCounts()) {
-    return;
-  }
-
-  // if (DiagLevel == DiagnosticsEngine::Warning)
-  //   ++NumWarnings;
-  // else if (DiagLevel >= DiagnosticsEngine::Error)
-  //   ++NumErrors;
+  // if (UseInDiagnosticCounts()) {
+  //   if (DI.IsWarning()) {
+  //     ++TotalWarning;
+  //     return;
+  //   }
+  //   if (DI.IsError()) {
+  //     ++TotalErrors;
+  //     return;
+  //   }
+  // }
 }
 
 // DiagID Diagnostic::GetDiagID() const {

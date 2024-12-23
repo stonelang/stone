@@ -135,7 +135,7 @@ public:
   }
 
   /// Set whether a diagnostic should be ignored.
-  void SetIgnoredDiagnostic(DiagID ID, bool ignored) {
+  void SetIgnoreDiagnostic(DiagID ID, bool ignored) {
     ignoredDiagnostics[(unsigned)ID] = ignored;
   }
 
@@ -180,7 +180,6 @@ enum class DiagnosticStage {
 class Diagnostic : public DiagnosticAllocation<Diagnostic> {
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
-  friend class DiagnosticImpl;
 
 protected:
   DiagID ID;
@@ -226,13 +225,11 @@ public:
 public:
   DiagID GetID() const { return ID; }
   DiagnosticStage GetStage() { return Stage; }
-  // DiagnosticState& GetState() { return State;}
   llvm::ArrayRef<DiagnosticArgument> GetArgs() const { return Args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return Ranges; }
   llvm::ArrayRef<FixIt> GetFixIts() const { return FixIts; }
   SrcLoc GetLoc() const { return Loc; }
   DiagnosticLevel GetLevel() const { return Level; }
-  // llvm::StringRef GetMessage() const { return Message; }
   //  bool IsFromCache() { return FromCache; }
 
 public:
@@ -313,6 +310,9 @@ public:
 
   /// Add a character-based range to the currently-active diagnostic.
   InFlightDiagnostic &HighlightChars(SrcLoc StartLoc, SrcLoc EndLoc);
+
+  /// Add an argument to the diagnostic
+  InFlightDiagnostic &AddDiagnosticArgument(const DiagnosticArgument argument);
 };
 
 /// DiagnosticRenderer in clang
