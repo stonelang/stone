@@ -41,41 +41,129 @@ void DiagnosticEngine::FormatDiagnosticText(
       Out, FormatText.begin(), FormatText.end(), SM, Args, FormatOpts);
 }
 
-enum class DiagnosticTextToken {
+enum class IntTextKind {
   None = 0,
   Percent,
   LBrace,
   RBrace,
   LParen,
   RParen,
+  SingleQuote,
+  DoubleQuote,
+  WhiteSpace,
+  NewLine,
+  VerticalTable,
+  StringLiteral,
+  IntegerLiter,
+  Comma,
+  Semi,
+  Colon,
+  Identifier,
 };
 
-static DiagnosticTextToken DetermineDiagnosticTextToken(const char *CharPtr) {
-
-  switch (*CharPtr) {
+static IntTextKind DetermineInTextKind(const char *CurPtr) {
+  switch (*CurPtr++) {
   case '%':
-    return DiagnosticTextToken::Percent;
+    return IntTextKind::Percent;
   case '{':
-    return DiagnosticTextToken::Percent;
+    return IntTextKind::LBrace;
   case '}':
-    return DiagnosticTextToken::Percent;
+    return IntTextKind::RBrace;
   case '(':
-    return DiagnosticTextToken::Percent;
+    return IntTextKind::LParen;
   case ')':
-    return DiagnosticTextToken::Percent;
+    return IntTextKind::RParen;
+  case '\n':
+  case '\r':
+    return IntTextKind::NewLine;
+  case ' ':
+  case '\t':
+  case '\f':
+  case '\v':
+    return IntTextKind::WhiteSpace;
+  case ',':
+    return IntTextKind::Comma;
+  case ';':
+    return IntTextKind::Semi;
+  case ':':
+    return IntTextKind::Colon;
+  case 'A':
+  case 'B':
+  case 'C':
+  case 'D':
+  case 'E':
+  case 'F':
+  case 'G':
+  case 'H':
+  case 'I':
+  case 'J':
+  case 'K':
+  case 'L':
+  case 'M':
+  case 'N':
+  case 'O':
+  case 'P':
+  case 'Q':
+  case 'R':
+  case 'S':
+  case 'T':
+  case 'U':
+  case 'V':
+  case 'W':
+  case 'X':
+  case 'Y':
+  case 'Z':
+  case 'a':
+  case 'b':
+  case 'c':
+  case 'd':
+  case 'e':
+  case 'f':
+  case 'g':
+  case 'h':
+  case 'i':
+  case 'j':
+  case 'k':
+  case 'l':
+  case 'm':
+  case 'n':
+  case 'o':
+  case 'p':
+  case 'q':
+  case 'r':
+  case 's':
+  case 't':
+  case 'u':
+  case 'v':
+  case 'w':
+  case 'x':
+  case 'y':
+  case 'z':
+  case '_':
+    return IntTextKind::Identifier;
+  case '"':
+    return IntTextKind::StringLiteral;
   default:
-    return DiagnosticTextToken::None;
+    return IntTextKind::None;
   }
 }
 void DiagnosticEngine::FormatDiagnosticText(
-    llvm::raw_ostream &Out, const char *StrPtr, const char *EndPtr, SrcMgr &SM,
-    ArrayRef<DiagnosticArgument> Args, DiagnosticFormatOptions FormatOpts) {
+    llvm::raw_ostream &Out, const char *BufferStart, const char *BufferEnd,
+    SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
+    DiagnosticFormatOptions FormatOpts) {
 
-  while (*StrPtr != *EndPtr) {
+  /// Assign the CurPtr to the BufferStart
+  const char *CurPtr = BufferStart;
+  //
+  const char *TextStart = CurPtr;
+  unsigned IntTextLoc = 0;
+  while (1) {
+    /// May not need.
+    ++IntTextLoc;
+    auto CurTok = DetermineInTextKind(CurPtr);
 
-    switch (*StrPtr) {
-    case '%': {
-    }
+    if (CurPtr == BufferEnd) {
+      break;
     }
   }
 }
