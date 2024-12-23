@@ -312,6 +312,17 @@ public:
 
   /// Add an argument to the diagnostic
   InFlightDiagnostic &AddDiagnosticArgument(const DiagnosticArgument argument);
+
+public:
+  /// May be faster.
+  friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
+                                              int I) {
+    return ID;
+  }
+  friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
+                                              llvm::StringRef Text) {
+    return ID;
+  }
 };
 
 /// DiagnosticRenderer in clang

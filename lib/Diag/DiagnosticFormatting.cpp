@@ -27,7 +27,6 @@ void DiagnosticImpl::FormatDiagnostic(
     llvm::raw_ostream &Out, SrcMgr &SM,
     DiagnosticFormatOptions FormatOpts) const {
 
-
   DiagnosticEngine::FormatDiagnosticText(Out, FormatText, SM, FormatArgs,
                                          FormatOpts);
 }
@@ -42,23 +41,41 @@ void DiagnosticEngine::FormatDiagnosticText(
       Out, FormatText.begin(), FormatText.end(), SM, Args, FormatOpts);
 }
 
+enum class DiagnosticTextToken {
+  None = 0,
+  Percent,
+  LBrace,
+  RBrace,
+  LParen,
+  RParen,
+};
+
+static DiagnosticTextToken DetermineDiagnosticTextToken(const char *CharPtr) {
+
+  switch (*CharPtr) {
+  case '%':
+    return DiagnosticTextToken::Percent;
+  case '{':
+    return DiagnosticTextToken::Percent;
+  case '}':
+    return DiagnosticTextToken::Percent;
+  case '(':
+    return DiagnosticTextToken::Percent;
+  case ')':
+    return DiagnosticTextToken::Percent;
+  default:
+    return DiagnosticTextToken::None;
+  }
+}
 void DiagnosticEngine::FormatDiagnosticText(
     llvm::raw_ostream &Out, const char *StrPtr, const char *EndPtr, SrcMgr &SM,
     ArrayRef<DiagnosticArgument> Args, DiagnosticFormatOptions FormatOpts) {
 
   while (*StrPtr != *EndPtr) {
 
-    // if (*DiagStr != '%') {
-    //   // Append non-%0 substrings to Str if we have one.
-    //   const char *StrEnd = std::find(DiagStr, DiagEnd, '%');
-    //   Out.write(DiagStr, StrEnd);
-    //   DiagStr = StrEnd;
-    //   continue;
-    // }
-    // else if (isPunctuation((*DiagStr)+1)) {
-    //   Out.write(DiagStr[1]);  // %% -> %.
-    //   DiagStr += 2;
-    //   continue;
-    // }
+    switch (*StrPtr) {
+    case '%': {
+    }
+    }
   }
 }
