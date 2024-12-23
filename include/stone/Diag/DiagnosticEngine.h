@@ -4,7 +4,6 @@
 #include "stone/Diag/DiagnosticAllocation.h"
 #include "stone/Diag/DiagnosticClient.h"
 
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
@@ -470,6 +469,11 @@ public:
   static void FormatDiagnosticText(
       llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
       ArrayRef<DiagnosticArgument> Args,
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
+
+  static void FormatDiagnosticText(
+      llvm::raw_ostream &Out, const char *DiagStart, const char *DiagEnd,
+      SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 
 private:

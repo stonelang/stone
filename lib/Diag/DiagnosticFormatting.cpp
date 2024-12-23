@@ -1,7 +1,27 @@
 #include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "clang/Basic/CharInfo.h"
+
+#include "llvm/ADT/SmallString.h"
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringExtras.h"
+#include "llvm/ADT/StringRef.h"
+#include "llvm/Support/ConvertUTF.h"
+#include "llvm/Support/CrashRecoveryContext.h"
+#include "llvm/Support/Unicode.h"
+#include "llvm/Support/raw_ostream.h"
+#include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <limits>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace stone;
+using namespace clang;
 
 void DiagnosticImpl::FormatDiagnostic(
     llvm::raw_ostream &Out, SrcMgr &SM,
@@ -26,13 +46,8 @@ void DiagnosticEngine::FormatDiagnosticText(
     llvm::raw_ostream &Out, StringRef InText, SrcMgr &SM,
     ArrayRef<DiagnosticArgument> Args, DiagnosticFormatOptions FormatOpts) {
 
-  // unsigned BufferID = SM.addMemBufferCopy(Text);
-  // DiagnosticTextParser textParser(BufferID, SM);
-  // textParser.Parse();
-  // FormatDiagnosticParser().Parse();
-
   while (!InText.empty()) {
-  	// Find the location of the percent symbol 
+    // Find the location of the percent symbol
     size_t Percent = InText.find('%');
     if (Percent == StringRef::npos) {
       // Write the rest of the string; we're done.
@@ -40,62 +55,41 @@ void DiagnosticEngine::FormatDiagnosticText(
       break;
     }
 
-     // Write the string up to (but not including) the %, then drop that text
-     // (including the %).
-     Out.write(InText.data(), Percent);
-     InText = InText.substr(Percent + 1);
+    // Write the string up to but not including the % into Out.
+    Out.write(InText.data(), Percent);
 
-    // // '%%' -> '%'.
-    // if (InText[0] == '%') {
-    //   Out.write('%');
-    //   InText = InText.substr(1);
-    //   continue;
-    // }
+    // Remove the text up to and include the % from InText.
+    InText = InText.substr(Percent + 1);
 
-    // // Parse an optional modifier.
-    // StringRef Modifier;
-    // {
-    //   size_t Length = InText.find_if_not(isalpha);
-    //   Modifier = InText.substr(0, Length);
-    //   InText = InText.substr(Length);
-    // }
-
-    // if (Modifier == "error") {
-    //   Out << StringRef(
-    //       "<<INTERNAL ERROR: encountered %error in diagnostic text>>");
-    //   continue;
-    // }
-
-    // // Parse the optional argument list for a modifier, which is
-    // brace-enclosed. StringRef ModifierArguments; if (InText[0] == '{') {
-    //   InText = InText.substr(1);
-    //   ModifierArguments = skipToDelimiter(InText, '}');
-    // }
-
-    // // Find the digit sequence, and parse it into an argument index.
-    // size_t Length = InText.find_if_not(isdigit);
-    // unsigned ArgIndex;
-    // bool IndexParseFailed = InText.substr(0, Length).getAsInteger(10,
-    // ArgIndex);
-
-    // if (IndexParseFailed) {
-    //   Out << StringRef(
-    //       "<<INTERNAL ERROR: unparseable argument index in diagnostic
-    //       text>>");
-    //   continue;
-    // }
-
-    // InText = InText.substr(Length);
-
-    // if (ArgIndex >= Args.size()) {
-    //   Out << StringRef(
-    //       "<<INTERNAL ERROR: out-of-range argument index in diagnostic
-    //       text>>");
-    //   continue;
-    // }
-
-    // Convert the argument to a string.
-    // DiagnosticEngine::FormatDiagnosticArgument(Modifier, ModifierArguments,
-    // Args, ArgIndex, FormatOpts, Out);
+    // It is possible that you have '%%' -- we treat it as '%'.
+    if (InText[0] == '%') {
+      // Write percent to Out
+      Out.write('%');
+      // Remove the extra percent
+      InText = InText.substr(1);
+      continue;
+    }
   }
 }
+
+// void DiagnosticEngine::FormatDiagnosticText(
+//     llvm::raw_ostream &Out, const char *DiagStr, const char *DiagEnd,
+//     SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
+//     DiagnosticFormatOptions FormatOpts) {
+
+//   while (DiagStr != DiagEnd) {
+
+//     // if (*DiagStr != '%') {
+//     //   // Append non-%0 substrings to Str if we have one.
+//     //   const char *StrEnd = std::find(DiagStr, DiagEnd, '%');
+//     //   Out.write(DiagStr, StrEnd);
+//     //   DiagStr = StrEnd;
+//     //   continue;
+//     // }
+//     // else if (isPunctuation((*DiagStr)+1)) {
+//     //   Out.write(DiagStr[1]);  // %% -> %.
+//     //   DiagStr += 2;
+//     //   continue;
+//     // }
+//   }
+// }

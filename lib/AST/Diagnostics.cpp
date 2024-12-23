@@ -1225,7 +1225,54 @@ bool TextDiagnosticPrinter::finishProcessing() {
 }
 
 void TextDiagnosticPrinter::printDiagnostic(SrcMgr &SM,
-                                            const DiagnosticInfo &Info) {}
+                                            const DiagnosticInfo &Info) {
+
+  // Determine what kind of diagnostic we're emitting.
+  llvm::SourceMgr::DiagKind SMKind;
+  switch (Info.Kind) {
+  case DiagnosticKind::Error:
+    SMKind = llvm::SourceMgr::DK_Error;
+    break;
+  case DiagnosticKind::Warning:
+    SMKind = llvm::SourceMgr::DK_Warning;
+    break;
+
+  case DiagnosticKind::Note:
+    SMKind = llvm::SourceMgr::DK_Note;
+    break;
+
+  case DiagnosticKind::Remark:
+    SMKind = llvm::SourceMgr::DK_Remark;
+    break;
+  }
+
+  // Translate ranges.
+  SmallVector<llvm::SMRange, 2> Ranges;
+  for (auto R : Info.Ranges)
+    Ranges.push_back(getRawRange(SM, R));
+
+  // Translate fix-its.
+  SmallVector<llvm::SMFixIt, 2> FixIts;
+  for (DiagnosticInfo::FixIt F : Info.FixIts)
+    FixIts.push_back(getRawFixIt(SM, F));
+
+  // Display the diagnostic.
+  ColoredStream coloredErrs{Stream};
+  raw_ostream &out = ForceColors ? coloredErrs : Stream;
+  const llvm::SourceMgr &rawSM = SM.getLLVMSourceMgr();
+
+  // Actually substitute the diagnostic arguments into the diagnostic text.
+  llvm::SmallString<256> Text;
+  {
+    llvm::raw_svector_ostream Out(Text);
+    DiagnosticEngine::formatDiagnosticText(Out, Info.FormatString,
+                                           Info.FormatArgs);
+  }
+
+  auto Msg = SM.GetMessage(Info.Loc, SMKind, Text, Ranges, FixIts,
+                           EmitMacroExpansionFiles);
+  rawSM.PrintMessage(out, Msg, ForceColors);
+}
 
 void TextDiagnosticPrinter::handleDiagnostic(SrcMgr &SM,
                                              const DiagnosticInfo &Info) {
