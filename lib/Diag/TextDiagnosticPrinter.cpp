@@ -24,7 +24,7 @@ void TextDiagnosticPrinter::HandleDiagnostic(SrcMgr &SM,
   // // this later as we print out the diagnostic to the terminal.
   DI.FormatDiagnostic(OS.GetOutputStream(), SM);
 
-  // 2. Print message
+  // 2. Print the formatted message
   //  // Keeps track of the starting position of the location
   //  // information (e.g., "foo.c:10:4:") that precedes the error
   //  // message. We use this information to determine how long the

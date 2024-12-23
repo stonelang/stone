@@ -33,6 +33,7 @@ void DiagnosticEngine::FormatDiagnosticText(
   // FormatDiagnosticParser().Parse();
 
   while (!InText.empty()) {
+  	// Find the location of the percent symbol 
     size_t Percent = InText.find('%');
     if (Percent == StringRef::npos) {
       // Write the rest of the string; we're done.
@@ -40,10 +41,10 @@ void DiagnosticEngine::FormatDiagnosticText(
       break;
     }
 
-    // // Write the string up to (but not including) the %, then drop that text
-    // // (including the %).
-    // Out.write(InText.data(), Percent);
-    // InText = InText.substr(Percent + 1);
+     // Write the string up to (but not including) the %, then drop that text
+     // (including the %).
+     Out.write(InText.data(), Percent);
+     InText = InText.substr(Percent + 1);
 
     // // '%%' -> '%'.
     // if (InText[0] == '%') {
