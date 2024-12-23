@@ -59,6 +59,8 @@ enum class IntTextKind {
   Semi,
   Colon,
   Identifier,
+  Number,
+
 };
 
 static IntTextKind DetermineInTextKind(const char *CurPtr) {
@@ -143,10 +145,22 @@ static IntTextKind DetermineInTextKind(const char *CurPtr) {
     return IntTextKind::Identifier;
   case '"':
     return IntTextKind::StringLiteral;
+  case '0':
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+  case '5':
+  case '6':
+  case '7':
+  case '8':
+  case '9':
+    return IntTextKind::Number;
   default:
     return IntTextKind::None;
   }
 }
+
 void DiagnosticEngine::FormatDiagnosticText(
     llvm::raw_ostream &Out, const char *BufferStart, const char *BufferEnd,
     SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
@@ -154,16 +168,31 @@ void DiagnosticEngine::FormatDiagnosticText(
 
   /// Assign the CurPtr to the BufferStart
   const char *CurPtr = BufferStart;
-  //
+  // Recall the start so we can form the text range.
   const char *TextStart = CurPtr;
-  unsigned IntTextLoc = 0;
-  while (1) {
-    /// May not need.
-    ++IntTextLoc;
-    auto CurTok = DetermineInTextKind(CurPtr);
 
-    if (CurPtr == BufferEnd) {
-      break;
+  // Keep a count
+  unsigned IntTextLoc = 0;
+
+  while (*CurPtr != *BufferEnd) {
+    /// May not need.
+    //++IntTextLoc;
+    auto CurTok = DetermineInTextKind(CurPtr);
+    if (CurTok == IntTextKind::None) {
+      return;
+    }
+    // Check for a percent
+    if (CurTok == IntTextKind::Percent) {
+      // Now, copy the string up to the percent (not including) to the Out
+      // buffer
+      Out.write(TextStart, static_cast<size_t>(CurPtr - TextStart));
+      continue;
+    }
+
+    if (CurTok == IntTextKind::Number) {
+      if (DetermineInTextKind(CurPtr--) != IntTextKind::Percent) {
+        return;
+      }
     }
   }
 }
