@@ -197,7 +197,7 @@ static IntTextKind DetermineInTextKind(const char *CurPtr) {
 //   }
 // }
 
-struct DiagnosticTextParser {
+class DiagnosticTextParser {
 
   llvm::raw_ostream &Out;
 
@@ -216,6 +216,7 @@ struct DiagnosticTextParser {
 
   llvm::ArrayRef<DiagnosticArgument> Args;
 
+public:
   DiagnosticTextParser(llvm::raw_ostream &Out, const char *BufferStart,
                        const char *BufferEnd, stone::SrcMgr &SM,
                        ArrayRef<DiagnosticArgument> Args)
@@ -224,6 +225,14 @@ struct DiagnosticTextParser {
     CurPtr = BufferStart;
   }
 
+public:
+  void Parse() {
+    while (*CurPtr != *BufferEnd) {
+      ParseImpl(CurPtr);
+    }
+  }
+
+private:
   void ParsePercent(const char *CurPtr) {
     if (*CurPtr != '%') {
       return;
@@ -235,7 +244,8 @@ struct DiagnosticTextParser {
   void ParseLParent(const char *CurPtr) {}
   void ParseRParent(const char *CurPtr) {}
 
-  void ParseChar(const char *CurPtr) {
+  void ParseDigit(const char *CurPtr) {}
+  void ParseImpl(const char *CurPtr) {
     switch (*CurPtr++) {
     case '%': {
       ParsePercent(CurPtr);
@@ -257,11 +267,21 @@ struct DiagnosticTextParser {
       ParseRParent(CurPtr);
       break;
     }
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9': {
+      ParseDigit(CurPtr);
+      break;
     }
-  }
-  void Parse() {
-    while (*CurPtr != *BufferEnd) {
-      ParseChar(CurPtr);
+    default: {
+    }
     }
   }
 };
