@@ -41,7 +41,6 @@ void DiagnosticEngine::FormatDiagnosticText(
       Out, FormatText.begin(), FormatText.end(), SM, Args, FormatOpts);
 }
 
-
 class DiagnosticTextParser {
 
   llvm::raw_ostream &Out;
@@ -113,9 +112,8 @@ private:
   }
   void ParseSelect(const char *CurPtr) {
 
-  	if(*CurPtr != 's'){
-  	}
-
+    if (*CurPtr != 's') {
+    }
   }
   void ParseImpl(const char *CurPtr) {
     switch (*CurPtr++) {
@@ -166,13 +164,13 @@ private:
       break;
     }
     case ',':
-    	// eat
+      // eat
       break;
     case ';':
-    	//eat 
+      // eat
       break;
     case ':':
-    	// eat
+      // eat
       break;
     default: {
       if (!clang::isLetter(*CurPtr)) {

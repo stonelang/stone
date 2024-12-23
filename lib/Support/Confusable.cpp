@@ -1,11 +1,11 @@
-#include "stone/Parse/Confusable.h"
+#include "stone/Support/Confusable.h"
 
 char stone::ConvertConfusableCharacterToASCII(uint32_t codepoint) {
   switch (codepoint) {
 #define CONFUSABLE(CONFUSABLE_POINT, CONFUSABLE_NAME, BASE_POINT, BASE_NAME)   \
   case CONFUSABLE_POINT:                                                       \
     return BASE_POINT;
-#include "stone/Parse/Confusable.def"
+#include "stone/Support/Confusable.def"
   default:
     return 0;
   }
@@ -17,7 +17,7 @@ stone::GetConfusableAndBaseCodepointNames(uint32_t codepoint) {
 #define CONFUSABLE(CONFUSABLE_POINT, CONFUSABLE_NAME, BASE_POINT, BASE_NAME)   \
   case CONFUSABLE_POINT:                                                       \
     return std::make_pair(CONFUSABLE_NAME, BASE_NAME);
-#include "stone/Parse/Confusable.def"
+#include "stone/Support/Confusable.def"
   default:
     return std::make_pair("", "");
   }

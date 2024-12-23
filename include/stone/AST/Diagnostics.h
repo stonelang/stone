@@ -310,33 +310,6 @@ public:
   }
 };
 
-struct DiagnosticFormatOptions {
-  const std::string OpeningQuotationMark;
-  const std::string ClosingQuotationMark;
-  const std::string AKAFormatString;
-  const std::string OpaqueResultFormatString;
-
-  DiagnosticFormatOptions(std::string OpeningQuotationMark,
-                          std::string ClosingQuotationMark,
-                          std::string AKAFormatString,
-                          std::string OpaqueResultFormatString)
-      : OpeningQuotationMark(OpeningQuotationMark),
-        ClosingQuotationMark(ClosingQuotationMark),
-        AKAFormatString(AKAFormatString),
-        OpaqueResultFormatString(OpaqueResultFormatString) {}
-
-  DiagnosticFormatOptions()
-      : OpeningQuotationMark("'"), ClosingQuotationMark("'"),
-        AKAFormatString("'%s' (aka '%s')"),
-        OpaqueResultFormatString("'%s' (%s of '%s')") {}
-
-  /// When formatting fix-it arguments, don't include quotes or other
-  /// additions which would result in invalid code.
-  static DiagnosticFormatOptions formatForFixIts() {
-    return DiagnosticFormatOptions("", "", "%s", "%s");
-  }
-};
-
 enum class FixItID : uint32_t;
 
 /// Represents a fix-it defined  with a format string and optional

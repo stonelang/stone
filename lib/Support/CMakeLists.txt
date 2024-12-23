@@ -19,9 +19,11 @@ set(stone_support_sources
   InputFile.cpp
   Statistics.cpp
   Options.cpp
+  Confusable.cpp
 
 	LINK_LIBS 
 	StoneBasic
+  clangBasic
 
   DEPENDS
   StoneOptions

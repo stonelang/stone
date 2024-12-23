@@ -5,6 +5,8 @@ ERROR(error_invalid_diagnostic,None,
       "INTERNAL ERROR: this diagnostic should not be produced", ())
 
 
+ERROR(error_no_input_files, None, "no input files", ())
+
 ERROR(error_duplicate_input_file,None,
       "duplicate input file '%0'", (StringRef))
 

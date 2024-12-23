@@ -279,6 +279,7 @@ PUNCTUATOR(minusequal,  "-=")
 PUNCTUATOR(plus,         "+")
 PUNCTUATOR(doubleplus,   "++")
 PUNCTUATOR(plusequal,    "+=")
+PUNCTUATOR(percent,      "%")
 
 // Keywords prefixed with a '#'.  "if" becomes "tok::pound_if".
 POUND_KEYWORD(if)

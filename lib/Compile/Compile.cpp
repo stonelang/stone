@@ -39,7 +39,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
                              invocation.GetDiagnosticOptions());
 
   DE.AddClient(DC.get());
-  DE.Diagnose(diag::warning_null_character);
+  DE.Diagnose(diag::error_no_input_files);
   DE.FinishProcessing();
 
   // auto FinishCompile = [&](Status status = Status::Success()) -> int {

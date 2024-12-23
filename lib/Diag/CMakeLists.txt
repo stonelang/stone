@@ -14,6 +14,7 @@ set(stone_diag_sources
   TextDiagnosticBuffering.cpp
   TextDiagnosticPrinter.cpp
   DiagnosticEmitter.cpp
+  DiagnosticFormatLexer.cpp
 
   LINK_LIBS
   StoneBasic

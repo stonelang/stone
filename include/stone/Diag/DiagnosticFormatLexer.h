@@ -1,16 +1,16 @@
-#ifndef STONE_PARSE_LEXER_H
-#define STONE_PARSE_LEXER_H
+#ifndef STONE_DIAG_DIAGNOSTICFORMATLEXER_H
+#define STONE_DIAG_DIAGNOSTICFORMATLEXER_H
 
-#include "stone/AST/Diagnostics.h"
+#include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/Token.h"
-#include "stone/Support/LexerBase.h"
-#include "stone/Support/Statistics.h"
 #include "stone/Support/Trivia.h"
 
 // TODO: Move to support
 namespace stone {
 class SrcMgr;
 class Token;
+
+namespace diag {
 /// Given a pointer to the starting byte of a UTF8 character, validate it and
 /// advance the lexer past it.  This returns the encoded character or ~0U if
 /// the encoding is invalid.
@@ -50,6 +50,8 @@ enum class ConflictMarkerKind {
 };
 
 class LexerState final {
+  friend class DiagnosticFormatLexer;
+
 public:
   LexerState() {}
   bool IsValid() const { return loc.isValid(); }
@@ -66,19 +68,12 @@ private:
   friend class Lexer;
 };
 
-class LexerCache final {
-public:
-  LexerCache();
-  ~LexerCache();
-};
-
 // TODO: ParsingOptions
-class Lexer final : public LexerBase {
+class DiagnosticFormatLexer final {
 
   const unsigned BufferID;
   const SrcMgr &sm;
-  DiagnosticEngine *de;
-  StatsReporter *se;
+  llvm::raw_ostream &Diag;
   LexerState state;
 
   /// Pointer to the first character of the buffer, even in a lexer that
@@ -136,18 +131,19 @@ class Lexer final : public LexerBase {
   /// deep.
   const char *LexerCutOffPoint = nullptr;
 
-  Lexer(const Lexer &) = delete;
-  void operator=(const Lexer &) = delete;
+  DiagnosticFormatLexer(const DiagnosticFormatLexer &) = delete;
+  void operator=(const DiagnosticFormatLexer &) = delete;
 
   struct PrincipalCtor {};
 
   /// The principal constructor used by public constructors below.
   /// Don't use this constructor for other purposes, it does not initialize
   /// everything.
-  Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
-        DiagnosticEngine *de, StatsReporter *se, LexerMode LexMode,
-        HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
-        TriviaRetentionMode TriviaRetention);
+  DiagnosticFormatLexer(const PrincipalCtor &, unsigned BufferID,
+                        const SrcMgr &sm, llvm::raw_ostream &Diag,
+                        LexerMode LexMode, HashbangMode HashbangAllowed,
+                        CommentRetentionMode RetainComments,
+                        TriviaRetentionMode TriviaRetention);
 
   void Lex();
   void initialize(unsigned Offset, unsigned EndOffset);
@@ -172,22 +168,23 @@ public:
   ///   means that APIs like GetLocForEndOfToken really ought to take
   ///   this flag; it's just that we don't care that much about fidelity
   ///   when parsing SIL files.
-  Lexer(
-      unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
-      StatsReporter *se, LexerMode LexMode,
+  DiagnosticFormatLexer(
+      unsigned BufferID, const SrcMgr &sm, llvm::raw_ostream &Diag,
+      LexerMode LexMode,
       HashbangMode HashbangAllowed = HashbangMode::Disallowed,
       CommentRetentionMode RetainComments = CommentRetentionMode::None,
       TriviaRetentionMode TriviaRetention = TriviaRetentionMode::WithoutTrivia);
 
-  Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
-        StatsReporter *se);
+  DiagnosticFormatLexer(unsigned BufferID, const stone::SrcMgr &sm,
+                        llvm::raw_ostream &Diag);
 
   /// Create a lexer that scans a subrange of the source buffer.
-  Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
-        StatsReporter *se, LexerMode LexMode, HashbangMode HashbangAllowed,
-        CommentRetentionMode RetainComments,
-        TriviaRetentionMode TriviaRetention, unsigned Offset,
-        unsigned EndOffset);
+  DiagnosticFormatLexer(unsigned BufferID, const stone::SrcMgr &sm,
+                        llvm::raw_ostream &Diag, LexerMode LexMode,
+                        HashbangMode HashbangAllowed,
+                        CommentRetentionMode RetainComments,
+                        TriviaRetentionMode TriviaRetention, unsigned Offset,
+                        unsigned EndOffset);
 
   /// Create a sub-lexer that lexes from the same buffer, but scans
   /// a subrange of the buffer.
@@ -195,7 +192,8 @@ public:
   /// \param Parent the parent lexer that scans the whole buffer
   /// \param BeginState start of the subrange
   /// \param EndState end of the subrange
-  Lexer(Lexer &Parent, LexerState BeginState, LexerState EndState);
+  DiagnosticFormatLexer(DiagnosticFormatLexer &Parent, LexerState BeginState,
+                        LexerState EndState);
 
   /// Returns true if this lexer will produce a code completion token.
   bool isCodeCompletion() const { return CodeCompletionPtr != nullptr; }
@@ -301,9 +299,11 @@ public:
   void restoreState(LexerState S, bool enableDiagnostics = false) {
     assert(S.IsValid());
     CurPtr = getBufferPtrForSrcLoc(S.loc);
+
     // Don't reemit diagnostics while readvancing the lexer.
-    llvm::SaveAndRestore<stone::DiagnosticEngine *> DE(
-        de, enableDiagnostics ? de : nullptr);
+    // llvm::SaveAndRestore<llvm::raw_ostream *> DE(
+    //     de, enableDiagnostics ? de : nullptr);
+
     Lex();
     // Restore Trivia.
     if (TriviaRetention == TriviaRetentionMode::WithTrivia)
@@ -332,7 +332,7 @@ public:
   /// bracket, possibly with comments in between) in order to insert the
   /// appropriate fix-it.
   static Token getTokenAtLocation(
-      const SrcMgr &SM, SrcLoc Loc,
+      const stone::SrcMgr &SM, SrcLoc Loc,
       CommentRetentionMode CRM = CommentRetentionMode::ReturnAsTokens);
 
   /// Retrieve the source location that points just past the
@@ -342,7 +342,7 @@ public:
   /// resides.
   ///
   /// \param Loc The source location of the beginning of a token.
-  static SrcLoc GetLocForEndOfTokenImpl(const SrcMgr &SM, SrcLoc Loc);
+  static SrcLoc GetLocForEndOfTokenImpl(const stone::SrcMgr &SM, SrcLoc Loc);
 
   /// Convert a SrcRange to the equivalent CharSrcRange
   ///
@@ -350,7 +350,7 @@ public:
   /// resides.
   ///
   /// \param SR The source range
-  static CharSrcRange getCharSrcRangeFromSrcRange(const SrcMgr &SM,
+  static CharSrcRange getCharSrcRangeFromSrcRange(const stone::SrcMgr &SM,
                                                   const SrcRange &SR) {
     return CharSrcRange(SM, SR.Start, GetLocForEndOfTokenImpl(SM, SR.End));
   }
@@ -370,25 +370,25 @@ public:
   ////
   /// If the offset points to whitespace the returned source location will point
   /// to the whitespace offset.
-  static SrcLoc GetLocForStartOfToken(SrcMgr &SM, unsigned BufferID,
+  static SrcLoc GetLocForStartOfToken(stone::SrcMgr &SM, unsigned BufferID,
                                       unsigned Offset);
 
-  static SrcLoc GetLocForStartOfToken(SrcMgr &SM, SrcLoc Loc);
+  static SrcLoc GetLocForStartOfToken(stone::SrcMgr &SM, SrcLoc Loc);
 
   /// Retrieve the start location of the line containing the given location.
   /// the given location.
-  static SrcLoc GetLocForStartOfLine(SrcMgr &SM, SrcLoc Loc);
+  static SrcLoc GetLocForStartOfLine(stone::SrcMgr &SM, SrcLoc Loc);
 
   /// Retrieve the source location for the end of the line containing the
   /// given location, which is the location of the start of the next line.
-  static SrcLoc GetLocForEndOfLine(SrcMgr &SM, SrcLoc Loc);
+  static SrcLoc GetLocForEndOfLine(stone::SrcMgr &SM, SrcLoc Loc);
 
   /// Retrieve the string used to indent the line that contains the given
   /// source location.
   ///
   /// If \c ExtraIndentation is not null, it will be set to an appropriate
   /// additional intendation for adding code in a smaller scope "within" \c Loc.
-  static StringRef getIndentationForLine(SrcMgr &SM, SrcLoc Loc,
+  static StringRef getIndentationForLine(stone::SrcMgr &SM, SrcLoc Loc,
                                          StringRef *ExtraIndentation = nullptr);
 
   /// Determines if the given string is a valid non-operator
@@ -488,11 +488,11 @@ public:
   /// of a potentially interpolated string.
   static void getStringLiteralSegments(const Token &Str,
                                        SmallVectorImpl<StringSegment> &Segments,
-                                       stone::DiagnosticEngine *Diags);
+                                       llvm::raw_ostream &Diag);
 
   void getStringLiteralSegments(const Token &Str,
                                 SmallVectorImpl<StringSegment> &Segments) {
-    return getStringLiteralSegments(Str, Segments, de);
+    return getStringLiteralSegments(Str, Segments, Diag);
   }
 
   static SrcLoc getSrcLoc(const char *Loc) { return SrcLoc::GetFromPtr(Loc); }
@@ -515,14 +515,6 @@ private:
   /// pointer.
   const char *getBufferPtrForSrcLoc(SrcLoc Loc) const {
     return BufferStart + sm.getLocOffsetInBuffer(Loc, BufferID);
-  }
-
-  InFlightDiagnostic diagnose(const char *loc, Diagnostic diagnostic);
-
-  template <typename... DiagArgTypes, typename... ArgTypes>
-  InFlightDiagnostic diagnose(const char *loc, Diag<DiagArgTypes...> DiagID,
-                              ArgTypes &&...Args) {
-    return diagnose(loc, Diagnostic(DiagID, std::forward<ArgTypes>(Args)...));
   }
 
   void formToken(tok Kind, const char *TokStart);
@@ -556,7 +548,8 @@ private:
   /// skipped over (like a BOM), this can be used to point to the start of the
   /// BOM. The returned \c StringRef will always start at \p AllTriviaStart.
   StringRef lexTrivia(bool IsForTrailingTrivia, const char *AllTriviaStart);
-  static unsigned lexUnicodeEscape(const char *&CurPtr, Lexer *Diags);
+  static unsigned lexUnicodeEscape(const char *&CurPtr,
+                                   DiagnosticFormatLexer *Diags);
 
   unsigned lexCharacter(const char *&CurPtr, char StopQuote,
                         bool EmitDiagnostics, bool IsMultilineString = false,
@@ -586,14 +579,6 @@ private:
   /// error message instead, determined by the Swift library.
   void diagnoseSingleQuoteStringLiteral(const char *TokStart,
                                         const char *TokEnd);
-
-public:
-  Token GetTokenAtLoc(const SrcMgr &sm, SrcLoc loc) override {
-    return getTokenAtLocation(sm, loc);
-  }
-  SrcLoc GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) override {
-    return GetLocForEndOfTokenImpl(sm, loc);
-  }
 };
 
 /// A lexer that can lex trivia into its pieces
@@ -618,6 +603,8 @@ Iterator token_lower_bound(ArrayTy &Array, SrcLoc Loc) {
 /// .
 llvm::ArrayRef<Token> slice_token_array(ArrayRef<Token> AllTokens,
                                         SrcLoc StartLoc, SrcLoc EndLoc);
+
+} // namespace diag
 } // namespace stone
 
 #endif
