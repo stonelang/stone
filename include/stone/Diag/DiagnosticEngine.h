@@ -462,17 +462,11 @@ public:
   /// buffer.
   static void FormatDiagnosticText(
       llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
-      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
-
-  /// Format the given diagnostic text and place the result in the given
-  /// buffer.
-  static void FormatDiagnosticText(
-      llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
       ArrayRef<DiagnosticArgument> Args,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 
   static void FormatDiagnosticText(
-      llvm::raw_ostream &Out, const char *DiagStart, const char *DiagEnd,
+      llvm::raw_ostream &Out, const char *StrPtr, const char *EndPtr,
       SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 

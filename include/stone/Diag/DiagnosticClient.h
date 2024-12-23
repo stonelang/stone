@@ -211,7 +211,7 @@ struct DiagnosticImpl final {
   SrcLoc Loc;
   DiagnosticKind Kind;
   DiagnosticReason Reason;
-  StringRef FormatString;
+  StringRef FormatText;
   ArrayRef<DiagnosticArgument> FormatArgs;
 
   /// DiagnosticInfo of notes which are children of this diagnostic, if any
@@ -224,19 +224,16 @@ struct DiagnosticImpl final {
   llvm::ArrayRef<FixIt> FixIts;
 
   /// Evaluates true when this object stores a diagnostic.
-  explicit operator bool() const { return !FormatString.empty(); }
+  explicit operator bool() const { return !FormatText.empty(); }
 
   DiagnosticImpl(DiagID ID, SrcLoc Loc, DiagnosticKind Kind,
-                 DiagnosticReason Reason, StringRef FormatString,
+                 DiagnosticReason Reason, StringRef FormatText,
                  ArrayRef<DiagnosticArgument> FormatArgs,
                  ArrayRef<Diagnostic *> ChildDiagnostics,
                  ArrayRef<CharSrcRange> Ranges, ArrayRef<FixIt> FixIts)
-      : ID(ID), Loc(Loc), Kind(Kind), Reason(Reason),
-        FormatString(FormatString), FormatArgs(FormatArgs),
-        ChildDiagnostics(ChildDiagnostics), Ranges(Ranges), FixIts(FixIts) {}
-
-  // void FormatDiagnostic(
-  //     DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
+      : ID(ID), Loc(Loc), Kind(Kind), Reason(Reason), FormatText(FormatText),
+        FormatArgs(FormatArgs), ChildDiagnostics(ChildDiagnostics),
+        Ranges(Ranges), FixIts(FixIts) {}
 
   void FormatDiagnostic(
       llvm::raw_ostream &OS, SrcMgr &SM,

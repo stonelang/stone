@@ -31,21 +31,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-  // TextDiagnosticPrinter printer;
   CompilerInvocation invocation;
-  // invocation.AddDiagnosticConsumer(printer);
-
-  // std::unique_ptr<diags::TextDiagnosticBuffering> BDC(
-  //     new diags::TextDiagnosticBuffering());
-
-  // diags::DiagnosticEngine BDE(invocation.GetSrcMgr(),
-  //                             invocation.GetDiagnosticOptions());
-  // BDE.AddClient(BDC.get());
-  // // BDE.Diagnose(diags::err_compile_no_intputs);
-
-  // BDC->FlushDiagnostics(BDE);
-  // BDC->FinishProcessing();
-
   std::unique_ptr<diags::TextDiagnosticPrinterImpl> DC(
       new diags::TextDiagnosticPrinterImpl());
 
