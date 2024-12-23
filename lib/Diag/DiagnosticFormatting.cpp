@@ -161,38 +161,113 @@ static IntTextKind DetermineInTextKind(const char *CurPtr) {
   }
 }
 
+// void DiagnosticEngine::FormatDiagnosticText(
+//     llvm::raw_ostream &Out, const char *BufferStart, const char *BufferEnd,
+//     SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
+//     DiagnosticFormatOptions FormatOpts) {
+
+//   /// Assign the CurPtr to the BufferStart
+//   const char *CurPtr = BufferStart;
+//   // Recall the start so we can form the text range.
+//   const char *TextStart = CurPtr;
+
+//   // Keep a count
+//   unsigned IntTextLoc = 0;
+
+//   while (*CurPtr != *BufferEnd) {
+//     /// May not need.
+//     //++IntTextLoc;
+//     auto CurTok = DetermineInTextKind(CurPtr);
+//     if (CurTok == IntTextKind::None) {
+//       return;
+//     }
+//     // Check for a percent
+//     if (CurTok == IntTextKind::Percent) {
+//       // Now, copy the string up to the percent (not including) to the Out
+//       // buffer
+//       Out.write(TextStart, static_cast<size_t>(CurPtr - TextStart));
+//       continue;
+//     }
+
+//     if (CurTok == IntTextKind::Number) {
+//       if (DetermineInTextKind(CurPtr--) != IntTextKind::Percent) {
+//         return;
+//       }
+//     }
+//   }
+// }
+
+struct DiagnosticTextParser {
+
+  llvm::raw_ostream &Out;
+
+  /// Pointer to the first character of the buffer, even in a lexer that
+  /// scans a subrange of the buffer.
+  const char *BufferStart;
+  /// Pointer to one past the end character of the buffer, even in a lexer
+  /// that scans a subrange of the buffer.  Because the buffer is always
+  /// NUL-terminated, this points to the NUL terminator.
+  const char *BufferEnd;
+
+  /// Pointer to the next not consumed character.
+  const char *CurPtr;
+
+  stone::SrcMgr &SM;
+
+  llvm::ArrayRef<DiagnosticArgument> Args;
+
+  DiagnosticTextParser(llvm::raw_ostream &Out, const char *BufferStart,
+                       const char *BufferEnd, stone::SrcMgr &SM,
+                       ArrayRef<DiagnosticArgument> Args)
+      : Out(Out), BufferStart(BufferStart), BufferEnd(BufferEnd), SM(SM),
+        Args(Args) {
+    CurPtr = BufferStart;
+  }
+
+  void ParsePercent(const char *CurPtr) {
+    if (*CurPtr != '%') {
+      return;
+    }
+  }
+  void ParseLBrace(const char *CurPtr) {}
+  void ParseRBrace(const char *CurPtr) {}
+
+  void ParseLParent(const char *CurPtr) {}
+  void ParseRParent(const char *CurPtr) {}
+
+  void ParseChar(const char *CurPtr) {
+    switch (*CurPtr++) {
+    case '%': {
+      ParsePercent(CurPtr);
+      break;
+    }
+    case '{': {
+      ParseLBrace(CurPtr);
+      break;
+    }
+    case '}': {
+      ParseRBrace(CurPtr);
+      break;
+    }
+    case '(': {
+      ParseLBrace(CurPtr);
+      break;
+    }
+    case ')': {
+      ParseRParent(CurPtr);
+      break;
+    }
+    }
+  }
+  void Parse() {
+    while (*CurPtr != *BufferEnd) {
+      ParseChar(CurPtr);
+    }
+  }
+};
 void DiagnosticEngine::FormatDiagnosticText(
     llvm::raw_ostream &Out, const char *BufferStart, const char *BufferEnd,
     SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
     DiagnosticFormatOptions FormatOpts) {
-
-  /// Assign the CurPtr to the BufferStart
-  const char *CurPtr = BufferStart;
-  // Recall the start so we can form the text range.
-  const char *TextStart = CurPtr;
-
-  // Keep a count
-  unsigned IntTextLoc = 0;
-
-  while (*CurPtr != *BufferEnd) {
-    /// May not need.
-    //++IntTextLoc;
-    auto CurTok = DetermineInTextKind(CurPtr);
-    if (CurTok == IntTextKind::None) {
-      return;
-    }
-    // Check for a percent
-    if (CurTok == IntTextKind::Percent) {
-      // Now, copy the string up to the percent (not including) to the Out
-      // buffer
-      Out.write(TextStart, static_cast<size_t>(CurPtr - TextStart));
-      continue;
-    }
-
-    if (CurTok == IntTextKind::Number) {
-      if (DetermineInTextKind(CurPtr--) != IntTextKind::Percent) {
-        return;
-      }
-    }
-  }
+  DiagnosticTextParser(Out, BufferStart, BufferStart, SM, Args).Parse();
 }
