@@ -41,161 +41,6 @@ void DiagnosticEngine::FormatDiagnosticText(
       Out, FormatText.begin(), FormatText.end(), SM, Args, FormatOpts);
 }
 
-enum class IntTextKind {
-  None = 0,
-  Percent,
-  LBrace,
-  RBrace,
-  LParen,
-  RParen,
-  SingleQuote,
-  DoubleQuote,
-  WhiteSpace,
-  NewLine,
-  VerticalTable,
-  StringLiteral,
-  IntegerLiter,
-  Comma,
-  Semi,
-  Colon,
-  Identifier,
-  Number,
-
-};
-
-static IntTextKind DetermineInTextKind(const char *CurPtr) {
-  switch (*CurPtr++) {
-  case '%':
-    return IntTextKind::Percent;
-  case '{':
-    return IntTextKind::LBrace;
-  case '}':
-    return IntTextKind::RBrace;
-  case '(':
-    return IntTextKind::LParen;
-  case ')':
-    return IntTextKind::RParen;
-  case '\n':
-  case '\r':
-    return IntTextKind::NewLine;
-  case ' ':
-  case '\t':
-  case '\f':
-  case '\v':
-    return IntTextKind::WhiteSpace;
-  case ',':
-    return IntTextKind::Comma;
-  case ';':
-    return IntTextKind::Semi;
-  case ':':
-    return IntTextKind::Colon;
-  case 'A':
-  case 'B':
-  case 'C':
-  case 'D':
-  case 'E':
-  case 'F':
-  case 'G':
-  case 'H':
-  case 'I':
-  case 'J':
-  case 'K':
-  case 'L':
-  case 'M':
-  case 'N':
-  case 'O':
-  case 'P':
-  case 'Q':
-  case 'R':
-  case 'S':
-  case 'T':
-  case 'U':
-  case 'V':
-  case 'W':
-  case 'X':
-  case 'Y':
-  case 'Z':
-  case 'a':
-  case 'b':
-  case 'c':
-  case 'd':
-  case 'e':
-  case 'f':
-  case 'g':
-  case 'h':
-  case 'i':
-  case 'j':
-  case 'k':
-  case 'l':
-  case 'm':
-  case 'n':
-  case 'o':
-  case 'p':
-  case 'q':
-  case 'r':
-  case 's':
-  case 't':
-  case 'u':
-  case 'v':
-  case 'w':
-  case 'x':
-  case 'y':
-  case 'z':
-  case '_':
-    return IntTextKind::Identifier;
-  case '"':
-    return IntTextKind::StringLiteral;
-  case '0':
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-  case '5':
-  case '6':
-  case '7':
-  case '8':
-  case '9':
-    return IntTextKind::Number;
-  default:
-    return IntTextKind::None;
-  }
-}
-
-// void DiagnosticEngine::FormatDiagnosticText(
-//     llvm::raw_ostream &Out, const char *BufferStart, const char *BufferEnd,
-//     SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
-//     DiagnosticFormatOptions FormatOpts) {
-
-//   /// Assign the CurPtr to the BufferStart
-//   const char *CurPtr = BufferStart;
-//   // Recall the start so we can form the text range.
-//   const char *TextStart = CurPtr;
-
-//   // Keep a count
-//   unsigned IntTextLoc = 0;
-
-//   while (*CurPtr != *BufferEnd) {
-//     /// May not need.
-//     //++IntTextLoc;
-//     auto CurTok = DetermineInTextKind(CurPtr);
-//     if (CurTok == IntTextKind::None) {
-//       return;
-//     }
-//     // Check for a percent
-//     if (CurTok == IntTextKind::Percent) {
-//       // Now, copy the string up to the percent (not including) to the Out
-//       // buffer
-//       Out.write(TextStart, static_cast<size_t>(CurPtr - TextStart));
-//       continue;
-//     }
-
-//     if (CurTok == IntTextKind::Number) {
-//       if (DetermineInTextKind(CurPtr--) != IntTextKind::Percent) {
-//         return;
-//       }
-//     }
-//   }
-// }
 
 class DiagnosticTextParser {
 
@@ -216,6 +61,8 @@ class DiagnosticTextParser {
 
   llvm::ArrayRef<DiagnosticArgument> Args;
 
+  bool CutOff;
+
 public:
   DiagnosticTextParser(llvm::raw_ostream &Out, const char *BufferStart,
                        const char *BufferEnd, stone::SrcMgr &SM,
@@ -227,7 +74,7 @@ public:
 
 public:
   void Parse() {
-    while (*CurPtr != *BufferEnd) {
+    while ((*CurPtr != *BufferEnd) && !CutOff) {
       ParseImpl(CurPtr);
     }
   }
@@ -238,13 +85,38 @@ private:
       return;
     }
   }
-  void ParseLBrace(const char *CurPtr) {}
-  void ParseRBrace(const char *CurPtr) {}
+  void ParseLBrace(const char *CurPtr) {
+    if (*CurPtr != '{') {
+      return;
+    }
+  }
+  void ParseRBrace(const char *CurPtr) {
+    if (*CurPtr != '}') {
+      return;
+    }
+  }
 
-  void ParseLParent(const char *CurPtr) {}
-  void ParseRParent(const char *CurPtr) {}
+  void ParseLParen(const char *CurPtr) {
+    if (*CurPtr != '(') {
+      return;
+    }
+  }
+  void ParseRParen(const char *CurPtr) {
+    if (*CurPtr != '}') {
+      return;
+    }
+  }
 
-  void ParseDigit(const char *CurPtr) {}
+  void ParseDigit(const char *CurPtr) {
+    if (!clang::isDigit(*CurPtr)) {
+    }
+  }
+  void ParseSelect(const char *CurPtr) {
+
+  	if(*CurPtr != 's'){
+  	}
+
+  }
   void ParseImpl(const char *CurPtr) {
     switch (*CurPtr++) {
     case '%': {
@@ -264,7 +136,7 @@ private:
       break;
     }
     case ')': {
-      ParseRParent(CurPtr);
+      ParseRParen(CurPtr);
       break;
     }
     case '0':
@@ -280,7 +152,36 @@ private:
       ParseDigit(CurPtr);
       break;
     }
+    case '\n':
+    case '\r': {
+      // new line should not exist
+      CutOff = true;
+      break;
+    }
+    case ' ':
+    case '\t':
+    case '\f':
+    case '\v': {
+      // eat
+      break;
+    }
+    case ',':
+    	// eat
+      break;
+    case ';':
+    	//eat 
+      break;
+    case ':':
+    	// eat
+      break;
     default: {
+      if (!clang::isLetter(*CurPtr)) {
+        CutOff = true;
+      }
+      if (*CurPtr == 's') {
+        ParseSelect(CurPtr);
+      }
+      break;
     }
     }
   }
