@@ -240,7 +240,7 @@ struct DiagnosticImpl final {
   //     DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
 
   void FormatDiagnostic(
-      llvm::raw_ostream &OS,
+      llvm::raw_ostream &OS, SrcMgr &SM,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
 
   bool IsNote() const { return Kind == DiagnosticKind::Note; }

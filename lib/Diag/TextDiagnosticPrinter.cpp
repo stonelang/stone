@@ -13,12 +13,16 @@ void TextDiagnosticPrinter::EmitDiagnostic() {}
 
 void TextDiagnosticPrinter::HandleDiagnostic(SrcMgr &SM,
                                              const DiagnosticImpl &DI) {
+
+  /// Make sure that it has a message.
+  assert(DI && "unable print a dianostic without a message!");
+
   // 1. Format message
   //  Default implementation (Warnings/errors count).
   DiagnosticClient::HandleDiagnostic(SM, DI);
   // // Render the diagnostic message into a temporary buffer eagerly. We'll use
   // // this later as we print out the diagnostic to the terminal.
-  DI.FormatDiagnostic(OS.GetOutputStream());
+  DI.FormatDiagnostic(OS.GetOutputStream(), SM);
 
   // 2. Print message
   //  // Keeps track of the starting position of the location

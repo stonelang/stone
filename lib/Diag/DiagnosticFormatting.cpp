@@ -5,9 +5,11 @@
 using namespace stone;
 
 void DiagnosticImpl::FormatDiagnostic(
-    llvm::raw_ostream &Out, DiagnosticFormatOptions FormatOpts) const {
+    llvm::raw_ostream &Out, SrcMgr &SM,
+    DiagnosticFormatOptions FormatOpts) const {
 
-  // DiagnosticEngine::FormatDiagnosticText()
+  DiagnosticEngine::FormatDiagnosticText(Out, FormatString, SM, FormatArgs,
+                                         FormatOpts);
 }
 
 /// Format the given diagnostic text and place the result in the given
@@ -28,7 +30,6 @@ void DiagnosticEngine::FormatDiagnosticText(
   // unsigned BufferID = SM.addMemBufferCopy(Text);
   // DiagnosticTextParser textParser(BufferID, SM);
   // textParser.Parse();
-
   // FormatDiagnosticParser().Parse();
 
   while (!InText.empty()) {
