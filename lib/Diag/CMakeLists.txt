@@ -6,6 +6,7 @@ set(LLVM_LINK_COMPONENTS
   TargetParser
   )
 set(stone_diag_sources
+  DiagnosticFormatting.cpp
   DiagnosticEngine.cpp
   DiagnosticID.cpp
   DiagnosticClient.cpp

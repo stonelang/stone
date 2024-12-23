@@ -86,16 +86,7 @@ DiagnosticClient::~DiagnosticClient() = default;
 bool DiagnosticClient::UseInDiagnosticCounts() const { return true; }
 
 void DiagnosticClient::HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) {
-  // if (UseInDiagnosticCounts()) {
-  //   if (DI.IsWarning()) {
-  //     ++TotalWarning;
-  //     return;
-  //   }
-  //   if (DI.IsError()) {
-  //     ++TotalErrors;
-  //     return;
-  //   }
-  // }
+  // NOTE: May not need this anymore
 }
 
 // DiagID Diagnostic::GetDiagID() const {
@@ -107,9 +98,3 @@ void DiagnosticClient::HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) {
 
 //   //FormatDiagnostic(OS);
 // }
-
-void DiagnosticImpl::FormatDiagnostic(
-    llvm::raw_ostream &Out, DiagnosticFormatOptions FormatOpts) const {
-
-  // DiagnosticEngine::FormatDiagnosticText()
-}
