@@ -3,7 +3,7 @@
 
 #include "stone/Diag/DiagnosticAllocation.h"
 #include "stone/Diag/DiagnosticClient.h"
-#include "stone/Diag/DiagnosticFormatParser.h"
+
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"

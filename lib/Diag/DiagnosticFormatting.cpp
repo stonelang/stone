@@ -1,6 +1,5 @@
 #include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/DiagnosticFormatParser.h"
 
 using namespace stone;
 
