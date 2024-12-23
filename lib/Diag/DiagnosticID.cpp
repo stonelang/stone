@@ -34,7 +34,7 @@ namespace {
 
 static constexpr const char *const DiagnosticStrings[] = {
 #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)          \
+             SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)            \
   DESC,
 #include "stone/Diag/AllDiagnosticKind.inc"
     "<not a diagnostic>",
@@ -48,17 +48,23 @@ static constexpr const char *const DiagnosticIDStrings[] = {
     "<not a diagnostic>",
 };
 
-
 // static const constexpr StoredDiagnosticInfo StoredDiagnosticInfos[] = {
-// #define ERROR(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)                                    \
-//   StoredDiagnosticInfo(DiagnosticKind::Error, LocalDiagnosticOptions::Options),
-// #define WARNING(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)                                  \
-//   StoredDiagnosticInfo(DiagnosticKind::Warning,                                \
+// #define ERROR(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
+// NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   StoredDiagnosticInfo(DiagnosticKind::Error,
+//   LocalDiagnosticOptions::Options),
+// #define WARNING(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
+// NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   StoredDiagnosticInfo(DiagnosticKind::Warning, \
 //                        LocalDiagnosticOptions::Options),
-// #define NOTE(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)                                     \
-//   StoredDiagnosticInfo(DiagnosticKind::Note, LocalDiagnosticOptions::Options),
-// #define REMARK(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY)                                   \
-//   StoredDiagnosticInfo(DiagnosticKind::Remark, LocalDiagnosticOptions::Options),
+// #define NOTE(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
+// NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   StoredDiagnosticInfo(DiagnosticKind::Note,
+//   LocalDiagnosticOptions::Options),
+// #define REMARK(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE,
+// NOWERROR,SHOWINSYSHEADER, SHOWINSYSMACRO, DEFERRABLE, CATEGORY) \
+//   StoredDiagnosticInfo(DiagnosticKind::Remark,
+//   LocalDiagnosticOptions::Options),
 // #include "stone/Diag/AllDiagnosticKind.inc"
 // };
 // static_assert(sizeof(storedDiagnosticInfos) / sizeof(StoredDiagnosticInfo) ==

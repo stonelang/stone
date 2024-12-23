@@ -12,7 +12,6 @@ namespace diags {
 
 class TextDiagnosticEmitter final : public DiagnosticEmitter {
 
-
   // void EmitSnippetAndCaret(FullSourceLoc Loc, DiagnosticsEngine::Level Level,
   //                          SmallVectorImpl<CharSourceRange> &Ranges,
   //                          ArrayRef<FixItHint> Hints);
@@ -20,9 +19,8 @@ class TextDiagnosticEmitter final : public DiagnosticEmitter {
   void EmitSnippet(StringRef SourceLine, unsigned MaxLineNoDisplayWidth,
                    unsigned LineNo);
 
-  //void EmitParseableFixits(llvm::ArrayRef<FixItHint> fixIts, const SourceManager &SM);
-
-
+  // void EmitParseableFixits(llvm::ArrayRef<FixItHint> fixIts, const
+  // SourceManager &SM);
 
 public:
   TextDiagnosticEmitter(DiagnosticOutputStream &OS, const LangOptions &LangOpts,
@@ -43,7 +41,6 @@ protected:
                        llvm::SmallVectorImpl<CharSrcRange> &Ranges,
                        llvm::ArrayRef<FixIt> FixIts) override;
 
-
 public:
   /// Print the diagonstic level to a raw_ostream.
   ///
@@ -52,7 +49,7 @@ public:
   /// TextDiagnostic emission code, but it can also be used directly by
   /// consumers that don't have a source manager or other state that the full
   /// TextDiagnostic logic requires.
-  static void PrintDiagnosticLevel(DiagnosticOutputStream& OS,
+  static void PrintDiagnosticLevel(DiagnosticOutputStream &OS,
                                    DiagnosticLevel DiagLevel);
 
   /// Pretty-print a diagnostic message to a raw_ostream.
@@ -71,9 +68,9 @@ public:
   /// \param Columns The number of columns to use in line-wrapping, 0 disables
   ///                all line-wrapping.
   /// \param ShowColors Enable colorizing of the message.
-  static void PrintDiagnosticMessage(DiagnosticOutputStream& OS, bool IsSupplemental,
-                                     StringRef Message, unsigned CurrentColumn,
-                                     unsigned Columns);
+  static void PrintDiagnosticMessage(DiagnosticOutputStream &OS,
+                                     bool IsSupplemental, StringRef Message,
+                                     unsigned CurrentColumn, unsigned Columns);
 };
 
 class TextDiagnosticPrinter final : public DiagnosticClient {

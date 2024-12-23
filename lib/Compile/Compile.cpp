@@ -33,27 +33,30 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   CompilerInvocation invocation;
   invocation.AddDiagnosticConsumer(printer);
 
-  // auto FinishCompile = [&](Status status = Status::Success()) -> int {
-  //   return (status.IsError() ? status.GetFlag()
-  //                            : invocation.GetDiags().finishProcessing());
-  // };
+  auto FinishCompile = [&](Status status = Status::Success()) -> int {
+    return (status.IsError() ? status.GetFlag()
+                             : invocation.GetDiags().finishProcessing());
+  };
 
-  // auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
-  // invocation.SetMainExecutablePath(mainExecutablePath);
-  // assert(invocation.GetCompilerOptions().HasMainExecutablePath() &&
-  //        "Did not find an executable path!");
+  auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);
+  invocation.SetMainExecutablePath(mainExecutablePath);
+  assert(invocation.GetCompilerOptions().HasMainExecutablePath() &&
+         "Did not find an executable path!");
 
-  // auto mainExecutableName = llvm::sys::path::stem(arg0);
-  // invocation.SetMainExecutableName(mainExecutableName);
-  // assert(invocation.GetCompilerOptions().HasMainExecutableName() &&
-  //        "Did not find an executable name!");
+  auto mainExecutableName = llvm::sys::path::stem(arg0);
+  invocation.SetMainExecutableName(mainExecutableName);
+  assert(invocation.GetCompilerOptions().HasMainExecutableName() &&
+         "Did not find an executable name!");
 
   // auto status = invocation.ParseCommandLine(args);
   // if (status.IsError()) {
   //   return FinishCompile(Status::Error());
   // }
 
-  // CompilerInstance compiler(invocation);
+  CompilerInstance compiler(invocation);
+  compiler.GetInvocation().GetDiags().diagnose(
+      SrcLoc(), diag::error_invalid_arg_combination, "test", "test");
+  compiler.GetInvocation().GetDiags().finishProcessing();
 
   // if (!compiler.HasPrimaryAction()) {
   //   // compiler.GetDiags().diagnose(diag::error_no_compile_action);

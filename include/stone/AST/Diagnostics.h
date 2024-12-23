@@ -139,6 +139,20 @@ enum class RequirementKind : uint8_t;
 ///
 enum class DiagnosticKind : uint8_t { Error, Warning, Remark, Note };
 
+/// Represents a fix-it, a replacement of one range of text with another.
+class FixIt final {
+  CharSrcRange Range;
+  std::string Text;
+
+public:
+  FixIt(CharSrcRange R, StringRef Str, ArrayRef<DiagnosticArgument> Args);
+
+  CharSrcRange &getRange() { return Range; }
+  const CharSrcRange &getRange() const { return Range; }
+
+  StringRef getText() const { return Text; }
+};
+
 /// Information about a diagnostic passed to DiagnosticConsumers.
 struct DiagnosticInfo final {
   DiagID ID = DiagID(0);
@@ -161,20 +175,6 @@ struct DiagnosticInfo final {
 
   /// Paths to "educational note" diagnostic documentation in the toolchain.
   ArrayRef<std::string> EducationalNotePaths;
-
-  /// Represents a fix-it, a replacement of one range of text with another.
-  class FixIt {
-    CharSrcRange Range;
-    std::string Text;
-
-  public:
-    FixIt(CharSrcRange R, StringRef Str, ArrayRef<DiagnosticArgument> Args);
-
-    CharSrcRange &getRange() { return Range; }
-    const CharSrcRange &getRange() const { return Range; }
-
-    StringRef getText() const { return Text; }
-  };
 
   /// Extra source ranges that are attached to the diagnostic.
   ArrayRef<CharSrcRange> Ranges;
@@ -349,10 +349,10 @@ template <typename... ArgTypes> struct StructuredFixIt {
 
 /// Diagnostic - This is a specific instance of a diagnostic along with all of
 /// the DiagnosticArguments that it requires.
-/// This is converted to a DiagnosticInfo object and sent to the client. 
-class Diagnostic {
+/// This is converted to a DiagnosticInfo object and sent to the client.
+class Diagnostic final {
 public:
-  typedef DiagnosticInfo::FixIt FixIt;
+  using FixIt = FixIt;
 
 private:
   DiagID ID;
@@ -884,7 +884,7 @@ protected:
     return llvm::SMRange(getRawLoc(R.getStart()), getRawLoc(R.getEnd()));
   }
 
-  static llvm::SMFixIt getRawFixIt(SrcMgr &SM, DiagnosticInfo::FixIt F) {
+  static llvm::SMFixIt getRawFixIt(SrcMgr &SM, FixIt F) {
     // FIXME: It's unfortunate that we have to copy the replacement text.
     return llvm::SMFixIt(getRawRange(SM, F.getRange()), F.getText());
   }

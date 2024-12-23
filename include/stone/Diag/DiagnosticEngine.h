@@ -216,9 +216,8 @@ public:
 
   DiagIDContext &GetDiagIDContext() { return diagIDContext; }
 
-
-  //InFlightDiagnostic Diagnose(SourceLocation Loc, DiagID ID);
-  //InFlightDiagnostic Diagnose(DiagID ID);
+  // InFlightDiagnostic Diagnose(SourceLocation Loc, DiagID ID);
+  // InFlightDiagnostic Diagnose(DiagID ID);
 
 public:
   void FinishProcessing();
@@ -236,7 +235,7 @@ public:
 
 class InFlightDiagnostic : public StreamingDiagnostic {
 public:
-  //InFlightDiagnostic &FixItReplace(SrcRange R, StringRef Str);
+  // InFlightDiagnostic &FixItReplace(SrcRange R, StringRef Str);
 };
 
 class StoredDiagnostic {

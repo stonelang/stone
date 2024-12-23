@@ -88,6 +88,8 @@ public:
   }
 
   DiagnosticEngine &GetDiags() { return diags; }
+  const DiagnosticEngine &GetDiags() const { return diags; }
+
   bool HasError() { return diags.hadAnyError(); }
   SrcMgr &GetSrcMgr() { return srcMgr; }
 

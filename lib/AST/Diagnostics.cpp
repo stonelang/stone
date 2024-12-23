@@ -1203,8 +1203,7 @@ DiagnosticConsumer::~DiagnosticConsumer() = default;
 
 llvm::SMLoc DiagnosticConsumer::getRawLoc(SrcLoc loc) { return loc.Value; }
 
-DiagnosticInfo::FixIt::FixIt(CharSrcRange R, StringRef Str,
-                             ArrayRef<DiagnosticArgument> Args)
+FixIt::FixIt(CharSrcRange R, StringRef Str, ArrayRef<DiagnosticArgument> Args)
     : Range(R) {
   // FIXME: Defer text formatting to later in the pipeline.
   llvm::raw_string_ostream OS(Text);
@@ -1225,44 +1224,40 @@ bool TextDiagnosticPrinter::finishProcessing() {
   return false;
 }
 
-
 namespace {
-  class ColoredStream : public raw_ostream {
-    raw_ostream &Underlying;
-  public:
-    explicit ColoredStream(raw_ostream &underlying) : Underlying(underlying) {}
-    ~ColoredStream() override { flush(); }
+class ColoredStream : public raw_ostream {
+  raw_ostream &Underlying;
 
-    raw_ostream &changeColor(Colors color, bool bold = false,
-                             bool bg = false) override {
-      Underlying.changeColor(color, bold, bg);
-      return *this;
-    }
-    raw_ostream &resetColor() override {
-      Underlying.resetColor();
-      return *this;
-    }
-    raw_ostream &reverseColor() override {
-      Underlying.reverseColor();
-      return *this;
-    }
-    bool has_colors() const override {
-      return true;
-    }
+public:
+  explicit ColoredStream(raw_ostream &underlying) : Underlying(underlying) {}
+  ~ColoredStream() override { flush(); }
 
-    void write_impl(const char *ptr, size_t size) override {
-      Underlying.write(ptr, size);
-    }
-    uint64_t current_pos() const override {
-      return Underlying.tell() - GetNumBytesInBuffer();
-    }
+  raw_ostream &changeColor(Colors color, bool bold = false,
+                           bool bg = false) override {
+    Underlying.changeColor(color, bold, bg);
+    return *this;
+  }
+  raw_ostream &resetColor() override {
+    Underlying.resetColor();
+    return *this;
+  }
+  raw_ostream &reverseColor() override {
+    Underlying.reverseColor();
+    return *this;
+  }
+  bool has_colors() const override { return true; }
 
-    size_t preferred_buffer_size() const override {
-      return 0;
-    }
-  };
+  void write_impl(const char *ptr, size_t size) override {
+    Underlying.write(ptr, size);
+  }
+  uint64_t current_pos() const override {
+    return Underlying.tell() - GetNumBytesInBuffer();
+  }
 
-}
+  size_t preferred_buffer_size() const override { return 0; }
+};
+
+} // namespace
 
 void TextDiagnosticPrinter::printDiagnostic(SrcMgr &SM,
                                             const DiagnosticInfo &Info) {
@@ -1287,13 +1282,13 @@ void TextDiagnosticPrinter::printDiagnostic(SrcMgr &SM,
 
   // Translate ranges.
   SmallVector<llvm::SMRange, 2> Ranges;
-  for (auto R : Info.Ranges){
+  for (auto R : Info.Ranges) {
     Ranges.push_back(getRawRange(SM, R));
   }
 
   // Translate fix-its.
   SmallVector<llvm::SMFixIt, 2> FixIts;
-  for (DiagnosticInfo::FixIt F : Info.FixIts){
+  for (FixIt F : Info.FixIts) {
     FixIts.push_back(getRawFixIt(SM, F));
   }
 
@@ -1301,7 +1296,7 @@ void TextDiagnosticPrinter::printDiagnostic(SrcMgr &SM,
   ColoredStream coloredErrs{Stream};
   raw_ostream &out = ForceColors ? coloredErrs : Stream;
   const llvm::SourceMgr &rawSM = SM.GetLLVMSrcMgr();
-  
+
   // Actually substitute the diagnostic arguments into the diagnostic text.
   llvm::SmallString<256> Text;
   {
@@ -1329,11 +1324,11 @@ void TextDiagnosticPrinter::handleDiagnostic(SrcMgr &SM,
     return;
   }
 
-
   switch (FormattingStyle) {
   case DiagnosticOptions::FormattingStyle::Stone: {
   }
   case DiagnosticOptions::FormattingStyle::LLVM: {
+    printDiagnostic(SM, Info);
   }
   }
 }
