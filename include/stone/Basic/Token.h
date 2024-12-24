@@ -236,6 +236,10 @@ public:
   bool IsLast() const { return kind == tok::LAST; }
   bool IsBool() const { return kind == tok::kw_bool; }
   bool IsFalse() const { return kind == tok::kw_false; }
+  bool IsIntegerLiteral() const { return kind == tok::integer_literal; }
+  bool IsStringLiteral() const { return kind == tok::integer_literal; }
+  bool IsFloatLiteral() const { return kind == tok::integer_literal; }
+  bool IsTick() const { return kind == tok::tick; }
 
   bool IsTypeChunk() const { return (IsStar() || IsAmp()); }
 

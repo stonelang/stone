@@ -216,18 +216,18 @@ void InFlightDiagnostic::FlushActiveDiagnostic() {
 
 void DiagnosticEngine::FlushActiveDiagnostic(bool ForceEmit) {
   assert(ActiveDiagnostic && "No active diagnostic to flush");
-  FlushActiveDiagnostic(ActiveDiagnostic);
+  HandleActiveDiagnostic(ActiveDiagnostic);
   ActiveDiagnostic = nullptr;
 }
 
-void DiagnosticEngine::FlushActiveDiagnostic(const Diagnostic *diagnostic) {
+void DiagnosticEngine::HandleActiveDiagnostic(const Diagnostic *diagnostic) {
   EmitDiagnostic(diagnostic);
 }
 
 void DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
   assert(HasClients() && "No DiagnosticClients. Unable to emit!");
 
-  if (auto DI = ConstructDiagnosticImpl(diagnostic)) {
+  if (auto DI = ConstructDiagnosticContext(diagnostic)) {
     for (auto &client : Clients) {
       if (client->UseInDiagnosticCounts()) {
         if (DI->IsWarning()) {
@@ -239,10 +239,12 @@ void DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
     }
 
     for (auto &client : Clients) {
-      client->HandleDiagnostic(SM, *DI);
+      client->HandleDiagnostic(*this, *DI);
     }
   }
 }
+
+void DiagnosticEngine::DiagnosticCompletionCallback(DiagID ID) {}
 
 static DiagnosticKind ComputeDiagnosticKind(DiagnosticLevel Level) {
   switch (Level) {
@@ -265,8 +267,8 @@ static DiagnosticKind ComputeDiagnosticKind(DiagnosticLevel Level) {
 }
 
 /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
-std::optional<DiagnosticImpl>
-DiagnosticEngine::ConstructDiagnosticImpl(const Diagnostic *diagnostic) {
+std::optional<DiagnosticContext>
+DiagnosticEngine::ConstructDiagnosticContext(const Diagnostic *diagnostic) {
 
   auto Level = state.ComputeDiagnosticLevel(diagnostic);
   if (Level == DiagnosticLevel::Ignore) {
@@ -274,7 +276,7 @@ DiagnosticEngine::ConstructDiagnosticImpl(const Diagnostic *diagnostic) {
   }
 
   auto fixIts = diagnostic->GetFixIts();
-  return DiagnosticImpl(
+  return DiagnosticContext(
       diagnostic->GetID(), diagnostic->GetLoc(), ComputeDiagnosticKind(Level),
       /* None for now*/ DiagnosticReason::None,
       GetDiagnosticStringForDiagID(diagnostic->GetID()), diagnostic->GetArgs(),

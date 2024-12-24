@@ -146,8 +146,8 @@ public:
 enum class DiagnosticReason : uint8_t { None = 0 };
 
 /// Information about a diagnostic passed to DiagnosticConsumers.
-struct DiagnosticImpl final {
-  DiagnosticEngine *DE; //???
+struct DiagnosticContext final {
+
   DiagID ID = DiagID(0);
   SrcLoc Loc;
   DiagnosticKind Kind;
@@ -164,21 +164,19 @@ struct DiagnosticImpl final {
   /// Extra source ranges that are attached to the diagnostic.
   llvm::ArrayRef<FixIt> FixIts;
 
+  // DiagnosticFormatOptions FormatOpts;
+
   /// Evaluates true when this object stores a diagnostic.
   explicit operator bool() const { return !FormatText.empty(); }
 
-  DiagnosticImpl(DiagID ID, SrcLoc Loc, DiagnosticKind Kind,
-                 DiagnosticReason Reason, StringRef FormatText,
-                 ArrayRef<DiagnosticArgument> FormatArgs,
-                 ArrayRef<Diagnostic *> ChildDiagnostics,
-                 ArrayRef<CharSrcRange> Ranges, ArrayRef<FixIt> FixIts)
+  DiagnosticContext(DiagID ID, SrcLoc Loc, DiagnosticKind Kind,
+                    DiagnosticReason Reason, StringRef FormatText,
+                    ArrayRef<DiagnosticArgument> FormatArgs,
+                    ArrayRef<Diagnostic *> ChildDiagnostics,
+                    ArrayRef<CharSrcRange> Ranges, ArrayRef<FixIt> FixIts)
       : ID(ID), Loc(Loc), Kind(Kind), Reason(Reason), FormatText(FormatText),
         FormatArgs(FormatArgs), ChildDiagnostics(ChildDiagnostics),
         Ranges(Ranges), FixIts(FixIts) {}
-
-  void FormatDiagnostic(
-      llvm::raw_ostream &OS, SrcMgr &SM,
-      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
 
   bool IsNote() const { return Kind == DiagnosticKind::Note; }
   bool IsWarning() const { return Kind == DiagnosticKind::Warning; }
@@ -222,14 +220,14 @@ public:
   ///
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
-  virtual void HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI);
-
-  // DiagnosticTracker &GetTracker() { return tracker; }
+  virtual void HandleDiagnostic(DiagnosticEngine &DE,
+                                const DiagnosticContext &DC);
 };
 
 class NullDiagnosticClient final : public DiagnosticClient {
 public:
-  void HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) override {
+  void HandleDiagnostic(DiagnosticEngine &DE,
+                        const DiagnosticContext &DC) override {
     // Just ignore it.
   }
 };
@@ -240,7 +238,8 @@ public:
 class ForwardingDiagnosticClient final : public DiagnosticClient {
 
 public:
-  void HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) override {
+  void HandleDiagnostic(DiagnosticEngine &DE,
+                        const DiagnosticContext &DC) override {
     // Just ignore it.
   }
 };

@@ -6,14 +6,13 @@ set(LLVM_LINK_COMPONENTS
   TargetParser
   )
 set(stone_diag_sources
-  DiagnosticFormatting.cpp
+  DiagnosticClient.cpp
   DiagnosticEngine.cpp
   DiagnosticID.cpp
-  DiagnosticClient.cpp
-  DiagnosticEmitter.cpp
-  TextDiagnosticBuffering.cpp
+  
+  DiagnosticFormatter.cpp
   TextDiagnosticPrinter.cpp
-  DiagnosticEmitter.cpp
+  TextDiagnosticFormatter.cpp
   DiagnosticFormatLexer.cpp
 
   LINK_LIBS

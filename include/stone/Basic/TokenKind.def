@@ -266,6 +266,7 @@ PUNCTUATOR(amp, "&")
 PUNCTUATOR(amp_prefix, "&") //TODO: remove 
 PUNCTUATOR(arrow, "->")
 PUNCTUATOR(backtick, "`")
+PUNCTUATOR(tick, "'")
 PUNCTUATOR(backslash, "\\")
 PUNCTUATOR(slash,      "/")
 PUNCTUATOR(exclaim, "!") // if left-bound

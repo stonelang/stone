@@ -1,5 +1,5 @@
-#include "stone/Diag/DiagnosticFormatLexer.h"
 #include "stone/Basic/EditorPlaceholder.h"
+#include "stone/Diag/TextDiagnosticFormatter.h"
 
 #include "stone/Support/Confusable.h"
 

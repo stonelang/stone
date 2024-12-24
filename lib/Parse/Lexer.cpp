@@ -809,6 +809,10 @@ void Lexer::lexOperatorIdentifier() {
   if (CurPtr - TokStart == 1) {
     switch (TokStart[0]) {
 
+    case '%': {
+      // Just return percent for now
+      return formToken(tok::percent, TokStart);
+    }
     case '*': {
       return formToken(tok::star, TokStart);
     }

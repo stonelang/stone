@@ -1,6 +1,6 @@
+#include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticEngine.h"
-#include "stone/Diag/DiagnosticFormatLexer.h"
 
 #include "clang/Basic/CharInfo.h"
 
@@ -24,13 +24,13 @@
 
 using namespace stone;
 
-class DiagnosticFormatParser {
+struct TextDiagnosticFormatParser final {
   llvm::raw_ostream &Out;
 
   llvm::ArrayRef<DiagnosticArgument> Args;
 
   // Keep track of the args we have processed
-  unsigned TotalArgs = 0;
+  unsigned ArgsIndex = 0;
 
   stone::diag::DiagnosticFormatLexer Lexer;
 
@@ -50,6 +50,11 @@ class DiagnosticFormatParser {
   /// Trailing trivia for \c Tok.
   /// Always empty if !SF.shouldBuildSyntaxTree().
   llvm::StringRef TrailingTrivia;
+
+  TextDiagnosticFormatParser(unsigned BufferID, stone::SrcMgr &SM,
+                             ArrayRef<DiagnosticArgument> Args,
+                             llvm::raw_ostream &Out)
+      : Lexer(BufferID, SM, llvm::errs()), Out(Out), Args(Args) {}
 
   bool IsEOF() { return CurTok.GetKind() == tok::eof; }
   bool IsParsing() { return !IsEOF(); }
@@ -94,9 +99,16 @@ class DiagnosticFormatParser {
   }
 
   void ParsePercent() {
+    assert(PrevTok.IsTick() && " Expecting previous token to be a tick");
     assert(CurTok.IsPercent() && "Expecting percent token");
     // Send the current text to the output
-    Out << CurTok.GetText();
+    // Out << CurTok.GetText();
+
+    llvm::outs() << "here";
+
+    /// assert(CurTok.PeekNext().IsIntegerLiteral() && " ")
+
+    // assert(clang::isDigit(CurTok.PeekNext().GetText())
   }
 
   void ParseLParen() {
@@ -117,25 +129,28 @@ class DiagnosticFormatParser {
     Out << CurTok.GetText();
   }
 
-public:
-  DiagnosticFormatParser(unsigned BufferID, stone::SrcMgr &SM,
-                         ArrayRef<DiagnosticArgument> Args,
-                         llvm::raw_ostream &Out)
-      : Lexer(BufferID, SM, llvm::errs()), Out(Out), Args(Args) {}
-
-public:
   void Parse() {
+
     if (CurTok.IsLast()) {
       Consume();
     }
     while (IsParsing()) {
       switch (CurTok.GetKind()) {
+
+      case tok::tick: {
+        Consume();
+        break;
+      }
       case tok::percent: {
         ParsePercent();
         break;
       }
       case tok::l_paren: {
         ParseLParen();
+        break;
+      }
+      case tok::identifier: {
+        Consume();
         break;
       }
       default: {
@@ -148,20 +163,19 @@ public:
   }
 };
 
-void DiagnosticImpl::FormatDiagnostic(
-    llvm::raw_ostream &Out, SrcMgr &SM,
+diag::TextDiagnosticFormatter::TextDiagnosticFormatter() {}
+
+diag::TextDiagnosticFormatter::~TextDiagnosticFormatter() {}
+
+bool diag::TextDiagnosticFormatter::FormatDiagnostic(
+    llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticContext &DC,
     DiagnosticFormatOptions FormatOpts) const {
 
-  DiagnosticEngine::FormatDiagnosticText(Out, FormatText, SM, FormatArgs,
-                                         FormatOpts);
-}
+  if (DC.FormatText.empty()) {
+    return false;
+  }
+  auto BufferID = SM.addMemBufferCopy(DC.FormatText);
+  TextDiagnosticFormatParser(BufferID, SM, DC.FormatArgs, OS).Parse();
 
-/// Format the given diagnostic text and place the result in the given
-/// buffer.
-void DiagnosticEngine::FormatDiagnosticText(
-    llvm::raw_ostream &Out, StringRef FormatText, stone::SrcMgr &SM,
-    ArrayRef<DiagnosticArgument> Args, DiagnosticFormatOptions FormatOpts) {
-
-  auto BufferID = SM.addMemBufferCopy(FormatText);
-  DiagnosticFormatParser(BufferID, SM, Args, Out).Parse();
+  return true;
 }

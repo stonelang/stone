@@ -1,5 +1,5 @@
 #include "stone/Diag/TextDiagnosticPrinter.h"
-
+#include "stone/Diag/DiagnosticEngine.h"
 using namespace stone;
 
 TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &stream)
@@ -11,18 +11,20 @@ void TextDiagnosticPrinter::PrintDiagnostic() {}
 
 void TextDiagnosticPrinter::EmitDiagnostic() {}
 
-void TextDiagnosticPrinter::HandleDiagnostic(SrcMgr &SM,
-                                             const DiagnosticImpl &DI) {
+void TextDiagnosticPrinter::HandleDiagnostic(DiagnosticEngine &DE,
+                                             const DiagnosticContext &DC) {
 
   /// Make sure that it has a message.
-  assert(DI && "unable print a dianostic without a message!");
+  assert(DC && "unable print a dianostic without a message!");
+
+  DE.GetFormatter().FormatDiagnostic(OS.GetOutputStream(), DE.GetSrcMgr(), DC);
 
   // 1. Format message
   //  Default implementation (Warnings/errors count).
-  DiagnosticClient::HandleDiagnostic(SM, DI);
+  // DiagnosticClient::HandleDiagnostic(SM, DI);
   // // Render the diagnostic message into a temporary buffer eagerly. We'll use
   // // this later as we print out the diagnostic to the terminal.
-  DI.FormatDiagnostic(OS.GetOutputStream(), SM);
+  // DI.FormatDiagnostic(OS.GetOutputStream(), SM);
 
   // 2. Print the formatted message
   //  // Keeps track of the starting position of the location
@@ -61,25 +63,24 @@ void TextDiagnosticPrinter::HandleDiagnostic(SrcMgr &SM,
 
   // GetEmitter().GetDiagnosticOutputStream().Flush();
 
-  OS.Flush();
+  // OS.Flush();
+
+  DE.DiagnosticCompletionCallback(DC.ID);
 }
 
 TextDiagnosticPrinterImpl::TextDiagnosticPrinterImpl() {}
 
 TextDiagnosticPrinterImpl::~TextDiagnosticPrinterImpl() {}
 
-void TextDiagnosticPrinterImpl::HandleDiagnostic(SrcMgr &SM,
-                                                 const DiagnosticImpl &DI) {
+void TextDiagnosticPrinterImpl::HandleDiagnostic(DiagnosticEngine &DE,
+                                                 const DiagnosticContext &D) {
 
   // Default implementation (Warnings/errors count).
-  TextDiagnosticPrinter::HandleDiagnostic(SM, DI);
+  // TextDiagnosticPrinter::HandleDiagnostic(SM, DI);
 
   // PrintDiagnostic(); if there are certain conditions
 
   EmitDiagnostic();
 }
 
-bool TextDiagnosticPrinterImpl::FinishProcessing() {
-
-  return true;
-}
+bool TextDiagnosticPrinterImpl::FinishProcessing() { return true; }

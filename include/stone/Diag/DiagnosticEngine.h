@@ -3,6 +3,7 @@
 
 #include "stone/Diag/DiagnosticAllocation.h"
 #include "stone/Diag/DiagnosticClient.h"
+#include "stone/Diag/DiagnosticFormatter.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -375,6 +376,9 @@ class DiagnosticEngine final {
   SrcMgr &SM;
 
   DiagnosticOptions &DiagOpts;
+
+  std::unique_ptr<DiagnosticFormatter> Formatter;
+
   /// The diagnostic consumer(s) that will be responsible for actually
   /// emitting diagnostics.
   llvm::SmallVector<DiagnosticClient *, 2> Clients;
@@ -392,7 +396,7 @@ class DiagnosticEngine final {
 
   /// Flush a new diagnostic, which will either be emitted, or added to an
   /// active transaction.
-  void FlushActiveDiagnostic(const Diagnostic *diagnostic);
+  void HandleActiveDiagnostic(const Diagnostic *diagnostic);
 
   /// Used to emit a diagnostic that is finally fully formed,
   /// ignoring suppression.
@@ -418,7 +422,17 @@ public:
 
   bool FinishProcessing();
 
+  /// A simple callback indicating the completion of the diagnostic
+  void DiagnosticCompletionCallback(DiagID ID);
+
 public:
+  // Set the formatter for the diagnostics
+  void SetFormatter(std::unique_ptr<DiagnosticFormatter> formatter) {
+    Formatter = std::move(formatter);
+  }
+  DiagnosticFormatter &GetFormatter() { return *Formatter; }
+  bool HasFormatter() { return Formatter != nullptr; }
+
   void AddClient(DiagnosticClient *client);
 
   /// Remove a specific DiagnosticConsumer.
@@ -430,6 +444,8 @@ public:
   std::vector<DiagnosticClient *> TakeClients();
   llvm::ArrayRef<DiagnosticClient *> GetClients() const { return Clients; }
   bool HasClients() const { return Clients.size() > 0; }
+
+  SrcMgr &GetSrcMgr() { return SM; }
 
 public:
   // InFlightDiagnostic Diagnose(DiagID NextDiagID);
@@ -470,8 +486,8 @@ public:
                          DiagnosticStringFormatter StringFormatter);
 
   /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
-  std::optional<DiagnosticImpl>
-  ConstructDiagnosticImpl(const Diagnostic *diagnostic);
+  std::optional<DiagnosticContext>
+  ConstructDiagnosticContext(const Diagnostic *diagnostic);
 
   /// Given a diagnostic ID, return a description of the issue.
   llvm::StringRef GetDescriptionForDiagID(DiagID ID) const;
@@ -485,15 +501,15 @@ public:
 
   /// Format the given diagnostic text and place the result in the given
   /// buffer.
-  static void FormatDiagnosticText(
-      llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
-      ArrayRef<DiagnosticArgument> Args,
-      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
+  // static void FormatDiagnosticText(
+  //     llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
+  //     ArrayRef<DiagnosticArgument> Args,
+  //     DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 
-  static void FormatDiagnosticText(
-      llvm::raw_ostream &Out, const char *StrPtr, const char *EndPtr,
-      SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
-      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
+  // static void FormatDiagnosticText(
+  //     llvm::raw_ostream &Out, const char *StrPtr, const char *EndPtr,
+  //     SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
+  //     DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 
 private:
   DiagnosticLevel GetDiagnosticLevel(DiagID ID, SrcLoc) const;

@@ -3,6 +3,7 @@
 
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/Token.h"
+#include "stone/Diag/DiagnosticFormatter.h"
 #include "stone/Support/Trivia.h"
 
 // TODO: Move to support
@@ -603,6 +604,19 @@ Iterator token_lower_bound(ArrayTy &Array, SrcLoc Loc) {
 /// .
 llvm::ArrayRef<Token> slice_token_array(ArrayRef<Token> AllTokens,
                                         SrcLoc StartLoc, SrcLoc EndLoc);
+
+class TextDiagnosticFormatter : public DiagnosticFormatter {
+
+public:
+  TextDiagnosticFormatter();
+  ~TextDiagnosticFormatter();
+
+public:
+  bool FormatDiagnostic(llvm::raw_ostream &OS, SrcMgr &SM,
+                        const DiagnosticContext &DC,
+                        DiagnosticFormatOptions FormatOpts =
+                            DiagnosticFormatOptions())  const override;
+};
 
 } // namespace diag
 } // namespace stone

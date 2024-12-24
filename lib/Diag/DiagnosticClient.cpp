@@ -85,7 +85,8 @@ DiagnosticClient::~DiagnosticClient() = default;
 ///  reported by DiagnosticsEngine.
 bool DiagnosticClient::UseInDiagnosticCounts() const { return true; }
 
-void DiagnosticClient::HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) {
+void DiagnosticClient::HandleDiagnostic(DiagnosticEngine &DE,
+                                        const DiagnosticContext &DC) {
   // NOTE: May not need this anymore
 }
 

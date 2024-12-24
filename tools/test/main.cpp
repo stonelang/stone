@@ -18,9 +18,8 @@ int main() {
   DiagnosticOptions DiagOpts;
   DiagnosticEngine DE(SM, DiagOpts);
 
-
   DE.AddClient(DC.get());
-  DE.Diagnose(SrcLoc(),diag::error_no_input_files);
+  DE.Diagnose(SrcLoc(),diag::error_duplicate_input_file, "test.stone");
   DE.FinishProcessing();
 
   return 0;
