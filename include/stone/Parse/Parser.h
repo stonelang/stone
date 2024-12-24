@@ -15,7 +15,7 @@
 
 #include "stone/Parse/CodeCompletionCallbacks.h"
 #include "stone/Parse/ParserResult.h"
-#include "stone/Support/Lexer.h"
+#include "stone/Parse/Lexer.h"
 #include "stone/Support/Statistics.h"
 
 #include "llvm/Support/Timer.h"

@@ -32,8 +32,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   FINISH_LLVM_INIT();
 
   CompilerInvocation invocation;
-  std::unique_ptr<diags::TextDiagnosticPrinterImpl> DC(
-      new diags::TextDiagnosticPrinterImpl());
+  std::unique_ptr<diag::TextDiagnosticPrinterImpl> DC(
+      new diag::TextDiagnosticPrinterImpl());
 
   diags::DiagnosticEngine DE(invocation.GetSrcMgr(),
                              invocation.GetDiagnosticOptions());

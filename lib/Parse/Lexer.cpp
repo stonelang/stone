@@ -1,4 +1,4 @@
-#include "stone/Lexer/Lexer.h"
+#include "stone/Parse/Lexer.h"
 #include "stone/AST/DiagnosticsParse.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Support/Confusable.h"
