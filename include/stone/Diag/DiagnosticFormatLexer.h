@@ -175,7 +175,7 @@ public:
       CommentRetentionMode RetainComments = CommentRetentionMode::None,
       TriviaRetentionMode TriviaRetention = TriviaRetentionMode::WithoutTrivia);
 
-  DiagnosticFormatLexer(unsigned BufferID, const stone::SrcMgr &sm,
+  DiagnosticFormatLexer(unsigned BufferID, const stone::SrcMgr &SM,
                         llvm::raw_ostream &Diag);
 
   /// Create a lexer that scans a subrange of the source buffer.

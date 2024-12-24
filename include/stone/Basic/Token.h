@@ -231,6 +231,7 @@ public:
   bool IsLSquare() const { return kind == tok::l_square; }
   bool IsRSquare() const { return kind == tok::r_square; }
   bool IsPercent() const { return kind == tok::percent; }
+  bool IsLast() const { return kind == tok::LAST; }
 
   bool IsTypeChunk() const { return (IsStar() || IsAmp()); }
 
