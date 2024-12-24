@@ -5,7 +5,7 @@ add_subdirectory(Basic)
 add_subdirectory(Diag)
 #add_subdirectory(Driver)
 add_subdirectory(Parse)
-#add_subdirectory(Sem)
+add_subdirectory(Sem)
 add_subdirectory(Support)
 
 
