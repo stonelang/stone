@@ -170,24 +170,24 @@ private:
   DiagnosticState &operator=(DiagnosticState &&) = default;
 };
 
-enum class DiagnosticStage {
-  None = 0,
-  Active,
-  Flushed,
-  Emitted,
-};
-
 class Diagnostic final : public DiagnosticAllocation<Diagnostic> {
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
+
+public:
+  enum class Stage {
+    None = 0,
+    Active,
+    Waiting,
+    Emitted,
+
+  };
 
 protected:
   DiagID ID;
   SrcLoc Loc;
 
-  DiagnosticStage Stage = DiagnosticStage::None;
-  // DiagnosticState State;
-
+  Stage CurStage = Stage::None;
   llvm::SmallVector<DiagnosticArgument, 3> Args;
   llvm::SmallVector<CharSrcRange, 2> Ranges;
   llvm::SmallVector<FixIt, 2> FixIts;
@@ -203,7 +203,7 @@ protected:
   void AddFixIt(FixIt &&F) { FixIts.push_back(std::move(F)); }
 
   /// Set the diagnostic stage
-  void SetStage(DiagnosticStage S) { Stage = S; }
+  void SetStage(Stage S) { CurStage = S; }
 
 public:
   // All constructors are intentionally implicit.
@@ -223,8 +223,11 @@ public:
   // explicit operator bool() const { return !Diag->Message.empty(); }
 
 public:
+  /// Evaluates true when this object stores a diagnostic.
+  explicit operator bool() const { return CurStage != Stage::None; }
+
   DiagID GetID() const { return ID; }
-  DiagnosticStage GetStage() { return Stage; }
+  Diagnostic::Stage GetStage() { return CurStage; }
   llvm::ArrayRef<DiagnosticArgument> GetArgs() const { return Args; }
   llvm::ArrayRef<CharSrcRange> GetRanges() const { return Ranges; }
   llvm::ArrayRef<FixIt> GetFixIts() const { return FixIts; }
@@ -365,6 +368,10 @@ class DiagnosticEngine final {
   // Cap on depth of constexpr evaluation backtrace stack, 0 -> no limit.
   unsigned ConstexprBacktraceLimit = 0;
 
+  /// The number of open diagnostic transactions. Diagnostics are only
+  /// emitted once all transactions have closed.
+  unsigned TransactionCount = 0;
+
   /// Counts for DiagnosticErrorTrap to check whether an error occurred
   /// during a parsing section, e.g. during parsing a function.
   unsigned TrapTotalErrorsOccurred;
@@ -397,6 +404,11 @@ class DiagnosticEngine final {
   /// Flush a new diagnostic, which will either be emitted, or added to an
   /// active transaction.
   void HandleActiveDiagnostic(const Diagnostic *diagnostic);
+
+  /// Called when tentative diagnostic is about to be flushed,
+  /// to apply any required transformations e.g. copy string arguments
+  /// to extend their lifetime.
+  void HandleActiveDiagnosticLater(const Diagnostic *diagnostic);
 
   /// Used to emit a diagnostic that is finally fully formed,
   /// ignoring suppression.
@@ -580,6 +592,52 @@ public:
     TotalUnrecoverableErrors = DE.TrapTotalUnrecoverableErrorsOccurred;
   }
 };
+
+// FUTURE -- Clients can create an object of this type, pass in an existing DE.
+// When the transaction is out of scope, it will call
+class DiagnosticTransaction {
+public:
+  enum class State {
+    Closed = 0,
+    Opened,
+  };
+
+protected:
+  DiagnosticEngine &DE;
+  State CurState;
+
+public:
+  DiagnosticTransaction(const DiagnosticTransaction &) = delete;
+  DiagnosticTransaction &operator=(const DiagnosticTransaction &) = delete;
+
+  explicit DiagnosticTransaction(DiagnosticEngine &DE)
+      : DE(DE), CurState(State::Opened) {
+    // DE.TransactionCount++;
+  }
+
+  ~DiagnosticTransaction() {
+    if (IsOpen()) {
+      Commit();
+    }
+  }
+
+public:
+  bool IsOpen() { return CurState == State::Opened; }
+
+  void Commit() {
+    Close();
+    // DE.EmitTentativeDiagnostics();
+  }
+
+  void Close() {
+    assert(IsOpen() && "only open transactions may be closed");
+    CurState = State::Closed;
+    // DE.TransactionCount--;
+    //  assert(Depth == Engine.TransactionCount &&
+    //         "transactions must be closed LIFO");
+  }
+};
+
 } // namespace stone
 
 #endif
