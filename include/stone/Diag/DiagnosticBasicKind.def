@@ -1,14 +1,50 @@
 #define DEFINE_DIAGNOSTIC_MACROS
 #include "DiagnosticMacroKind.h"
 
-ERROR(error_invalid_diagnostic,None,
+ERROR(error_invalid_diagnostic,none,
       "INTERNAL ERROR: this diagnostic should not be produced", ())
 
+ERROR(error_opening_output,none,
+      "error opening '%0' for output: %1", (StringRef, StringRef))
 
-ERROR(error_no_input_files, None, "no input files", ())
+ERROR(error_invalid_mode,none,
+      "invalid mode: type -help for a list of the compiler modes.", ())
 
-ERROR(error_duplicate_input_file,None,
+ERROR(error_no_input_files, none, "no input files", ())
+
+ERROR(error_unknown_arg, none, "unknown argument:", (StringRef))
+
+ERROR(error_missing_arg_value,none,
+      "missing argument value for '%0', expected %1 argument(s)",(StringRef, unsigned))
+
+ERROR(error_unable_to_open_output, none, "could not open output", (StringRef, StringRef))
+
+ERROR(error_unable_to_open_buffer_for_file, none, "could not open file buffer for", (StringRef))
+
+
+ERROR(error_duplicate_input_file,none,
       "duplicate input file '%0'", (StringRef))
+
+ERROR(error_cannot_open_file,none,
+      "cannot open file '%0' (%1)", (StringRef, StringRef))
+
+
+ERROR(error_open_input_file,none,
+      "error opening input file '%0' (%1)", (StringRef, StringRef))
+
+
+ERROR(error_invalid_arg_value,none,
+      "invalid value '%1' in '%0'", (StringRef, StringRef))
+
+// Usually, but not always, emitted from the driver
+ERROR(error_two_files_same_name,none,
+      "filename \"%0\" used twice: '%1' and '%2'",
+      (StringRef, StringRef, StringRef))
+
+NOTE(note_explain_two_files_same_name,none,
+     "filenames are used to distinguish private declarations with the same "
+     "name", ())
+
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DiagnosticMacroKind.h"

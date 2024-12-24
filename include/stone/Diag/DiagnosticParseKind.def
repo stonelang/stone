@@ -1,13 +1,230 @@
-//==============================================================================
-// Lexing 
-//==============================================================================
 #define DEFINE_DIAGNOSTIC_MACROS
 #include "DiagnosticMacroKind.h"
 
-WARNING(warning_null_character,None,
+
+
+//==============================================================================
+// MARK: Lexing and Parsing
+//==============================================================================
+
+NOTE(note_opening_brace,none,
+     "to match this opening '{'", ())
+
+NOTE(note_opening_bracket,none,
+     "to match this opening '['", ())
+
+NOTE(note_opening_paren,none,
+     "to match this opening '('", ())
+
+NOTE(note_opening_angle,none,
+     "to match this opening '<'", ())
+
+ERROR(error_extra_rbrace,none,
+      "extraneous '}' at top level", ())
+
+
+//------------------------------------------------------------------------------
+// Lexer diagnostics : TODO: lex_note_.., lex_error_... lex__warn_...
+//------------------------------------------------------------------------------
+
+
+NOTE(lex_multiline_string_indent_should_match_here,none,
+      "should match %select{space|tab}0 here", (unsigned))
+NOTE(lex_multiline_string_indent_change_line,none,
+      "change indentation of %select{this line|these lines}0 to match closing delimiter", (bool))
+
+ERROR(lex_escaped_newline_at_lastline,none,
+      "escaped newline at the last line is not allowed", ())
+
+
+WARNING(lex_null_character,none,
+        "nul character embedded in middle of file", ())
+ERROR(lex_utf16_bom_marker,none,
+      "input files must be encoded as UTF-8 instead of UTF-16", ())
+
+ERROR(lex_hashbang_not_allowed,none,
+      "hashbang line is allowed only in the main file", ())
+
+ERROR(lex_unprintable_ascii_character,none,
+      "unprintable ASCII character found in source file", ())
+ERROR(lex_invalid_utf8,none,
+      "invalid UTF-8 found in source file", ())
+
+ERROR(lex_single_quote_string,none,
+      "single-quoted string literal found, use '\"'", ())
+ERROR(lex_invalid_curly_quote,none,
+      "unicode curly quote found, replace with '\"'", ())
+NOTE(lex_confusable_character,none,
+      "unicode character '%0' (%1) looks similar to '%2' (%3); did you mean to use '%2' (%3)?",
+      (StringRef, StringRef, StringRef, StringRef))
+WARNING(lex_nonbreaking_space,none,
+        "non-breaking space (U+00A0) used instead of regular space", ())
+
+ERROR(lex_unterminated_block_comment,none,
+      "unterminated '/*' comment", ())
+NOTE(lex_comment_start,none,
+     "comment started here", ())
+
+
+ERROR(lex_unterminated_string,none,
+      "unterminated string literal", ())
+ERROR(lex_invalid_escape,none,
+       "invalid escape sequence in literal", ())
+ERROR(lex_invalid_u_escape,none,
+      "\\u{...} escape sequence expects between 1 and 8 hex digits", ())
+ERROR(lex_invalid_u_escape_rbrace,none,
+      "expected '}' in \\u{...} escape sequence", ())
+ERROR(lex_invalid_escape_delimiter,none,
+      "too many '#' characters in delimited escape", ())
+ERROR(lex_invalid_closing_delimiter,none,
+      "too many '#' characters in closing delimiter", ())
+
+ERROR(lex_unterminated_regex,none,
+      "unterminated regex literal", ())
+
+ERROR(lex_invalid_unicode_scalar,none,
+      "invalid unicode scalar", ())
+ERROR(lex_unicode_escape_braces,none,
+      "expected hexadecimal code in braces after unicode escape", ())
+ERROR(lex_illegal_multiline_string_start,none,
+      "multi-line string literal content must begin on a new line", ())
+ERROR(lex_illegal_multiline_string_end,none,
+      "multi-line string literal closing delimiter must begin on a new line", ())
+ERROR(lex_multiline_string_indent_inconsistent,none,
+      "%select{unexpected space in|unexpected tab in|insufficient}2 indentation of "
+      "%select{line|next %1 lines}0 in multi-line string literal",
+      (bool, unsigned, unsigned))
+
+
+ERROR(lex_invalid_character,none,
+       "invalid character in source file", ())
+ERROR(lex_invalid_identifier_start_character,none,
+       "an identifier cannot begin with this character", ())
+ERROR(lex_expected_digit_in_fp_exponent,none,
+       "expected a digit in floating point exponent", ())
+ERROR(lex_invalid_digit_in_fp_exponent,none,
+      "'%0' is not a valid %select{digit|first character}1 in floating point exponent",
+      (StringRef, bool))
+ERROR(lex_invalid_digit_in_int_literal,none,
+      "'%0' is not a valid %select{binary digit (0 or 1)|octal digit (0-7)|"
+      "digit|hexadecimal digit (0-9, A-F)}1 in integer literal",
+      (StringRef, unsigned))
+ERROR(lex_expected_binary_exponent_in_hex_float_literal,none,
+      "hexadecimal floating point literal must end with an exponent", ())
+ERROR(lex_unexpected_block_comment_end,none,
+      "unexpected end of block comment", ())
+ERROR(lex_unary_equal,none,
+      "'=' must have consistent whitespace on both sides", ())
+ERROR(extra_whitespace_period,none,
+      "extraneous whitespace after '.' is not stoneitted", ())
+ERROR(lex_editor_placeholder,none,
+      "editor placeholder in source file", ())
+WARNING(lex_editor_placeholder_in_playground,none,
+        "editor placeholder in source file", ())
+ERROR(lex_conflict_marker_in_file,none,
+      "source control conflict marker in source file", ())
+
+
+//==============================================================================
+// Lexing 
+//==============================================================================
+
+WARNING(warn_null_character,none,
         "null character embedded in middle of file", ())
+
+ERROR(error_utf16_bom_marker,none,
+      "input files must be encoded as UTF-8 instead of UTF-16", ())
+
+ERROR(error_unprintable_ascii_character,none,
+      "unprintable ASCII character found in source file", ())
+
+ERROR(error_invalid_utf8,none,
+      "invalid UTF-8 found in source file", ())
+
+ERROR(error_single_quote_string,none,
+      "single-quoted string literal found, use '\"'", ())
+
+ERROR(error_invalid_curly_quote,none,
+      "unicode curly quote found, replace with '\"'", ())
+
+NOTE(note_confusable_character,none,
+      "unicode character '%0' (%1) looks similar to '%2' (%3); did you mean to use '%2' (%3)?",
+      (StringRef, StringRef, StringRef, StringRef))
+
+WARNING(warn_non_breaking_space,none,
+        "non-breaking space (U+00A0) used instead of regular space", ())
+
+ERROR(error_unterminated_block_comment,none,
+      "unterminated '/*' comment", ())
+
+NOTE(note_comment_start,none,
+     "comment started here", ())
+
+
+ERROR(error_unterminated_string,none,
+      "unterminated string literal", ())
+
+ERROR(error_invalid_escape,none,
+       "invalid escape sequence in literal", ())
+
+ERROR(error_invalid_u_escape,none,
+      "\\u{...} escape sequence expects between 1 and 8 hex digits", ())
+
+ERROR(error_invalid_u_escape_rbrace,none,
+      "expected '}' in \\u{...} escape sequence", ())
+
+ERROR(error_invalid_escape_delimiter,none,
+      "too many '#' characters in delimited escape", ())
+
+ERROR(error_invalid_closing_delimiter,none,
+      "too many '#' characters in closing delimiter", ())
+
+ERROR(error_invalid_unicode_scalar,none,
+      "invalid unicode scalar", ())
+      
+ERROR(error_unicode_escape_braces,none,
+      "expected hexadecimal code in braces after unicode escape", ())
+
+
+//==============================================================================
+// Parsing and Syntax Nodes
+//==============================================================================
+
+// NOTE(note_prev_decl_def,none,
+//      "previous definition of %0 is here", (const stone::Decl *))
+
+ERROR(error_case_stmt_without_body,none,
+      "%select{'case'|'default'}0 label in a 'match' should have at least one "
+      "executable statement", (bool))
+
+
+//==============================================================================
+// Parsing Function types
+//==============================================================================
+
+ERROR(error_expected_type_for_function_result,PointsToFirstBadToken,
+      "expected type for function result", ())
+
+ERROR(error_expected_arrow_after_function_param,none,
+      "expected '->' after function parameter tuple", ())
+
+
+ERROR(expected_type,PointsToFirstBadToken, "expected type", ())
+
+
+//==============================================================================
+// MARK: Type checking
+//==============================================================================
+
+
+//------------------------------------------------------------------------------
+// MARK: Expression parsing diagnostics
+//------------------------------------------------------------------------------
+
+
+ERROR(expected_member_name,PointsToFirstBadToken,
+      "expected member name following '.'", ())
+
 
 #define UNDEFINE_DIAGNOSTIC_MACROS
 #include "DiagnosticMacroKind.h"
-
-

@@ -7,7 +7,7 @@ using namespace stone;
 namespace {
 enum class LocalDiagnosticOptions {
   /// No options.
-  None,
+  none,
 
   /// The location of this diagnostic points to the beginning of the first
   /// token that the parser considers invalid.  If this token is located at the
@@ -219,14 +219,11 @@ void InFlightDiagnostic::FlushActiveDiagnostic() {
 
 void DiagnosticEngine::FlushActiveDiagnostic(bool ForceEmit) {
   assert(ActiveDiagnostic && "No active diagnostic to flush");
-  HandleDiagnostic(ActiveDiagnostic);
+  FlushActiveDiagnostic(ActiveDiagnostic);
   ActiveDiagnostic = nullptr;
 }
 
-/// Handle a new diagnostic, which will either be emitted, or added to an
-/// active transaction.
-void DiagnosticEngine::HandleDiagnostic(const Diagnostic *diagnostic) {
-
+void DiagnosticEngine::FlushActiveDiagnostic(const Diagnostic *diagnostic) {
   EmitDiagnostic(diagnostic);
 }
 
@@ -317,23 +314,3 @@ DiagnosticState::ComputeDiagnosticLevel(const Diagnostic *diag) {
   previousLevel = Level;
   return Level;
 }
-
-// Diagnostic *Diagnostic::Create(DiagnosticEngine &DE, DiagID ID) {
-//   return Diagnostic::Create(DE, SrcLoc(), ID);
-// }
-// Diagnostic *Diagnostic::Create(DiagnosticEngine &DE, SrcLoc Loc, DiagID ID) {
-//   return new (DE) Diagnostic(DE, ID, Loc);
-// }
-// Diagnostic *
-// Diagnostic::Create(DiagnosticEngine &DE, DiagID ID,
-//                           SrcLoc Loc,
-//                           ArrayRef<DiagnosticArgument> Args) {
-//   return new (DE) Diagnostic(ID, Loc, Args);
-// }
-
-// Diagnostic *Diagnostic::Create(DiagnosticEngine &DE, DiagID ID,
-//                                              SrcLoc Loc,
-//                                              ArrayRef<DiagnosticArgument>
-//                                              Args, ArrayRef<FixIt> FixIts) {
-//   return new (DE) Diagnostic(ID, Loc, Args, FixIts);
-// }

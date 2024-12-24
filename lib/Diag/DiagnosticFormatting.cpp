@@ -87,10 +87,27 @@ class DiagnosticFormatParser {
     return CurLoc;
   }
 
+  void ParsePercent() {
+    assert(CurTok.IsPercent() && "Expecting percent token");
+    // Send the current text to the output
+    Out << CurTok.GetText();
+  }
 
-  void ParsePercent(){
-  	assert(CurTok.IsPercent() && "Expecting percent token");
-  	// Send the current text to the output 
+  void ParseLParen() {
+    assert(CurTok.GetKind() == tok::l_paren && "Expecting left paren");
+    // Now, we can consume the token ... what follows is a type
+    Consume();
+
+    // if (CurTok.IsIdentifer()) {
+    //   // This is StringRef, or some builtin type
+    // }
+
+    switch (CurTok.GetKind()) {
+
+    case tok::kw_bool: {
+    }
+    }
+    // Send the current text to the output
     Out << CurTok.GetText();
   }
 
@@ -107,13 +124,17 @@ public:
     while (IsParsing()) {
       switch (CurTok.GetKind()) {
       case tok::percent: {
-      	ParsePercent();
+        ParsePercent();
+        break;
+      }
+      case tok::l_paren: {
+        ParseLParen();
         break;
       }
       default: {
-      	// If we are here, we did not find anything of interest.
-      	// So, we consume. 
- 		Consume();
+        // If we are here, we did not find anything of interest.
+        // So, we consume.
+        Consume();
       }
       }
     }

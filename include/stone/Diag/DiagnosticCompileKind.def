@@ -1,0 +1,55 @@
+#define DEFINE_DIAGNOSTIC_MACROS
+#include "DiagnosticMacroKind.h"
+
+
+ERROR(error_no_compile_args, none, "no arguments provided to the compiler", ())
+
+ERROR(error_no_compile_mode, none, "no compile mode", ())
+
+ERROR(error_cannot_have_input_files_with_file_list,none,
+      "cannot have input files with file list", ())
+
+ERROR(error_cannot_have_primary_files_with_primary_file_list,none,
+      "cannot have primary input files with primary file list", ())
+
+ERROR(error_cannot_have_supplementary_outputs,none,
+      "cannot have '%0' with '%1'", (StringRef, StringRef))
+
+
+ERROR(error_invalid_arg_combination,none,
+      "unsupported argument combination: '%0' and '%1'", (StringRef, StringRef))
+
+ERROR(error_primary_file_not_found,none,
+      "primary file '%0' was not found in file list '%1'",
+      (StringRef, StringRef))
+
+ERROR(error_if_any_output_files_are_specified_they_all_must_be,none,
+      "if any %0 files are specified, they all must be", (StringRef))
+
+ERROR(error_no_output_filename_specified,none,
+      "an %0 filename was not specified for a mode which requires an "
+      "%0 filename", (StringRef))
+
+ERROR(error_implicit_output_file_is_directory,none,
+      "the implicit output file '%0' is a directory; explicitly specify a "
+      "filename using %1", (StringRef, StringRef))
+
+ERROR(error_wrong_number_of_arguments,none,
+      "wrong number of '%0' arguments (expected %1, got %2)",
+      (StringRef, int, int))
+
+
+ERROR(error_unable_to_load_supplementary_output_file_map, none,
+      "unable to load supplementary output file map '%0': %1",
+      (StringRef, StringRef))
+
+ERROR(error_missing_entry_in_supplementary_output_file_map, none,
+       "supplementary output file map '%0' is missing an entry for '%1' "
+       "(this likely indicates a compiler issue; " STONE_BUG_REPORT_MESSAGE ")",
+       (StringRef, StringRef))
+
+
+#define UNDEFINE_DIAGNOSTIC_MACROS
+#include "DiagnosticMacroKind.h"
+
+

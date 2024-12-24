@@ -388,9 +388,11 @@ class DiagnosticEngine final {
   /// Requested by InFlightDiagnostic
   void FlushActiveDiagnostic(bool ForceEmit = false);
 
-  /// Handle a new diagnostic, which will either be emitted, or added to an
+  /// Flush a new diagnostic, which will either be emitted, or added to an
   /// active transaction.
-  void HandleDiagnostic(const Diagnostic *diagnostic);
+  void FlushActiveDiagnostic(const Diagnostic *diagnostic);
+
+
 
   /// Used to emit a diagnostic that is finally fully formed,
   /// ignoring suppression.

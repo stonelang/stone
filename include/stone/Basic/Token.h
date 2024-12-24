@@ -109,6 +109,8 @@ public:
   bool IsIdentifierOrUnderscore() const {
     return IsAny(tok::identifier, tok::kw__);
   }
+  /// True if the token is an identifier or '_'.
+  bool IsIdentifier() const { return IsAny(tok::identifier); }
 
   /// True if the token is an l_paren token that does not start a new line.
   bool IsFollowingLParen() const {
@@ -232,6 +234,8 @@ public:
   bool IsRSquare() const { return kind == tok::r_square; }
   bool IsPercent() const { return kind == tok::percent; }
   bool IsLast() const { return kind == tok::LAST; }
+  bool IsBool() const { return kind == tok::kw_bool; }
+  bool IsFalse() const { return kind == tok::kw_false; }
 
   bool IsTypeChunk() const { return (IsStar() || IsAmp()); }
 
