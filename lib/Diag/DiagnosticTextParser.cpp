@@ -51,9 +51,8 @@ struct DiagnosticTextParser final {
   /// Always empty if !SF.shouldBuildSyntaxTree().
   llvm::StringRef TrailingTrivia;
 
-  DiagnosticTextParser(unsigned BufferID, stone::SrcMgr &SM,
-                       ArrayRef<DiagnosticArgument> Args,
-                       llvm::raw_ostream &Out)
+  DiagnosticTextParser(unsigned BufferID, SrcMgr &SM, llvm::raw_ostream &Out,
+                       ArrayRef<DiagnosticArgument> Args)
       : Lexer(BufferID, SM, llvm::errs()), Out(Out), Args(Args) {}
 
   bool IsEOF() { return CurTok.GetKind() == tok::eof; }
@@ -167,7 +166,7 @@ void DiagnosticEngine::FormatDiagnosticText(
     llvm::raw_ostream &Out, SrcMgr &SM, StringRef Text,
     ArrayRef<DiagnosticArgument> Args, DiagnosticFormatOptions FormatOpts) {
 
-  DiagnosticTextParser(SM.addMemBufferCopy(Text), SM, Args, Out).Parse();
+  DiagnosticTextParser(SM.addMemBufferCopy(Text), SM, Out, Args).Parse();
 }
 
 void DiagnosticEngine::FormatDiagnosticText(
