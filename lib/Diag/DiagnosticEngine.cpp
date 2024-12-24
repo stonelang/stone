@@ -111,8 +111,8 @@ static constexpr const char *const diagnosticIDStrings[] = {
 
 DiagnosticState::DiagnosticState() {
   ignoredDiagnostics.resize(LocalDiagID::TotalDiags);
-  errorDiagnostics.resize(LocalDiagID::TotalDiags);
-  warningDiagnostics.resize(LocalDiagID::TotalDiags);
+  // errorDiagnostics.resize(LocalDiagID::TotalDiags);
+  // warningDiagnostics.resize(LocalDiagID::TotalDiags);
 }
 // static DiagnosticLevel
 // DiagnosticState::ComputeDiagnosticLevel(DiagnosticKind kind, bool isFatal) {
@@ -179,6 +179,8 @@ bool DiagnosticEngine::FinishProcessing() {
   for (auto &client : Clients) {
     hasError |= client->FinishProcessing();
   }
+  llvm::outs() << state.GetTotalErrors();
+
   return hasError;
 }
 
@@ -276,11 +278,22 @@ DiagnosticEngine::ConstructDiagnosticInfo(const Diagnostic *diagnostic) {
   }
 
   auto fixIts = diagnostic->GetFixIts();
-  return DiagnosticInfo(
+
+  return DiagnosticEngine::CreateDiagnosticInfo(
       diagnostic->GetID(), diagnostic->GetLoc(), ComputeDiagnosticKind(Level),
       /* None for now*/ DiagnosticReason::None,
       GetDiagnosticStringForDiagID(diagnostic->GetID()), diagnostic->GetArgs(),
       /* no children now*/ {}, diagnostic->GetRanges(), fixIts);
+}
+
+DiagnosticInfo DiagnosticEngine::CreateDiagnosticInfo(
+    DiagID ID, SrcLoc Loc, DiagnosticKind Kind, DiagnosticReason Reason,
+    StringRef FormatText, ArrayRef<DiagnosticArgument> FormatArgs,
+    ArrayRef<Diagnostic *> ChildDiagnostics, ArrayRef<CharSrcRange> Ranges,
+    ArrayRef<FixIt> FixIts) {
+
+  return DiagnosticInfo(ID, Loc, Kind, Reason, FormatText, FormatArgs,
+                        ChildDiagnostics, Ranges, FixIts);
 }
 
 static DiagnosticLevel ComputeDiagnosticLevelImpl(DiagnosticKind kind,

@@ -34,6 +34,7 @@ namespace stone {
 class LangOptions;
 
 class Diagnostic;
+
 class InFlightDiagnostic;
 class DiagnosticClient;
 
@@ -411,6 +412,10 @@ class DiagnosticEngine final {
   /// Send all diagnostics to the queue
   void QueueDiagnostic(const Diagnostic *diagnostic);
 
+  /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
+  std::optional<DiagnosticInfo>
+  ConstructDiagnosticInfo(const Diagnostic *diagnostic);
+
 public:
   DiagnosticEngine(const DiagnosticEngine &) = delete;
   DiagnosticEngine &operator=(const DiagnosticEngine &) = delete;
@@ -477,10 +482,6 @@ public:
   DiagID GetCustomDiagID(DiagnosticLevel Level,
                          DiagnosticStringFormatter StringFormatter);
 
-  /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
-  std::optional<DiagnosticInfo>
-  ConstructDiagnosticInfo(const Diagnostic *diagnostic);
-
   /// Given a diagnostic ID, return a description of the issue.
   llvm::StringRef GetDescriptionForDiagID(DiagID ID) const;
 
@@ -503,6 +504,13 @@ public:
   static void FormatDiagnosticText(
       llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticInfo &DI,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
+
+  static DiagnosticInfo
+  CreateDiagnosticInfo(DiagID ID, SrcLoc Loc, DiagnosticKind Kind,
+                       DiagnosticReason Reason, StringRef FormatText,
+                       ArrayRef<DiagnosticArgument> FormatArgs,
+                       ArrayRef<Diagnostic *> ChildDiagnostics,
+                       ArrayRef<CharSrcRange> Ranges, ArrayRef<FixIt> FixIts);
 
 private:
   DiagnosticLevel GetDiagnosticLevel(DiagID ID, SrcLoc) const;

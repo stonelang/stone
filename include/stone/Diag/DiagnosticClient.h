@@ -190,20 +190,12 @@ struct DiagnosticInfo final {
 // class CustomDiagnostic {};
 
 class DiagnosticClient {
-  friend class DiagnosticEngine;
-
-  unsigned TotalWarnings = 0; ///< Number of warnings reported
-  unsigned TotalErrors = 0;   ///< Number of errors reported
-
-  // DiagnosticTracker tracker;
 
 public:
   DiagnosticClient();
   virtual ~DiagnosticClient();
 
 public:
-  virtual void Clear() { TotalWarnings = TotalErrors = 0; }
-
   /// Callback to inform the diagnostic client that processing of all
   /// source files has ended.
   virtual bool FinishProcessing() {}
