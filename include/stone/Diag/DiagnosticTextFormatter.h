@@ -5,16 +5,16 @@
 
 namespace stone {
 
-struct DiagnosticContext;
-class DiagnosticFormatter {
+struct DiagnosticImpl;
+class DiagnosticTextFormatter {
 
 public:
-  DiagnosticFormatter();
-  virtual ~DiagnosticFormatter();
+  DiagnosticTextFormatter();
+  virtual ~DiagnosticTextFormatter();
 
 public:
-  virtual bool FormatDiagnostic(
-      llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticContext &DC,
+  virtual bool FormatDiagnosticText(
+      llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticImpl &DC,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
 };
 

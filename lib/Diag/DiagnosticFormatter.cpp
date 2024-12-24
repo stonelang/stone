@@ -9,7 +9,7 @@ DiagnosticFormatter::DiagnosticFormatter() {}
 DiagnosticFormatter::~DiagnosticFormatter() = default;
 
 bool DiagnosticFormatter::FormatDiagnostic(
-    llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticContext &DC,
+    llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticImpl &DC,
     DiagnosticFormatOptions FormatOpts) const {
   return true;
 }

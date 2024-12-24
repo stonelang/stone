@@ -12,7 +12,7 @@ void TextDiagnosticPrinter::PrintDiagnostic() {}
 void TextDiagnosticPrinter::EmitDiagnostic() {}
 
 void TextDiagnosticPrinter::HandleDiagnostic(DiagnosticEngine &DE,
-                                             const DiagnosticContext &DC) {
+                                             const DiagnosticImpl &DC) {
 
   /// Make sure that it has a message.
   assert(DC && "unable print a dianostic without a message!");
@@ -73,7 +73,7 @@ TextDiagnosticPrinterImpl::TextDiagnosticPrinterImpl() {}
 TextDiagnosticPrinterImpl::~TextDiagnosticPrinterImpl() {}
 
 void TextDiagnosticPrinterImpl::HandleDiagnostic(DiagnosticEngine &DE,
-                                                 const DiagnosticContext &D) {
+                                                 const DiagnosticImpl &D) {
 
   // Default implementation (Warnings/errors count).
   // TextDiagnosticPrinter::HandleDiagnostic(SM, DI);

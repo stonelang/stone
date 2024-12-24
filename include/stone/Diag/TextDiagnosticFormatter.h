@@ -613,9 +613,9 @@ public:
 
 public:
   bool FormatDiagnostic(llvm::raw_ostream &OS, SrcMgr &SM,
-                        const DiagnosticContext &DC,
+                        const DiagnosticImpl &DC,
                         DiagnosticFormatOptions FormatOpts =
-                            DiagnosticFormatOptions())  const override;
+                            DiagnosticFormatOptions()) const override;
 };
 
 } // namespace diag

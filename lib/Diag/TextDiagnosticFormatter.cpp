@@ -168,7 +168,7 @@ diag::TextDiagnosticFormatter::TextDiagnosticFormatter() {}
 diag::TextDiagnosticFormatter::~TextDiagnosticFormatter() {}
 
 bool diag::TextDiagnosticFormatter::FormatDiagnostic(
-    llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticContext &DC,
+    llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticImpl &DC,
     DiagnosticFormatOptions FormatOpts) const {
 
   if (DC.FormatText.empty()) {

@@ -486,8 +486,8 @@ public:
                          DiagnosticStringFormatter StringFormatter);
 
   /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
-  std::optional<DiagnosticContext>
-  ConstructDiagnosticContext(const Diagnostic *diagnostic);
+  std::optional<DiagnosticImpl>
+  ConstructDiagnosticImpl(const Diagnostic *diagnostic);
 
   /// Given a diagnostic ID, return a description of the issue.
   llvm::StringRef GetDescriptionForDiagID(DiagID ID) const;
@@ -506,10 +506,10 @@ public:
   //     ArrayRef<DiagnosticArgument> Args,
   //     DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 
-  // static void FormatDiagnosticText(
-  //     llvm::raw_ostream &Out, const char *StrPtr, const char *EndPtr,
-  //     SrcMgr &SM, ArrayRef<DiagnosticArgument> Args,
-  //     DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
+  static void FormatDiagnosticText(llvm::raw_ostream &Out, StringRef DiagnosticText,
+                                   SrcMgr &SM,
+                                   ArrayRef<DiagnosticArgument> Args,
+                                   DiagnosticTextFormatter &TextFormatter);
 
 private:
   DiagnosticLevel GetDiagnosticLevel(DiagID ID, SrcLoc) const;

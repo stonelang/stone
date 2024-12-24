@@ -227,7 +227,7 @@ void DiagnosticEngine::HandleActiveDiagnostic(const Diagnostic *diagnostic) {
 void DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
   assert(HasClients() && "No DiagnosticClients. Unable to emit!");
 
-  if (auto DI = ConstructDiagnosticContext(diagnostic)) {
+  if (auto DI = ConstructDiagnosticImpl(diagnostic)) {
     for (auto &client : Clients) {
       if (client->UseInDiagnosticCounts()) {
         if (DI->IsWarning()) {
@@ -267,8 +267,8 @@ static DiagnosticKind ComputeDiagnosticKind(DiagnosticLevel Level) {
 }
 
 /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
-std::optional<DiagnosticContext>
-DiagnosticEngine::ConstructDiagnosticContext(const Diagnostic *diagnostic) {
+std::optional<DiagnosticImpl>
+DiagnosticEngine::ConstructDiagnosticImpl(const Diagnostic *diagnostic) {
 
   auto Level = state.ComputeDiagnosticLevel(diagnostic);
   if (Level == DiagnosticLevel::Ignore) {
@@ -276,7 +276,7 @@ DiagnosticEngine::ConstructDiagnosticContext(const Diagnostic *diagnostic) {
   }
 
   auto fixIts = diagnostic->GetFixIts();
-  return DiagnosticContext(
+  return DiagnosticImpl(
       diagnostic->GetID(), diagnostic->GetLoc(), ComputeDiagnosticKind(Level),
       /* None for now*/ DiagnosticReason::None,
       GetDiagnosticStringForDiagID(diagnostic->GetID()), diagnostic->GetArgs(),

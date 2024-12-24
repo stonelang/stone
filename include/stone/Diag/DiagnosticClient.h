@@ -146,7 +146,7 @@ public:
 enum class DiagnosticReason : uint8_t { None = 0 };
 
 /// Information about a diagnostic passed to DiagnosticConsumers.
-struct DiagnosticContext final {
+struct DiagnosticImpl final {
 
   DiagID ID = DiagID(0);
   SrcLoc Loc;
@@ -169,7 +169,7 @@ struct DiagnosticContext final {
   /// Evaluates true when this object stores a diagnostic.
   explicit operator bool() const { return !FormatText.empty(); }
 
-  DiagnosticContext(DiagID ID, SrcLoc Loc, DiagnosticKind Kind,
+  DiagnosticImpl(DiagID ID, SrcLoc Loc, DiagnosticKind Kind,
                     DiagnosticReason Reason, StringRef FormatText,
                     ArrayRef<DiagnosticArgument> FormatArgs,
                     ArrayRef<Diagnostic *> ChildDiagnostics,
@@ -221,13 +221,13 @@ public:
   /// The default implementation just keeps track of the total number of
   /// warnings and errors.
   virtual void HandleDiagnostic(DiagnosticEngine &DE,
-                                const DiagnosticContext &DC);
+                                const DiagnosticImpl &DC);
 };
 
 class NullDiagnosticClient final : public DiagnosticClient {
 public:
   void HandleDiagnostic(DiagnosticEngine &DE,
-                        const DiagnosticContext &DC) override {
+                        const DiagnosticImpl &DC) override {
     // Just ignore it.
   }
 };
@@ -239,7 +239,7 @@ class ForwardingDiagnosticClient final : public DiagnosticClient {
 
 public:
   void HandleDiagnostic(DiagnosticEngine &DE,
-                        const DiagnosticContext &DC) override {
+                        const DiagnosticImpl &DC) override {
     // Just ignore it.
   }
 };
