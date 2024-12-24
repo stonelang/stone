@@ -87,6 +87,11 @@ class DiagnosticFormatParser {
     return CurLoc;
   }
 
+
+  void ParsePercent(){
+  	asert(CurTok.IsPercent() && "Expecting percent token");
+  }
+
 public:
   DiagnosticFormatParser(unsigned BufferID, stone::SrcMgr &SM,
                          llvm::raw_ostream &Diag)
@@ -98,12 +103,15 @@ public:
       Consume();
     }
     while (IsParsing()) {
-
       switch (CurTok.GetKind()) {
       case tok::percent: {
+      	ParsePercent();
         break;
       }
       default: {
+      	// If we are here, we did not find anything of interest.
+      	// So, we consume. 
+ 		Consume();
       }
       }
     }
