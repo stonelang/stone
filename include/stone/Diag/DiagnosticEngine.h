@@ -392,8 +392,6 @@ class DiagnosticEngine final {
   /// active transaction.
   void FlushActiveDiagnostic(const Diagnostic *diagnostic);
 
-
-
   /// Used to emit a diagnostic that is finally fully formed,
   /// ignoring suppression.
   void EmitDiagnostic(const Diagnostic *diagnostic);

@@ -26,6 +26,12 @@ using namespace stone;
 
 class DiagnosticFormatParser {
   llvm::raw_ostream &Out;
+
+  llvm::ArrayRef<DiagnosticArgument> Args;
+
+  // Keep track of the args we have processed
+  unsigned TotalArgs = 0;
+
   stone::diag::DiagnosticFormatLexer Lexer;
 
   // This is the previous token pasrsed by the parser.
@@ -113,11 +119,13 @@ class DiagnosticFormatParser {
 
 public:
   DiagnosticFormatParser(unsigned BufferID, stone::SrcMgr &SM,
-                         llvm::raw_ostream &Diag)
-      : Lexer(BufferID, SM, llvm::errs()), Out(Out) {}
+                         ArrayRef<DiagnosticArgument> Args,
+                         llvm::raw_ostream &Out)
+      : Lexer(BufferID, SM, llvm::errs()), Out(Out), Args(Args) {}
 
 public:
   void Parse() {
+
     if (CurTok.IsLast()) {
       Consume();
     }
@@ -156,5 +164,5 @@ void DiagnosticEngine::FormatDiagnosticText(
     ArrayRef<DiagnosticArgument> Args, DiagnosticFormatOptions FormatOpts) {
 
   auto BufferID = SM.addMemBufferCopy(FormatText);
-  DiagnosticFormatParser(BufferID, SM, Out).Parse();
+  DiagnosticFormatParser(BufferID, SM, Args, Out).Parse();
 }
