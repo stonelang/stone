@@ -144,22 +144,25 @@ std::vector<DiagnosticClient *> DiagnosticEngine::TakeClients() {
   return clients;
 }
 
-InFlightDiagnostic DiagnosticEngine::Diagnose(DiagID NextDiagID) {
-  // return Diagnose(Diagnostic::Create(*this, NextDiagID));
-}
+// InFlightDiagnostic DiagnosticEngine::Diagnose(DiagID NextDiagID) {
+//   // return Diagnose(Diagnostic::Create(*this, NextDiagID));
+// }
 
-InFlightDiagnostic DiagnosticEngine::Diagnose(SrcLoc NextDiagLoc,
-                                              DiagID NextDiagID) {
-  // return Diagnose(Diagnostic::Create(*this, NextDiagLoc, NextDiagID));
-}
+// InFlightDiagnostic DiagnosticEngine::Diagnose(SrcLoc NextDiagLoc,
+//                                               DiagID NextDiagID) {
+//   // return Diagnose(Diagnostic::Create(*this, NextDiagLoc, NextDiagID));
+// }
 // InFlightDiagnostic
 // DiagnosticEngine::Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
 //                                   llvm::ArrayRef<DiagnosticArgument> Args) {
 //   return Diagnose(Diagnostic::Create(*this, NextDiagID, NextDiagLoc, Args));
 // }
 
-InFlightDiagnostic DiagnosticEngine::Diagnose(const Diagnostic *diagnostic) {
+InFlightDiagnostic DiagnosticEngine::Diagnose(SrcLoc Loc,
+                                              Diagnostic *diagnostic) {
   assert(!ActiveDiagnostic && "Already have an active diagnostic");
+  diagnostic->SetLoc(Loc);
+  ActiveDiagnostic = diagnostic;
   return InFlightDiagnostic(*this);
 }
 
@@ -169,20 +172,14 @@ InFlightDiagnostic::SetDiagnosticLevel(DiagnosticLevel Level) {
   return *this;
 }
 
-InFlightDiagnostic &
-InFlightDiagnostic::AddDiagnosticArgument(const DiagnosticArgument argument) {
-  /// DE->GetActiveDiagnostic()->AddArg(std::move(argument));
-  return *this;
-}
-
 void DiagnosticEngine::Clear(bool soft) {}
 
 bool DiagnosticEngine::FinishProcessing() {
-  // hasError
-  // for (auto &Client : Clients) {
-  //   hasError |= Client->FinishProcessing();
-  // }
-  // return hasError;
+  bool hasError;
+  for (auto &client : Clients) {
+    hasError |= client->FinishProcessing();
+  }
+  return hasError;
 }
 
 DiagnosticKind
@@ -228,7 +225,7 @@ void DiagnosticEngine::FlushActiveDiagnostic(const Diagnostic *diagnostic) {
 }
 
 void DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
-  assert(!HasClients() && "No DiagnosticClients. Unable to emit!");
+  assert(HasClients() && "No DiagnosticClients. Unable to emit!");
 
   if (auto DI = ConstructDiagnosticImpl(diagnostic)) {
     for (auto &client : Clients) {
@@ -240,8 +237,11 @@ void DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
         }
       }
     }
+
+    for (auto &client : Clients) {
+      client->HandleDiagnostic(SM, *DI);
+    }
   }
-  // Get the Level
 }
 
 static DiagnosticKind ComputeDiagnosticKind(DiagnosticLevel Level) {
@@ -299,7 +299,9 @@ static DiagnosticLevel ComputeDiagnosticLevelImpl(DiagnosticKind kind,
 DiagnosticLevel
 DiagnosticState::ComputeDiagnosticLevel(const Diagnostic *diag) {
 
+  // Get the stored info for the DiagID
   auto stroedDiagInfo = storedDiagnosticInfos[(unsigned)diag->GetID()];
+
   DiagnosticLevel Level = std::max(
       ComputeDiagnosticLevelImpl(stroedDiagInfo.kind, stroedDiagInfo.isFatal),
       diag->GetLevel());
@@ -308,8 +310,35 @@ DiagnosticState::ComputeDiagnosticLevel(const Diagnostic *diag) {
 
   if (previousLevel == DiagnosticLevel::Ignore &&
       Level == DiagnosticLevel::Note) {
+    Level = DiagnosticLevel::Ignore;
   }
-  Level = DiagnosticLevel::Ignore;
+
+  if (fatalErrorOccurred) {
+    // if (!showDiagnosticsAfterFatalError && Level != DiagnosticLevel::Note){
+    //   Level = DiagnosticLevel::Ignore;
+    // }
+  }
+  if (Level == DiagnosticLevel::Warning) {
+    if (warningsAsErrors) {
+      Level = DiagnosticLevel::Error;
+    }
+    if (suppressWarnings) {
+      Level = DiagnosticLevel::Ignore;
+    }
+  }
+
+  if (Level == DiagnosticLevel::Remark) {
+    if (suppressRemarks) {
+      Level = DiagnosticLevel::Ignore;
+    }
+  }
+
+  if (Level == DiagnosticLevel::Fatal) {
+    fatalErrorOccurred = true;
+    anyErrorOccurred = true;
+  } else if (Level == DiagnosticLevel::Error) {
+    anyErrorOccurred = true;
+  }
 
   previousLevel = Level;
   return Level;

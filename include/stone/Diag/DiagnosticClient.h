@@ -15,25 +15,20 @@ namespace stone {
 class Diagnostic;
 class DiagnosticEngine;
 
-/// The level of the diagnostic, after it has been through mapping.
+/// The low level internal level to the diagnsotic-engine
 enum class DiagnosticLevel : uint8_t {
   None = 0,
-  Ignore, /// Lowest
-  Note,
-  Remark,
-  Warning,
+  Fatal,
   Error,
-  Fatal, /// Highest
+  Warning,
+  Remark,
+  Note,
+  Ignore
+
 };
 
-/// This is just the kind of diagnostic being process -- this is not the same as
-/// the level.
-enum class DiagnosticKind : uint8_t {
-  Error = 0,
-  Note,
-  Remark,
-  Warning,
-};
+/// The diagnostic kind that the client is processing
+enum class DiagnosticKind : uint8_t { Error, Warning, Remark, Note };
 enum class DiagnosticArgumentKind {
   None = 0,
   Integer,
@@ -144,60 +139,6 @@ public:
   StringRef GetText() const { return Text; }
 };
 
-// class DiagnosticFormatter {
-
-//   llvm::SmallVectorImpl<char> &OutString;
-
-// public:
-//   DiagnosticFormatter(llvm::SmallVectorImpl<char> &OutString)
-//       : OutString(OutString) {}
-
-//   DiagnosticFormatter()
-//       : DiagnosticFormatter(llvm::SmallString<64> OutString =
-//       llvm::SmallString()) {}
-// };
-
-// For client consumption only
-// class DiagnosticInfo final {
-
-//   DiagnosticKind kind;
-//   llvm::StringRef FormatString;
-//   const DiagnosticEngine &DE;
-
-//   Diagnostic(const Diagnostic &) = delete;
-//   Diagnostic &operator=(const Diagnostic &) = delete;
-//   Diagnostic &operator=(Diagnostic &&) = delete;
-
-// public:
-//   explicit Diagnostic(DiagnosticKind kind, llvm::StringRef FmtStr,
-//                           const DiagnosticEngine &DE)
-//       : kind(kind), FormatString(FmtStr), DE(DE) {}
-
-// public:
-//   DiagnosticKind GetKind() { return kind; }
-//   llvm::StringRef GetFormatString() { return FormatString; }
-//   const DiagnosticEngine &GetDiags() const { return DE; }
-
-// public:
-/// NOTE: use DiagnosticEngine::FormatDiagnosticText
-///  Format this diagnostic into a string, substituting the
-///  formal arguments into the %0 slots.
-///
-///  The result is appended onto the \p OutStr array.
-// void FormatDiagnostic(llvm::SmallVectorImpl<char> &OutStr) const;
-
-// /// Format the given format-string into the output buffer using the
-// /// arguments stored in this diagnostic.
-// void FormatDiagnostic(const char *DiagStr, const char *DiagEnd,
-//                       llvm::SmallVectorImpl<char> &OutStr) const;
-
-// Diagnostic ConstructDiagnostic();
-
-//   void FormatDiagnostic(
-//       llvm::raw_ostream &Out,
-//       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) const;
-// };
-
 class DiagnosticStringFormatter {
 public:
 };
@@ -267,7 +208,7 @@ public:
 
   /// Callback to inform the diagnostic client that processing of all
   /// source files has ended.
-  virtual void FinishProcessing() {}
+  virtual bool FinishProcessing() {}
 
   /// Indicates whether the diagnostics handled by this
   /// DiagnosticConsumer should be included in the number of diagnostics

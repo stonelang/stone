@@ -1,0 +1,9 @@
+add_stone_tool(stonetest
+  main.cpp
+)
+target_link_libraries(stonetest
+	PRIVATE
+	StoneBasic
+	StoneSupport
+	StoneDiag
+)

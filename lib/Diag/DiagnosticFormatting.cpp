@@ -125,7 +125,6 @@ public:
 
 public:
   void Parse() {
-
     if (CurTok.IsLast()) {
       Consume();
     }

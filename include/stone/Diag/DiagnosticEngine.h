@@ -176,7 +176,7 @@ enum class DiagnosticStage {
   Emitted,
 };
 
-class Diagnostic : public DiagnosticAllocation<Diagnostic> {
+class Diagnostic final : public DiagnosticAllocation<Diagnostic> {
   friend class DiagnosticEngine;
   friend class InFlightDiagnostic;
 
@@ -230,17 +230,6 @@ public:
   SrcLoc GetLoc() const { return Loc; }
   DiagnosticLevel GetLevel() const { return Level; }
   //  bool IsFromCache() { return FromCache; }
-
-public:
-  static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID);
-  static Diagnostic *Create(DiagnosticEngine &DE, SrcLoc Loc, DiagID ID);
-
-  // static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
-  //                           ArrayRef<DiagnosticArgument> Args);
-
-  // static Diagnostic *Create(DiagnosticEngine &DE, DiagID ID, SrcLoc Loc,
-  //                           ArrayRef<DiagnosticArgument> Args,
-  //                           ArrayRef<FixIt> FixIts);
 };
 
 /// Primarily builds out the Diagnostic with fixit decorations.
@@ -287,6 +276,13 @@ public:
     Other.IsActive = false;
   }
 
+  ~InFlightDiagnostic() {
+    if (IsActive) {
+      FlushActiveDiagnostic();
+    }
+  }
+
+public:
   /// Flush the active diagnostic to the diagnostic output engine.
   void FlushActiveDiagnostic();
 
@@ -310,17 +306,23 @@ public:
   /// Add a character-based range to the currently-active diagnostic.
   InFlightDiagnostic &HighlightChars(SrcLoc StartLoc, SrcLoc EndLoc);
 
-  /// Add an argument to the diagnostic
-  InFlightDiagnostic &AddDiagnosticArgument(const DiagnosticArgument argument);
-
 public:
   /// May be faster.
   friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
                                               int I) {
     return ID;
   }
+
+  friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
+                                              unsigned I) {
+    return ID;
+  }
   friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
                                               llvm::StringRef Text) {
+    return ID;
+  }
+  friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
+                                              const FixIt &fixIt) {
     return ID;
   }
 };
@@ -430,14 +432,26 @@ public:
   bool HasClients() const { return Clients.size() > 0; }
 
 public:
-  InFlightDiagnostic Diagnose(DiagID NextDiagID);
-  InFlightDiagnostic Diagnose(SrcLoc Loc, DiagID NextDiagID);
+  // InFlightDiagnostic Diagnose(DiagID NextDiagID);
+  // InFlightDiagnostic Diagnose(SrcLoc Loc, DiagID NextDiagID);
 
-  // InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc);
-  // InFlightDiagnostic Diagnose(DiagID NextDiagID, SrcLoc NextDiagLoc,
-  //                               llvm::ArrayRef<DiagnosticArgument> args);
+  /// Emit a diagnostic with the given set of diagnostic arguments.
+  ///
+  /// \param Loc The location to which the diagnostic refers in the source
+  /// code.
+  ///
+  /// \param ID The diagnostic to be emitted.
+  ///
+  /// \param Args The diagnostic arguments, which will be converted to
+  /// the types expected by the diagnostic \p ID.
+  template <typename... ArgTypes>
+  InFlightDiagnostic
+  Diagnose(SrcLoc Loc, Diag<ArgTypes...> ID,
+           typename detail::PassArgument<ArgTypes>::type... Args) {
+    return Diagnose(Loc, new (*this) Diagnostic(ID, std::move(Args)...));
+  }
 
-  InFlightDiagnostic Diagnose(const Diagnostic *D);
+  InFlightDiagnostic Diagnose(SrcLoc Loc, Diagnostic *D);
 
   bool HasActiveDiagnsotic() const { return ActiveDiagnostic != nullptr; }
   /// Determine whethere there is already a diagnostic in flight.

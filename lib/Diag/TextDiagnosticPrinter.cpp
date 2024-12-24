@@ -60,6 +60,8 @@ void TextDiagnosticPrinter::HandleDiagnostic(SrcMgr &SM,
   //                             Info.GetRanges(), Info.GetFixIts());
 
   // GetEmitter().GetDiagnosticOutputStream().Flush();
+
+  OS.Flush();
 }
 
 TextDiagnosticPrinterImpl::TextDiagnosticPrinterImpl() {}
@@ -75,4 +77,9 @@ void TextDiagnosticPrinterImpl::HandleDiagnostic(SrcMgr &SM,
   // PrintDiagnostic(); if there are certain conditions
 
   EmitDiagnostic();
+}
+
+bool TextDiagnosticPrinterImpl::FinishProcessing() {
+
+  return true;
 }

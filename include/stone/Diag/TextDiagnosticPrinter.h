@@ -35,7 +35,7 @@ public:
   void HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) override;
 
   /// \returns true if an error occurred while finishing-up.
-  // virtual bool FinishProcessing() { return false; }
+  bool FinishProcessing() override { return true; }
 
   // /// Flush any in-flight diagnostics.
   // virtual void FlushInflightDiagnostic() {}
@@ -48,6 +48,7 @@ public:
   ~TextDiagnosticPrinterImpl();
 
 public:
+  bool FinishProcessing() override;
   void HandleDiagnostic(SrcMgr &SM, const DiagnosticImpl &DI) override;
 };
 
