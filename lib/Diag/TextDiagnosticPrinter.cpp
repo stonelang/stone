@@ -1,5 +1,6 @@
 #include "stone/Diag/TextDiagnosticPrinter.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DiagnosticText.h"
 using namespace stone;
 
 TextDiagnosticPrinter::TextDiagnosticPrinter(llvm::raw_ostream &stream)
@@ -12,12 +13,16 @@ void TextDiagnosticPrinter::PrintDiagnostic() {}
 void TextDiagnosticPrinter::EmitDiagnostic() {}
 
 void TextDiagnosticPrinter::HandleDiagnostic(DiagnosticEngine &DE,
-                                             const DiagnosticImpl &DC) {
+                                             const DiagnosticInfo &DI) {
 
   /// Make sure that it has a message.
-  assert(DC && "unable print a dianostic without a message!");
+  assert(DI && "unable print a dianostic without a message!");
 
-  DE.GetFormatter().FormatDiagnostic(OS.GetOutputStream(), DE.GetSrcMgr(), DC);
+  DiagnosticEngine::FormatDiagnosticText(OS.GetOutputStream(), DE.GetSrcMgr(),
+                                         DI);
+
+  // DE.GetFormatter().FormatDiagnostic(OS.GetOutputStream(), DE.GetSrcMgr(),
+  // DC);
 
   // 1. Format message
   //  Default implementation (Warnings/errors count).
@@ -65,7 +70,7 @@ void TextDiagnosticPrinter::HandleDiagnostic(DiagnosticEngine &DE,
 
   // OS.Flush();
 
-  DE.DiagnosticCompletionCallback(DC.ID);
+  DE.DiagnosticCompletionCallback(DI);
 }
 
 TextDiagnosticPrinterImpl::TextDiagnosticPrinterImpl() {}
@@ -73,7 +78,7 @@ TextDiagnosticPrinterImpl::TextDiagnosticPrinterImpl() {}
 TextDiagnosticPrinterImpl::~TextDiagnosticPrinterImpl() {}
 
 void TextDiagnosticPrinterImpl::HandleDiagnostic(DiagnosticEngine &DE,
-                                                 const DiagnosticImpl &D) {
+                                                 const DiagnosticInfo &D) {
 
   // Default implementation (Warnings/errors count).
   // TextDiagnosticPrinter::HandleDiagnostic(SM, DI);

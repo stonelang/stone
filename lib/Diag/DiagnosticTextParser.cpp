@@ -1,6 +1,6 @@
-#include "stone/Diag/TextDiagnosticFormatter.h"
 #include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DiagnosticText.h"
 
 #include "clang/Basic/CharInfo.h"
 
@@ -24,7 +24,7 @@
 
 using namespace stone;
 
-struct TextDiagnosticFormatParser final {
+struct DiagnosticTextParser final {
   llvm::raw_ostream &Out;
 
   llvm::ArrayRef<DiagnosticArgument> Args;
@@ -32,7 +32,7 @@ struct TextDiagnosticFormatParser final {
   // Keep track of the args we have processed
   unsigned ArgsIndex = 0;
 
-  stone::diag::DiagnosticFormatLexer Lexer;
+  stone::diag::DiagnosticTextLexer Lexer;
 
   // This is the previous token pasrsed by the parser.
   Token PrevTok;
@@ -51,9 +51,9 @@ struct TextDiagnosticFormatParser final {
   /// Always empty if !SF.shouldBuildSyntaxTree().
   llvm::StringRef TrailingTrivia;
 
-  TextDiagnosticFormatParser(unsigned BufferID, stone::SrcMgr &SM,
-                             ArrayRef<DiagnosticArgument> Args,
-                             llvm::raw_ostream &Out)
+  DiagnosticTextParser(unsigned BufferID, stone::SrcMgr &SM,
+                       ArrayRef<DiagnosticArgument> Args,
+                       llvm::raw_ostream &Out)
       : Lexer(BufferID, SM, llvm::errs()), Out(Out), Args(Args) {}
 
   bool IsEOF() { return CurTok.GetKind() == tok::eof; }
@@ -163,19 +163,20 @@ struct TextDiagnosticFormatParser final {
   }
 };
 
-diag::TextDiagnosticFormatter::TextDiagnosticFormatter() {}
+void DiagnosticEngine::FormatDiagnosticText(
+    llvm::raw_ostream &Out, SrcMgr &SM, StringRef Text,
+    ArrayRef<DiagnosticArgument> Args, DiagnosticFormatOptions FormatOpts) {
 
-diag::TextDiagnosticFormatter::~TextDiagnosticFormatter() {}
+  DiagnosticTextParser(SM.addMemBufferCopy(Text), SM, Args, Out).Parse();
+}
 
-bool diag::TextDiagnosticFormatter::FormatDiagnostic(
-    llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticImpl &DC,
-    DiagnosticFormatOptions FormatOpts) const {
+void DiagnosticEngine::FormatDiagnosticText(
+    llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticInfo &DI,
+    DiagnosticFormatOptions FormatOpts) {
 
-  if (DC.FormatText.empty()) {
-    return false;
+  if (!DI) {
+    return;
   }
-  auto BufferID = SM.addMemBufferCopy(DC.FormatText);
-  TextDiagnosticFormatParser(BufferID, SM, DC.FormatArgs, OS).Parse();
-
-  return true;
+  DiagnosticEngine::FormatDiagnosticText(OS, SM, DI.FormatText, DI.FormatArgs,
+                                         FormatOpts);
 }

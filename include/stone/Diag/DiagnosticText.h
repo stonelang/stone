@@ -3,7 +3,6 @@
 
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/Token.h"
-#include "stone/Diag/DiagnosticFormatter.h"
 #include "stone/Support/Trivia.h"
 
 // TODO: Move to support
@@ -51,7 +50,7 @@ enum class ConflictMarkerKind {
 };
 
 class LexerState final {
-  friend class DiagnosticFormatLexer;
+  friend class DiagnosticTextLexer;
 
 public:
   LexerState() {}
@@ -70,7 +69,7 @@ private:
 };
 
 // TODO: ParsingOptions
-class DiagnosticFormatLexer final {
+class DiagnosticTextLexer final {
 
   const unsigned BufferID;
   const SrcMgr &sm;
@@ -132,19 +131,19 @@ class DiagnosticFormatLexer final {
   /// deep.
   const char *LexerCutOffPoint = nullptr;
 
-  DiagnosticFormatLexer(const DiagnosticFormatLexer &) = delete;
-  void operator=(const DiagnosticFormatLexer &) = delete;
+  DiagnosticTextLexer(const DiagnosticTextLexer &) = delete;
+  void operator=(const DiagnosticTextLexer &) = delete;
 
   struct PrincipalCtor {};
 
   /// The principal constructor used by public constructors below.
   /// Don't use this constructor for other purposes, it does not initialize
   /// everything.
-  DiagnosticFormatLexer(const PrincipalCtor &, unsigned BufferID,
-                        const SrcMgr &sm, llvm::raw_ostream &Diag,
-                        LexerMode LexMode, HashbangMode HashbangAllowed,
-                        CommentRetentionMode RetainComments,
-                        TriviaRetentionMode TriviaRetention);
+  DiagnosticTextLexer(const PrincipalCtor &, unsigned BufferID,
+                      const SrcMgr &sm, llvm::raw_ostream &Diag,
+                      LexerMode LexMode, HashbangMode HashbangAllowed,
+                      CommentRetentionMode RetainComments,
+                      TriviaRetentionMode TriviaRetention);
 
   void Lex();
   void initialize(unsigned Offset, unsigned EndOffset);
@@ -169,23 +168,23 @@ public:
   ///   means that APIs like GetLocForEndOfToken really ought to take
   ///   this flag; it's just that we don't care that much about fidelity
   ///   when parsing SIL files.
-  DiagnosticFormatLexer(
+  DiagnosticTextLexer(
       unsigned BufferID, const SrcMgr &sm, llvm::raw_ostream &Diag,
       LexerMode LexMode,
       HashbangMode HashbangAllowed = HashbangMode::Disallowed,
       CommentRetentionMode RetainComments = CommentRetentionMode::None,
       TriviaRetentionMode TriviaRetention = TriviaRetentionMode::WithoutTrivia);
 
-  DiagnosticFormatLexer(unsigned BufferID, const stone::SrcMgr &SM,
-                        llvm::raw_ostream &Diag);
+  DiagnosticTextLexer(unsigned BufferID, const stone::SrcMgr &SM,
+                      llvm::raw_ostream &Diag);
 
   /// Create a lexer that scans a subrange of the source buffer.
-  DiagnosticFormatLexer(unsigned BufferID, const stone::SrcMgr &sm,
-                        llvm::raw_ostream &Diag, LexerMode LexMode,
-                        HashbangMode HashbangAllowed,
-                        CommentRetentionMode RetainComments,
-                        TriviaRetentionMode TriviaRetention, unsigned Offset,
-                        unsigned EndOffset);
+  DiagnosticTextLexer(unsigned BufferID, const stone::SrcMgr &sm,
+                      llvm::raw_ostream &Diag, LexerMode LexMode,
+                      HashbangMode HashbangAllowed,
+                      CommentRetentionMode RetainComments,
+                      TriviaRetentionMode TriviaRetention, unsigned Offset,
+                      unsigned EndOffset);
 
   /// Create a sub-lexer that lexes from the same buffer, but scans
   /// a subrange of the buffer.
@@ -193,8 +192,8 @@ public:
   /// \param Parent the parent lexer that scans the whole buffer
   /// \param BeginState start of the subrange
   /// \param EndState end of the subrange
-  DiagnosticFormatLexer(DiagnosticFormatLexer &Parent, LexerState BeginState,
-                        LexerState EndState);
+  DiagnosticTextLexer(DiagnosticTextLexer &Parent, LexerState BeginState,
+                      LexerState EndState);
 
   /// Returns true if this lexer will produce a code completion token.
   bool isCodeCompletion() const { return CodeCompletionPtr != nullptr; }
@@ -550,7 +549,7 @@ private:
   /// BOM. The returned \c StringRef will always start at \p AllTriviaStart.
   StringRef lexTrivia(bool IsForTrailingTrivia, const char *AllTriviaStart);
   static unsigned lexUnicodeEscape(const char *&CurPtr,
-                                   DiagnosticFormatLexer *Diags);
+                                   DiagnosticTextLexer *Diags);
 
   unsigned lexCharacter(const char *&CurPtr, char StopQuote,
                         bool EmitDiagnostics, bool IsMultilineString = false,
@@ -605,18 +604,7 @@ Iterator token_lower_bound(ArrayTy &Array, SrcLoc Loc) {
 llvm::ArrayRef<Token> slice_token_array(ArrayRef<Token> AllTokens,
                                         SrcLoc StartLoc, SrcLoc EndLoc);
 
-class TextDiagnosticFormatter : public DiagnosticFormatter {
-
-public:
-  TextDiagnosticFormatter();
-  ~TextDiagnosticFormatter();
-
-public:
-  bool FormatDiagnostic(llvm::raw_ostream &OS, SrcMgr &SM,
-                        const DiagnosticImpl &DC,
-                        DiagnosticFormatOptions FormatOpts =
-                            DiagnosticFormatOptions()) const override;
-};
+class DiagnosticTextParser final {};
 
 } // namespace diag
 } // namespace stone

@@ -1,5 +1,5 @@
 #include "stone/Basic/EditorPlaceholder.h"
-#include "stone/Diag/TextDiagnosticFormatter.h"
+#include "stone/Diag/DiagnosticText.h"
 
 #include "stone/Support/Confusable.h"
 
@@ -169,7 +169,7 @@ uint32_t diag::validateUTF8CharacterAndAdvance(const char *&Ptr,
 // Setup and Helper Methods
 //===----------------------------------------------------------------------===//
 
-diag::DiagnosticFormatLexer::DiagnosticFormatLexer(
+diag::DiagnosticTextLexer::DiagnosticTextLexer(
     const PrincipalCtor &, unsigned BufferID, const stone::SrcMgr &sm,
     llvm::raw_ostream &Diag, diag::LexerMode LexMode,
     diag::HashbangMode HashbangAllowed,
@@ -179,8 +179,8 @@ diag::DiagnosticFormatLexer::DiagnosticFormatLexer(
       IsHashbangAllowed(HashbangAllowed == diag::HashbangMode::Allowed),
       RetainComments(RetainComments), TriviaRetention(TriviaRetention) {}
 
-void diag::DiagnosticFormatLexer::initialize(unsigned Offset,
-                                             unsigned EndOffset) {
+void diag::DiagnosticTextLexer::initialize(unsigned Offset,
+                                           unsigned EndOffset) {
   assert(Offset <= EndOffset);
 
   // Initialize buffer pointers.
@@ -216,48 +216,48 @@ void diag::DiagnosticFormatLexer::initialize(unsigned Offset,
          "or we should be lexing from the middle of the buffer");
 }
 
-diag::DiagnosticFormatLexer::DiagnosticFormatLexer(
+diag::DiagnosticTextLexer::DiagnosticTextLexer(
     unsigned BufferID, const stone::SrcMgr &sm, llvm::raw_ostream &Diag,
     diag::LexerMode LexMode, diag::HashbangMode HashbangAllowed,
     diag::CommentRetentionMode RetainComments,
     diag::TriviaRetentionMode TriviaRetention)
-    : DiagnosticFormatLexer(PrincipalCtor(), BufferID, sm, Diag, LexMode,
-                            HashbangAllowed, RetainComments, TriviaRetention) {
+    : DiagnosticTextLexer(PrincipalCtor(), BufferID, sm, Diag, LexMode,
+                          HashbangAllowed, RetainComments, TriviaRetention) {
 
   unsigned EndOffset = sm.getRangeForBuffer(BufferID).getByteLength();
 
   initialize(/*Offset=*/0, EndOffset);
 }
 
-diag::DiagnosticFormatLexer::DiagnosticFormatLexer(unsigned BufferID,
-                                                   const stone::SrcMgr &sm,
-                                                   llvm::raw_ostream &Diag)
-    : DiagnosticFormatLexer(BufferID, sm, Diag, diag::LexerMode::Stone,
-                            diag::HashbangMode::Disallowed,
-                            diag::CommentRetentionMode::None,
-                            diag::TriviaRetentionMode::WithoutTrivia) {}
+diag::DiagnosticTextLexer::DiagnosticTextLexer(unsigned BufferID,
+                                               const stone::SrcMgr &sm,
+                                               llvm::raw_ostream &Diag)
+    : DiagnosticTextLexer(BufferID, sm, Diag, diag::LexerMode::Stone,
+                          diag::HashbangMode::Disallowed,
+                          diag::CommentRetentionMode::None,
+                          diag::TriviaRetentionMode::WithoutTrivia) {}
 
-diag::DiagnosticFormatLexer::DiagnosticFormatLexer(
+diag::DiagnosticTextLexer::DiagnosticTextLexer(
     unsigned BufferID, const stone::SrcMgr &sm, llvm::raw_ostream &Diag,
     diag::LexerMode LexMode, diag::HashbangMode HashbangAllowed,
     diag::CommentRetentionMode RetainComments,
     diag::TriviaRetentionMode TriviaRetention, unsigned Offset,
     unsigned EndOffset)
-    : DiagnosticFormatLexer(PrincipalCtor(), BufferID, sm, Diag, LexMode,
-                            HashbangAllowed, RetainComments, TriviaRetention) {
+    : DiagnosticTextLexer(PrincipalCtor(), BufferID, sm, Diag, LexMode,
+                          HashbangAllowed, RetainComments, TriviaRetention) {
 
   initialize(Offset, EndOffset);
 }
 
-diag::DiagnosticFormatLexer::DiagnosticFormatLexer(
-    DiagnosticFormatLexer &Parent, diag::LexerState BeginState,
-    diag::LexerState EndState)
-    : DiagnosticFormatLexer(PrincipalCtor(), Parent.BufferID, Parent.sm,
-                            Parent.Diag, Parent.LexMode,
-                            Parent.IsHashbangAllowed
-                                ? diag::HashbangMode::Allowed
-                                : diag::HashbangMode::Disallowed,
-                            Parent.RetainComments, Parent.TriviaRetention) {
+diag::DiagnosticTextLexer::DiagnosticTextLexer(DiagnosticTextLexer &Parent,
+                                               diag::LexerState BeginState,
+                                               diag::LexerState EndState)
+    : DiagnosticTextLexer(PrincipalCtor(), Parent.BufferID, Parent.sm,
+                          Parent.Diag, Parent.LexMode,
+                          Parent.IsHashbangAllowed
+                              ? diag::HashbangMode::Allowed
+                              : diag::HashbangMode::Disallowed,
+                          Parent.RetainComments, Parent.TriviaRetention) {
 
   assert(BufferID == sm.findBufferContainingLoc(BeginState.loc) &&
          "state for the wrong buffer");
@@ -270,20 +270,20 @@ diag::DiagnosticFormatLexer::DiagnosticFormatLexer(
   initialize(Offset, EndOffset);
 }
 
-Token diag::DiagnosticFormatLexer::getTokenAt(SrcLoc Loc) {
+Token diag::DiagnosticTextLexer::getTokenAt(SrcLoc Loc) {
   assert(BufferID == static_cast<unsigned>(sm.findBufferContainingLoc(Loc)) &&
          "location from the wrong buffer");
 
-  DiagnosticFormatLexer L(BufferID, sm, Diag, LexMode,
-                          diag::HashbangMode::Allowed,
-                          diag::CommentRetentionMode::None,
-                          diag::TriviaRetentionMode::WithoutTrivia);
+  DiagnosticTextLexer L(BufferID, sm, Diag, LexMode,
+                        diag::HashbangMode::Allowed,
+                        diag::CommentRetentionMode::None,
+                        diag::TriviaRetentionMode::WithoutTrivia);
 
   L.restoreState(diag::LexerState(Loc));
   return L.Peek();
 }
 
-void diag::DiagnosticFormatLexer::formToken(tok Kind, const char *TokStart) {
+void diag::DiagnosticTextLexer::formToken(tok Kind, const char *TokStart) {
   assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
          "Current pointer out of range!");
 
@@ -312,7 +312,7 @@ void diag::DiagnosticFormatLexer::formToken(tok Kind, const char *TokStart) {
   NextToken.SetToken(Kind, TokenText, CommentLength);
 }
 
-void diag::DiagnosticFormatLexer::formEscapedIdentifierToken(
+void diag::DiagnosticTextLexer::formEscapedIdentifierToken(
     const char *TokStart) {
   assert(CurPtr - TokStart >= 3 &&
          "escaped identifier must be longer than or equal 3 bytes");
@@ -329,7 +329,7 @@ void diag::DiagnosticFormatLexer::formEscapedIdentifierToken(
 
 static void validateMultilineIndents(const Token &Str, llvm::raw_ostream &Diag);
 
-void diag::DiagnosticFormatLexer::formStringLiteralToken(
+void diag::DiagnosticTextLexer::formStringLiteralToken(
     const char *TokStart, bool IsMultilineString, unsigned CustomDelimiterLen) {
 
   formToken(tok::string_literal, TokStart);
@@ -346,7 +346,7 @@ void diag::DiagnosticFormatLexer::formStringLiteralToken(
 }
 
 diag::LexerState
-diag::DiagnosticFormatLexer::getStateForBeginningOfTokenLoc(SrcLoc Loc) const {
+diag::DiagnosticTextLexer::getStateForBeginningOfTokenLoc(SrcLoc Loc) const {
   const char *Ptr = getBufferPtrForSrcLoc(Loc);
   // Skip whitespace backwards until we hit a newline.  This is needed to
   // correctly lex the token if it is at the beginning of the line.
@@ -384,8 +384,8 @@ static void diagnoseEmbeddedNul(llvm::raw_ostream &Diag, const char *Ptr) {
   // if (!de)
   //   return;
 
-  SrcLoc NulLoc = diag::DiagnosticFormatLexer::getSrcLoc(Ptr);
-  SrcLoc NulEndLoc = diag::DiagnosticFormatLexer::getSrcLoc(Ptr + 1);
+  SrcLoc NulLoc = diag::DiagnosticTextLexer::getSrcLoc(Ptr);
+  SrcLoc NulEndLoc = diag::DiagnosticTextLexer::getSrcLoc(Ptr + 1);
 
   // de->diagnose(NulLoc, diag::lex_null_character)
   //     .fixItRemoveChars(NulLoc, NulEndLoc);
@@ -408,7 +408,7 @@ static bool advanceToEndOfLine(const char *&CurPtr, const char *BufferEnd,
         --CurPtr;
         const char *CharStart = CurPtr;
         if (diag::validateUTF8CharacterAndAdvance(CurPtr, BufferEnd) == ~0U) {
-          // de->diagnose(DiagnosticFormatLexer::getSrcLoc(CharStart),
+          // de->diagnose(DiagnosticTextLexer::getSrcLoc(CharStart),
           // diag::lex_invalid_utf8);
         }
       }
@@ -429,7 +429,7 @@ static bool advanceToEndOfLine(const char *&CurPtr, const char *BufferEnd,
   }
 }
 
-void diag::DiagnosticFormatLexer::skipToEndOfLine(bool EatNewline) {
+void diag::DiagnosticTextLexer::skipToEndOfLine(bool EatNewline) {
   bool isEOL = advanceToEndOfLine(CurPtr, BufferEnd, CodeCompletionPtr, Diag);
   if (EatNewline && isEOL) {
     ++CurPtr;
@@ -437,12 +437,12 @@ void diag::DiagnosticFormatLexer::skipToEndOfLine(bool EatNewline) {
   }
 }
 
-void diag::DiagnosticFormatLexer::skipSlashSlashComment(bool EatNewline) {
+void diag::DiagnosticTextLexer::skipSlashSlashComment(bool EatNewline) {
   assert(CurPtr[-1] == '/' && CurPtr[0] == '/' && "Not a // comment");
   skipToEndOfLine(EatNewline);
 }
 
-void diag::DiagnosticFormatLexer::skipHashbang(bool EatNewline) {
+void diag::DiagnosticTextLexer::skipHashbang(bool EatNewline) {
   assert(CurPtr == ContentStart && CurPtr[0] == '#' && CurPtr[1] == '!' &&
          "Not a hashbang");
   skipToEndOfLine(EatNewline);
@@ -492,7 +492,7 @@ static bool skipToEndOfSlashStarComment(const char *&CurPtr,
         const char *CharStart = CurPtr;
 
         if (diag::validateUTF8CharacterAndAdvance(CurPtr, BufferEnd) == ~0U) {
-          // de->diagnose(diag::DiagnosticFormatLexer::getSrcLoc(CharStart),
+          // de->diagnose(diag::DiagnosticTextLexer::getSrcLoc(CharStart),
           // diag::lex_invalid_utf8);
         }
       }
@@ -517,12 +517,12 @@ static bool skipToEndOfSlashStarComment(const char *&CurPtr,
       }
       const char *EOL = (CurPtr[-1] == '\n') ? (CurPtr - 1) : CurPtr;
 
-      // de->diagnose(diag::DiagnosticFormatLexer::getSrcLoc(EOL),
+      // de->diagnose(diag::DiagnosticTextLexer::getSrcLoc(EOL),
       //              diag::lex_unterminated_block_comment)
-      //     .fixItInsert(diag::DiagnosticFormatLexer::getSrcLoc(EOL),
+      //     .fixItInsert(diag::DiagnosticTextLexer::getSrcLoc(EOL),
       //     Terminator);
 
-      // de->diagnose(diag::DiagnosticFormatLexer::getSrcLoc(StartPtr),
+      // de->diagnose(diag::DiagnosticTextLexer::getSrcLoc(StartPtr),
       // diag::lex_comment_start);
 
       return isMultiline;
@@ -532,7 +532,7 @@ static bool skipToEndOfSlashStarComment(const char *&CurPtr,
 
 /// skipSlashStarComment - /**/ comments are skipped (treated as whitespace).
 /// Note that (unlike in C) block comments can be nested.
-void diag::DiagnosticFormatLexer::skipSlashStarComment() {
+void diag::DiagnosticTextLexer::skipSlashStarComment() {
   bool isMultiline =
       skipToEndOfSlashStarComment(CurPtr, BufferEnd, CodeCompletionPtr, Diag);
   if (isMultiline) {
@@ -630,7 +630,7 @@ static bool advanceIfValidContinuationOfOperator(char const *&ptr,
   return advanceIf(ptr, end, IsOperatorContinuationCodePoint);
 }
 
-bool diag::DiagnosticFormatLexer::isIdentifier(StringRef string) {
+bool diag::DiagnosticTextLexer::isIdentifier(StringRef string) {
   if (string.empty()) {
     return false;
   }
@@ -646,7 +646,7 @@ bool diag::DiagnosticFormatLexer::isIdentifier(StringRef string) {
 
 /// Determines if the given string is a valid operator identifier,
 /// without escaping characters.
-bool diag::DiagnosticFormatLexer::isOperator(StringRef string) {
+bool diag::DiagnosticTextLexer::isOperator(StringRef string) {
   if (string.empty()) {
     return false;
   }
@@ -660,7 +660,7 @@ bool diag::DiagnosticFormatLexer::isOperator(StringRef string) {
   return p == end;
 }
 
-tok diag::DiagnosticFormatLexer::kindOfIdentifier(llvm::StringRef tokStr) {
+tok diag::DiagnosticTextLexer::kindOfIdentifier(llvm::StringRef tokStr) {
 
 // TODO: Why are you passing S?
 #define KEYWORD(kw)                                                            \
@@ -672,7 +672,7 @@ tok diag::DiagnosticFormatLexer::kindOfIdentifier(llvm::StringRef tokStr) {
 }
 
 /// lexIdentifier - Match [a-zA-Z_][a-zA-Z_$0-9]*
-void diag::DiagnosticFormatLexer::lexIdentifier() {
+void diag::DiagnosticTextLexer::lexIdentifier() {
   const char *TokStart = CurPtr - 1;
   CurPtr = TokStart;
   bool didStart = advanceIfValidStartOfIdentifier(CurPtr, BufferEnd);
@@ -688,7 +688,7 @@ void diag::DiagnosticFormatLexer::lexIdentifier() {
 }
 
 /// lexHash - Handle #], #! for shebangs, and the family of #identifiers.
-void diag::DiagnosticFormatLexer::lexHash() {
+void diag::DiagnosticTextLexer::lexHash() {
   const char *TokStart = CurPtr - 1;
 
   // Scan for [a-zA-Z]+ to see what we match.
@@ -815,7 +815,7 @@ static bool rangeContainsPlaceholderEnd(const char *CurPtr, const char *End) {
 }
 
 /// lexOperatorIdentifier - Match identifiers formed out of punctuation.
-void diag::DiagnosticFormatLexer::lexOperatorIdentifier() {
+void diag::DiagnosticTextLexer::lexOperatorIdentifier() {
   const char *TokStart = CurPtr - 1;
   CurPtr = TokStart;
   bool didStart = advanceIfValidStartOfOperator(CurPtr, BufferEnd);
@@ -949,7 +949,7 @@ void diag::DiagnosticFormatLexer::lexOperatorIdentifier() {
 }
 
 /// lexDollarIdent - Match $[0-9a-zA-Z_$]+
-void diag::DiagnosticFormatLexer::lexDollarIdent() {
+void diag::DiagnosticTextLexer::lexDollarIdent() {
   const char *tokStart = CurPtr - 1;
   assert(*tokStart == '$');
 
@@ -979,7 +979,7 @@ void diag::DiagnosticFormatLexer::lexDollarIdent() {
 
 enum class ExpectedDigitKind : unsigned { Binary, Octal, Decimal, Hex };
 
-void diag::DiagnosticFormatLexer::lexHexNumber() {
+void diag::DiagnosticTextLexer::lexHexNumber() {
   // We assume we're starting from the 'x' in a '0x...' floating-point literal.
   assert(*CurPtr == 'x' && "not a hex literal");
   const char *TokStart = CurPtr - 1;
@@ -1105,7 +1105,7 @@ void diag::DiagnosticFormatLexer::lexHexNumber() {
 ///   floating_literal ::= [0-9][0-9_]*[eE][+-]?[0-9][0-9_]*
 ///   floating_literal ::= 0x[0-9A-Fa-f][0-9A-Fa-f_]*
 ///                          (\.[0-9A-Fa-f][0-9A-Fa-f_]*)?[pP][+-]?[0-9][0-9_]*
-void diag::DiagnosticFormatLexer::lexNumber() {
+void diag::DiagnosticTextLexer::lexNumber() {
   const char *TokStart = CurPtr - 1;
   assert((clang::isDigit(*TokStart) || *TokStart == '.') && "Unexpected start");
 
@@ -1235,8 +1235,9 @@ void diag::DiagnosticFormatLexer::lexNumber() {
 
 ///   unicode_character_escape ::= [\]u{hex+}
 ///   hex                      ::= [0-9a-fA-F]
-unsigned diag::DiagnosticFormatLexer::lexUnicodeEscape(
-    const char *&CurPtr, diag::DiagnosticFormatLexer *Diag) {
+unsigned
+diag::DiagnosticTextLexer::lexUnicodeEscape(const char *&CurPtr,
+                                            diag::DiagnosticTextLexer *Diag) {
   assert(CurPtr[0] == '{' && "Invalid unicode escape");
   ++CurPtr;
 
@@ -1342,9 +1343,9 @@ static bool delimiterMatches(unsigned CustomDelimiterLen, const char *&BytesPtr,
     // Diag<> message = IsClosing ? diag::lex_invalid_closing_delimiter
     //                            : diag::lex_invalid_escape_delimiter;
 
-    // de->diagnose(diag::DiagnosticFormatLexer::getSrcLoc(BytesPtr), message)
-    //     .fixItRemoveChars(diag::DiagnosticFormatLexer::getSrcLoc(BytesPtr),
-    //     diag::DiagnosticFormatLexer::getSrcLoc(TmpPtr));
+    // de->diagnose(diag::DiagnosticTextLexer::getSrcLoc(BytesPtr), message)
+    //     .fixItRemoveChars(diag::DiagnosticTextLexer::getSrcLoc(BytesPtr),
+    //     diag::DiagnosticTextLexer::getSrcLoc(TmpPtr));
   }
   return true;
 }
@@ -1388,9 +1389,11 @@ static bool advanceIfMultilineDelimiter(unsigned CustomDelimiterLen,
 ///
 ///   character_escape  ::= [\][\] | [\]t | [\]n | [\]r | [\]" | [\]' | [\]0
 ///   character_escape  ::= unicode_character_escape
-unsigned diag::DiagnosticFormatLexer::lexCharacter(
-    const char *&CurPtr, char StopQuote, bool EmitDiagnostics,
-    bool IsMultilineString, unsigned CustomDelimiterLen) {
+unsigned diag::DiagnosticTextLexer::lexCharacter(const char *&CurPtr,
+                                                 char StopQuote,
+                                                 bool EmitDiagnostics,
+                                                 bool IsMultilineString,
+                                                 unsigned CustomDelimiterLen) {
   const char *CharStart = CurPtr;
 
   switch (*CurPtr++) {
@@ -1739,14 +1742,14 @@ StringRef getMultilineTrailingIndent(StringRef Bytes, llvm::raw_ostream &Diag,
         while (Ptr > begin && (*Ptr == ' ' || *Ptr == '\t'))
           --Ptr;
         if (*Ptr == '\\') {
-          auto escapeLoc = diag::DiagnosticFormatLexer::getSrcLoc(Ptr);
+          auto escapeLoc = diag::DiagnosticTextLexer::getSrcLoc(Ptr);
           bool invalid = true;
           while (*--Ptr == '\\')
             invalid = !invalid;
           if (invalid) {
             // de->diagnose(escapeLoc, diag::lex_escaped_newline_at_lastline)
             //     .fixItRemoveChars(escapeLoc,
-            //     diag::DiagnosticFormatLexer::getSrcLoc(LineEnd));
+            //     diag::DiagnosticTextLexer::getSrcLoc(LineEnd));
           }
         }
       }
@@ -1759,7 +1762,7 @@ StringRef getMultilineTrailingIndent(StringRef Bytes, llvm::raw_ostream &Diag,
   }
 
   if (sawNonWhitespace) {
-    auto loc = diag::DiagnosticFormatLexer::getSrcLoc(start + 1);
+    auto loc = diag::DiagnosticTextLexer::getSrcLoc(start + 1);
 
     // de->diagnose(loc, diag::lex_illegal_multiline_string_end)
     //     // FIXME: Should try to suggest indentation.
@@ -1787,7 +1790,7 @@ static void diagnoseInvalidMultilineIndents(llvm::raw_ostream &Diag,
   assert(!LineStarts.empty());
 
   auto getLoc = [&](size_t offset) -> SrcLoc {
-    return diag::DiagnosticFormatLexer::getSrcLoc(
+    return diag::DiagnosticTextLexer::getSrcLoc(
         (const char *)Bytes.bytes_begin() + offset);
   };
   auto classify = [&](unsigned char ch) -> unsigned {
@@ -1835,7 +1838,7 @@ static void validateMultilineIndents(const Token &Str,
       getMultilineTrailingIndent(Bytes, Diag, Str.GetCustomDelimiterLen());
   if (Indent.empty())
     return;
-  SrcLoc IndentStartLoc = diag::DiagnosticFormatLexer::getSrcLoc(Indent.data());
+  SrcLoc IndentStartLoc = diag::DiagnosticTextLexer::getSrcLoc(Indent.data());
 
   // The offset into the previous line where it experienced its first
   // indentation error, or Indent.size() if every character matched.
@@ -1892,15 +1895,15 @@ static void validateMultilineIndents(const Token &Str,
 
 /// Emit diagnostics for single-quote string and suggest replacement
 /// with double-quoted equivalent.
-void diag::DiagnosticFormatLexer::diagnoseSingleQuoteStringLiteral(
+void diag::DiagnosticTextLexer::diagnoseSingleQuoteStringLiteral(
     const char *TokStart, const char *TokEnd) {
   assert(*TokStart == '\'' && TokEnd[-1] == '\'');
 
   // TODO: Not needed -- remove
   // assert(de);
 
-  auto startLoc = diag::DiagnosticFormatLexer::getSrcLoc(TokStart);
-  auto endLoc = diag::DiagnosticFormatLexer::getSrcLoc(TokEnd);
+  auto startLoc = diag::DiagnosticTextLexer::getSrcLoc(TokStart);
+  auto endLoc = diag::DiagnosticTextLexer::getSrcLoc(TokEnd);
 
   SmallString<32> replacement;
   replacement.push_back('"');
@@ -1942,8 +1945,7 @@ void diag::DiagnosticFormatLexer::diagnoseSingleQuoteStringLiteral(
 ///   string_literal ::= ["]([^"\\\n\r]|character_escape)*["]
 ///   string_literal ::= ["]["]["].*["]["]["] - approximately
 ///   string_literal ::= (#+)("")?".*"(\2\1) - "raw" strings
-void diag::DiagnosticFormatLexer::lexStringLiteral(
-    unsigned CustomDelimiterLen) {
+void diag::DiagnosticTextLexer::lexStringLiteral(unsigned CustomDelimiterLen) {
   const char QuoteChar = CurPtr[-1];
   const char *TokStart = CurPtr - 1 - CustomDelimiterLen;
 
@@ -1956,7 +1958,7 @@ void diag::DiagnosticFormatLexer::lexStringLiteral(
   if (IsMultilineString && *CurPtr != '\n' && *CurPtr != '\r') {
 
     // diagnose(CurPtr, diag::lex_illegal_multiline_string_start)
-    //     .fixItInsert(diag::DiagnosticFormatLexer::getSrcLoc(CurPtr), "\n");
+    //     .fixItInsert(diag::DiagnosticTextLexer::getSrcLoc(CurPtr), "\n");
   }
 
   bool wasErroneous = false;
@@ -2019,7 +2021,7 @@ void diag::DiagnosticFormatLexer::lexStringLiteral(
 /// string literal, diagnose the problem and return a pointer to the end of the
 /// entire string literal.  This helps us avoid parsing the body of the string
 /// as program tokens, which will only lead to massive confusion.
-const char *diag::DiagnosticFormatLexer::findEndOfCurlyQuoteStringLiteral(
+const char *diag::DiagnosticTextLexer::findEndOfCurlyQuoteStringLiteral(
     const char *Body, bool EmitDiagnostics) {
 
   while (true) {
@@ -2057,7 +2059,7 @@ const char *diag::DiagnosticFormatLexer::findEndOfCurlyQuoteStringLiteral(
   }
 }
 
-void diag::DiagnosticFormatLexer::lexRegexLiteral(const char *TokStart) {
+void diag::DiagnosticTextLexer::lexRegexLiteral(const char *TokStart) {
   assert(*TokStart == '\'');
 
   bool HadError = false;
@@ -2094,7 +2096,7 @@ void diag::DiagnosticFormatLexer::lexRegexLiteral(const char *TokStart) {
 ///   identifier ::= '`' identifier '`'
 ///
 /// If it doesn't match this production, the leading ` is a punctuator.
-void diag::DiagnosticFormatLexer::lexEscapedIdentifier() {
+void diag::DiagnosticTextLexer::lexEscapedIdentifier() {
   assert(CurPtr[-1] == '`' && "Unexpected start of escaped identifier");
 
   const char *Quote = CurPtr - 1;
@@ -2150,7 +2152,7 @@ static const char *findConflictEnd(const char *CurPtr, const char *BufferEnd,
   return nullptr;
 }
 
-bool diag::DiagnosticFormatLexer::tryLexConflictMarker(bool EatNewline) {
+bool diag::DiagnosticTextLexer::tryLexConflictMarker(bool EatNewline) {
   const char *Ptr = CurPtr - 1;
 
   // Only a conflict marker if it starts at the beginning of a line.
@@ -2182,7 +2184,7 @@ bool diag::DiagnosticFormatLexer::tryLexConflictMarker(bool EatNewline) {
   return false;
 }
 
-bool diag::DiagnosticFormatLexer::lexUnknown(bool EmitDiagnosticsIfToken) {
+bool diag::DiagnosticTextLexer::lexUnknown(bool EmitDiagnosticsIfToken) {
   const char *Tmp = CurPtr - 1;
 
   if (advanceIfValidContinuationOfIdentifier(Tmp, BufferEnd)) {
@@ -2266,8 +2268,8 @@ bool diag::DiagnosticFormatLexer::lexUnknown(bool EmitDiagnosticsIfToken) {
   return false; // Skip presumed whitespace.
 }
 
-diag::DiagnosticFormatLexer::NullCharacterKind
-diag::DiagnosticFormatLexer::getNullCharacterKind(const char *Ptr) const {
+diag::DiagnosticTextLexer::NullCharacterKind
+diag::DiagnosticTextLexer::getNullCharacterKind(const char *Ptr) const {
   assert(Ptr != nullptr && *Ptr == 0);
   if (Ptr == CodeCompletionPtr) {
     return NullCharacterKind::CodeCompletion;
@@ -2278,7 +2280,7 @@ diag::DiagnosticFormatLexer::getNullCharacterKind(const char *Ptr) const {
   return NullCharacterKind::Embedded;
 }
 
-void diag::DiagnosticFormatLexer::tryLexEditorPlaceholder() {
+void diag::DiagnosticTextLexer::tryLexEditorPlaceholder() {
   assert(CurPtr[-1] == '<' && CurPtr[0] == '#');
   const char *TokStart = CurPtr - 1;
   for (const char *Ptr = CurPtr + 1; Ptr < BufferEnd - 1; ++Ptr) {
@@ -2305,7 +2307,7 @@ void diag::DiagnosticFormatLexer::tryLexEditorPlaceholder() {
   lexOperatorIdentifier();
 }
 
-StringRef diag::DiagnosticFormatLexer::getEncodedStringSegmentImpl(
+StringRef diag::DiagnosticTextLexer::getEncodedStringSegmentImpl(
     StringRef Bytes, SmallVectorImpl<char> &TempString, bool IsFirstSegment,
     bool IsLastSegment, unsigned IndentToStrip, unsigned CustomDelimiterLen) {
 
@@ -2420,7 +2422,7 @@ StringRef diag::DiagnosticFormatLexer::getEncodedStringSegmentImpl(
   return StringRef(TempString.begin(), TempString.size());
 }
 
-void diag::DiagnosticFormatLexer::getStringLiteralSegments(
+void diag::DiagnosticTextLexer::getStringLiteralSegments(
     const Token &Str, SmallVectorImpl<StringSegment> &Segments,
     llvm::raw_ostream &Diag) {
   assert(Str.Is(tok::string_literal));
@@ -2482,7 +2484,7 @@ void diag::DiagnosticFormatLexer::getStringLiteralSegments(
 // Main Lexer Loop
 //===----------------------------------------------------------------------===//
 
-void diag::DiagnosticFormatLexer::Lex() {
+void diag::DiagnosticTextLexer::Lex() {
   assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
          "Current pointer out of range!");
 
@@ -2730,7 +2732,7 @@ void diag::DiagnosticFormatLexer::Lex() {
   }
 }
 
-Token diag::DiagnosticFormatLexer::getTokenAtLocation(
+Token diag::DiagnosticTextLexer::getTokenAtLocation(
     const stone::SrcMgr &SM, SrcLoc Loc,
     diag::CommentRetentionMode commentRetentionMode) {
   // Don't try to do anything with an invalid location.
@@ -2749,17 +2751,17 @@ Token diag::DiagnosticFormatLexer::getTokenAtLocation(
   // comments and normally we won't be at the beginning of a comment token
   // (making this option irrelevant), or the caller lexed comments and
   // we need to lex just the comment token.
-  diag::DiagnosticFormatLexer L(
-      BufferID, SM, llvm::errs(), diag::LexerMode::Stone,
-      diag::HashbangMode::Allowed, commentRetentionMode,
-      diag::TriviaRetentionMode::WithoutTrivia);
+  diag::DiagnosticTextLexer L(BufferID, SM, llvm::errs(),
+                              diag::LexerMode::Stone,
+                              diag::HashbangMode::Allowed, commentRetentionMode,
+                              diag::TriviaRetentionMode::WithoutTrivia);
 
   L.restoreState(diag::LexerState(Loc));
   return L.Peek();
 }
 
-StringRef diag::DiagnosticFormatLexer::lexTrivia(bool IsForTrailingTrivia,
-                                                 const char *AllTriviaStart) {
+StringRef diag::DiagnosticTextLexer::lexTrivia(bool IsForTrailingTrivia,
+                                               const char *AllTriviaStart) {
   CommentStart = nullptr;
 
 Restart:
@@ -2954,8 +2956,8 @@ Restart:
 }
 
 SrcLoc
-diag::DiagnosticFormatLexer::GetLocForEndOfTokenImpl(const stone::SrcMgr &SM,
-                                                     SrcLoc Loc) {
+diag::DiagnosticTextLexer::GetLocForEndOfTokenImpl(const stone::SrcMgr &SM,
+                                                   SrcLoc Loc) {
   return Loc.getAdvancedLocOrInvalid(getTokenAtLocation(SM, Loc).GetLength());
 }
 
@@ -2963,7 +2965,7 @@ static SrcLoc getLocForStartOfTokenInBuf(stone::SrcMgr &SM, unsigned BufferID,
                                          unsigned Offset, unsigned BufferStart,
                                          unsigned BufferEnd) {
 
-  diag::DiagnosticFormatLexer L(
+  diag::DiagnosticTextLexer L(
       BufferID, SM, llvm::errs(), diag::LexerMode::Stone,
       diag::HashbangMode::Allowed, diag::CommentRetentionMode::None,
       diag::TriviaRetentionMode::WithoutTrivia, BufferStart, BufferEnd);
@@ -2984,9 +2986,9 @@ static SrcLoc getLocForStartOfTokenInBuf(stone::SrcMgr &SM, unsigned BufferID,
       // Current token encompasses our source location.
 
       if (Tok.Is(tok::string_literal)) {
-        SmallVector<diag::DiagnosticFormatLexer::StringSegment, 4> Segments;
-        diag::DiagnosticFormatLexer::getStringLiteralSegments(Tok, Segments,
-                                                              llvm::errs());
+        SmallVector<diag::DiagnosticTextLexer::StringSegment, 4> Segments;
+        diag::DiagnosticTextLexer::getStringLiteralSegments(Tok, Segments,
+                                                            llvm::errs());
         for (auto &Seg : Segments) {
           unsigned SegOffs = SM.getLocOffsetInBuffer(Seg.Loc, BufferID);
           unsigned SegEnd = SegOffs + Seg.Length;
@@ -2994,7 +2996,7 @@ static SrcLoc getLocForStartOfTokenInBuf(stone::SrcMgr &SM, unsigned BufferID,
             break;
 
           // If the offset is inside an interpolated expr segment, re-lex.
-          if (Seg.Kind == diag::DiagnosticFormatLexer::StringSegment::Expr &&
+          if (Seg.Kind == diag::DiagnosticTextLexer::StringSegment::Expr &&
               Offset < SegEnd)
             return getLocForStartOfTokenInBuf(SM, BufferID, Offset,
                                               /*BufferStart=*/SegOffs,
@@ -3024,8 +3026,8 @@ static const char *findStartOfLine(const char *bufStart, const char *current) {
   return current;
 }
 
-SrcLoc diag::DiagnosticFormatLexer::GetLocForStartOfToken(stone::SrcMgr &SM,
-                                                          SrcLoc Loc) {
+SrcLoc diag::DiagnosticTextLexer::GetLocForStartOfToken(stone::SrcMgr &SM,
+                                                        SrcLoc Loc) {
   if (!Loc.isValid())
     return SrcLoc();
   unsigned BufferId = SM.findBufferContainingLoc(Loc);
@@ -3033,9 +3035,9 @@ SrcLoc diag::DiagnosticFormatLexer::GetLocForStartOfToken(stone::SrcMgr &SM,
                                SM.getLocOffsetInBuffer(Loc, BufferId));
 }
 
-SrcLoc diag::DiagnosticFormatLexer::GetLocForStartOfToken(stone::SrcMgr &SM,
-                                                          unsigned BufferID,
-                                                          unsigned Offset) {
+SrcLoc diag::DiagnosticTextLexer::GetLocForStartOfToken(stone::SrcMgr &SM,
+                                                        unsigned BufferID,
+                                                        unsigned Offset) {
   CharSrcRange entireRange = SM.getRangeForBuffer(BufferID);
   StringRef Buffer = SM.extractText(entireRange);
 
@@ -3059,8 +3061,8 @@ SrcLoc diag::DiagnosticFormatLexer::GetLocForStartOfToken(stone::SrcMgr &SM,
                                     /*BufferEnd=*/Buffer.size());
 }
 
-SrcLoc diag::DiagnosticFormatLexer::GetLocForStartOfLine(stone::SrcMgr &SM,
-                                                         SrcLoc Loc) {
+SrcLoc diag::DiagnosticTextLexer::GetLocForStartOfLine(stone::SrcMgr &SM,
+                                                       SrcLoc Loc) {
   // Don't try to do anything with an invalid location.
   if (Loc.isInvalid()) {
     return Loc;
@@ -3082,8 +3084,8 @@ SrcLoc diag::DiagnosticFormatLexer::GetLocForStartOfLine(stone::SrcMgr &SM,
   return getSrcLoc(StartOfLine);
 }
 
-SrcLoc diag::DiagnosticFormatLexer::GetLocForEndOfLine(stone::SrcMgr &SM,
-                                                       SrcLoc Loc) {
+SrcLoc diag::DiagnosticTextLexer::GetLocForEndOfLine(stone::SrcMgr &SM,
+                                                     SrcLoc Loc) {
   // Don't try to do anything with an invalid location.
   if (Loc.isInvalid())
     return Loc;
@@ -3105,7 +3107,7 @@ SrcLoc diag::DiagnosticFormatLexer::GetLocForEndOfLine(stone::SrcMgr &SM,
   return getSrcLoc(Buffer.data() + Offset + 1);
 }
 
-StringRef diag::DiagnosticFormatLexer::getIndentationForLine(
+StringRef diag::DiagnosticTextLexer::getIndentationForLine(
     stone::SrcMgr &SM, SrcLoc Loc, llvm::StringRef *ExtraIndentation) {
   /// Yes, this sucks.
   // FIXME: do something more intelligent here.
@@ -3115,10 +3117,10 @@ StringRef diag::DiagnosticFormatLexer::getIndentationForLine(
   // here will update everyone.
 
   if (ExtraIndentation) {
-    llvm::SmallString<diag::DiagnosticFormatLexer::extraIndentationSize> spaces;
+    llvm::SmallString<diag::DiagnosticTextLexer::extraIndentationSize> spaces;
 
     llvm::raw_svector_ostream stream(spaces);
-    for (unsigned i = 0; i < diag::DiagnosticFormatLexer::extraIndentationSize;
+    for (unsigned i = 0; i < diag::DiagnosticTextLexer::extraIndentationSize;
          ++i) {
       stream << "";
     }
@@ -3126,7 +3128,7 @@ StringRef diag::DiagnosticFormatLexer::getIndentationForLine(
     // TODO: May not need the cast -- I think type promotion handles that.
     assert(
         ExtraIndentation->size() ==
-        static_cast<size_t>(diag::DiagnosticFormatLexer::extraIndentationSize));
+        static_cast<size_t>(diag::DiagnosticTextLexer::extraIndentationSize));
   }
 
   // Don't try to do anything with an invalid location.

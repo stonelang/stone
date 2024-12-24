@@ -33,7 +33,7 @@ public:
   void EmitDiagnosticCaret();
 
   void HandleDiagnostic(DiagnosticEngine &DE,
-                        const DiagnosticImpl &DC) override;
+                        const DiagnosticInfo &DI) override;
 
   /// \returns true if an error occurred while finishing-up.
   bool FinishProcessing() override { return true; }
@@ -51,7 +51,7 @@ public:
 public:
   bool FinishProcessing() override;
   void HandleDiagnostic(DiagnosticEngine &DE,
-                        const DiagnosticImpl &DC) override;
+                        const DiagnosticInfo &DI) override;
 };
 
 } // namespace stone

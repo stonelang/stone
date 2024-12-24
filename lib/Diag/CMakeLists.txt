@@ -9,11 +9,9 @@ set(stone_diag_sources
   DiagnosticClient.cpp
   DiagnosticEngine.cpp
   DiagnosticID.cpp
-  
-  DiagnosticFormatter.cpp
   TextDiagnosticPrinter.cpp
-  TextDiagnosticFormatter.cpp
-  DiagnosticFormatLexer.cpp
+  DiagnosticTextLexer.cpp
+  DiagnosticTextParser.cpp
 
   LINK_LIBS
   StoneBasic

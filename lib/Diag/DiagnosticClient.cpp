@@ -1,5 +1,6 @@
 #include "stone/Diag/DiagnosticClient.h"
 #include "stone/Diag/DiagnosticEngine.h"
+#include "stone/Diag/DiagnosticText.h"
 using namespace stone;
 
 DiagnosticOutputStream::DiagnosticOutputStream()
@@ -86,16 +87,6 @@ DiagnosticClient::~DiagnosticClient() = default;
 bool DiagnosticClient::UseInDiagnosticCounts() const { return true; }
 
 void DiagnosticClient::HandleDiagnostic(DiagnosticEngine &DE,
-                                        const DiagnosticImpl &DC) {
+                                        const DiagnosticInfo &DI) {
   // NOTE: May not need this anymore
 }
-
-// DiagID Diagnostic::GetDiagID() const {
-//   return DE->GetCurDiagID();
-// }
-
-// void DiagnosticImpl::FormatDiagnostic(
-//     DiagnosticFormatOptions FormatOpts) const {
-
-//   //FormatDiagnostic(OS);
-// }

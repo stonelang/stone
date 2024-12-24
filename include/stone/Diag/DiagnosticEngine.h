@@ -3,7 +3,6 @@
 
 #include "stone/Diag/DiagnosticAllocation.h"
 #include "stone/Diag/DiagnosticClient.h"
-#include "stone/Diag/DiagnosticFormatter.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -377,7 +376,7 @@ class DiagnosticEngine final {
 
   DiagnosticOptions &DiagOpts;
 
-  std::unique_ptr<DiagnosticFormatter> Formatter;
+  // std::unique_ptr<DiagnosticFormatter> Formatter;
 
   /// The diagnostic consumer(s) that will be responsible for actually
   /// emitting diagnostics.
@@ -423,16 +422,9 @@ public:
   bool FinishProcessing();
 
   /// A simple callback indicating the completion of the diagnostic
-  void DiagnosticCompletionCallback(DiagID ID);
+  void DiagnosticCompletionCallback(const DiagnosticInfo &DI);
 
 public:
-  // Set the formatter for the diagnostics
-  void SetFormatter(std::unique_ptr<DiagnosticFormatter> formatter) {
-    Formatter = std::move(formatter);
-  }
-  DiagnosticFormatter &GetFormatter() { return *Formatter; }
-  bool HasFormatter() { return Formatter != nullptr; }
-
   void AddClient(DiagnosticClient *client);
 
   /// Remove a specific DiagnosticConsumer.
@@ -486,8 +478,8 @@ public:
                          DiagnosticStringFormatter StringFormatter);
 
   /// Generate DiagnosticInfo for a Diagnostic to be passed to consumers.
-  std::optional<DiagnosticImpl>
-  ConstructDiagnosticImpl(const Diagnostic *diagnostic);
+  std::optional<DiagnosticInfo>
+  ConstructDiagnosticInfo(const Diagnostic *diagnostic);
 
   /// Given a diagnostic ID, return a description of the issue.
   llvm::StringRef GetDescriptionForDiagID(DiagID ID) const;
@@ -501,15 +493,16 @@ public:
 
   /// Format the given diagnostic text and place the result in the given
   /// buffer.
-  // static void FormatDiagnosticText(
-  //     llvm::raw_ostream &Out, StringRef Text, SrcMgr &SM,
-  //     ArrayRef<DiagnosticArgument> Args,
-  //     DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
+  static void FormatDiagnosticText(
+      llvm::raw_ostream &Out, SrcMgr &SM, StringRef Text,
+      ArrayRef<DiagnosticArgument> Args,
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 
-  static void FormatDiagnosticText(llvm::raw_ostream &Out, StringRef DiagnosticText,
-                                   SrcMgr &SM,
-                                   ArrayRef<DiagnosticArgument> Args,
-                                   DiagnosticTextFormatter &TextFormatter);
+  /// Format the given diagnostic text and place the result in the given
+  /// buffer.
+  static void FormatDiagnosticText(
+      llvm::raw_ostream &OS, SrcMgr &SM, const DiagnosticInfo &DI,
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 
 private:
   DiagnosticLevel GetDiagnosticLevel(DiagID ID, SrcLoc) const;
