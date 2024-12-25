@@ -1,5 +1,6 @@
 
-enum Day {
-	uint8 Monday = 0, 
-	Tuesday,
+enum Day : uint8 {
+	Sunday = 1, 
+	Monday, 
+    Tuesday,
 }

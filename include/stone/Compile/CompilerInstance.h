@@ -1,8 +1,7 @@
-#ifndef STONE_COMPILE_COMPILER_H
-#define STONE_COMPILE_COMPILER_H
+#ifndef STONE_COMPILE_COMPILERINSTANCE_H
+#define STONE_COMPILE_COMPILERINSTANCE_H
 
 #include "stone/AST/Diagnostics.h"
-#include "stone/Compile/CompilerAction.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Support/Statistics.h"
@@ -19,6 +18,7 @@ namespace stone {
 
 class ModuleDecl;
 class CodeGenResult;
+class CompilerAction;
 class CompilerObservation;
 
 class CompilerInstance final {

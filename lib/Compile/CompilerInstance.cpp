@@ -1,10 +1,10 @@
-#include "stone/Compile/CompilerInstance.h"
 #include "stone/AST/DiagnosticsCompile.h"
 #include "stone/AST/Module.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/Compile.h"
+#include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerAction.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
@@ -462,23 +462,17 @@ void CompilerInstance::ForEachPrimarySourceFile(
   }
 }
 
-// Status CompilerInstance::ForEachSourceFileToTypeCheck(
-//     std::function<Status(SourceFile &sourceFile)> notify) {
-//   if (IsCompileForWholeModule()) {
-//     ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-//       if (notify(sourceFile).IsError()) {
-//         return Status::Error();
-//       }
-//     });
-//   } else {
-//     ForEachPrimarySourceFile([&](SourceFile &sourceFile) {
-//       if (notify(sourceFile).IsError()) {
-//         return Status::Error();
-//       }
-//     });
-//   }
-//   return Status();
-// }
+void CompilerInstance::ForEachSourceFileToTypeCheck(
+    std::function<void(SourceFile &sourceFile)> notify) {
+  if (IsCompileForWholeModule()) {
+    ForEachSourceFileInMainModule(
+        [&](SourceFile &sourceFile) { notify(sourceFile); });
+  } else {
+    ForEachPrimarySourceFile(
+        [&](SourceFile &sourceFile) { notify(sourceFile); });
+  }
+}
+
 std::error_code CompilerInstance::CreateDirectory(std::string name) {
   return llvm::sys::fs::create_directories(name);
 }

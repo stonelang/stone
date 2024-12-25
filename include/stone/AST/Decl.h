@@ -768,6 +768,13 @@ public:
   // Module *mod = nullptr;
 };
 
+class JoinDecl final : public NamedDecl {
+  SrcLoc joinLoc;
+
+public:
+  
+};
+
 class TrustDecl final
     : public Decl,
       public llvm::TrailingObjects<TrustDecl, GenericParamList *> {

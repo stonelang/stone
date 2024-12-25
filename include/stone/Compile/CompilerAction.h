@@ -1,19 +1,13 @@
 #ifndef STONE_COMPILE_COMPILERACTION_H
 #define STONE_COMPILE_COMPILERACTION_H
 
-#include "stone/AST/Diagnostics.h"
-#include "stone/Compile/CompilerOptions.h"
-#include "stone/Support/Statistics.h"
 
-#include <deque>
-#include <functional>
-#include <memory>
-#include <utility>
-#include <vector>
+#include "stone/Compile/CompilerOptions.h"
 
 namespace stone {
 
 class ModuleDecl;
+class CompilerAction;
 class CodeGenResult;
 class CompilerInstance;
 class CompilerObservation;
@@ -239,21 +233,21 @@ public:
 //   }
 // };
 
-// class TypeCheckAction final : public ASTAction {
-// public:
-//   TypeCheckAction(CompilerInstance &instance) : ASTAction(instance) {}
+class TypeCheckAction final : public ASTAction {
+public:
+  TypeCheckAction(CompilerInstance &instance) : ASTAction(instance) {}
 
-// public:
-//   bool ExecuteAction() override;
+public:
+  bool ExecuteAction() override;
 
-// public:
-//   CompilerActionKind GetDepActionKind() const override {
-//     return CompilerActionKind::ResolveImports;
-//   }
-//   CompilerActionKind GetSelfActionKind() const override {
-//     return CompilerActionKind::TypeCheck;
-//   }
-// };
+public:
+  CompilerActionKind GetDepActionKind() const override {
+    return CompilerActionKind::ResolveImports;
+  }
+  CompilerActionKind GetSelfActionKind() const override {
+    return CompilerActionKind::TypeCheck;
+  }
+};
 
 // class EmitASTAction final : public ASTAction {
 // public:

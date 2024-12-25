@@ -24,16 +24,7 @@ ASTContext::~ASTContext() {
   }
 }
 
-Identifier ASTContext::GetIdentifier(llvm::StringRef identifierText) const {
 
-  if ((identifierText.data() != nullptr) && !identifierText.empty() &&
-      identifierText.size() > 0) {
-    auto pair = std::make_pair(identifierText, Identifier::Aligner());
-    auto first = identifierTable.insert(pair).first;
-    return Identifier(first->getKeyData());
-  }
-  return Identifier(nullptr);
-}
 llvm::BumpPtrAllocator &ASTContext::GetAllocator() const { return allocator; }
 
 void ASTContext::AddLoadedModule(ModuleDecl *mod) {

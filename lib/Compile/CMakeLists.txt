@@ -7,7 +7,7 @@ set(stone_compile_sources
   CompilerInputsConverter.cpp
   CompilerOptionsConverter.cpp
   CompilerOutputsConverter.cpp
-  Frontend.cpp
+  CompilerFrontend.cpp
   
   LINK_LIBS
   StoneCodeGen

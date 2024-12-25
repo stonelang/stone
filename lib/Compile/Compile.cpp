@@ -1,6 +1,6 @@
-#include "stone/Compile/Compile.h"
 #include "stone/AST/Diagnostics.h"
 #include "stone/AST/DiagnosticsCompile.h"
+#include "stone/AST/Module.h"
 #include "stone/Basic/About.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
@@ -8,12 +8,14 @@
 #include "stone/CodeGen/CodeGenContext.h"
 #include "stone/CodeGen/CodeGenModule.h"
 #include "stone/CodeGen/CodeGenResult.h"
+#include "stone/Compile/Compile.h"
 #include "stone/Compile/CompilerAction.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerObservation.h"
-#include "stone/Parse/CodeCompletionCallbacks.h"
-#include "stone/Parse/Parser.h"
 #include "stone/Sem/TypeChecker.h"
+#include "stone/Parse/Parser.h"
+#include "stone/Parse/CodeCompletionCallbacks.h"
+
 #include "stone/Support/Statistics.h"
 
 using namespace stone;
@@ -161,27 +163,27 @@ bool ParseAction::ExecuteAction() {
 
 //   return true;
 // }
-// bool CompilerInstance::TypeCheckAction::ExecuteAction() {
+bool TypeCheckAction::ExecuteAction() {
 
-//   FrontendStatsTracer actionTracer(instance.GetStats(),
-//                                    GetSelfActionKindString());
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
 
-//   auto PerformTypeChecking = [&](CompilerInstance &instance,
-//                                  SourceFile &sourceFile) -> bool {
-//     assert(sourceFile.HasParsed() &&
-//            "Unable to type-check a source-file that was not parsed.");
+  auto PerformTypeChecking = [&](CompilerInstance &instance,
+                                 SourceFile &sourceFile) -> bool {
+    assert(sourceFile.HasParsed() &&
+           "Unable to type-check a source-file that was not parsed.");
 
-//     return TypeChecker(sourceFile).TypeCheckTopLevelDecls();
-//   };
+    return TypeChecker(sourceFile).TypeCheckTopLevelDecls();
+  };
 
-//   instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
-//     if (!PerformTypeChecking(instance, sourceFile)) {
-//       return false;
-//     }
-//     sourceFile.SetTypeCheckedStage();
-//   });
-//   return true;
-// }
+  instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
+    if (!PerformTypeChecking(instance, sourceFile)) {
+      return false;
+    }
+    sourceFile.SetTypeCheckedStage();
+  });
+  return true;
+}
 
 // bool CompilerInstance::EmitASTAction::ExecuteAction() {
 //   FrontendStatsTracer actionTracer(instance.GetStats(),

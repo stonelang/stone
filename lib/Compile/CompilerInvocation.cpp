@@ -3,7 +3,7 @@
 #include "stone/Compile/Compile.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
-#include "stone/Compile/Frontend.h"
+#include "stone/Compile/CompilerFrontend.h"
 #include "stone/Parse/CodeCompletionCallbacks.h"
 
 #include "stone/Strings.h"

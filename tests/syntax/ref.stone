@@ -1,4 +1,5 @@
-space Ref; 
+
+join IO;
 
 public struct S0 {
 }
