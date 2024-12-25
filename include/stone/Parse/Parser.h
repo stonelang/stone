@@ -280,6 +280,8 @@ public:
   // ParserStatus ParseTypeSpec(DeclSpec &spec);
   // ParserStatus ParseBuiltinTypeSpec(DeclSpec &spec);
 
+  ParserStatus ParseQualifierList(ParsingDeclSpec &spec);
+  ParserStatus ParsePublicVisibilityList(ParsingDeclSpec &spec);
   ParserResult<Decl> ParseDecl(ParsingDeclSpec &spec);
   ParserResult<ImportDecl> ParseImportDecl(ParsingDeclSpec &spec);
 

@@ -234,10 +234,11 @@ bool EmitIRAction::ExecuteAction() {
       CodeGenResult result =
           ExecuteAction(primarySourceFile, outputFilename, psps, globalHash);
       NotifyCodeGenConsumer(&result);
+      AddCodeGenResult(std::move(result));
     });
   }
-  if(HasConsumer()){
-     GetConsumer()->DepCompleted(this);
+  if (HasConsumer()) {
+    GetConsumer()->DepCompleted(this);
   }
   return true;
 }
@@ -279,7 +280,6 @@ bool EmitObjectAction::ExecuteAction() {
 
   FrontendStatsTracer emitObjectActionTracer(instance.GetStats(),
                                              GetSelfActionKindString());
-
   return true;
 }
 
@@ -293,7 +293,7 @@ void EmitObjectAction::ConsumeCodeGen(CodeGenResult *result) {
 void EmitObjectAction::DepCompleted(CompilerAction *dep) {
   if (dep) {
     assert((GetDepActionKind() == dep->GetSelfActionKind()) &&
-           "Invalid dependency!");
+           "EmitObjectAction did not call the dependency!");
     if (auto emitCodeAction = llvm::cast<EmitCodeAction>(dep)) {
     }
   }

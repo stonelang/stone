@@ -59,24 +59,11 @@ ParserResult<Decl> Parser::ParseTopLevelDecl(ParsingDeclSpec &spec) {
 
   return ParseDecl(spec);
 }
-ParserResult<Decl> Parser::ParseDecl(ParsingDeclSpec &spec) {
 
+ParserStatus Parser::ParseQualifierList(ParsingDeclSpec &spec) {
+  ParserStatus status;
   while (IsParsing()) {
     switch (GetCurTok().GetKind()) {
-    case tok::kw_import:
-      return ParseImportDecl(spec);
-    case tok::kw_public: {
-      spec.GetPublicVisibility().SetLoc(ConsumeToken());
-      break;
-    }
-    case tok::kw_internal: {
-      spec.GetInternalVisibility().SetLoc(ConsumeToken());
-      break;
-    }
-    case tok::kw_private: {
-      spec.GetPrivateVisibility().SetLoc(ConsumeToken());
-      break;
-    }
     case tok::kw_const: {
       spec.GetConstQualifier().SetLoc(ConsumeToken());
       break;
@@ -93,40 +80,89 @@ ParserResult<Decl> Parser::ParseDecl(ParsingDeclSpec &spec) {
       spec.GetVolatileQualifier().SetLoc(ConsumeToken());
       break;
     }
-    case tok::kw_void:
-    case tok::kw_auto:
-    case tok::kw_char:
-    case tok::kw_char8:
-    case tok::kw_char16:
-    case tok::kw_char32:
-    case tok::kw_int:
-    case tok::kw_int8:
-    case tok::kw_int16:
-    case tok::kw_int32:
-    case tok::kw_int64:
-    case tok::kw_uint:
-    case tok::kw_uint8:
-    case tok::kw_uint16:
-    case tok::kw_uint32:
-    case tok::kw_uint64:
-    case tok::kw_float:
-    case tok::kw_float32:
-    case tok::kw_float64:
-    case tok::kw_complex32:
-    case tok::kw_complex64:
-    case tok::kw_imaginary32:
-    case tok::kw_imaginary64: {
-      return ParseVarDecl(spec);
+    default:
+      break;
     }
-    case tok::kw_fun: {
-      return ParseFunDecl(spec);
-    }
-    case tok::kw_struct: {
-      return ParseStructDecl(spec);
-    }
-    }
+    return status;
   }
-  return stone::ParserResult<Decl>();
+}
+
+ParserStatus Parser::ParsePublicVisibilityList(ParsingDeclSpec &spec) {
+  ParserStatus status;
+  while (IsParsing()) {
+    switch (GetCurTok().GetKind()) {
+    case tok::kw_public: {
+      spec.GetPublicVisibility().SetLoc(ConsumeToken());
+      continue;
+    }
+    case tok::kw_internal: {
+      spec.GetInternalVisibility().SetLoc(ConsumeToken());
+      continue;
+    }
+    case tok::kw_private: {
+      spec.GetPrivateVisibility().SetLoc(ConsumeToken());
+      continue;
+    }
+    default:
+      break;
+    }
+    return status;
+  }
+}
+
+ParserResult<Decl> Parser::ParseDecl(ParsingDeclSpec &spec) {
+
+  ParserResult<Decl> DeclResult;
+  auto status = ParseQualifierList(spec);
+  if (status.IsError() || spec.HasQualifierOverflow()) {
+    return DeclResult;
+  }
+  status |= ParsePublicVisibilityList(spec);
+  if (status.IsError() || spec.HasVisibilityOverflow()) {
+    return DeclResult;
+  }
+
+  switch (GetCurTok().GetKind()) {
+  case tok::kw_import: {
+    DeclResult = ParseImportDecl(spec);
+    break;
+  }
+  case tok::kw_void:
+  case tok::kw_auto:
+  case tok::kw_char:
+  case tok::kw_char8:
+  case tok::kw_char16:
+  case tok::kw_char32:
+  case tok::kw_int:
+  case tok::kw_int8:
+  case tok::kw_int16:
+  case tok::kw_int32:
+  case tok::kw_int64:
+  case tok::kw_uint:
+  case tok::kw_uint8:
+  case tok::kw_uint16:
+  case tok::kw_uint32:
+  case tok::kw_uint64:
+  case tok::kw_float:
+  case tok::kw_float32:
+  case tok::kw_float64:
+  case tok::kw_complex32:
+  case tok::kw_complex64:
+  case tok::kw_imaginary32:
+  case tok::kw_imaginary64: {
+    DeclResult = ParseVarDecl(spec);
+    break;
+  }
+  case tok::kw_fun: {
+    DeclResult = ParseFunDecl(spec);
+    break;
+  }
+  case tok::kw_struct: {
+    DeclResult = ParseStructDecl(spec);
+    break;
+  }
+  }
+  return DeclResult;
 }
 
 ParserResult<ImportDecl> Parser::ParseImportDecl(ParsingDeclSpec &spec) {
@@ -147,8 +183,9 @@ ParserResult<FunDecl> Parser::ParseFunDecl(ParsingDeclSpec &spec) {
 
   // auto ParseFunctionName() = [&]() -> Identifier {
   //   auto functionNameText = GetCurTok().GetText();
-  //   functionNameIdentifier = GetASTContext().GetIdentifier(functionNameText);
-  //   spec.declNameLoc = ConsumeToken();
+  //   functionNameIdentifier =
+  //   GetASTContext().GetIdentifier(functionNameText); spec.declNameLoc =
+  //   ConsumeToken();
   // }();
 
   // // Make sure we have a valid identifier

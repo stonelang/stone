@@ -4,6 +4,7 @@
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/ParsingTypeSpec.h"
 
+#include "llvm/ADT/TinyPtrVector.h"
 #include "llvm/Support/Timer.h"
 
 #include <memory>
@@ -120,18 +121,30 @@ struct ParsingDeclName final {
 };
 
 class ParsingDeclSpecLoc {
-  SrcLoc currentLoc;
-  SrcLoc previousLoc;
+  SrcLoc Loc;
+  llvm::SmallVector<SrcLoc, 5> overflow;
+
+  void AddLoc(SrcLoc loc) {
+    if (overflow.size() == 0) {
+      Loc = loc;
+    } else {
+      overflow.push_back(loc);
+    }
+  }
 
 public:
-  ParsingDeclSpecLoc() : currentLoc(SrcLoc()), previousLoc(SrcLoc()) {}
+  ParsingDeclSpecLoc() : Loc(SrcLoc()) {}
 
 public:
-  bool HasLoc() const { return currentLoc.isValid(); }
-  void ClearLoc() { currentLoc = SrcLoc(); }
-  void SetLoc(SrcLoc loc) { currentLoc = loc; }
-  SrcLoc GetLoc() { return currentLoc; }
+  bool HasLoc() const { return Loc.isValid(); }
+  void ClearLoc() { Loc = SrcLoc(); }
+  void SetLoc(SrcLoc loc) { AddLoc(loc); }
+  SrcLoc GetLoc() { return Loc; }
+  bool HasOverflow() const { return (overflow.size() > 0); }
+  llvm::ArrayRef<SrcLoc> GetOverflow() { return overflow; }
 };
+
+class ParsingVisibilitySpecLoc {};
 
 class ParsingDeclSpec final {
   Parser &currentParser;
@@ -219,9 +232,9 @@ public:
   ParsingDeclSpecLoc GetInternalVisibility() { return internalVisibilityLoc; }
   ParsingDeclSpecLoc GetPrivateVisibility() { return privateVisibilityLoc; }
 
-public:
   ParsingDeclSpecLoc GetImport() { return importLoc; }
 
+public:
   void StripQualSpecs() {
     constLoc.ClearLoc();
     restrictLoc.ClearLoc();
@@ -240,6 +253,27 @@ public:
   void ApplyQualSpecs(QualType &ty);
 
   QualSpecs GetQualSpecs() const;
+
+  bool HasQualifierOverflow() {
+    if (GetConstQualifier().HasOverflow() ||
+        GetRestrictQualifier().HasOverflow() ||
+        GetVolatileQualifier().HasOverflow() ||
+        GetStoneQualifier().HasOverflow() ||
+        GetMutableQualifier().HasOverflow()) {
+      return true;
+    }
+    return false;
+  }
+  bool HasVisibilityOverflow() {
+
+    if (GetPublicVisibility().HasOverflow() ||
+        GetRestrictQualifier().HasOverflow() ||
+        GetInternalVisibility().HasOverflow() ||
+        GetPrivateVisibility().HasOverflow()) {
+      return true;
+    }
+    return false;
+  }
 };
 
 } // namespace stone
