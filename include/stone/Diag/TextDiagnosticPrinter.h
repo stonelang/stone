@@ -27,6 +27,15 @@ public:
     FmtStyle = fmtStyle;
   }
 
+  /// Print the diagonstic level to a raw_ostream.
+  ///
+  /// This is a static helper that handles colorizing the level and formatting
+  /// it into an arbitrary output stream. This is used internally by the
+  /// TextDiagnostic emission code, but it can also be used directly by
+  /// consumers that don't have a source manager or other state that the full
+  /// TextDiagnostic logic requires.
+  virtual void PrintDiagnosticKind(raw_ostream &OS, DiagnosticKind Kind,
+                                   bool ShowColors) {}
   void PrintDiagnostic();
   void EmitDiagnostic();
   void EmitDiagnosticMessage();
