@@ -111,31 +111,31 @@ bool PrintFeatureAction::ExecuteAction() {
   return true;
 }
 
-// bool CompilerInstance::ParseAction::ExecuteAction() {
+bool ParseAction::ExecuteAction() {
 
-//   // FrontendStatsTracer actionTracer(instance.GetStats(),
-//   //                                  GetSelfActionKindString());
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
 
-//   CodeCompletionCallbacks *codeCompletionCallbacks =
-//       instance.GetObservation()->GetCodeCompletionCallbacks();
+  CodeCompletionCallbacks *codeCompletionCallbacks =
+      instance.GetObservation()->GetCodeCompletionCallbacks();
 
-//   auto PerformParse = [&](CompilerInstance &instance,
-//                           SourceFile &sourceFile) -> bool {
-//     return Parser(sourceFile, GetASTContext()).ParseTopLevelDecls();
-//   };
+  auto PerformParse = [&](CompilerInstance &instance,
+                          SourceFile &sourceFile) -> bool {
+    return Parser(sourceFile, instance.GetASTContext()).ParseTopLevelDecls();
+  };
 
-//   instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-//     if (!PerformParse(instance, sourceFile)) {
-//       return false;
-//     }
-//     sourceFile.SetParsedStage();
-//     if (instance.HasObservation()) {
-//       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
-//     }
-//   });
+  instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+    if (!PerformParse(instance, sourceFile)) {
+      return false;
+    }
+    sourceFile.SetParsedStage();
+    if (instance.HasObservation()) {
+      codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
+    }
+  });
 
-//   return true;
-// }
+  return true;
+}
 // bool CompilerInstance::EmitParseAction::ExecuteAction() {
 //   FrontendStatsTracer actionTracer(instance.GetStats(),
 //                                    GetSelfActionKindString());
