@@ -24,7 +24,6 @@ ASTContext::~ASTContext() {
   }
 }
 
-
 llvm::BumpPtrAllocator &ASTContext::GetAllocator() const { return allocator; }
 
 void ASTContext::AddLoadedModule(ModuleDecl *mod) {

@@ -772,7 +772,6 @@ class JoinDecl final : public NamedDecl {
   SrcLoc joinLoc;
 
 public:
-  
 };
 
 class TrustDecl final

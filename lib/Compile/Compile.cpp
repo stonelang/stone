@@ -1,3 +1,4 @@
+#include "stone/Compile/Compile.h"
 #include "stone/AST/Diagnostics.h"
 #include "stone/AST/DiagnosticsCompile.h"
 #include "stone/AST/Module.h"
@@ -8,13 +9,12 @@
 #include "stone/CodeGen/CodeGenContext.h"
 #include "stone/CodeGen/CodeGenModule.h"
 #include "stone/CodeGen/CodeGenResult.h"
-#include "stone/Compile/Compile.h"
 #include "stone/Compile/CompilerAction.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerObservation.h"
-#include "stone/Sem/TypeChecker.h"
-#include "stone/Parse/Parser.h"
 #include "stone/Parse/CodeCompletionCallbacks.h"
+#include "stone/Parse/Parser.h"
+#include "stone/Sem/TypeChecker.h"
 
 #include "stone/Support/Statistics.h"
 

@@ -1,6 +1,5 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/Basic/LangOptions.h"
- 
 
 #include "clang/Basic/CharInfo.h"
 #include "llvm/ADT/DenseMapInfo.h"
@@ -11,13 +10,11 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/raw_ostream.h"
- 
 
 #include <cassert>
 #include <cstdio>
 #include <cstring>
 #include <string>
-
 
 using namespace stone;
 

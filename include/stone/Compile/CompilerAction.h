@@ -1,7 +1,6 @@
 #ifndef STONE_COMPILE_COMPILERACTION_H
 #define STONE_COMPILE_COMPILERACTION_H
 
-
 #include "stone/Compile/CompilerOptions.h"
 
 namespace stone {
@@ -199,6 +198,9 @@ public:
   CompilerActionKind GetSelfActionKind() const override {
     return CompilerActionKind::Parse;
   }
+
+  virtual void ConsumeDecl(Decl *result) {}
+  virtual void ConsumeSourceFile(SourceFile *result) {}
 };
 
 // class EmitParseAction final : public ASTAction {
@@ -265,18 +267,17 @@ public:
 //   }
 // };
 
-// class EmitCodeAction : public ASTAction {
+class EmitCodeAction : public ASTAction {
 
-// protected:
-//   CodeGenResult *result;
-//   llvm::GlobalVariable *globalHash;
+protected:
+  llvm::GlobalVariable *globalHash;
 
-// public:
-//   EmitCodeAction(CompilerInstance &instance) : ASTAction(instance) {}
+public:
+  EmitCodeAction(CompilerInstance &instance) : ASTAction(instance) {}
 
-// public:
-//   virtual void ConsumeEmittedCode(CodeGenResult *result) {}
-// };
+public:
+  virtual void ConsumeCodeGen(CodeGenResult *result) {}
+};
 
 // class EmitIRAction final : public EmitCodeAction {
 
