@@ -1,4 +1,5 @@
 #include "stone/Basic/SrcMgr.h"
+#include "stone/Basic/Token.h"
 
 #include "clang/Basic/CharInfo.h"
 #include "llvm/ADT/SmallString.h"
@@ -23,12 +24,13 @@
 
 using namespace stone;
 
-enum class TextKind : uint8_t {
-#define TOKEN(X) X,
-#include "stone/Basic/TokenKind.def"
-  TotalTextKinds
-};
-class TextToken {};
+// enum class TextKind : uint8_t {
+// #define TOKEN(X) X,
+// #include "stone/Basic/TokenKind.def"
+//   TotalTextKinds
+// };
+using TextKind = stone::tok;
+
 struct TextSlice {};
 
 struct TextLexer {
@@ -65,7 +67,7 @@ struct TextLexer {
   };
 
   class LexerState final {
-    friend class DiagnosticTextLexer;
+    friend class TextLexer;
 
   public:
     LexerState() {}
@@ -82,6 +84,14 @@ struct TextLexer {
     llvm::StringRef leadingTrivia;
     friend class Lexer;
   };
+
+  const unsigned BufferID;
+
+  const SrcMgr &SM;
+
+  llvm::raw_ostream &Diag;
+
+  LexerState state;
 
   /// Pointer to the first character of the buffer, even in a lexer that
   /// scans a subrange of the buffer.
@@ -106,7 +116,12 @@ struct TextLexer {
   /// Pointer to the next not consumed character.
   const char *CurPtr;
 
-  TextToken NextToken;
+  Token NextToken;
+
+  /// The kind of source we're lexing. This either enables special behavior for
+  /// module interfaces, or enables things like the 'sil' keyword if lexing
+  /// a .sil file.
+  const LexerMode LexMode;
 
   /// True if we should skip past a `#!` line at the start of the file.
   const bool IsHashbangAllowed;
@@ -124,44 +139,146 @@ struct TextLexer {
   /// The StringRef points into the source buffer that is currently being lexed.
   llvm::StringRef TrailingTrivia;
 
+  /// The location at which the comment of the next token starts. \c nullptr if
+  /// the next token doesn't have a comment.
+  const char *CommentStart;
+
   /// If this is not \c nullptr, all tokens after this point are treated as eof.
   /// Used to cut off lexing early when we detect that the nesting level is too
   /// deep.
   const char *LexerCutOffPoint = nullptr;
 
-  // TextLexer(unsigned BufferID, const SrcMgr &sm, llvm::raw_ostream &Diag,
-  //           HashbangMode HashbangAllowed = HashbangMode::Disallowed,
-  //           CommentRetentionMode RetainComments = CommentRetentionMode::None,
-  //           TriviaRetentionMode TriviaRetention =
-  //               TriviaRetentionMode::WithoutTrivia) {}
+  //=Lexer options goes here=/
+  bool warnOnEditorPlaceholder = false;
+  static constexpr unsigned extraIndentationSize = 4;
 
-  // TextLexer(unsigned BufferID, const stone::SrcMgr &SM,
-  //           llvm::raw_ostream &Diag) {}
+  TextLexer(bool primary, unsigned BufferID, const SrcMgr &SM,
+            llvm::raw_ostream &Diag, LexerMode LexMode,
+            HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
+            TriviaRetentionMode TriviaRetention)
+      : BufferID(BufferID), SM(SM), Diag(Diag), LexMode(LexMode),
+        IsHashbangAllowed(HashbangAllowed == HashbangMode::Allowed),
+        RetainComments(RetainComments), TriviaRetention(TriviaRetention) {}
 
-  // /// Create a TextLexer that scans a subrange of the source buffer.
-  // TextLexer(unsigned BufferID, const stone::SrcMgr &sm, llvm::raw_ostream
-  // &Diag,
-  //           HashbangMode HashbangAllowed, CommentRetentionMode
-  //           RetainComments, TriviaRetentionMode TriviaRetention, unsigned
-  //           Offset, unsigned EndOffset) {}
+  void Init(unsigned Offset, unsigned EndOffset) {
+    assert(Offset <= EndOffset);
+
+    // Initialize buffer pointers.
+    StringRef contents = SM.extractText(SM.getRangeForBuffer(BufferID));
+    BufferStart = contents.data();
+    BufferEnd = contents.data() + contents.size();
+    assert(*BufferEnd == 0);
+    assert(BufferStart + Offset <= BufferEnd);
+    assert(BufferStart + EndOffset <= BufferEnd);
+
+    // Check for Unicode BOM at start of file (Only UTF-8 BOM supported now).
+    size_t BOMLength = contents.starts_with("\xEF\xBB\xBF") ? 3 : 0;
+
+    // Keep information about existance of UTF-8 BOM for transparency source
+    // code editing with libSyntax.
+    ContentStart = BufferStart + BOMLength;
+
+    // Initialize code completion.
+    if (BufferID == SM.getCodeCompletionBufferID()) {
+      const char *Ptr = BufferStart + SM.getCodeCompletionOffset();
+      if (Ptr >= BufferStart && Ptr <= BufferEnd)
+        CodeCompletionPtr = Ptr;
+    }
+
+    ArtificialEOF = BufferStart + EndOffset;
+    CurPtr = BufferStart + Offset;
+
+    assert(NextToken.Is(tok::LAST));
+
+    Lex();
+    assert((NextToken.IsAtStartOfLine() || CurPtr != BufferStart) &&
+           "The token should be at the beginning of the line, "
+           "or we should be lexing from the middle of the buffer");
+  }
+
+  TextLexer(unsigned BufferID, const stone::SrcMgr &SM, llvm::raw_ostream &Diag,
+            LexerMode LexMode, HashbangMode HashbangAllowed,
+            CommentRetentionMode RetainComments,
+            TriviaRetentionMode TriviaRetention)
+      : TextLexer(true, BufferID, SM, Diag, LexMode, HashbangAllowed,
+                  RetainComments, TriviaRetention) {
+
+    unsigned EndOffset = SM.getRangeForBuffer(BufferID).getByteLength();
+
+    Init(/*Offset=*/0, EndOffset);
+  }
+
+  TextLexer(unsigned BufferID, const stone::SrcMgr &SM, llvm::raw_ostream &Diag)
+      : TextLexer(BufferID, SM, Diag, LexerMode::Stone,
+                  HashbangMode::Disallowed, CommentRetentionMode::None,
+                  TriviaRetentionMode::WithoutTrivia) {}
+
+  TextLexer(unsigned BufferID, const stone::SrcMgr &SM, llvm::raw_ostream &Diag,
+            LexerMode LexMode, HashbangMode HashbangAllowed,
+            CommentRetentionMode RetainComments,
+            TriviaRetentionMode TriviaRetention, unsigned Offset,
+            unsigned EndOffset)
+      : TextLexer(true, BufferID, SM, Diag, LexMode, HashbangAllowed,
+                  RetainComments, TriviaRetention) {
+
+    Init(Offset, EndOffset);
+  }
+
+  TextLexer(TextLexer &Parent, LexerState BeginState, LexerState EndState)
+      : TextLexer(true, Parent.BufferID, Parent.SM, Parent.Diag, Parent.LexMode,
+                  Parent.IsHashbangAllowed ? HashbangMode::Allowed
+                                           : HashbangMode::Disallowed,
+                  Parent.RetainComments, Parent.TriviaRetention) {
+
+    assert(BufferID == SM.findBufferContainingLoc(BeginState.loc) &&
+           "state for the wrong buffer");
+    assert(BufferID == SM.findBufferContainingLoc(EndState.loc) &&
+           "state for the wrong buffer");
+
+    unsigned Offset = SM.getLocOffsetInBuffer(BeginState.loc, BufferID);
+    unsigned EndOffset = SM.getLocOffsetInBuffer(EndState.loc, BufferID);
+
+    Init(Offset, EndOffset);
+  }
+
+  Token GetTokenAt(SrcLoc Loc) {
+    assert(BufferID == static_cast<unsigned>(SM.findBufferContainingLoc(Loc)) &&
+           "location from the wrong buffer");
+
+    TextLexer L(BufferID, SM, Diag, LexMode, HashbangMode::Allowed,
+                CommentRetentionMode::None, TriviaRetentionMode::WithoutTrivia);
+
+    // L.RestoreState(LexerState(Loc));
+    // return L.Peek();
+  }
 
   bool IsCurPtrOutOfRange() const {
     return (CurPtr >= BufferStart && CurPtr <= BufferEnd);
   }
 
-  /// Evaluates true when this object stores a diagnostic.
   explicit operator bool() const {
     return (LexerCutOffPoint && CurPtr >= LexerCutOffPoint);
   }
 
   void Lex() {
-
     assert(IsCurPtrOutOfRange() && "Current pointer is out of range!");
+
+    const char *LeadingTriviaStart = CurPtr;
+    if (CurPtr == BufferStart) {
+      if (BufferStart < ContentStart) {
+        size_t BOMLen = ContentStart - BufferStart;
+        assert(BOMLen == 3 && "UTF-8 BOM is 3 bytes");
+        CurPtr += BOMLen;
+      }
+      NextToken.SetAtStartOfLine(true);
+    } else {
+      NextToken.SetAtStartOfLine(false);
+    }
 
     // Remember the start of the token so we can form the text range.
     const char *TokStart = CurPtr;
 
-    // Are we beyound the cut off 
+    // Are we beyound the cut off
     if (!this) {
       return FormToken(TextKind::eof, TokStart);
     }
