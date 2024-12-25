@@ -2,7 +2,7 @@
 #define STONE_COMPILE_COMPILERACTION_H
 
 #include "stone/Compile/CompilerOptions.h"
-
+#include "stone/CodeGen/CodeGenResult.h"
 namespace stone {
 
 class ModuleDecl;
@@ -272,12 +272,16 @@ class EmitCodeAction : public ASTAction {
 
 protected:
   llvm::GlobalVariable *globalHash;
+  llvm::SmallVector<CodeGenResult> CodeGenResults;
+
+  void AddCodeGenResult(CodeGenResult &&result);
 
 public:
   EmitCodeAction(CompilerInstance &instance) : ASTAction(instance) {}
 
 public:
   virtual void ConsumeCodeGen(CodeGenResult *result) {}
+  llvm::ArrayRef<CodeGenResult> GetCodeGenResults() { return CodeGenResults; }
 };
 
 class EmitIRAction final : public EmitCodeAction {
@@ -330,6 +334,7 @@ public:
     return CompilerActionKind::EmitObject;
   }
   void ConsumeCodeGen(CodeGenResult *result) override;
+  void DepCompleted(CompilerAction *dep) override;
 };
 
 // class EmitBCAction final : public EmitCodeAction {

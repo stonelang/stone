@@ -8,7 +8,6 @@
 #include "stone/CodeGen/CodeGenBackend.h"
 #include "stone/CodeGen/CodeGenContext.h"
 #include "stone/CodeGen/CodeGenModule.h"
-#include "stone/CodeGen/CodeGenResult.h"
 #include "stone/Compile/CompilerAction.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerObservation.h"
@@ -185,12 +184,16 @@ bool TypeCheckAction::ExecuteAction() {
   return true;
 }
 
-// bool CompilerInstance::EmitASTAction::ExecuteAction() {
+// bool EmitASTAction::ExecuteAction() {
 //   FrontendStatsTracer actionTracer(instance.GetStats(),
 //                                    GetSelfActionKindString());
 
 //   return true;
 // }
+
+void EmitCodeAction::AddCodeGenResult(CodeGenResult &&result) {
+  CodeGenResults.push_back(std::move(result));
+}
 
 bool EmitIRAction::ExecuteAction() {
   FrontendStatsTracer actionTracer(instance.GetStats(),
@@ -218,6 +221,7 @@ bool EmitIRAction::ExecuteAction() {
                       parallelOutputFilenames, globalHash);
 
     NotifyCodeGenConsumer(&result);
+    AddCodeGenResult(std::move(result));
   }
   if (instance.IsCompileForSourceFile()) {
     instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
@@ -231,6 +235,9 @@ bool EmitIRAction::ExecuteAction() {
           ExecuteAction(primarySourceFile, outputFilename, psps, globalHash);
       NotifyCodeGenConsumer(&result);
     });
+  }
+  if(HasConsumer()){
+     GetConsumer()->DepCompleted(this);
   }
   return true;
 }
@@ -268,18 +275,26 @@ EmitIRAction::ExecuteAction(ModuleDecl *moduleDecl, llvm::StringRef moduleName,
                             ArrayRef<std::string> parallelOutputFilenames,
                             llvm::GlobalVariable *&globalHash) {}
 
-// bool CompilerInstance::EmitObjectAction::ExecuteAction() {
+bool EmitObjectAction::ExecuteAction() {
 
-//   FrontendStatsTracer emitObjectActionTracer(instance.GetStats(),
-//                                              GetSelfActionKindString());
+  FrontendStatsTracer emitObjectActionTracer(instance.GetStats(),
+                                             GetSelfActionKindString());
 
-//   return true;
-// }
+  return true;
+}
 
-// void CompilerInstance::EmitObjectAction::ConsumeEmittedCode(
-//     CodeGenResult *result) {
+void EmitObjectAction::ConsumeCodeGen(CodeGenResult *result) {
 
-//   CodeGenBackend::EmitOutputFile(
-//       instance.GetInvocation().GetCodeGenOptions(), instance.GetASTContext(),
-//       result->GetLLVMModule(), result->GetOutputFilename());
-// }
+  CodeGenBackend::EmitOutputFile(
+      instance.GetInvocation().GetCodeGenOptions(), instance.GetASTContext(),
+      result->GetLLVMModule(), result->GetOutputFilename());
+}
+
+void EmitObjectAction::DepCompleted(CompilerAction *dep) {
+  if (dep) {
+    assert((GetDepActionKind() == dep->GetSelfActionKind()) &&
+           "Invalid dependency!");
+    if (auto emitCodeAction = llvm::cast<EmitCodeAction>(dep)) {
+    }
+  }
+}
