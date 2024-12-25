@@ -240,9 +240,9 @@ CodeGenResult EmitIRAction::ExecuteAction(SourceFile &primarySourceFile,
                                           const PrimaryFileSpecificPaths &sps,
                                           llvm::GlobalVariable *&globalHash) {
 
-  assert(primarySourceFile.HasTypeChecked());
-
-  //"Unable to perform ir-gen on a source-file that was not type-checked.");
+  assert(
+      primarySourceFile.HasTypeChecked() &&
+      "Unable to perform ir-gen on a source-file that was not type-checked!");
 
   CodeGenContext codeGenContext(instance.GetInvocation().GetCodeGenOptions(),
                                 instance.GetASTContext());
