@@ -34,11 +34,11 @@ ERROR(error_open_input_file,none,
 
 
 ERROR(error_invalid_arg_value,none,
-      "invalid value '%1' in '%0'", (StringRef, StringRef))
+      "invalid value '%1' in '%0' ", (StringRef, StringRef))
 
 // Usually, but not always, emitted from the driver
 ERROR(error_two_files_same_name,none,
-      "filename \"%0\" used twice: '%1' and '%2'",
+      "filename \"%0\" used twice: '%1' and '%2' ",
       (StringRef, StringRef, StringRef))
 
 NOTE(note_explain_two_files_same_name,none,

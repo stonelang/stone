@@ -175,12 +175,11 @@ class Diagnostic final : public DiagnosticAllocation<Diagnostic> {
   friend class InFlightDiagnostic;
 
 public:
-  enum class Stage {
+  enum class Stage : uint8_t {
     None = 0,
     Active,
-    Waiting,
+    Tentative,
     Emitted,
-
   };
 
 protected:
@@ -403,12 +402,12 @@ class DiagnosticEngine final {
 
   /// Flush a new diagnostic, which will either be emitted, or added to an
   /// active transaction.
-  void HandleActiveDiagnostic(const Diagnostic *diagnostic);
+  void HandleActiveDiagnostic(Diagnostic *diagnostic);
 
   /// Called when tentative diagnostic is about to be flushed,
   /// to apply any required transformations e.g. copy string arguments
   /// to extend their lifetime.
-  void HandleActiveDiagnosticLater(const Diagnostic *diagnostic);
+  void HandleActiveDiagnosticLater(Diagnostic *diagnostic);
 
   /// Used to emit a diagnostic that is finally fully formed,
   /// ignoring suppression.
@@ -455,6 +454,8 @@ public:
   bool HasClients() const { return Clients.size() > 0; }
 
   SrcMgr &GetSrcMgr() { return SM; }
+
+  bool HasOpenTransactions() const { return TransactionCount > 0; }
 
 public:
   // InFlightDiagnostic Diagnose(DiagID NextDiagID);

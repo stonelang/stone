@@ -222,8 +222,18 @@ void DiagnosticEngine::FlushActiveDiagnostic(bool ForceEmit) {
   ActiveDiagnostic = nullptr;
 }
 
-void DiagnosticEngine::HandleActiveDiagnostic(const Diagnostic *diagnostic) {
-  EmitDiagnostic(diagnostic);
+void DiagnosticEngine::HandleActiveDiagnostic(Diagnostic *diagnostic) {
+  if (!HasOpenTransactions()) {
+    EmitDiagnostic(diagnostic);
+  } else {
+    HandleActiveDiagnosticLater(diagnostic);
+  }
+}
+void DiagnosticEngine::HandleActiveDiagnosticLater(Diagnostic *diagnostic) {
+  diagnostic->SetStage(Diagnostic::Stage::Tentative);
+  // WatitingDiagnostics.emplace_back(diagnostic);
+  // TODO: take a look at onTentativeDiagnosticFlush -- there could be a need to
+  // create CachedDiagnostic
 }
 
 void DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
@@ -245,6 +255,14 @@ void DiagnosticEngine::EmitDiagnostic(const Diagnostic *diagnostic) {
     }
   }
 }
+// void DiagnosticEngine::EmitWaitingDiagnostics() {
+//   for (auto &diagnostic : TentativeDiagnostics) {
+// assert(diagnostic->GetStage() == Diagnostic::Stage::Tentative && "Unable to
+// emit...");
+//     EmitDiagnostic(diagnostic);
+//   }
+//   ClearWaitingDiagnostics();
+// }
 
 void DiagnosticEngine::DiagnosticCompletionCallback(const DiagnosticInfo &DI) {}
 

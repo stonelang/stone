@@ -47,8 +47,7 @@ class DiagnosticArgument final {
   };
 
 public:
-  DiagnosticArgument(llvm::StringRef S)
-      : Kind(DiagnosticArgumentKind::String), StringVal(S) {}
+  DiagnosticArgument() : Kind(DiagnosticArgumentKind::None) {}
 
   DiagnosticArgument(int I)
       : Kind(DiagnosticArgumentKind::Integer), IntegerVal(I) {}
@@ -56,9 +55,13 @@ public:
   DiagnosticArgument(unsigned I)
       : Kind(DiagnosticArgumentKind::Unsigned), UnsignedVal(I) {}
 
+  DiagnosticArgument(llvm::StringRef S)
+      : Kind(DiagnosticArgumentKind::String), StringVal(S) {}
+
   DiagnosticArgument(Identifier I)
       : Kind(DiagnosticArgumentKind::Identifier), IdentifierVal(I) {}
 
+  DiagnosticArgumentKind GetKind() const { return Kind; }
   /// Initializes a diagnostic argument using the underlying type of the
   /// given enum.
   template <

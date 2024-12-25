@@ -9,6 +9,7 @@ set(stone_diag_sources
   DiagnosticClient.cpp
   DiagnosticEngine.cpp
   DiagnosticID.cpp
+  FormatDiagnosticText.cpp
   TextDiagnosticPrinter.cpp
   DiagnosticTextLexer.cpp
   DiagnosticTextParser.cpp

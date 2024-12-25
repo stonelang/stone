@@ -78,10 +78,10 @@ TextDiagnosticPrinterImpl::TextDiagnosticPrinterImpl() {}
 TextDiagnosticPrinterImpl::~TextDiagnosticPrinterImpl() {}
 
 void TextDiagnosticPrinterImpl::HandleDiagnostic(DiagnosticEngine &DE,
-                                                 const DiagnosticInfo &D) {
+                                                 const DiagnosticInfo &DI) {
 
   // Default implementation (Warnings/errors count).
-  // TextDiagnosticPrinter::HandleDiagnostic(SM, DI);
+  TextDiagnosticPrinter::HandleDiagnostic(DE, DI);
 
   // PrintDiagnostic(); if there are certain conditions
 

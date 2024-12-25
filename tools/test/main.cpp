@@ -9,6 +9,53 @@
 
 using namespace stone;
 
+
+
+// struct TextSlice {
+
+// }
+// struct TextState {
+//   unsigned CurArgIndex = 0;
+//   unsigned TotalArgIndex = 0;
+//   llvm::SmallVector<TextSlice> Slices;
+// };
+
+// struct TextParser{
+//   const char *CurPtr;
+//   const char *TailPtr;
+
+//   void Consume() {
+//       CurPtr++;
+//   }
+//   void Parse(const char *CurPtr, const char *TailPtr){
+
+//       wile(CurPtr != TailPtr){
+
+
+//       }
+//   }
+//   void Parse(StringRef Text) {
+//     Parse(Text.begin(), Text.end());
+//   }
+
+
+// };
+
+// struct TextFormatter {
+
+//   void Format(llvm::StringRef Text){
+
+//   }
+//   void Format(TextState ){
+
+//       wile(CurPtr != TailPtr){
+
+
+//       }
+//   }
+// };
+
+
 int main() {
  
   

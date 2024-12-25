@@ -18,16 +18,28 @@
 #include <cstdint>
 #include <cstring>
 #include <limits>
+#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
 
 using namespace stone;
 
+struct TextSlice {
+  tok Kind;
+  llvm::StringRef Text;
+  const DiagnosticArgument *Arg = nullptr;
+  explicit operator bool() const { return !Text.empty(); }
+  TextSlice(tok Kind, llvm::StringRef Text,
+            const DiagnosticArgument *Arg = nullptr)
+      : Kind(Kind), Text(Text), Arg(Arg) {}
+};
 struct DiagnosticTextParser final {
   llvm::raw_ostream &Out;
 
   llvm::ArrayRef<DiagnosticArgument> Args;
+
+  std::deque<TextSlice> Slices;
 
   // Keep track of the args we have processed
   unsigned ArgsIndex = 0;
@@ -98,34 +110,51 @@ struct DiagnosticTextParser final {
   }
 
   void ParsePercent() {
-    assert(PrevTok.IsTick() && " Expecting previous token to be a tick");
+    // assert(PrevTok.IsTick() && " Expecting previous token to be a tick");
+
     assert(CurTok.IsPercent() && "Expecting percent token");
-    // Send the current text to the output
-    // Out << CurTok.GetText();
 
-    llvm::outs() << "here";
+    assert(PeekNext().IsIntegerLiteral() &&
+           "Expecting a integer literal after %");
 
-    /// assert(CurTok.PeekNext().IsIntegerLiteral() && " ")
+    assert((std::stoi(PeekNext().GetText().data()) == ArgsIndex) &&
+           "in-text index must math arg-index");
 
-    // assert(clang::isDigit(CurTok.PeekNext().GetText())
+    Slices.push_back(
+        TextSlice(CurTok.GetKind(), StringRef(), &Args[ArgsIndex]));
+    Consume();
   }
 
   void ParseLParen() {
     assert(CurTok.GetKind() == tok::l_paren && "Expecting left paren");
     // Now, we can consume the token ... what follows is a type
     Consume();
+  }
+  void ParseIdentifier() {
+    assert(CurTok.GetKind() == tok::identifier && "Expecting identifier");
+    Slices.push_back(TextSlice(CurTok.GetKind(), CurTok.GetText()));
+    Consume();
+  }
 
-    // if (CurTok.IsIdentifer()) {
-    //   // This is StringRef, or some builtin type
-    // }
-
-    switch (CurTok.GetKind()) {
-
-    case tok::kw_bool: {
+  void ParseStringLiteral() {
+    assert(CurTok.GetKind() == tok::string_literal && "Expecting identifier");
+    /// The only string literal we have are of the form "'%N'"
+    const char *CurPtr = CurTok.GetText().begin();
+    const char *EndPtr = CurTok.GetText().end();
+    while (CurPtr != EndPtr) {
+      if (*CurPtr == '%') {
+        CurPtr++;
+        assert(clang::isDigit(*CurPtr) && "Expecting a number after '%' ");
+        unsigned IntextIndex = *CurPtr - '0';
+        assert(IntextIndex == ArgsIndex && "in-text index must math arg-index");
+        Slices.push_back(
+            TextSlice(CurTok.GetKind(), StringRef(), &Args[ArgsIndex]));
+        Consume();
+        ++ArgsIndex;
+        return;
+      }
+      CurPtr++;
     }
-    }
-    // Send the current text to the output
-    Out << CurTok.GetText();
   }
 
   void Parse() {
@@ -135,7 +164,6 @@ struct DiagnosticTextParser final {
     }
     while (IsParsing()) {
       switch (CurTok.GetKind()) {
-
       case tok::tick: {
         Consume();
         break;
@@ -148,8 +176,18 @@ struct DiagnosticTextParser final {
         ParseLParen();
         break;
       }
-      case tok::identifier: {
+      case tok::integer_literal: {
+        assert(PrevTok.IsPercent() &&
+               "missing percent before the integer literal!");
         Consume();
+        break;
+      }
+      case tok::string_literal: {
+        ParseStringLiteral();
+        break;
+      }
+      case tok::identifier: {
+        ParseIdentifier();
         break;
       }
       default: {
@@ -166,7 +204,36 @@ void DiagnosticEngine::FormatDiagnosticText(
     llvm::raw_ostream &Out, SrcMgr &SM, StringRef Text,
     ArrayRef<DiagnosticArgument> Args, DiagnosticFormatOptions FormatOpts) {
 
-  DiagnosticTextParser(SM.addMemBufferCopy(Text), SM, Out, Args).Parse();
+  DiagnosticTextParser textParser(SM.addMemBufferCopy(Text), SM, Out, Args);
+  textParser.Parse();
+
+  for (auto slice : textParser.Slices) {
+    if (!slice) {
+      // this is a %
+      assert(!slice.Arg && "percent requires an argument!");
+      switch (slice.Arg->GetKind()) {
+      case DiagnosticArgumentKind::Integer: {
+        Out << slice.Arg->GetAsInteger();
+        break;
+      }
+      case DiagnosticArgumentKind::String: {
+        Out << slice.Arg->GetAsString();
+        break;
+      }
+      }
+    } else {
+      switch (slice.Arg->GetKind()) {
+        // We have text, this is not a percent
+      case DiagnosticArgumentKind::String: {
+        Out << slice.Arg->GetAsString();
+      }
+      }
+    }
+    // Out.write(slice.Text);
+    // if(slice.Kind == tok::identifier && !slice.Arg){
+
+    // }
+  }
 }
 
 void DiagnosticEngine::FormatDiagnosticText(
