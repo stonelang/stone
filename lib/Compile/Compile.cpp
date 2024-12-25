@@ -192,82 +192,81 @@ bool TypeCheckAction::ExecuteAction() {
 //   return true;
 // }
 
-// bool CompilerInstance::EmitIRAction::ExecuteAction() {
-//   FrontendStatsTracer actionTracer(instance.GetStats(),
-//                                    GetSelfActionKindString());
+bool EmitIRAction::ExecuteAction() {
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
 
-//   auto TryNotifyEmitCodeConsumer = [&](CodeGenResult *result) -> void {
-//     if (HasConsumer()) {
-//       if (auto emittedCodeConsumer =
-//               llvm::cast<EmitCodeAction>(GetConsumer())) {
-//         emittedCodeConsumer->ConsumeEmittedCode(result);
-//       }
-//     }
-//   };
-//   if (instance.IsCompileForWholeModule()) {
-//     // Perform whole modufle
-//     const PrimaryFileSpecificPaths psps =
-//         instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+  auto NotifyCodeGenConsumer = [&](CodeGenResult *result) -> void {
+    if (HasConsumer()) {
+      if (auto codeGenConsumer = llvm::cast<EmitCodeAction>(GetConsumer())) {
+        codeGenConsumer->ConsumeCodeGen(result);
+      }
+    }
+  };
+  if (instance.IsCompileForWholeModule()) {
+    // Perform whole modufle
+    const PrimaryFileSpecificPaths psps =
+        instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
 
-//     std::vector<std::string> parallelOutputFilenames =
-//         instance.GetCopyOfOutputFilenames();
+    std::vector<std::string> parallelOutputFilenames =
+        instance.GetCopyOfOutputFilenames();
 
-//     llvm::StringRef outputFilename = psps.outputFilename;
+    llvm::StringRef outputFilename = psps.outputFilename;
 
-//     CodeGenResult result =
-//         ExecuteAction(instance.GetMainModule(), outputFilename, psps,
-//                       parallelOutputFilenames, globalHash);
+    CodeGenResult result =
+        ExecuteAction(instance.GetMainModule(), outputFilename, psps,
+                      parallelOutputFilenames, globalHash);
 
-//     TryNotifyEmitCodeConsumer(&result);
-//   }
-//   if (instance.IsCompileForSourceFile()) {
-//     instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
-//       // Get the paths for the primary source file.
-//       const PrimaryFileSpecificPaths psps =
-//           instance.GetPrimaryFileSpecificPathsForSyntaxFile(primarySourceFile);
+    NotifyCodeGenConsumer(&result);
+  }
+  if (instance.IsCompileForSourceFile()) {
+    instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
+      // Get the paths for the primary source file.
+      const PrimaryFileSpecificPaths psps =
+          instance.GetPrimaryFileSpecificPathsForSyntaxFile(primarySourceFile);
 
-//       llvm::StringRef outputFilename = psps.outputFilename;
+      llvm::StringRef outputFilename = psps.outputFilename;
 
-//       CodeGenResult result =
-//           ExecuteAction(primarySourceFile, outputFilename, psps, globalHash);
-//       TryNotifyEmitCodeConsumer(&result);
-//     });
-//   }
-//   return true;
-// }
+      CodeGenResult result =
+          ExecuteAction(primarySourceFile, outputFilename, psps, globalHash);
+      NotifyCodeGenConsumer(&result);
+    });
+  }
+  return true;
+}
 
-// CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
-//     SourceFile &primarySourceFile, llvm::StringRef moduleName,
-//     const PrimaryFileSpecificPaths &sps, llvm::GlobalVariable *&globalHash) {
+CodeGenResult EmitIRAction::ExecuteAction(SourceFile &primarySourceFile,
+                                          llvm::StringRef moduleName,
+                                          const PrimaryFileSpecificPaths &sps,
+                                          llvm::GlobalVariable *&globalHash) {
 
-//   assert(
-//       primarySourceFile.HasTypeChecked() &&
-//       "Unable to perform ir-gen on a source-file that was not
-//       type-checked.");
+  assert(primarySourceFile.HasTypeChecked());
 
-//   CodeGenContext codeGenContext(instance.GetInvocation().GetCodeGenOptions(),
-//                                 instance.GetASTContext());
+  //"Unable to perform ir-gen on a source-file that was not type-checked.");
 
-//   ModuleNameAndOuptFileName moduleNameAndOuptFileName =
-//       std::make_pair(moduleName, sps.outputFilename);
+  CodeGenContext codeGenContext(instance.GetInvocation().GetCodeGenOptions(),
+                                instance.GetASTContext());
 
-//   CodeGenModule codeGenModule(codeGenContext, nullptr,
-//                               moduleNameAndOuptFileName);
-//   codeGenModule.EmitSourceFile(primarySourceFile);
+  ModuleNameAndOuptFileName moduleNameAndOuptFileName =
+      std::make_pair(moduleName, sps.outputFilename);
 
-//   return CodeGenResult(std::move(codeGenContext.llvmContext),
-//                        std::unique_ptr<llvm::Module>{
-//                            codeGenModule.GetClangCodeGen().ReleaseModule()},
-//                        std::move(codeGenContext.llvmTargetMachine),
-//                        sps.outputFilename, globalHash);
-// }
+  CodeGenModule codeGenModule(codeGenContext, nullptr,
+                              moduleNameAndOuptFileName);
+  codeGenModule.EmitSourceFile(primarySourceFile);
 
-// ///\return the generated module
-// CodeGenResult CompilerInstance::EmitIRAction::ExecuteAction(
-//     ModuleDecl *moduleDecl, llvm::StringRef moduleName,
-//     const PrimaryFileSpecificPaths &sps,
-//     ArrayRef<std::string> parallelOutputFilenames,
-//     llvm::GlobalVariable *&globalHash) {}
+  return CodeGenResult(std::move(codeGenContext.llvmContext),
+                       std::unique_ptr<llvm::Module>{
+                           codeGenModule.GetClangCodeGen().ReleaseModule()},
+                       std::move(codeGenContext.llvmTargetMachine),
+                       sps.outputFilename, globalHash);
+}
+
+///\return the generated module
+CodeGenResult
+EmitIRAction::ExecuteAction(ModuleDecl *moduleDecl, llvm::StringRef moduleName,
+                            const PrimaryFileSpecificPaths &sps,
+                            ArrayRef<std::string> parallelOutputFilenames,
+                            llvm::GlobalVariable *&globalHash) {}
 
 // bool CompilerInstance::EmitObjectAction::ExecuteAction() {
 

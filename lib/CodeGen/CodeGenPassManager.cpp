@@ -16,6 +16,8 @@ CodeGenPassManager::CodeGenPassManager(const CodeGenOptions &codeGenOpts,
   mpm = pb.buildPerModuleDefaultPipeline(codeGenOpts.GetOptimizationLevel());
 }
 
+CodeGenPassManager::~CodeGenPassManager() {}
+
 void CodeGenPassManager::RunPasses() {
   GetPassManager().run(*llvmModule, GetModuleAnalysisManager());
 }

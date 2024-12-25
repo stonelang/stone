@@ -187,6 +187,10 @@ public:
 class ASTAction : public CompilerAction {
 public:
   ASTAction(CompilerInstance &instance) : CompilerAction(instance) {}
+
+public:
+  virtual void ConsumeDecl(Decl *result) {}
+  virtual void ConsumeSourceFile(SourceFile *result) {}
 };
 
 class ParseAction : public ASTAction {
@@ -198,9 +202,6 @@ public:
   CompilerActionKind GetSelfActionKind() const override {
     return CompilerActionKind::Parse;
   }
-
-  virtual void ConsumeDecl(Decl *result) {}
-  virtual void ConsumeSourceFile(SourceFile *result) {}
 };
 
 // class EmitParseAction final : public ASTAction {
@@ -279,62 +280,57 @@ public:
   virtual void ConsumeCodeGen(CodeGenResult *result) {}
 };
 
-// class EmitIRAction final : public EmitCodeAction {
+class EmitIRAction final : public EmitCodeAction {
 
-//   ///\return the generated module
-//   CodeGenResult ExecuteAction(SourceFile &primarySourceFile,
-//                               llvm::StringRef moduleName,
-//                               const PrimaryFileSpecificPaths &sps,
-//                               llvm::GlobalVariable *&globalHash);
+  ///\return the generated module
+  CodeGenResult ExecuteAction(SourceFile &primarySourceFile,
+                              llvm::StringRef moduleName,
+                              const PrimaryFileSpecificPaths &sps,
+                              llvm::GlobalVariable *&globalHash);
 
-//   ///\return the generated module
-//   CodeGenResult ExecuteAction(ModuleDecl *moduleDecl,
-//                               llvm::StringRef moduleName,
-//                               const PrimaryFileSpecificPaths &sps,
-//                               ArrayRef<std::string>
-//                               parallelOutputFilenames, llvm::GlobalVariable
-//                               *&globalHash);
+  ///\return the generated module
+  CodeGenResult ExecuteAction(ModuleDecl *moduleDecl,
+                              llvm::StringRef moduleName,
+                              const PrimaryFileSpecificPaths &sps,
+                              ArrayRef<std::string> parallelOutputFilenames,
+                              llvm::GlobalVariable *&globalHash);
 
-// public:
-//   EmitIRAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
+public:
+  EmitIRAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
 
-// public:
-//   bool ExecuteAction() override;
+public:
+  bool ExecuteAction() override;
 
-// public:
-//   CompilerActionKind GetDepActionKind() const override {
-//     return CompilerActionKind::TypeCheck;
-//   }
-//   CompilerActionKind GetSelfActionKind() const override {
-//     return CompilerActionKind::EmitIR;
-//   }
+public:
+  CompilerActionKind GetDepActionKind() const override {
+    return CompilerActionKind::TypeCheck;
+  }
+  CompilerActionKind GetSelfActionKind() const override {
+    return CompilerActionKind::EmitIR;
+  }
 
-// public:
-//   CodeGenResult *GetCodeGenResult() { return result; }
+public:
+  static bool classof(const CompilerAction *action) {
+    return action->IsEmitIRAction();
+  }
+};
 
-// public:
-//   static bool classof(const CompilerAction *action) {
-//     return action->IsEmitIRAction();
-//   }
-// };
+class EmitObjectAction final : public EmitCodeAction {
+public:
+  EmitObjectAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
 
-// class EmitObjectAction final : public EmitCodeAction {
-// public:
-//   EmitObjectAction(CompilerInstance &instance) : EmitCodeAction(instance)
-//   {}
+public:
+  bool ExecuteAction() override;
 
-// public:
-//   bool ExecuteAction() override;
-
-// public:
-//   CompilerActionKind GetDepActionKind() const override {
-//     return CompilerActionKind::EmitIR;
-//   }
-//   CompilerActionKind GetSelfActionKind() const override {
-//     return CompilerActionKind::EmitObject;
-//   }
-//   void ConsumeEmittedCode(CodeGenResult *result) override;
-// };
+public:
+  CompilerActionKind GetDepActionKind() const override {
+    return CompilerActionKind::EmitIR;
+  }
+  CompilerActionKind GetSelfActionKind() const override {
+    return CompilerActionKind::EmitObject;
+  }
+  void ConsumeCodeGen(CodeGenResult *result) override;
+};
 
 // class EmitBCAction final : public EmitCodeAction {
 // public:
