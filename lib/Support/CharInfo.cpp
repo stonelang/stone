@@ -127,7 +127,7 @@ uint32_t stone::charinfo::ValidateUTF8CharacterAndAdvance(const char *&Ptr,
 
 bool stone::charinfo::IsValidIdentifierContinuationCodePoint(uint32_t c) {
 
-  ///TODO: 
+  /// TODO:
   // if (c < 0x80) {
   //   return clang::isAsciiIdentifierContinue(c, /*dollar*/ true);
   // }

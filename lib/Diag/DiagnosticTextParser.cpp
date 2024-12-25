@@ -64,7 +64,7 @@ struct DiagnosticTextParser final {
   llvm::StringRef TrailingTrivia;
 
   DiagnosticTextParser(unsigned BufferID, SrcMgr &SM, llvm::raw_ostream &Out,
-                       ArrayRef<DiagnosticArgument> Args)
+             ArrayRef<DiagnosticArgument> Args)
       : Lexer(BufferID, SM, llvm::errs()), Out(Out), Args(Args) {}
 
   bool IsEOF() { return CurTok.GetKind() == tok::eof; }
@@ -211,6 +211,7 @@ void DiagnosticEngine::FormatDiagnosticText(
     if (!slice) {
       // this is a %
       assert(!slice.Arg && "percent requires an argument!");
+
       switch (slice.Arg->GetKind()) {
       case DiagnosticArgumentKind::Integer: {
         Out << slice.Arg->GetAsInteger();
