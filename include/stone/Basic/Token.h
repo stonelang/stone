@@ -240,6 +240,7 @@ public:
   bool IsStringLiteral() const { return kind == tok::integer_literal; }
   bool IsFloatLiteral() const { return kind == tok::integer_literal; }
   bool IsTick() const { return kind == tok::tick; }
+  bool IsEOF() const { return kind == tok::eof; }
 
   bool IsTypeChunk() const { return (IsStar() || IsAmp()); }
 

@@ -51,11 +51,6 @@ struct TextLexer {
     Allowed,
   };
 
-  enum class LexerMode {
-    Stone,
-    StoneInterface,
-  };
-
   /// Kinds of conflict marker which the lexer might encounter.
   enum class ConflictMarkerKind {
     /// A normal or diff3 conflict marker, initiated by at least 7 "<"s,
@@ -83,6 +78,16 @@ struct TextLexer {
     SrcLoc loc;
     llvm::StringRef leadingTrivia;
     friend class Lexer;
+  };
+
+  /// Nul character meaning kind.
+  enum class NullCharacterKind {
+    /// String buffer terminator.
+    BufferEnd,
+    /// Embedded nul character.
+    Embedded,
+    /// Code completion marker.
+    CodeCompletion
   };
 
   const unsigned BufferID;
@@ -118,11 +123,6 @@ struct TextLexer {
 
   Token NextToken;
 
-  /// The kind of source we're lexing. This either enables special behavior for
-  /// module interfaces, or enables things like the 'sil' keyword if lexing
-  /// a .sil file.
-  const LexerMode LexMode;
-
   /// True if we should skip past a `#!` line at the start of the file.
   const bool IsHashbangAllowed;
 
@@ -153,10 +153,10 @@ struct TextLexer {
   static constexpr unsigned extraIndentationSize = 4;
 
   TextLexer(bool primary, unsigned BufferID, const SrcMgr &SM,
-            llvm::raw_ostream &Diag, LexerMode LexMode,
-            HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
+            llvm::raw_ostream &Diag, HashbangMode HashbangAllowed,
+            CommentRetentionMode RetainComments,
             TriviaRetentionMode TriviaRetention)
-      : BufferID(BufferID), SM(SM), Diag(Diag), LexMode(LexMode),
+      : BufferID(BufferID), SM(SM), Diag(Diag),
         IsHashbangAllowed(HashbangAllowed == HashbangMode::Allowed),
         RetainComments(RetainComments), TriviaRetention(TriviaRetention) {}
 
@@ -197,11 +197,10 @@ struct TextLexer {
   }
 
   TextLexer(unsigned BufferID, const stone::SrcMgr &SM, llvm::raw_ostream &Diag,
-            LexerMode LexMode, HashbangMode HashbangAllowed,
-            CommentRetentionMode RetainComments,
+            HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
             TriviaRetentionMode TriviaRetention)
-      : TextLexer(true, BufferID, SM, Diag, LexMode, HashbangAllowed,
-                  RetainComments, TriviaRetention) {
+      : TextLexer(true, BufferID, SM, Diag, HashbangAllowed, RetainComments,
+                  TriviaRetention) {
 
     unsigned EndOffset = SM.getRangeForBuffer(BufferID).getByteLength();
 
@@ -209,23 +208,22 @@ struct TextLexer {
   }
 
   TextLexer(unsigned BufferID, const stone::SrcMgr &SM, llvm::raw_ostream &Diag)
-      : TextLexer(BufferID, SM, Diag, LexerMode::Stone,
-                  HashbangMode::Disallowed, CommentRetentionMode::None,
+      : TextLexer(BufferID, SM, Diag, HashbangMode::Disallowed,
+                  CommentRetentionMode::None,
                   TriviaRetentionMode::WithoutTrivia) {}
 
   TextLexer(unsigned BufferID, const stone::SrcMgr &SM, llvm::raw_ostream &Diag,
-            LexerMode LexMode, HashbangMode HashbangAllowed,
-            CommentRetentionMode RetainComments,
+            HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
             TriviaRetentionMode TriviaRetention, unsigned Offset,
             unsigned EndOffset)
-      : TextLexer(true, BufferID, SM, Diag, LexMode, HashbangAllowed,
-                  RetainComments, TriviaRetention) {
+      : TextLexer(true, BufferID, SM, Diag, HashbangAllowed, RetainComments,
+                  TriviaRetention) {
 
     Init(Offset, EndOffset);
   }
 
   TextLexer(TextLexer &Parent, LexerState BeginState, LexerState EndState)
-      : TextLexer(true, Parent.BufferID, Parent.SM, Parent.Diag, Parent.LexMode,
+      : TextLexer(true, Parent.BufferID, Parent.SM, Parent.Diag,
                   Parent.IsHashbangAllowed ? HashbangMode::Allowed
                                            : HashbangMode::Disallowed,
                   Parent.RetainComments, Parent.TriviaRetention) {
@@ -244,9 +242,6 @@ struct TextLexer {
   /// Returns true if this lexer will produce a code completion token.
   bool IsCodeCompletion() const { return CodeCompletionPtr != nullptr; }
 
-  /// Whether we are lexing a Swift interface file.
-  bool IsStoneInterface() const { return LexMode == LexerMode::StoneInterface; }
-
   /// Lex a token. If \c TriviaRetentionMode is \c WithTrivia, passed pointers
   /// to trivias are populated.
   void Lex(Token &Result, llvm::StringRef &LeadingTriviaResult,
@@ -256,8 +251,9 @@ struct TextLexer {
       LeadingTriviaResult = LeadingTrivia;
       TrailingTriviaResult = TrailingTrivia;
     }
-    if (Result.IsNot(tok::eof))
+    if (!Result.IsEOF()) {
       Lex();
+    }
   }
 
   void Lex(Token &Result) {
@@ -277,15 +273,14 @@ struct TextLexer {
     assert(BufferID == static_cast<unsigned>(SM.findBufferContainingLoc(Loc)) &&
            "location from the wrong buffer");
 
-    TextLexer L(BufferID, SM, Diag, LexMode, HashbangMode::Allowed,
+    TextLexer L(BufferID, SM, Diag, HashbangMode::Allowed,
                 CommentRetentionMode::None, TriviaRetentionMode::WithoutTrivia);
 
     // L.RestoreState(LexerState(Loc));
     // return L.Peek();
   }
 
-
-// Cut off lexing at the current position. The next token to be lexed will
+  // Cut off lexing at the current position. The next token to be lexed will
   /// be an EOF token, even if there is still source code to be lexed.
   /// The current and next token (returned by \c Peek ) are not
   /// modified. The token after \c NextToken will be the EOF token.
@@ -315,8 +310,7 @@ struct TextLexer {
 
   /// Peek - Return the next token to be returned by Lex without
   /// actually lexing it.
-  const Token &Peek() const { return NextToken; }
-
+  const Token &PeekNext() const { return NextToken; }
 
   bool IsCurPtrOutOfRange() const {
     return (CurPtr >= BufferStart && CurPtr <= BufferEnd);
@@ -325,6 +319,72 @@ struct TextLexer {
   explicit operator bool() const {
     return (LexerCutOffPoint && CurPtr >= LexerCutOffPoint);
   }
+
+  void FormToken(TextKind Kind, const char *TokStart) {
+    assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
+           "Current pointer out of range!");
+  }
+  void FormEscapedIdentifierToken(const char *TokStart);
+  void FormStringLiteralToken(const char *TokStart, bool IsMultilineString,
+                              unsigned CustomDelimiterLen);
+
+  /// Advance to the end of the line.
+  /// If EatNewLine is true, CurPtr will be at end of newline character.
+  /// Otherwise, CurPtr will be at newline character.
+  void SkipToEndOfLine(bool EatNewline);
+
+  /// Skip to the end of the line of a // comment.
+  void SkipSlashSlashComment(bool EatNewline);
+
+  /// Skip a #! hashbang line.
+  void SkipHashbang(bool EatNewline);
+
+  void SkipSlashStarComment();
+
+  void LexHash();
+  void LexIdentifier();
+  void LexDollarIdent();
+  void LexOperatorIdentifier();
+  void LexHexNumber();
+  void LexNumber();
+
+  /// Skip over trivia and return characters that were skipped over in a \c
+  /// StringRef. \p AllTriviaStart determines the start of the trivia. In nearly
+  /// all cases, this should be \c CurPtr. If other trivia has already been
+  /// skipped over (like a BOM), this can be used to point to the start of the
+  /// BOM. The returned \c StringRef will always start at \p AllTriviaStart.
+  llvm::StringRef LexTrivia(bool IsForTrailingTrivia,
+                            const char *AllTriviaStart);
+  static unsigned LexUnicodeEscape(const char *&CurPtr, TextLexer *Diags);
+
+  unsigned LexCharacter(const char *&CurPtr, char StopQuote,
+                        bool EmitDiagnostics, bool IsMultilineString = false,
+                        unsigned CustomDelimiterLen = 0);
+  void LexStringLiteral(unsigned CustomDelimiterLen = 0);
+  void LexEscapedIdentifier();
+
+  void LexRegexLiteral(const char *TokStart);
+
+  void TryLexEditorPlaceholder();
+  const char *TindEndOfCurlyQuoteStringLiteral(const char *,
+                                               bool EmitDiagnostics);
+
+  /// Try to lex conflict markers by checking for the presence of the start and
+  /// end of the marker in diff3 or Perforce style respectively.
+  bool TryLexConflictMarker(bool EatNewline);
+
+  /// Returns it should be tokenize.
+  bool LexAlien(bool EmitDiagnosticsIfToken);
+
+  NullCharacterKind GetNullCharacterKind(const char *Ptr) const;
+
+  /// Emit diagnostics for single-quote string and suggest replacement
+  /// with double-quoted equivalent.
+  ///
+  /// Or, if we're in strawperson mode, we will emit a custom
+  /// error message instead, determined by the Swift library.
+  void DiagnoseSingleQuoteStringLiteral(const char *TokStart,
+                                        const char *TokEnd);
 
   void Lex() {
     assert(IsCurPtrOutOfRange() && "Current pointer is out of range!");
@@ -348,10 +408,6 @@ struct TextLexer {
     if (!this) {
       return FormToken(TextKind::eof, TokStart);
     }
-  }
-  void FormToken(TextKind Kind, const char *TokStart) {
-    assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
-           "Current pointer out of range!");
   }
 };
 
