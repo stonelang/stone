@@ -1,5 +1,3 @@
-
-
 #include "clang/Basic/CharInfo.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/SmallVector.h"
@@ -9,6 +7,7 @@
 #include "llvm/Support/CrashRecoveryContext.h"
 #include "llvm/Support/Unicode.h"
 #include "llvm/Support/raw_ostream.h"
+
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
@@ -19,7 +18,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
 
 class TextToken {
   enum Kind : unsigned {

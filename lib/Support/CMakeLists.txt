@@ -18,6 +18,7 @@ list(REMOVE_ITEM LLVM_COMMON_DEPENDS stone-tablegen-targets)
 set(stone_support_sources
   InputFile.cpp
   Statistics.cpp
+  CharInfo.cpp
   Options.cpp
   Confusable.cpp
 
