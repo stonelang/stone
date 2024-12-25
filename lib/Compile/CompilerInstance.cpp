@@ -5,6 +5,7 @@
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
 #include "stone/Compile/Compile.h"
+#include "stone/Compile/CompilerAction.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Compile/CompilerObservation.h"
@@ -34,11 +35,11 @@ bool CompilerInstance::Setup() {
   return true;
 }
 
-CompilerActionKind CompilerInstance::CompilerAction::GetPrimaryActionKind() {
+CompilerActionKind CompilerAction::GetPrimaryActionKind() {
   return instance.GetPrimaryActionKind();
 }
 
-bool CompilerInstance::CompilerAction::SetupAction() {
+bool CompilerAction::SetupAction() {
   assert(HasSelfActionKind());
   if (HasDepActionKind()) {
     auto dep = instance.ConstructAction(GetDepActionKind());
@@ -69,11 +70,11 @@ bool CompilerInstance::ExecuteAction(CompilerAction &action) {
   return action.FinishAction();
 }
 
-std::unique_ptr<CompilerInstance::CompilerAction>
+std::unique_ptr<CompilerAction>
 CompilerInstance::ConstructAction(CompilerActionKind kind) {
   switch (kind) {
   case CompilerActionKind::PrintHelp:
-    return std::make_unique<CompilerInstance::PrintHelpAction>(*this);
+    return std::make_unique<PrintHelpAction>(*this);
     // case CompilerActionKind::PrintHelpHidden:
     //   return
     //   std::make_unique<CompilerInstance::PrintHelpHiddenAction>(*this);

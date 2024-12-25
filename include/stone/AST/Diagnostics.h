@@ -523,7 +523,7 @@ public:
     return CharSrcRange(SM, Start, End);
   }
 
-  DiagnosticEngine* GetDiags() const { return Engine;}
+  DiagnosticEngine *GetDiags() const { return Engine; }
   /// Flush the active diagnostic to the diagnostic output engine.
   void FlushActiveDiagnostic();
 

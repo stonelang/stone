@@ -16,7 +16,6 @@ class CompilerInstance;
 class PrimaryFileSpecificPaths;
 class CodeGenResult;
 
-
 /// \return true if compilie is successful
 bool PerformFrontend(CompilerInstance &instance);
 

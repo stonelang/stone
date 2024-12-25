@@ -8,6 +8,7 @@
 #include "stone/CodeGen/CodeGenContext.h"
 #include "stone/CodeGen/CodeGenModule.h"
 #include "stone/CodeGen/CodeGenResult.h"
+#include "stone/Compile/CompilerAction.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Parse/CodeCompletionCallbacks.h"
@@ -82,62 +83,59 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   return FinishCompile();
 }
 
-bool CompilerInstance::PrintHelpAction::ExecuteAction() {
+bool PrintHelpAction::ExecuteAction() {
   assert(GetSelfActionKind() == GetPrimaryActionKind() &&
          "PrintHelpAction has to be the PrimaryAction!");
 
   instance.GetInvocation().GetCompilerOptions().PrintHelp();
   return true;
 }
-bool CompilerInstance::PrintHelpHiddenAction::ExecuteAction() {
+bool PrintHelpHiddenAction::ExecuteAction() {
   assert(GetSelfActionKind() == GetPrimaryActionKind() &&
          "PrintHelpHiddenAction has to be the PrimaryAction!");
 
   instance.GetInvocation().GetCompilerOptions().PrintHelp(true);
   return true;
 }
-bool CompilerInstance::PrintVersionAction::ExecuteAction() {
+bool PrintVersionAction::ExecuteAction() {
   assert(GetSelfActionKind() == GetPrimaryActionKind() &&
          "PrintVersionAction has to be the PrimaryAction!");
 
   return true;
 }
 
-bool CompilerInstance::PrintFeatureAction::ExecuteAction() {
+bool PrintFeatureAction::ExecuteAction() {
   assert(GetSelfActionKind() == GetPrimaryActionKind() &&
          "PrintFeatureAction has to be the PrimaryAction!");
 
   return true;
 }
 
-bool CompilerInstance::ParseAction::ExecuteAction() {
+// bool CompilerInstance::ParseAction::ExecuteAction() {
 
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
+//   // FrontendStatsTracer actionTracer(instance.GetStats(),
+//   //                                  GetSelfActionKindString());
 
-  CodeCompletionCallbacks *codeCompletionCallbacks = nullptr;
-  if (instance.HasObservation()) {
-    codeCompletionCallbacks =
-        instance.GetObservation()->GetCodeCompletionCallbacks();
-  }
+//   CodeCompletionCallbacks *codeCompletionCallbacks =
+//       instance.GetObservation()->GetCodeCompletionCallbacks();
 
-  auto PerformParse = [&](CompilerInstance &instance,
-                          SourceFile &sourceFile) -> bool {
-    return Parser(sourceFile, instance.GetASTContext()).ParseTopLevelDecls();
-  };
+//   auto PerformParse = [&](CompilerInstance &instance,
+//                           SourceFile &sourceFile) -> bool {
+//     return Parser(sourceFile, GetASTContext()).ParseTopLevelDecls();
+//   };
 
-  instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-    if (!PerformParse(instance, sourceFile)) {
-      return false;
-    }
-    sourceFile.SetParsedStage();
-    if (codeCompletionCallbacks) {
-      codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
-    }
-  });
+//   instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+//     if (!PerformParse(instance, sourceFile)) {
+//       return false;
+//     }
+//     sourceFile.SetParsedStage();
+//     if (instance.HasObservation()) {
+//       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
+//     }
+//   });
 
-  return true;
-}
+//   return true;
+// }
 // bool CompilerInstance::EmitParseAction::ExecuteAction() {
 //   FrontendStatsTracer actionTracer(instance.GetStats(),
 //                                    GetSelfActionKindString());

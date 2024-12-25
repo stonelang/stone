@@ -145,6 +145,7 @@ LITERAL(regex_literal)
 ACTIVE_DECL_KEYWORD(interface)
 ACTIVE_DECL_KEYWORD(enum)
 ACTIVE_DECL_KEYWORD(struct)
+ACTIVE_DECL_KEYWORD(this) // move to expr_decl 
 ACTIVE_DECL_KEYWORD(private)
 ACTIVE_DECL_KEYWORD(internal)
 ACTIVE_DECL_KEYWORD(public)
@@ -161,7 +162,7 @@ ACTIVE_DECL_KEYWORD(trust)
 ACTIVE_DECL_KEYWORD(delete)
 ACTIVE_DECL_KEYWORD(operator)
 ACTIVE_DECL_KEYWORD(fun)
-
+ACTIVE_DECL_KEYWORD(bool)
 
 ACTIVE_DECL_KEYWORD(auto)
 ACTIVE_DECL_KEYWORD(void)
@@ -230,7 +231,7 @@ EXPR_KEYWORD(false)
 EXPR_KEYWORD(true)
 //EXPR_KEYWORD(is)
 EXPR_KEYWORD(null)
-EXPR_KEYWORD(this)
+
 
 
 // Pattern keywords.
@@ -265,6 +266,7 @@ PUNCTUATOR(amp, "&")
 PUNCTUATOR(amp_prefix, "&") //TODO: remove 
 PUNCTUATOR(arrow, "->")
 PUNCTUATOR(backtick, "`")
+PUNCTUATOR(tick, "'")
 PUNCTUATOR(backslash, "\\")
 PUNCTUATOR(slash,      "/")
 PUNCTUATOR(exclaim, "!") // if left-bound
@@ -279,6 +281,8 @@ PUNCTUATOR(minusequal,  "-=")
 PUNCTUATOR(plus,         "+")
 PUNCTUATOR(doubleplus,   "++")
 PUNCTUATOR(plusequal,    "+=")
+PUNCTUATOR(percent,      "%")
+
 
 // Keywords prefixed with a '#'.  "if" becomes "tok::pound_if".
 POUND_KEYWORD(if)

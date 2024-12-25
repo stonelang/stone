@@ -211,6 +211,7 @@ public:
   bool IsAmp() const { return kind == tok::amp; }
   bool IsArrow() const { return kind == tok::arrow; }
   bool IsBackTick() const { return kind == tok::backtick; }
+  bool IsTick() const { return kind == tok::tick; }
   bool IsExcliam() const { return kind == tok::exclaim; }
   bool IsDoubleColon() const { return kind == tok::doublecolon; }
   bool IsTilde() const { return kind == tok::tilde; }
@@ -230,7 +231,16 @@ public:
   bool IsRBrace() const { return kind == tok::r_brace; }
   bool IsLSquare() const { return kind == tok::l_square; }
   bool IsRSquare() const { return kind == tok::r_square; }
-
+  bool IsLast() const { return kind == tok::LAST; }
+  bool IsBool() const { return kind == tok::kw_bool; }
+  bool IsFalse() const { return kind == tok::kw_false; }
+  bool IsTrue() const { return kind == tok::kw_true; }
+  bool IsIntegerLiteral() const { return kind == tok::integer_literal; }
+  bool IsStringLiteral() const { return kind == tok::integer_literal; }
+  bool IsFloatLiteral() const { return kind == tok::integer_literal; }
+  bool IsEOF() const { return kind == tok::eof; }
+  bool IsNull() const { return kind == tok::kw_null; }
+  bool IsThis() const { return kind == tok::kw_this; }
   bool IsTypeChunk() const { return (IsStar() || IsAmp()); }
 
   /// True if the string literal token is multiline.

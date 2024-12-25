@@ -1,10 +1,10 @@
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/AST/DiagnosticsCompile.h"
+#include "stone/Compile/Compile.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerOptionsConverter.h"
-#include "stone/Parse/CodeCompletionCallbacks.h"
 #include "stone/Compile/Frontend.h"
-#include "stone/Compile/Compile.h"
+#include "stone/Parse/CodeCompletionCallbacks.h"
 
 #include "stone/Strings.h"
 #include "stone/Support/Options.h"
