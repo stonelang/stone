@@ -42,7 +42,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   assert(invocation.GetCompilerOptions().HasMainExecutableName() &&
          "Did not find an executable name!");
 
-  if(args.empty()){
+  if (args.empty()) {
     invocation.GetDiags().diagnose(SrcLoc(), diag::error_no_input_files);
     return FinishCompile(Status::Error());
   }

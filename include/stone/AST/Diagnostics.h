@@ -185,6 +185,9 @@ struct DiagnosticInfo final {
   /// This is a note which has a parent error or warning
   bool IsChildNote = false;
 
+  /// Evaluates true when this object stores a diagnostic.
+  explicit operator bool() const { return !FormatString.empty(); }
+
   DiagnosticInfo() {}
 
   DiagnosticInfo(DiagID ID, SrcLoc Loc, DiagnosticKind Kind,
@@ -199,6 +202,11 @@ struct DiagnosticInfo final {
         BufferIndirectlyCausingDiagnostic(BufferIndirectlyCausingDiagnostic),
         ChildDiagnosticInfo(ChildDiagnosticInfo), Ranges(Ranges),
         FixIts(FixIts), IsChildNote(IsChildNote) {}
+
+  bool IsNote() const { return Kind == DiagnosticKind::Note; }
+  bool IsWarning() const { return Kind == DiagnosticKind::Warning; }
+  bool IsRemark() const { return Kind == DiagnosticKind::Remark; }
+  bool IsError() const { return Kind == DiagnosticKind::Error; }
 };
 
 /// Variant type that holds a single diagnostic argument of a known
@@ -503,8 +511,11 @@ public:
 
   ~InFlightDiagnostic() {
     if (IsActive)
-      flush();
+      FlushActiveDiagnostic();
   }
+
+  /// Evaluates true when this object stores a diagnostic.
+  explicit operator bool() const { return Engine != nullptr; }
 
 public:
   CharSrcRange toCharSrcRange(SrcMgr &SM, SrcRange SR);
@@ -512,8 +523,9 @@ public:
     return CharSrcRange(SM, Start, End);
   }
 
+  DiagnosticEngine* GetDiags() const { return Engine;}
   /// Flush the active diagnostic to the diagnostic output engine.
-  void flush();
+  void FlushActiveDiagnostic();
 
   /// Prevent the diagnostic from behaving more severely than \p limit. For
   /// instance, if \c DiagnosticBehavior::Warning is passed, an error will be
@@ -720,7 +732,28 @@ private:
                                        ArrayRef<DiagnosticArgument> Args);
 
 public:
-  InFlightDiagnostic &AddArg(bool val);
+  friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
+                                              int I) {
+    return ID;
+  }
+
+  friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
+                                              unsigned I) {
+    return ID;
+  }
+  friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
+                                              llvm::StringRef Text) {
+    return ID;
+  }
+  friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
+                                              bool B) {
+    return ID;
+  }
+
+  friend const InFlightDiagnostic &operator<<(const InFlightDiagnostic &ID,
+                                              const FixIt &fixIt) {
+    return ID;
+  }
 };
 
 /// Class to track, map, and remap diagnostic severity and fatality
@@ -1617,7 +1650,7 @@ inline void
 DiagnosticEngine::diagnoseWithNotes(InFlightDiagnostic parentDiag,
                                     llvm::function_ref<void(void)> builder) {
   CompoundDiagnosticTransaction transaction(*this);
-  parentDiag.flush();
+  parentDiag.FlushActiveDiagnostic();
   builder();
 }
 

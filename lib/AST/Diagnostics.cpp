@@ -264,13 +264,6 @@ InFlightDiagnostic::fixItReplaceChars(SrcLoc Start, SrcLoc End,
   return *this;
 }
 
-InFlightDiagnostic &InFlightDiagnostic::AddArg(bool val) {
-  if (Engine) {
-    Engine->getActiveDiagnostic().addArg(DiagnosticArgument(val));
-    return *this;
-  }
-}
-
 // SrcLoc
 // DiagnosticEngine::getBestAddImportFixItLoc(const Decl *Member,
 //                                            SourceFile *sourceFile) const {
@@ -438,7 +431,7 @@ InFlightDiagnostic &InFlightDiagnostic::wrapIn(const Diagnostic &wrapper) {
   return *this;
 }
 
-void InFlightDiagnostic::flush() {
+void InFlightDiagnostic::FlushActiveDiagnostic() {
   if (!IsActive) {
     return;
   }
