@@ -64,7 +64,7 @@ struct DiagnosticTextParser final {
   llvm::StringRef TrailingTrivia;
 
   DiagnosticTextParser(unsigned BufferID, SrcMgr &SM, llvm::raw_ostream &Out,
-             ArrayRef<DiagnosticArgument> Args)
+                       ArrayRef<DiagnosticArgument> Args)
       : Lexer(BufferID, SM, llvm::errs()), Out(Out), Args(Args) {}
 
   bool IsEOF() { return CurTok.GetKind() == tok::eof; }
