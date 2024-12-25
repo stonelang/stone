@@ -241,6 +241,38 @@ struct TextLexer {
     Init(Offset, EndOffset);
   }
 
+  /// Returns true if this lexer will produce a code completion token.
+  bool IsCodeCompletion() const { return CodeCompletionPtr != nullptr; }
+
+  /// Whether we are lexing a Swift interface file.
+  bool IsStoneInterface() const { return LexMode == LexerMode::StoneInterface; }
+
+  /// Lex a token. If \c TriviaRetentionMode is \c WithTrivia, passed pointers
+  /// to trivias are populated.
+  void Lex(Token &Result, llvm::StringRef &LeadingTriviaResult,
+           llvm::StringRef &TrailingTriviaResult) {
+    Result = NextToken;
+    if (TriviaRetention == TriviaRetentionMode::WithTrivia) {
+      LeadingTriviaResult = LeadingTrivia;
+      TrailingTriviaResult = TrailingTrivia;
+    }
+    if (Result.IsNot(tok::eof))
+      Lex();
+  }
+
+  void Lex(Token &Result) {
+    llvm::StringRef LeadingTrivia, TrailingTrivia;
+    Lex(Result, LeadingTrivia, TrailingTrivia);
+  }
+
+  /// Reset the lexer's buffer pointer to \p Offset bytes after the buffer
+  /// start.
+  void ResetToOffset(size_t Offset) {
+    assert(BufferStart + Offset <= BufferEnd && "Offset after buffer end");
+    CurPtr = BufferStart + Offset;
+    Lex();
+  }
+
   Token GetTokenAt(SrcLoc Loc) {
     assert(BufferID == static_cast<unsigned>(SM.findBufferContainingLoc(Loc)) &&
            "location from the wrong buffer");
@@ -251,6 +283,40 @@ struct TextLexer {
     // L.RestoreState(LexerState(Loc));
     // return L.Peek();
   }
+
+
+// Cut off lexing at the current position. The next token to be lexed will
+  /// be an EOF token, even if there is still source code to be lexed.
+  /// The current and next token (returned by \c Peek ) are not
+  /// modified. The token after \c NextToken will be the EOF token.
+  void CutOffLexing() {
+    // If we already have a cut off point, don't push it further towards the
+    // back.
+    if (LexerCutOffPoint == nullptr || LexerCutOffPoint >= CurPtr) {
+      LexerCutOffPoint = CurPtr;
+    }
+  }
+
+  /// If a lexer cut off point has been set returns the offset in the buffer at
+  /// which lexing is being cut off.
+  std::optional<size_t> LexingCutOffOffset() const {
+    if (LexerCutOffPoint) {
+      return LexerCutOffPoint - BufferStart;
+    } else {
+      return std::nullopt;
+    }
+  }
+
+  bool IsKeepingComments() const {
+    return RetainComments == CommentRetentionMode::ReturnAsTokens;
+  }
+
+  unsigned GetBufferID() const { return BufferID; }
+
+  /// Peek - Return the next token to be returned by Lex without
+  /// actually lexing it.
+  const Token &Peek() const { return NextToken; }
+
 
   bool IsCurPtrOutOfRange() const {
     return (CurPtr >= BufferStart && CurPtr <= BufferEnd);
