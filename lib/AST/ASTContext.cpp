@@ -16,7 +16,7 @@ ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
                        ClangImporter &clangImporter, DiagnosticEngine &de,
                        StatsReporter *stats)
     : langOpts(langOpts), searchPathOpts(spOpts), clangImporter(clangImporter),
-      de(de), stats(stats), identifierTable(allocator) {
+      de(de), stats(stats), identifierTable(allocator), builtin(*this) {
 
   // builtin.BuiltinVoidType(new (*this) VoidType(*this));
 

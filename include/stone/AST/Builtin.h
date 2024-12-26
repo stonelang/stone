@@ -35,23 +35,14 @@ struct Builtin final {
 
   QualType GetType(llvm::StringRef name);
 
-public:
   // Declare the set of builtin identifiers.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
   Identifier Builtin##Name##Identifier;
 #include "stone/AST/BuiltinIdentifiers.def"
 
-public:
-  // Decls
-
-public:
-  // Functions
-public:
   Builtin(const Builtin &) = delete;
   void operator=(const Builtin &) = delete;
-
-public:
-  Builtin();
+  Builtin(const ASTContext &AC);
 };
 
 } // namespace stone

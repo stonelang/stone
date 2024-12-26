@@ -62,7 +62,6 @@ class Expr;
 class MangleContext;
 class Module;
 class Stmt;
-class Builtin;
 class ASTContext;
 class Decl;
 class DeclContext;
