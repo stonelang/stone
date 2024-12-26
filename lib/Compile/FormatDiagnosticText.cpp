@@ -119,7 +119,6 @@ public:
   Slice ParseTextSlice() {
 
     Slice slice;
-
     switch (CurTok.GetKind()) {
     case tok::string_literal: {
       slice = ParseStringLiteralSlice();

@@ -1121,6 +1121,13 @@ public:
   LexerBase *GetLexerBase() { return lexerBase; }
   void SetLexerBase(LexerBase *lexer) { lexerBase = lexer; }
 
+  DiagnosticFormatter *GetDiagnosticFormatter() {
+    if (HasConsumers()) {
+      return GetFirstDiagnosticConsumer()->GetDiagnosticFormatter();
+    }
+    return nullptr;
+  }
+
   // TODO:
   //  void setLocalization(StringRef locale, StringRef path) {
   //    assert(!locale.empty());
@@ -1154,6 +1161,12 @@ public:
   /// Return all \c DiagnosticConsumers.
   llvm::ArrayRef<DiagnosticConsumer *> getConsumers() const {
     return Consumers;
+  }
+  DiagnosticConsumer *GetFirstDiagnosticConsumer() {
+    if (HasConsumers()) {
+      return Consumers[0];
+    }
+    return nullptr;
   }
 
   void ForEachConsumer(std::function<void(DiagnosticConsumer *)> notify) {
