@@ -225,23 +225,23 @@ public:
 //   }
 // };
 
-// class ResolveImportsAction final : public ASTAction {
-// public:
-//   ResolveImportsAction(CompilerInstance &instance) : ASTAction(instance) {}
+class ResolveImportsAction final : public ASTAction {
+public:
+  ResolveImportsAction(CompilerInstance &instance) : ASTAction(instance) {}
 
-// public:
-//   bool ExecuteAction() override;
+public:
+  bool ExecuteAction() override;
 
-//   CompilerActionKind GetDepActionKind() const override {
-//     return CompilerActionKind::Parse;
-//   }
+  CompilerActionKind GetDepActionKind() const override {
+    return CompilerActionKind::Parse;
+  }
 
-//   CompilerActionKind GetSelfActionKind() const override {
-//     return CompilerActionKind::ResolveImports;
-//   }
+  CompilerActionKind GetSelfActionKind() const override {
+    return CompilerActionKind::ResolveImports;
+  }
 
-//   void DepCompleted(CompilerAction *dep) override;
-// };
+  void DepCompleted(CompilerAction *dep) override;
+};
 
 class TypeCheckAction final : public ASTAction {
 

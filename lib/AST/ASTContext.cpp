@@ -18,9 +18,8 @@ ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
     : langOpts(langOpts), searchPathOpts(spOpts), clangImporter(clangImporter),
       de(de), stats(stats), identifierTable(allocator), builtin(*this) {
 
-  // builtin.BuiltinVoidType(new (*this) VoidType(*this));
-
   // Initialize all of the known identifiers.
+  // This is done here because the allocation is not yet initialized.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
   builtin.Builtin##Name##Identifier = GetIdentifier(IdStr);
 #include "stone/AST/BuiltinIdentifiers.def"

@@ -146,24 +146,25 @@ bool ParseAction::ExecuteAction() {
 //   return true;
 // }
 
-// bool CompilerInstance::ResolveImportsAction::ExecuteAction() {
+bool ResolveImportsAction::ExecuteAction() {
 
-//   FrontendStatsTracer actionTracer(instance.GetStats(),
-//                                    GetSelfActionKindString());
+  FrontendStatsTracer actionTracer(instance.GetStats(),
+                                   GetSelfActionKindString());
 
-//   auto PeformResolveImports = [&](CompilerInstance &instance,
-//                                   SourceFile &sourceFile) -> bool {
-//     return true;
-//   };
+  auto PeformResolveImports = [&](CompilerInstance &instance,
+                                  SourceFile &sourceFile) -> bool {
+    return true;
+  };
 
-//   instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-//     if (!PeformResolveImports(instance, sourceFile)) {
-//       return false;
-//     }
-//   });
+  instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
+    if (!PeformResolveImports(instance, sourceFile)) {
+      return false;
+    }
+  });
 
-//   return true;
-// }
+  return true;
+}
+void ResolveImportsAction::DepCompleted(CompilerAction *action) {}
 bool TypeCheckAction::ExecuteAction() {
 
   FrontendStatsTracer actionTracer(instance.GetStats(),
