@@ -16,7 +16,15 @@ ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
                        ClangImporter &clangImporter, DiagnosticEngine &de,
                        StatsReporter *stats)
     : langOpts(langOpts), searchPathOpts(spOpts), clangImporter(clangImporter),
-      de(de), stats(stats), identifierTable(allocator), builtin(*this) {}
+      de(de), stats(stats), identifierTable(allocator) {
+
+  // builtin.BuiltinVoidType(new (*this) VoidType(*this));
+
+  // Initialize all of the known identifiers.
+#define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
+  builtin.Builtin##Name##Identifier = GetIdentifier(IdStr);
+#include "stone/AST/BuiltinIdentifiers.def"
+}
 
 ASTContext::~ASTContext() {
   for (auto &cleanup : cleanups) {

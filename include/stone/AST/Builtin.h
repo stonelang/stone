@@ -6,12 +6,8 @@
 
 namespace stone {
 
-class ASTContext;
+struct Builtin final {
 
-class Builtin final {
-  ASTContext &astContext;
-
-public:
   const CanType BuiltinFloat16Type;  /// 32-bit IEEE floating point
   const CanType BuiltinFloat32Type;  /// 32-bit IEEE floating point
   const CanType BuiltinFloat64Type;  /// 64-bit IEEE floating point
@@ -55,8 +51,7 @@ public:
   void operator=(const Builtin &) = delete;
 
 public:
-  Builtin(ASTContext &astContext);
-  ~Builtin();
+  Builtin();
 };
 
 } // namespace stone

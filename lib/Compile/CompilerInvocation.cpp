@@ -202,7 +202,7 @@ Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
       GetCompilerOptions().DoesActionGenerateNativeCode()) {
     // TODO: hard coding -cc1 for now -- build out proper string.
     if (!SetupClang(strings::ClangCC1,
-                   GetCompilerOptions().mainExecutablePath.data())) {
+                    GetCompilerOptions().mainExecutablePath.data())) {
       return Status::Error();
     }
     if (ParseTargetOptions(*inputArgList, compilerOpts, codeGenOpts, langOpts,
@@ -246,6 +246,6 @@ CompilerInvocation::GetPrimaryFileSpecificPathsForSyntaxFile(
 }
 
 bool CompilerInvocation::SetupClang(llvm::ArrayRef<const char *> argv,
-                                      const char *arg0) {
+                                    const char *arg0) {
   return GetClangImporter().Setup(argv, arg0);
 }

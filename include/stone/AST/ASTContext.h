@@ -134,6 +134,11 @@ class ASTContext final {
 
   /// OutputBackend for writing outputs.
   // llvm::IntrusiveRefCntPtr<llvm::vfs::OutputBackend> outputBackend;
+public:
+  // Declare the set of builtin identifiers.
+#define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
+  Identifier Builtin##Name##Identifier;
+#include "stone/AST/BuiltinIdentifiers.def"
 
 public:
   /// The set of cleanups to be called when the ASTContext is destroyed.

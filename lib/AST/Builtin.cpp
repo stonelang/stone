@@ -27,14 +27,4 @@ using namespace stone;
 //       BuiltinUInt128Type(new(astContext) UInt128Type(astContext)),
 //       BuiltinUIntType(new(astContext) UIntType(astContext)) {}
 
-Builtin::Builtin(ASTContext &astContext)
-    : astContext(astContext),
-      BuiltinInt8Type(new(astContext) Int8Type(astContext)) {
-
-  // Initialize all of the known identifiers.
-#define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \
-  Builtin##Name##Identifier = astContext.GetIdentifier(IdStr);
-#include "stone/AST/BuiltinIdentifiers.def"
-}
-
-Builtin::~Builtin() {}
+Builtin::Builtin() {}
