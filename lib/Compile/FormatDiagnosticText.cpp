@@ -159,7 +159,8 @@ public:
 public:
   Slice ParseStringLiteralSlice() {
     Slice result;
-    assert(CurTok.GetKind() == tok::string_literal && "Expecting string literal");
+    assert(CurTok.GetKind() == tok::string_literal &&
+           "Expecting string literal");
 
     return result;
   }

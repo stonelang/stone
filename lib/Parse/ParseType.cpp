@@ -72,9 +72,9 @@ bool ParsingBuiltinTypeSpec::IsChar32Type() const {
   return IsTypeKind(TypeKind::Char32);
 }
 
-bool ParsingBuiltinTypeSpec::IsRealType() const {
-  return IsTypeKind(TypeKind::Real);
-}
+// bool ParsingBuiltinTypeSpec::IsRealType() const {
+//   return IsTypeKind(TypeKind::Real);
+// }
 
 bool ParsingBuiltinTypeSpec::IsFloatType() const {
   return IsTypeKind(TypeKind::Float);

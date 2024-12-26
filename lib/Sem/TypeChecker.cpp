@@ -2,8 +2,10 @@
 
 using namespace stone;
 
-TypeChecker::TypeChecker(SourceFile &sourceFile) : sourceFile(sourceFile) {}
+TypeChecker::TypeChecker(SourceFile &sourceFile,
+                         TypeCheckerOptions &typeCheckerOpts)
+    : sourceFile(sourceFile), typeCheckerOpts(typeCheckerOpts) {}
 
-void TypeChecker::TypeCheckVisibilityLevel(Decl *D) {}
+void TypeChecker::CheckVisibilityLevel(Decl *D) {}
 
-void TypeChecker::TypeCheckVisibilityLevel(QualType ty) {}
+void TypeChecker::CheckVisibilityLevel(QualType ty) {}

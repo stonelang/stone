@@ -26,6 +26,12 @@ namespace stone {
 class CodeGenBuilder;
 class CodeGenModule;
 
+class CodeGenFunctionInfo {
+public:
+  /// Whether this is an instance method.
+  unsigned InstanceFunction : 1;
+};
+
 class CodeGenFunction final {
 
   CodeGenModule &codeGenModule;

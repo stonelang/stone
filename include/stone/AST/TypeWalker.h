@@ -8,9 +8,14 @@
 #include <string>
 
 namespace stone {
-enum class TypeWalkerAction { None = 0, Continue, SkipChildren, Stop };
 
 class QualType;
+enum class TypeWalkerAction {
+  None = 0,
+  Continue,
+  SkipChildren,
+  Stop,
+};
 
 /// An abstract class used to traverse a Type.
 class TypeWalker {
@@ -31,20 +36,5 @@ protected:
   TypeWalker(const TypeWalker &) = default;
   virtual ~TypeWalker() = default;
 };
-
-// class TypeDeclWalker : public TypeWalker {
-//   TypeWalkerAction WalkToTypePreChildren(Type T) override;
-
-// public:
-//   virtual TypeWalkerAction WisitNominalType(NominalType *ty) {
-//     return TypeWalkerAction::Continue;
-//   }
-//   // virtual TypeWalkerAction VisitBoundGenericType(BoundGenericType *ty) {
-//   //   return TypeWalkerAction::Continue;
-//   // }
-//   virtual TypeWalkerAction WisitAliasType(AliasType *ty) {
-//     return TypeWalkerAction::Continue;
-//   }
-// };
 
 } // namespace stone

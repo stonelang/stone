@@ -172,7 +172,9 @@ bool TypeCheckAction::ExecuteAction() {
     assert(sourceFile.HasParsed() &&
            "Unable to type-check a source-file that was not parsed.");
 
-    return TypeChecker(sourceFile).TypeCheckTopLevelDecls();
+    return TypeChecker(sourceFile,
+                       instance.GetInvocation().GetTypeCheckerOptions())
+        .CheckTopLevelDecls();
   };
 
   instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {

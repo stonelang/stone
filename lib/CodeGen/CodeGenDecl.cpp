@@ -22,22 +22,29 @@ public:
 
 void CodeGenModule::EmitSourceFile(SourceFile &sourceFile) {
 
-  for (auto *decl : sourceFile.GetTopLevelDecls()) {
-    EmitGlobalDecl(decl);
+  for (auto *topLevelDecl : sourceFile.GetTopLevelDecls()) {
+    EmitTopLevelDecl(topLevelDecl);
   }
 }
 
-void CodeGenModule::EmitGlobalDecl(Decl *topLevelDecl) {
+void CodeGenModule::EmitTopLevelDecl(Decl *topLevelDecl) {
 
   assert(topLevelDecl->IsTopLevel() && "Not a top-level declaration");
+  EmitDecl(topLevelDecl);
+}
 
-  switch (topLevelDecl->GetKind()) {
+void CodeGenModule::EmitDecl(Decl *D) {
+
+  switch (D->GetKind()) {
   case DeclKind::Fun:
-    return EmitFunDecl(topLevelDecl->GetAsFunDecl());
+    return EmitFunDecl(D->GetAsFunDecl());
   case DeclKind::Struct:
-    return EmitStructDecl(topLevelDecl->GetAsStructDecl());
+    return EmitStructDecl(D->GetAsStructDecl());
+  case DeclKind::Class:
+    return EmitClassDecl(D->GetAsClassDecl());
+  case DeclKind::Interface:
+    return EmitInterfaceDecl(D->GetAsInterfaceDecl());
   }
-
   llvm_unreachable("bad decl kind!");
 }
 
@@ -50,6 +57,8 @@ void CodeGenModule::EmitFunDecl(FunDecl *funDecl) {
 void CodeGenModule::EmitInterfaceDecl(InterfaceDecl *d) {}
 
 void CodeGenModule::EmitStructDecl(StructDecl *d) {}
+
+void CodeGenModule::EmitClassDecl(ClassDecl *d) {}
 
 void CodeGenModule::EmitEnumDecl(EnumDecl *d) {}
 

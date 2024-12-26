@@ -463,36 +463,40 @@ public:
   FunType(QualType returnType, const ASTContext *sc);
 };
 
-// class NominalType : public Type {
-// protected:
-//   friend ASTContext;
+class NominalType : public Type {
+protected:
+  friend ASTContext;
 
-// public:
-//   // Implement isa/cast/dyncast/etc.
-//   static bool classof(const Type *ty) {
-//     return ty->GetKind() >= TypeKind::First_NominalType &&
-//            ty->GetKind() <= TypeKind::Last_NominalType;
-//   }
-// };
+public:
+  // Implement isa/cast/dyncast/etc.
+  static bool classof(const Type *ty) {
+    return ty->GetKind() >= TypeKind::First_NominalType &&
+           ty->GetKind() <= TypeKind::Last_NominalType;
+  }
+};
 
-// class StructType final : public NominalType {
-// public:
-// };
+class StructType final : public NominalType {
+public:
+};
 
-// class InterfaceType final : public NominalType {
-// public:
-// };
+class ClassType final : public NominalType {
+public:
+};
 
-// class EnumType final : public NominalType {};
+class InterfaceType final : public NominalType {
+public:
+};
 
-// class DeducedType : public Type {
-// protected:
-//   friend class ASTContext; // ASTContext creates these
-// };
+class EnumType final : public NominalType {};
 
-// class AutoType final : public DeducedType, public llvm::FoldingSetNode {
-// public:
-// };
+class DeducedType : public Type {
+protected:
+  friend class ASTContext; // ASTContext creates these
+};
+
+class AutoType final : public DeducedType, public llvm::FoldingSetNode {
+public:
+};
 
 // class ChunkType : public Type, public llvm::FoldingSetNode {};
 
@@ -550,20 +554,20 @@ public:
 //       : Type(TypeKind::Module, &sc), mod(mod) {}
 // };
 
-// class SugarType : public Type {
-//   // The state of this union is known via Bits.SugarType.HasCachedType so
-//   that
-//   // we can avoid masking the pointer on the fast path.
-//   union {
-//     Type *underlyingType;
-//     const ASTContext *Context;
-//   };
-// };
-// /// An alias to a type
-// /// alias Int = int; My using use using Int = int;
-// class AliasType : public SugarType {
-// public:
-// };
+class SugarType : public Type {
+  // The state of this union is known via Bits.SugarType.HasCachedType so
+  // that
+  // we can avoid masking the pointer on the fast path.
+  // union {
+  //   QualType *underlyingType;
+  //   const ASTContext *Context;
+  // };
+};
+/// An alias to a type
+/// alias Int = int; My using use using Int = int;
+class AliasType : public SugarType {
+public:
+};
 
 // /// An alias to a type
 // /// using Int = int; My using use using Int = int;

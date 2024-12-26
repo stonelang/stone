@@ -45,7 +45,9 @@ public:
 
   ~CodeGenConstant();
 };
-
+class CodeGenTypeResolver {
+public:
+};
 class CodeGenModule final {
 public:
   llvm::Type *VoidTy;
@@ -99,10 +101,12 @@ public:
 
 public:
   void EmitSourceFile(SourceFile &sf);
-  void EmitGlobalDecl(Decl *d);
+  void EmitTopLevelDecl(Decl *d);
+  void EmitDecl(Decl *d);
   void EmitFunDecl(FunDecl *d);
   void EmitInterfaceDecl(InterfaceDecl *d);
   void EmitStructDecl(StructDecl *d);
+  void EmitClassDecl(ClassDecl *d);
   void EmitEnumDecl(EnumDecl *d);
   void EmitVarDecl(VarDecl *d);
   void EmitAutoDecl(AutoDecl *d);

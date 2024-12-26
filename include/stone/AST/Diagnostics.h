@@ -945,7 +945,8 @@ public:
   /// DiagnosticConsumer (this is the case when building module interfaces).
   ///
   /// \param Info Information describing the diagnostic.
-  virtual void handleDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info, DiagnosticEngine* CB = nullptr) = 0;
+  virtual void handleDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info,
+                                DiagnosticEngine *CB = nullptr) = 0;
 
   /// \returns true if an error occurred while finishing-up.
   virtual bool finishProcessing() { return false; }
@@ -970,7 +971,8 @@ public:
 /// DiagnosticConsumer that discards all diagnostics.
 class NullDiagnosticConsumer : public DiagnosticConsumer {
 public:
-  void handleDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info, DiagnosticEngine* CB = nullptr) override;
+  void handleDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info,
+                        DiagnosticEngine *CB = nullptr) override;
 };
 
 /// DiagnosticConsumer that forwards diagnostics to the consumers of
@@ -980,7 +982,8 @@ class ForwardingDiagnosticConsumer : public DiagnosticConsumer {
 
 public:
   ForwardingDiagnosticConsumer(DiagnosticEngine &Target);
-  void handleDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info, DiagnosticEngine* CB = nullptr) override;
+  void handleDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info,
+                        DiagnosticEngine *CB = nullptr) override;
 };
 
 class DiagnosticLocalizationProducer {
@@ -1354,11 +1357,18 @@ public:
 
   /// Format the given diagnostic text and place the result in the given
   /// buffer.
-  static void formatDiagnosticText(
+  void FormatDiagnosticText(
       llvm::raw_ostream &Out, StringRef InText,
       ArrayRef<DiagnosticArgument> FormatArgs,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions(),
       DiagnosticFormatter *formatter = nullptr);
+
+  /// Format the given diagnostic text and place the result in the given
+  /// buffer.
+  static void formatDiagnosticText(
+      llvm::raw_ostream &Out, StringRef InText,
+      ArrayRef<DiagnosticArgument> FormatArgs,
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
 
 private:
   /// Called when tentative diagnostic is about to be flushed,
@@ -1765,8 +1775,8 @@ public:
   TextDiagnosticPrinter(llvm::raw_ostream &stream = llvm::errs());
   ~TextDiagnosticPrinter();
 
-  virtual void handleDiagnostic(SrcMgr &SM,
-                                const DiagnosticInfo &Info, DiagnosticEngine* CB = nullptr) override;
+  virtual void handleDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info,
+                                DiagnosticEngine *CB = nullptr) override;
 
   virtual bool finishProcessing() override;
 

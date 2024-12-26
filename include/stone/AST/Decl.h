@@ -42,6 +42,8 @@ class Decl;
 class Stmt;
 class FunDecl;
 class StructDecl;
+class ClassDecl;
+class InterfaceDecl;
 class ModuleDecl;
 class BraceStmt;
 class DeclContext;
@@ -328,11 +330,12 @@ public:
                               bool extraSace = false);
 
 public:
-  ///\returns the FunDecl
   FunDecl *GetAsFunDecl() { return llvm::cast<FunDecl>(this); }
-
-  ///\returns the StructDecl
   StructDecl *GetAsStructDecl() { return llvm::cast<StructDecl>(this); }
+  ClassDecl *GetAsClassDecl() { return llvm::cast<ClassDecl>(this); }
+  InterfaceDecl *GetAsInterfaceDecl() {
+    return llvm::cast<InterfaceDecl>(this);
+  }
 };
 
 class NamedDecl : public Decl {
@@ -717,6 +720,11 @@ public:
 public:
   static StructDecl *Create(DeclName name, SrcLoc loc, ASTContext &astContext,
                             DeclContext *parent = nullptr);
+};
+
+class ClassDecl final : public NominalTypeDecl {
+public:
+  static bool classof(const Decl *D) { return D->GetKind() == DeclKind::Class; }
 };
 
 class InterfaceDecl final : public NominalTypeDecl {

@@ -3,7 +3,7 @@
 
 #include "stone/AST/Decl.h"
 #include "stone/AST/Module.h"
-
+#include "stone/AST/TypeCheckerOptions.h"
 namespace stone {
 
 class Decl;
@@ -25,9 +25,6 @@ class ValueDecl;
 enum class DisallowedOriginKind : uint8_t {
   None = 0,
   ImplementationOnly,
-  SPIImported,
-  SPILocal,
-  SPIOnly,
   MissingImport,
 
 };
@@ -43,13 +40,15 @@ enum class DowngradeToWarningKind : bool {
 
 class TypeChecker final {
   SourceFile &sourceFile;
+  TypeCheckerOptions &typeCheckerOpts;
 
 public:
-  TypeChecker(SourceFile &sourceFile);
+  TypeChecker(SourceFile &sourceFile, TypeCheckerOptions &typeCheckerOpts);
 
 public:
-  bool TypeCheckTopLevelDecls();
-  bool TypeCheckTopLevelDecl(Decl *topLevelDecl);
+  bool CheckTopLevelDecls();
+  bool CheckTopLevelDecl(Decl *topLevelDecl);
+  bool CheckDecl(Decl *D);
 
 public:
   // Performs access-related checks for \p D.
@@ -57,9 +56,28 @@ public:
   /// At a high level, this checks the given declaration's signature does not
   /// reference any other declarations that are less visible than the
   /// declaration itself. Related checks may also be performed.
-  void TypeCheckVisibilityLevel(Decl *D);
+  void CheckVisibilityLevel(Decl *D);
 
-  void TypeCheckVisibilityLevel(QualType ty);
+  void CheckVisibilityLevel(QualType ty);
+
+  /// Returns the kind of origin, implementation-only import or SPI declaration,
+  /// that restricts exporting \p decl from the given file and context.
+  // DisallowedOriginKind GetDisallowedOriginKind(const Decl *decl,
+  //                                              const ExportContext &where);
+
+  // DisallowedOriginKind GetDisallowedOriginKind(const Decl *decl,
+  //                                              const ExportContext &where,
+  //                                              DowngradeToWarningKind &kind);
+
+public:
+  /// Determine whether one type is a subtype of another.
+  ///
+  /// \param t1 The potential subtype.
+  /// \param t2 The potential supertype.
+  /// \param dc The context of the check.
+  ///
+  /// \returns true if \c t1 is a subtype of \c t2.
+  bool IsSubTypeOf(QualType t1, QualType t2, DeclContext *dc);
 };
 
 } // namespace stone

@@ -751,9 +751,7 @@ static void formatDiagnosticArgument(StringRef Modifier,
   } // end switch
 }
 
-/// Format the given diagnostic text and place the result in the given
-/// buffer.
-void DiagnosticEngine::formatDiagnosticText(llvm::raw_ostream &Out,
+void DiagnosticEngine::FormatDiagnosticText(llvm::raw_ostream &Out,
                                             StringRef InText,
                                             ArrayRef<DiagnosticArgument> Args,
                                             DiagnosticFormatOptions FormatOpts,
@@ -761,8 +759,16 @@ void DiagnosticEngine::formatDiagnosticText(llvm::raw_ostream &Out,
 
   if (formatter) {
     formatter->FormatDiagnosticText(Out, InText, Args, FormatOpts);
-    return;
+  } else {
+    DiagnosticEngine::formatDiagnosticText(Out, InText, Args, FormatOpts);
   }
+}
+
+/// Format the given diagnostic text and place the result in the given
+/// buffer.
+void DiagnosticEngine::formatDiagnosticText(
+    llvm::raw_ostream &Out, StringRef InText, ArrayRef<DiagnosticArgument> Args,
+    DiagnosticFormatOptions FormatOpts) {
   while (!InText.empty()) {
     size_t Percent = InText.find('%');
     if (Percent == StringRef::npos) {
@@ -1312,7 +1318,8 @@ void TextDiagnosticPrinter::printDiagnostic(SrcMgr &SM,
 }
 
 void TextDiagnosticPrinter::handleDiagnostic(SrcMgr &SM,
-                                             const DiagnosticInfo &Info, DiagnosticEngine* CB) {
+                                             const DiagnosticInfo &Info,
+                                             DiagnosticEngine *CB) {
   if (Info.Kind == DiagnosticKind::Error) {
     DidErrorOccur = true;
   }
