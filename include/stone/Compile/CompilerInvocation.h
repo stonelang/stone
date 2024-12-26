@@ -182,5 +182,8 @@ public:
   Status ParseArgs(llvm::ArrayRef<const char *> args);
 };
 
+IRTargetOptions GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
+                                   const LangOptions &langOpts,
+                                   ClangImporter &clangImporter);
 } // namespace stone
 #endif

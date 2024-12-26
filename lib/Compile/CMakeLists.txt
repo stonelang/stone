@@ -7,7 +7,6 @@ set(stone_compile_sources
   CompilerInputsConverter.cpp
   CompilerOptionsConverter.cpp
   CompilerOutputsConverter.cpp
-  CompilerFrontend.cpp
   FormatDiagnosticText.cpp
   
   LINK_LIBS
