@@ -3,6 +3,25 @@
 #include "stone/Parse/ParserResult.h"
 using namespace stone;
 
+template <typename AlignTy> class SliceAllocation {
+public:
+  /// Disable non-placement new.
+  void *operator new(size_t) = delete;
+  void *operator new[](size_t) = delete;
+
+  /// Disable non-placement delete.
+  void operator delete(void *) = delete;
+  void operator delete[](void *) = delete;
+
+  /// Custom version of 'new' that uses the SILModule's BumpPtrAllocator with
+  /// precise alignment knowledge.  This is templated on the allocator type so
+  /// that this doesn't require including SILModule.h.
+  template <typename ContextTy>
+  void *operator new(size_t Bytes, const ContextTy &C,
+                     size_t Alignment = alignof(AlignTy)) {
+    return C.Allocate(Bytes, Alignment);
+  }
+};
 enum class DiagnosticTextSliceKind {
   None = 0,
   Identifer,
@@ -11,12 +30,43 @@ enum class DiagnosticTextSliceKind {
   Error,
 };
 
-class DiagnosticTextSlice {
+class DiagnosticTextSlice : public SliceAllocation<DiagnosticTextSlice> {
   DiagnosticTextSliceKind kind;
 
 protected:
   DiagnosticTextSlice(DiagnosticTextSliceKind kind) : kind(kind) {}
+  virtual ~DiagnosticTextSlice() = default;
+
+public:
+  virtual void Merge() {}
 };
+
+class IdentiferTextSlice : public DiagnosticTextSlice {
+
+public:
+  IdentiferTextSlice(llvm::StringRef Text)
+      : DiagnosticTextSlice(DiagnosticTextSliceKind::Identifer) {}
+};
+
+class PercentTextSlice : public DiagnosticTextSlice {
+
+public:
+  PercentTextSlice() : DiagnosticTextSlice(DiagnosticTextSliceKind::Percent) {}
+};
+
+class SelectTextSlice : public DiagnosticTextSlice {
+
+public:
+  SelectTextSlice() : DiagnosticTextSlice(DiagnosticTextSliceKind::Select) {}
+};
+
+class ErrorTextSlice : public DiagnosticTextSlice {
+
+public:
+  ErrorTextSlice() : DiagnosticTextSlice(DiagnosticTextSliceKind::Error) {}
+};
+
+class DiagnosticTextSliceVisitor {};
 
 using Slice = ParserResult<DiagnosticTextSlice>;
 using Slices = llvm::SmallVector<Slice>;
@@ -50,14 +100,23 @@ class DiagnosticTextParser {
   /// Always empty if !SF.shouldBuildSyntaxTree().
   llvm::StringRef TrailingTrivia;
 
+  /// Slices allocator
+  mutable llvm::BumpPtrAllocator allocator;
+
 public:
   DiagnosticTextParser(unsigned BufferID, SrcMgr &SM, llvm::raw_ostream &Out,
                        ArrayRef<DiagnosticArgument> Args)
       : lexer(BufferID, SM, nullptr, nullptr), Out(Out), Args(Args) {}
 
-  const Token &PeekNext() const { return lexer.Peek(); }
+  void *Allocate(unsigned long Bytes, unsigned Alignment = 8) const {
+    if (Bytes == 0) {
+      return nullptr;
+    }
+    return allocator.Allocate(Bytes, Alignment);
+  }
 
 public:
+  const Token &PeekNext() const { return lexer.Peek(); }
   void Lex(Token &result) { lexer.Lex(result); }
   void Lex(Token &result, llvm::StringRef &leading, llvm::StringRef &trailing) {
     lexer.Lex(result, leading, trailing);
@@ -99,9 +158,15 @@ public:
   }
 
 public:
-  Slice ParseStringLiteralSlice() { Slice result; }
+  Slice ParseStringLiteralSlice() {
+    Slice result;
+    return result;
+  }
 
-  Slice ParseIdentifierSlice() { Slice result; }
+  Slice ParseIdentifierSlice() {
+    Slice result;
+    return result;
+  }
 
   void Parse(Slices &slices) {
 

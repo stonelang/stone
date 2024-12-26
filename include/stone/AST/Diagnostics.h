@@ -1397,6 +1397,19 @@ private:
   /// Forward all tentative diagnostics to a different diagnostic engine.
   void forwardTentativeDiagnosticsTo(DiagnosticEngine &targetEngine);
 
+  // void formatSelectionArgument(StringRef ModifierArguments,
+  //                              ArrayRef<DiagnosticArgument> Args,
+  //                              unsigned SelectedIndex,
+  //                              DiagnosticFormatOptions FormatOpts,
+  //                              llvm::raw_ostream &Out);
+
+  // void formatDiagnosticArgument(StringRef Modifier, StringRef
+  // ModifierArguments,
+  //                               ArrayRef<DiagnosticArgument> Args,
+  //                               unsigned ArgIndex,
+  //                               DiagnosticFormatOptions FormatOpts,
+  //                               llvm::raw_ostream &Out);
+
 public:
   DiagnosticKind declaredDiagnosticKindFor(const DiagID id);
 
