@@ -162,7 +162,8 @@ public:
   }
 
 public:
-  Status SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
+  ///\return true if it was created. 
+  bool SetupClang(llvm::ArrayRef<const char *> args, const char *arg0);
   ClangImporter &GetClangImporter() { return *clangImporter; }
 
 public:
