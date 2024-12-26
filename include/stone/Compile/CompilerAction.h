@@ -15,7 +15,7 @@ class CompilerAction {
 protected:
   CompilerInstance &instance;
   CompilerAction *consumer = nullptr;
-  //llvm::SmallVector<CompilerAction*> consumers;
+  // llvm::SmallVector<CompilerAction*> consumers;
 
 public:
   /// Setup the execution and execute any dependencies
@@ -72,8 +72,8 @@ public:
   /// Check that there exist a consumer
   bool HasConsumer() { return GetConsumer() != nullptr; }
 
-  ///TODO: Consumers 
-  /// the the consumer
+  /// TODO: Consumers
+  ///  the the consumer
   void SetConsumer(CompilerAction *compilerAction) {
     consumer = compilerAction;
   }
@@ -191,9 +191,11 @@ public:
   ASTAction(CompilerInstance &instance) : CompilerAction(instance) {}
 
 public:
-  // virtual void ConsumeDecl(Decl *result) { assert(false && "Invalid invocation of ConsumeDecl!")}
-  // virtual void ConsumeSourceFile(SourceFile *result) { assert(false && "Invalid invocation of ConsumeSourceFile!")}
-  // virtual void ConsumeModuleDecl(ModuleDecl *result) { assert(false && "Invalid invocation of ConsumeModuleDecl!")}
+  // virtual void ConsumeDecl(Decl *result) { assert(false && "Invalid
+  // invocation of ConsumeDecl!")} virtual void ConsumeSourceFile(SourceFile
+  // *result) { assert(false && "Invalid invocation of ConsumeSourceFile!")}
+  // virtual void ConsumeModuleDecl(ModuleDecl *result) { assert(false &&
+  // "Invalid invocation of ConsumeModuleDecl!")}
 };
 
 class ParseAction : public ASTAction {
@@ -242,6 +244,7 @@ public:
 // };
 
 class TypeCheckAction final : public ASTAction {
+
 public:
   TypeCheckAction(CompilerInstance &instance) : ASTAction(instance) {}
 
@@ -255,7 +258,7 @@ public:
   CompilerActionKind GetSelfActionKind() const override {
     return CompilerActionKind::TypeCheck;
   }
-   void DepCompleted(CompilerAction *dep) override;
+  void DepCompleted(CompilerAction *dep) override;
 };
 
 // class EmitASTAction final : public ASTAction {
@@ -294,17 +297,17 @@ public:
 class EmitIRAction final : public EmitCodeAction {
 
   ///\return the generated module
-  CodeGenResult ExecuteAction(SourceFile &primarySourceFile,
-                              llvm::StringRef moduleName,
-                              const PrimaryFileSpecificPaths &sps,
-                              llvm::GlobalVariable *&globalHash);
+  CodeGenResult EmitSourceFile(SourceFile &primarySourceFile,
+                               llvm::StringRef moduleName,
+                               const PrimaryFileSpecificPaths &sps,
+                               llvm::GlobalVariable *&globalHash);
 
   ///\return the generated module
-  CodeGenResult ExecuteAction(ModuleDecl *moduleDecl,
-                              llvm::StringRef moduleName,
-                              const PrimaryFileSpecificPaths &sps,
-                              ArrayRef<std::string> parallelOutputFilenames,
-                              llvm::GlobalVariable *&globalHash);
+  CodeGenResult EmitModuleDecl(ModuleDecl *moduleDecl,
+                               llvm::StringRef moduleName,
+                               const PrimaryFileSpecificPaths &sps,
+                               ArrayRef<std::string> parallelOutputFilenames,
+                               llvm::GlobalVariable *&globalHash);
 
 public:
   EmitIRAction(CompilerInstance &instance) : EmitCodeAction(instance) {}
@@ -319,8 +322,11 @@ public:
   CompilerActionKind GetSelfActionKind() const override {
     return CompilerActionKind::EmitIR;
   }
-  //void DepCompleted(CompilerAction *dep) override;
-  bool ShouldOutput() { return ((GetSelfActionKind() == GetPrimaryActionKind()) && !HasConsumer()) ;}
+  // void DepCompleted(CompilerAction *dep) override;
+  bool ShouldOutput() {
+    return ((GetSelfActionKind() == GetPrimaryActionKind()) && !HasConsumer());
+  }
+
 public:
   static bool classof(const CompilerAction *action) {
     return action->IsEmitIRAction();

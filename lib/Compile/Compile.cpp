@@ -117,21 +117,21 @@ bool ParseAction::ExecuteAction() {
   FrontendStatsTracer actionTracer(instance.GetStats(),
                                    GetSelfActionKindString());
 
-  CodeCompletionCallbacks *codeCompletionCallbacks =
-      instance.GetObservation()->GetCodeCompletionCallbacks();
-
-  auto PerformParse = [&](CompilerInstance &instance,
-                          SourceFile &sourceFile) -> bool {
-    return Parser(sourceFile, instance.GetASTContext()).ParseTopLevelDecls();
+  auto ParseSourceFile = [&](SourceFile &sourceFile, ASTContext &AC) -> bool {
+    return Parser(sourceFile, AC).ParseTopLevelDecls();
   };
 
   instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-    if (!PerformParse(instance, sourceFile)) {
+    if (!ParseSourceFile(sourceFile, instance.GetASTContext())) {
       return false;
     }
     sourceFile.SetParsedStage();
     if (instance.HasObservation()) {
-      codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
+      auto codeCompletionCallbacks =
+          instance.GetObservation()->GetCodeCompletionCallbacks();
+      if (codeCompletionCallbacks) {
+        codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
+      }
     }
   });
   if (HasConsumer()) {
@@ -169,29 +169,26 @@ bool TypeCheckAction::ExecuteAction() {
   FrontendStatsTracer actionTracer(instance.GetStats(),
                                    GetSelfActionKindString());
 
-  auto PerformTypeChecking = [&](CompilerInstance &instance,
-                                 SourceFile &sourceFile) -> bool {
+  auto TypeCheckSourceFile = [&](SourceFile &sourceFile,
+                                 TypeCheckerOptions &typeCheckerOpts) -> bool {
     assert(sourceFile.HasParsed() &&
            "Unable to type-check a source-file that was not parsed.");
-
-    return TypeChecker(sourceFile,
-                       instance.GetInvocation().GetTypeCheckerOptions())
-        .CheckTopLevelDecls();
+    return TypeChecker(sourceFile, typeCheckerOpts).CheckTopLevelDecls();
   };
 
   instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
-    if (!PerformTypeChecking(instance, sourceFile)) {
+    if (!TypeCheckSourceFile(
+            sourceFile, instance.GetInvocation().GetTypeCheckerOptions())) {
       return false;
     }
   });
-   if (HasConsumer()) {
+  if (HasConsumer()) {
     GetConsumer()->DepCompleted(this);
   }
   return true;
 }
 
- void TypeCheckAction::DepCompleted(CompilerAction *dep) {
- }
+void TypeCheckAction::DepCompleted(CompilerAction *dep) {}
 
 // bool EmitASTAction::ExecuteAction() {
 //   FrontendStatsTracer actionTracer(instance.GetStats(),
@@ -200,11 +197,8 @@ bool TypeCheckAction::ExecuteAction() {
 //   return true;
 // }
 
+bool EmitCodeAction::ExecuteAction() {}
 
-
-bool EmitCodeAction::ExecuteAction() {
-  return true;
-}
 void EmitCodeAction::AddCodeGenResult(CodeGenResult &&result) {
   CodeGenResults.push_back(std::move(result));
 }
@@ -213,7 +207,7 @@ bool EmitIRAction::ExecuteAction() {
   FrontendStatsTracer actionTracer(instance.GetStats(),
                                    GetSelfActionKindString());
 
-  /// Execute any requirements before executing emit-ir 
+  /// Execute any requirements before executing emit-ir
   EmitCodeAction::ExecuteAction();
 
   auto NotifyCodeGenConsumer = [&](CodeGenResult *result) -> void {
@@ -234,8 +228,8 @@ bool EmitIRAction::ExecuteAction() {
     llvm::StringRef outputFilename = psps.outputFilename;
 
     CodeGenResult result =
-        ExecuteAction(instance.GetMainModule(), outputFilename, psps,
-                      parallelOutputFilenames, globalHash);
+        EmitModuleDecl(instance.GetMainModule(), outputFilename, psps,
+                       parallelOutputFilenames, globalHash);
 
     NotifyCodeGenConsumer(&result);
     AddCodeGenResult(std::move(result));
@@ -249,7 +243,8 @@ bool EmitIRAction::ExecuteAction() {
       llvm::StringRef outputFilename = psps.outputFilename;
 
       CodeGenResult result =
-          ExecuteAction(primarySourceFile, outputFilename, psps, globalHash);
+          EmitSourceFile(primarySourceFile, outputFilename, psps, globalHash);
+
       NotifyCodeGenConsumer(&result);
       AddCodeGenResult(std::move(result));
     });
@@ -258,16 +253,15 @@ bool EmitIRAction::ExecuteAction() {
     GetConsumer()->DepCompleted(this);
   }
 
-  if(ShouldOutput()){
-
+  if (ShouldOutput()) {
   }
   return true;
 }
 
-CodeGenResult EmitIRAction::ExecuteAction(SourceFile &primarySourceFile,
-                                          llvm::StringRef moduleName,
-                                          const PrimaryFileSpecificPaths &sps,
-                                          llvm::GlobalVariable *&globalHash) {
+CodeGenResult EmitIRAction::EmitSourceFile(SourceFile &primarySourceFile,
+                                           llvm::StringRef moduleName,
+                                           const PrimaryFileSpecificPaths &sps,
+                                           llvm::GlobalVariable *&globalHash) {
 
   assert(
       primarySourceFile.HasTypeChecked() &&
@@ -292,10 +286,10 @@ CodeGenResult EmitIRAction::ExecuteAction(SourceFile &primarySourceFile,
 
 ///\return the generated module
 CodeGenResult
-EmitIRAction::ExecuteAction(ModuleDecl *moduleDecl, llvm::StringRef moduleName,
-                            const PrimaryFileSpecificPaths &sps,
-                            ArrayRef<std::string> parallelOutputFilenames,
-                            llvm::GlobalVariable *&globalHash) {}
+EmitIRAction::EmitModuleDecl(ModuleDecl *moduleDecl, llvm::StringRef moduleName,
+                             const PrimaryFileSpecificPaths &sps,
+                             ArrayRef<std::string> parallelOutputFilenames,
+                             llvm::GlobalVariable *&globalHash) {}
 
 bool EmitObjectAction::ExecuteAction() {
 

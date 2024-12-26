@@ -52,6 +52,11 @@ public:
 
   /// Callbacks into the parsing pipeline
   virtual CodeCompletionCallbacks *GetCodeCompletionCallbacks() {}
+
+  ///\return true if there exist a CodeCompletionCallbacks
+  bool HasCodeCompletionCallbacks() {
+    return GetCodeCompletionCallbacks() != nullptr;
+  }
 };
 
 } // namespace stone

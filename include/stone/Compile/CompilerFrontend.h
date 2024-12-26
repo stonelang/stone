@@ -48,7 +48,7 @@ bool PerformSemanticAnalysis(CompilerInstance &instance,
 bool PerformEmitAST(CompilerInstance &instance);
 
 // \return true if the code generation was successfull
-bool CompletedSemanticAnalysis(CompilerInstance &instance);
+bool PerformFrontendAfterSemanticAnalysis(CompilerInstance &instance);
 
 // \return true if the code generation was successfull
 bool EmitCode(CompilerInstance &instance, ModuleDeclOrModuleFile moduleOrFile,
