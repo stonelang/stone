@@ -1312,7 +1312,7 @@ void TextDiagnosticPrinter::printDiagnostic(SrcMgr &SM,
 }
 
 void TextDiagnosticPrinter::handleDiagnostic(SrcMgr &SM,
-                                             const DiagnosticInfo &Info) {
+                                             const DiagnosticInfo &Info, DiagnosticEngine* CB) {
   if (Info.Kind == DiagnosticKind::Error) {
     DidErrorOccur = true;
   }
