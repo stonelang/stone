@@ -964,6 +964,7 @@ public:
 
   /// A custom diagnostic formatter to use
   virtual DiagnosticFormatter *GetDiagnosticFormatter() { return nullptr; }
+  bool HasDiagnosticFormatter() { return GetDiagnosticFormatter() != nullptr; }
 };
 
 /// DiagnosticConsumer that discards all diagnostics.
@@ -1343,7 +1344,8 @@ public:
   static void formatDiagnosticText(
       llvm::raw_ostream &Out, StringRef InText,
       ArrayRef<DiagnosticArgument> FormatArgs,
-      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions());
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions(),
+      DiagnosticFormatter *formatter = nullptr);
 
 private:
   /// Called when tentative diagnostic is about to be flushed,

@@ -753,9 +753,16 @@ static void formatDiagnosticArgument(StringRef Modifier,
 
 /// Format the given diagnostic text and place the result in the given
 /// buffer.
-void DiagnosticEngine::formatDiagnosticText(
-    llvm::raw_ostream &Out, StringRef InText, ArrayRef<DiagnosticArgument> Args,
-    DiagnosticFormatOptions FormatOpts) {
+void DiagnosticEngine::formatDiagnosticText(llvm::raw_ostream &Out,
+                                            StringRef InText,
+                                            ArrayRef<DiagnosticArgument> Args,
+                                            DiagnosticFormatOptions FormatOpts,
+                                            DiagnosticFormatter *formatter) {
+
+  if (formatter) {
+    formatter->FormatDiagnosticText(Out, InText, Args, FormatOpts);
+    return;
+  }
   while (!InText.empty()) {
     size_t Percent = InText.find('%');
     if (Percent == StringRef::npos) {
@@ -1294,6 +1301,7 @@ void TextDiagnosticPrinter::printDiagnostic(SrcMgr &SM,
   llvm::SmallString<256> Text;
   {
     llvm::raw_svector_ostream Out(Text);
+
     DiagnosticEngine::formatDiagnosticText(Out, Info.FormatString,
                                            Info.FormatArgs);
   }
