@@ -18,6 +18,9 @@ protected:
   DiagnosticTextSlice(DiagnosticTextSliceKind kind) : kind(kind) {}
 };
 
+using Slice = ParserResult<DiagnosticTextSlice>;
+using Slices = llvm::SmallVector<Slice>;
+
 // TODO: It would be nice to use the Parser
 class DiagnosticTextParser {
 
@@ -96,11 +99,11 @@ public:
   }
 
 public:
-  ParserResult<DiagnosticTextSlice> ParseStringLiteralSlice() {}
+  Slice ParseStringLiteralSlice() { Slice result; }
 
-  ParserResult<DiagnosticTextSlice> ParseIdentifierSlice() {}
+  Slice ParseIdentifierSlice() { Slice result; }
 
-  void Parse(llvm::SmallVector<ParserResult<DiagnosticTextSlice>> &slices) {
+  void Parse(Slices &slices) {
 
     if (CurTok.IsLast()) {
       Consume();
@@ -113,9 +116,9 @@ public:
     }
   }
 
-  ParserResult<DiagnosticTextSlice> ParseTextSlice() {
+  Slice ParseTextSlice() {
 
-    ParserResult<DiagnosticTextSlice> slice;
+    Slice slice;
 
     switch (CurTok.GetKind()) {
     case tok::string_literal: {
@@ -134,10 +137,10 @@ public:
   }
 };
 
-static void ParseDiagnosticText(
-    llvm::raw_ostream &Out, StringRef InText,
-    ArrayRef<DiagnosticArgument> FormatArgs, DiagnosticFormatOptions FormatOpts,
-    SrcMgr &SM, llvm::SmallVector<ParserResult<DiagnosticTextSlice>> &results) {
+static void ParseDiagnosticText(llvm::raw_ostream &Out, StringRef InText,
+                                ArrayRef<DiagnosticArgument> FormatArgs,
+                                DiagnosticFormatOptions FormatOpts, SrcMgr &SM,
+                                Slices &results) {
 
   DiagnosticTextParser(SM.addMemBufferCopy(InText), SM, Out, FormatArgs)
       .Parse(results);
@@ -148,6 +151,6 @@ void CompilerDiagnosticFormatter::FormatDiagnosticText(
     ArrayRef<DiagnosticArgument> FormatArgs,
     DiagnosticFormatOptions FormatOpts) {
 
-  llvm::SmallVector<ParserResult<DiagnosticTextSlice>> results;
+  Slices results;
   ParseDiagnosticText(Out, InText, FormatArgs, FormatOpts, SM, results);
 }
