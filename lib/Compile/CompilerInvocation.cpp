@@ -24,8 +24,10 @@
 
 using namespace stone;
 
-CompilerDiagnosticPrinter::CompilerDiagnosticPrinter()
-    : formatter(new CompilerDiagnosticFormatter()) {}
+CompilerDiagnosticFormatter::CompilerDiagnosticFormatter(SrcMgr &SM) : SM(SM) {}
+
+CompilerDiagnosticPrinter::CompilerDiagnosticPrinter(SrcMgr &SM)
+    : formatter(new CompilerDiagnosticFormatter(SM)) {}
 
 DiagnosticFormatter *CompilerDiagnosticPrinter::GetDiagnosticFormatter() {
   return formatter.get();

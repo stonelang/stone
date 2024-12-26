@@ -25,8 +25,8 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   llvm::PrettyStackTraceString crashInfo("Compile construction...");
   FINISH_LLVM_INIT();
 
-  CompilerDiagnosticPrinter printer;
   CompilerInvocation invocation;
+  CompilerDiagnosticPrinter printer(invocation.GetSrcMgr());
   invocation.AddDiagnosticConsumer(printer);
 
   auto FinishCompile = [&](Status status = Status::Success()) -> int {

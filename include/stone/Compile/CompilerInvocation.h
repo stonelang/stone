@@ -28,10 +28,14 @@
 namespace stone {
 
 class CompilerDiagnosticFormatter final : public DiagnosticFormatter {
-public:
-  CompilerDiagnosticFormatter();
+  SrcMgr &SM;
 
 public:
+  CompilerDiagnosticFormatter(SrcMgr &SM);
+
+public:
+public:
+  SrcMgr &GetSrcMgr() { return SM; }
   void FormatDiagnosticText(
       llvm::raw_ostream &Out, StringRef InText,
       ArrayRef<DiagnosticArgument> FormatArgs,
@@ -43,7 +47,7 @@ class CompilerDiagnosticPrinter final : public TextDiagnosticPrinter {
   std::unique_ptr<CompilerDiagnosticFormatter> formatter;
 
 public:
-  CompilerDiagnosticPrinter();
+  CompilerDiagnosticPrinter(SrcMgr &SM);
 
 public:
   DiagnosticFormatter *GetDiagnosticFormatter() override;
