@@ -34,8 +34,8 @@ public:
   CompilerDiagnosticFormatter(SrcMgr &SM);
 
 public:
-public:
   SrcMgr &GetSrcMgr() { return SM; }
+
   void FormatDiagnosticText(
       llvm::raw_ostream &Out, StringRef InText,
       ArrayRef<DiagnosticArgument> FormatArgs,
