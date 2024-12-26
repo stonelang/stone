@@ -120,7 +120,7 @@ struct ParsingDeclName final {
                         bool isCxxClassTemplateSpec = false) const;
 };
 
-class ParsingDeclSpecLoc {
+class ParsingDeclSpecLoc final {
   SrcLoc Loc;
   llvm::SmallVector<SrcLoc, 5> overflow;
 

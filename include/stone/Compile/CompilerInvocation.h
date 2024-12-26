@@ -27,6 +27,28 @@
 
 namespace stone {
 
+class CompilerDiagnosticFormatter final : public DiagnosticFormatter {
+public:
+  CompilerDiagnosticFormatter();
+
+public:
+  void FormatDiagnosticText(
+      llvm::raw_ostream &Out, StringRef InText,
+      ArrayRef<DiagnosticArgument> FormatArgs,
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) override;
+};
+
+class CompilerDiagnosticPrinter final : public TextDiagnosticPrinter {
+
+  std::unique_ptr<CompilerDiagnosticFormatter> formatter;
+
+public:
+  CompilerDiagnosticPrinter();
+
+public:
+  DiagnosticFormatter *GetDiagnosticFormatter() override;
+};
+
 using ConfigurationFileBuffers =
     llvm::SmallVector<std::unique_ptr<llvm::MemoryBuffer>, 4>;
 

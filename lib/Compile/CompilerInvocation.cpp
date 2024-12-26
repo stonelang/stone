@@ -24,6 +24,13 @@
 
 using namespace stone;
 
+CompilerDiagnosticPrinter::CompilerDiagnosticPrinter()
+    : formatter(new CompilerDiagnosticFormatter()) {}
+
+DiagnosticFormatter *CompilerDiagnosticPrinter::GetDiagnosticFormatter() {
+  return formatter.get();
+}
+
 CompilerInvocation::CompilerInvocation() : clangImporter(new ClangImporter()) {}
 
 void CompilerInvocation::SetTargetTriple(llvm::StringRef triple) {

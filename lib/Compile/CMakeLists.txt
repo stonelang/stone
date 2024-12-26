@@ -8,6 +8,7 @@ set(stone_compile_sources
   CompilerOptionsConverter.cpp
   CompilerOutputsConverter.cpp
   CompilerFrontend.cpp
+  CompilerDiagnosticFormatter.cpp
   
   LINK_LIBS
   StoneCodeGen

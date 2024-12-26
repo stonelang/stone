@@ -908,6 +908,18 @@ private:
   }
 };
 
+class DiagnosticFormatter {
+
+public:
+  DiagnosticFormatter() {}
+  virtual ~DiagnosticFormatter() = default;
+
+public:
+  virtual void FormatDiagnosticText(
+      llvm::raw_ostream &Out, StringRef InText,
+      ArrayRef<DiagnosticArgument> FormatArgs,
+      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) = 0;
+};
 /// Abstract interface for classes that present diagnostics to the user.
 class DiagnosticConsumer {
 protected:
@@ -949,6 +961,9 @@ public:
   /// so here's a placeholder.
 
   virtual void informDriverOfIncompleteBatchModeCompilation() {}
+
+  /// A custom diagnostic formatter to use
+  virtual DiagnosticFormatter *GetDiagnosticFormatter() { return nullptr; }
 };
 
 /// DiagnosticConsumer that discards all diagnostics.
@@ -1689,7 +1704,9 @@ public:
 };
 
 /// Diagnostic consumer that displays diagnostics to standard error.
-class TextDiagnosticPrinter final : public DiagnosticConsumer {
+class TextDiagnosticPrinter : public DiagnosticConsumer {
+
+protected:
   llvm::raw_ostream &Stream;
   bool ForceColors = false;
   bool PrintEducationalNotes = false;
@@ -1752,7 +1769,9 @@ public:
     SuppressOutput = suppressOutput;
   }
 
-private:
+  DiagnosticFormatter *GetDiagnosticFormatter() override { return nullptr; }
+
+protected:
   /// Retrieve the SourceFileSyntax for the given buffer.
   void *getSourceFileSyntax(SrcMgr &SM, unsigned bufferID,
                             StringRef displayName);
