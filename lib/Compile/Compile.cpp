@@ -134,7 +134,9 @@ bool ParseAction::ExecuteAction() {
       codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
     }
   });
-
+  if (HasConsumer()) {
+    GetConsumer()->DepCompleted(this);
+  }
   return true;
 }
 // bool CompilerInstance::EmitParseAction::ExecuteAction() {
@@ -181,10 +183,15 @@ bool TypeCheckAction::ExecuteAction() {
     if (!PerformTypeChecking(instance, sourceFile)) {
       return false;
     }
-    sourceFile.SetTypeCheckedStage();
   });
+   if (HasConsumer()) {
+    GetConsumer()->DepCompleted(this);
+  }
   return true;
 }
+
+ void TypeCheckAction::DepCompleted(CompilerAction *dep) {
+ }
 
 // bool EmitASTAction::ExecuteAction() {
 //   FrontendStatsTracer actionTracer(instance.GetStats(),

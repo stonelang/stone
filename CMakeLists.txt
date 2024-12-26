@@ -379,6 +379,8 @@ include_directories(BEFORE
   ${CMAKE_SOURCE_DIR}/tools/clang/include
   )
 
+
+
 if (NOT LLVM_INSTALL_TOOLCHAIN_ONLY)
   install(DIRECTORY include/stone include/stone-c
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"

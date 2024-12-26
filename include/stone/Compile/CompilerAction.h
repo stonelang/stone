@@ -15,6 +15,7 @@ class CompilerAction {
 protected:
   CompilerInstance &instance;
   CompilerAction *consumer = nullptr;
+  //llvm::SmallVector<CompilerAction*> consumers;
 
 public:
   /// Setup the execution and execute any dependencies
@@ -71,6 +72,7 @@ public:
   /// Check that there exist a consumer
   bool HasConsumer() { return GetConsumer() != nullptr; }
 
+  ///TODO: Consumers 
   /// the the consumer
   void SetConsumer(CompilerAction *compilerAction) {
     consumer = compilerAction;
@@ -189,8 +191,9 @@ public:
   ASTAction(CompilerInstance &instance) : CompilerAction(instance) {}
 
 public:
-  virtual void ConsumeDecl(Decl *result) {}
-  virtual void ConsumeSourceFile(SourceFile *result) {}
+  // virtual void ConsumeDecl(Decl *result) { assert(false && "Invalid invocation of ConsumeDecl!")}
+  // virtual void ConsumeSourceFile(SourceFile *result) { assert(false && "Invalid invocation of ConsumeSourceFile!")}
+  // virtual void ConsumeModuleDecl(ModuleDecl *result) { assert(false && "Invalid invocation of ConsumeModuleDecl!")}
 };
 
 class ParseAction : public ASTAction {
@@ -234,6 +237,8 @@ public:
 //   CompilerActionKind GetSelfActionKind() const override {
 //     return CompilerActionKind::ResolveImports;
 //   }
+
+//   void DepCompleted(CompilerAction *dep) override;
 // };
 
 class TypeCheckAction final : public ASTAction {
@@ -250,6 +255,7 @@ public:
   CompilerActionKind GetSelfActionKind() const override {
     return CompilerActionKind::TypeCheck;
   }
+   void DepCompleted(CompilerAction *dep) override;
 };
 
 // class EmitASTAction final : public ASTAction {
@@ -312,6 +318,7 @@ public:
   CompilerActionKind GetSelfActionKind() const override {
     return CompilerActionKind::EmitIR;
   }
+  //void DepCompleted(CompilerAction *dep) override;
 
 public:
   static bool classof(const CompilerAction *action) {
