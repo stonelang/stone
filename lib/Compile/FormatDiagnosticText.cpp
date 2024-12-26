@@ -35,7 +35,6 @@ class DiagnosticTextSlice : public SliceAllocation<DiagnosticTextSlice> {
 
 protected:
   DiagnosticTextSlice(DiagnosticTextSliceKind kind) : kind(kind) {}
-  virtual ~DiagnosticTextSlice() = default;
 
 public:
   virtual void Merge() {}
