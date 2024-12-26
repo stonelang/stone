@@ -284,6 +284,7 @@ protected:
 
 public:
   EmitCodeAction(CompilerInstance &instance) : ASTAction(instance) {}
+  bool ExecuteAction() override;
 
 public:
   virtual void ConsumeCodeGen(CodeGenResult *result) {}
@@ -319,7 +320,7 @@ public:
     return CompilerActionKind::EmitIR;
   }
   //void DepCompleted(CompilerAction *dep) override;
-
+  bool ShouldOutput() { return ((GetSelfActionKind() == GetPrimaryActionKind()) && !HasConsumer()) ;}
 public:
   static bool classof(const CompilerAction *action) {
     return action->IsEmitIRAction();

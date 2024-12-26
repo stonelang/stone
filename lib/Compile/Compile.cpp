@@ -200,6 +200,11 @@ bool TypeCheckAction::ExecuteAction() {
 //   return true;
 // }
 
+
+
+bool EmitCodeAction::ExecuteAction() {
+  return true;
+}
 void EmitCodeAction::AddCodeGenResult(CodeGenResult &&result) {
   CodeGenResults.push_back(std::move(result));
 }
@@ -207,6 +212,9 @@ void EmitCodeAction::AddCodeGenResult(CodeGenResult &&result) {
 bool EmitIRAction::ExecuteAction() {
   FrontendStatsTracer actionTracer(instance.GetStats(),
                                    GetSelfActionKindString());
+
+  /// Execute any requirements before executing emit-ir 
+  EmitCodeAction::ExecuteAction();
 
   auto NotifyCodeGenConsumer = [&](CodeGenResult *result) -> void {
     if (HasConsumer()) {
@@ -248,6 +256,10 @@ bool EmitIRAction::ExecuteAction() {
   }
   if (HasConsumer()) {
     GetConsumer()->DepCompleted(this);
+  }
+
+  if(ShouldOutput()){
+
   }
   return true;
 }
