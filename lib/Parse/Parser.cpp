@@ -43,7 +43,8 @@ Identifier Parser::GetIdentifier(llvm::StringRef text) {
 ParserStatus Parser::ParseIdentifier(Identifier &result, SrcLoc &resultLoc) {
   ParserStatus status;
 
-  assert(GetCurTok().IsIdentifierOrUnderscore());
+  assert(GetCurTok().IsIdentifierOrUnderscore() &&
+         "Not a valid start of an identifier!");
   resultLoc = ConsumeIdentifier(result);
 
   return status;

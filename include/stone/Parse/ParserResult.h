@@ -46,6 +46,8 @@ public:
   ParserResult(ParserResult<U> Other)
       : ptrAndBits(Other.ptrAndBits.getPointer(), Other.ptrAndBits.getInt()) {}
 
+  /// Evaluates true when this object stores a diagnostic.
+  explicit operator bool() const { return !IsNull(); }
   /// Return true if this result does not have an AST node.
   ///
   /// If returns true, then error bit is set.

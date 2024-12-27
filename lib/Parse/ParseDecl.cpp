@@ -177,26 +177,24 @@ ParserResult<FunDecl> Parser::ParseFunDecl(ParsingDeclSpec &spec) {
   assert(GetCurTok().IsFun() && "ParseFunDecl requires a fun specifier");
 
   auto parsingTypeSpecResult = ParseType();
+  assert(parsingTypeSpecResult && "Expected a fun type!");
+
   spec.SetParsingTypeSpec(parsingTypeSpecResult.Get());
 
-  Identifier identifierName;
+  ParserStatus status;
+  SrcLoc basicNameLoc; 
+  status = ParseIdentifier(spec.basicName, basicNameLoc);
+  spec.basicNameLoc.SetLoc(basicNameLoc);
 
-  // auto ParseFunctionName() = [&]() -> Identifier {
-  //   auto functionNameText = GetCurTok().GetText();
-  //   functionNameIdentifier =
-  //   GetASTContext().GetIdentifier(functionNameText); spec.declNameLoc =
-  //   ConsumeToken();
-  // }();
+    // Now, parse the function signature
+  status |= ParseFunctionSignature(spec);
 
-  // // Make sure we have a valid identifier
-  // if (!GetCurTok().IsIdentifierOrUnderscore()) {
-  //   // Do some logging  "Expecting function declarator or identifier");
-  //   return stone::MakeParserError();
-  // }
+  if (status.IsError()) {
+    return status;
+  }
 }
 
-ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec,
-                                            Identifier identifierName) {
+ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec) {
 
   assert(spec.HasParsingTypeSpec() &&
          "ParseFunctionSignature requires a type-spec");
@@ -205,19 +203,35 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec,
 
   auto parsingFunTypeSpec = spec.GetParsingFunTypeSpec();
 
-  // ParserStatus status;
-  // status= ParseFunctionArguments(spec);
+  ParserStatus status;
+  status = ParseFunctionArguments(spec);
 
   // auto retType = ParseType(spec,
   //     diag::error_expected_type_for_function_result);
 }
 
-// ParserStatus Parser::ParseFunctionArguments(ParsingDeclSpec &spec) {
+// TODO: Pass in the function spec in the future.
+ParserStatus Parser::ParseFunctionArguments(ParsingDeclSpec &spec) {
 
-//   ParserStatus status;
-//   SrcLoc lParenLoc;
-//   SrcLoc rParenLoc;
-// }
+  assert(spec.HasParsingTypeSpec() &&
+         "ParseFunctionSignature requires a type-spec");
+  assert(spec.GetParsingTypeSpec()->IsFunction() &&
+         "ParseFunctionSignature type-pec is not function");
+
+  auto parsingFunTypeSpec = spec.GetParsingFunTypeSpec();
+
+  if (!GetCurTok().IsLParen()) {
+    return MakeParserError();
+  }
+  parsingFunTypeSpec->SetLParen(ConsumeToken(tok::l_paren));
+
+  if (!GetCurTok().IsRParen()) {
+    return MakeParserError();
+  }
+  parsingFunTypeSpec->SetRParen(ConsumeToken(tok::r_paren));
+
+  return MakeParserSuccess();
+}
 
 ParserResult<VarDecl> Parser::ParseVarDecl(ParsingDeclSpec &spec) {
   ParserResult<VarDecl> result;

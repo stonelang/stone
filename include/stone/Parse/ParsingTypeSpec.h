@@ -306,6 +306,8 @@ class ParsingFunTypeSpec : public ParsingTypeSpec {
   SrcLoc forcedInlineLoc;
   SrcLoc arrowLoc;
   SrcLoc doubleColonLoc;
+  SrcLoc lParen;
+  SrcLoc rParen;
 
   ParsingTypeSpec *resultType = nullptr;
 
@@ -320,6 +322,14 @@ public:
   void SetArrow(SrcLoc loc) { arrowLoc = loc; }
   SrcLoc GetArrow() { return arrowLoc; }
   bool HasArrow() { return GetArrow().isValid(); }
+
+  void SetLParen(SrcLoc loc) { lParen = loc; }
+  SrcLoc GetLParen() { return lParen; }
+  bool HasLParen() { return GetLParen().isValid(); }
+
+  void SetRParen(SrcLoc loc) { rParen = loc; }
+  SrcLoc GetRParen() { return rParen; }
+  bool HasRParen() { return GetRParen().isValid(); }
 
 public:
   static bool classof(const ParsingTypeSpec *spec) {

@@ -182,9 +182,13 @@ class ParsingDeclSpec final {
   /// The parsing decl options
   ParsingDeclOptions parsingDeclOpts;
 
+public:
+  Identifier basicName;
+
+  ParsingDeclSpecLoc basicNameLoc;
+
   /// The name of the decl that ware parsing
   DeclName declName;
-
   ///
   ParsingDeclSpecLoc declNameLoc;
 

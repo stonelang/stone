@@ -290,8 +290,7 @@ public:
   ParserResult<StructDecl> ParseStructDecl(ParsingDeclSpec &spec);
 
 private:
-  ParserStatus ParseFunctionSignature(ParsingDeclSpec &spec,
-                                      Identifier identifierName);
+  ParserStatus ParseFunctionSignature(ParsingDeclSpec &spec);
 
   ParserStatus ParseFunctionArguments(ParsingDeclSpec &spec);
 
