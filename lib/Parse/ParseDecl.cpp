@@ -1,3 +1,4 @@
+#include "stone/AST/DiagnosticsParse.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/ParsingDeclSpec.h"
 
@@ -182,11 +183,11 @@ ParserResult<FunDecl> Parser::ParseFunDecl(ParsingDeclSpec &spec) {
   spec.SetParsingTypeSpec(parsingTypeSpecResult.Get());
 
   ParserStatus status;
-  SrcLoc basicNameLoc; 
+  SrcLoc basicNameLoc;
   status = ParseIdentifier(spec.basicName, basicNameLoc);
   spec.basicNameLoc.SetLoc(basicNameLoc);
 
-    // Now, parse the function signature
+  // Now, parse the function signature
   status |= ParseFunctionSignature(spec);
 
   if (status.IsError()) {
@@ -204,10 +205,34 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec) {
   auto parsingFunTypeSpec = spec.GetParsingFunTypeSpec();
 
   ParserStatus status;
+
   status = ParseFunctionArguments(spec);
+  if (status.IsError()) {
+    return status;
+  }
+
+  spec.declName = DeclName(spec.basicName);
+
+  // if (!GetCurTok().IsArrow()) {
+  //   status.SetIsError();
+  //   return status;
+  // }
+
+  SrcLoc arrowLoc;
+  if (!ConsumeIf(tok::arrow, arrowLoc)) {
+    // FixIt ':' to '->'.
+    diagnose(GetCurTok(), diag::error_expected_arrow_after_function_decl)
+        .fixItReplace(curTok.GetLoc(), llvm::StringRef("->"));
+    // arrowLoc = ConsumeToken(tok::colon);
+    return MakeParserError();
+  }
+
+  parsingFunTypeSpec->SetArrow(arrowLoc);
 
   // auto retType = ParseType(spec,
   //     diag::error_expected_type_for_function_result);
+
+  return MakeParserSuccess();
 }
 
 // TODO: Pass in the function spec in the future.

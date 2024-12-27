@@ -30,8 +30,13 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   invocation.AddDiagnosticConsumer(printer);
 
   auto FinishCompile = [&](Status status = Status::Success()) -> int {
-    return (status.IsError() ? status.GetFlag()
-                             : invocation.GetDiags().finishProcessing());
+    if (invocation.GetDiags().finishProcessing()) {
+      return 1;
+    }
+    if (status.IsError()) {
+      return 1;
+    }
+    return 0;
   };
 
   auto mainExecutablePath = llvm::sys::fs::getMainExecutable(arg0, mainAddr);

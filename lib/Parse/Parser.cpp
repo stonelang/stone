@@ -14,8 +14,11 @@ Parser::Parser(SourceFile &sourceFile, ASTContext &astContext)
 
 Parser::Parser(SourceFile &sourceFile, ASTContext &astContext,
                std::unique_ptr<Lexer> lx)
-    : sourceFile(sourceFile), astContext(astContext), lexer(lx.release()),
-      curDC(&sourceFile) {}
+    : sourceFile(sourceFile), SM(astContext.GetSrcMgr()),
+      astContext(astContext), lexer(lx.release()), curDC(&sourceFile) {
+
+  astContext.GetDiags().SetLexerBase(lexer.get());
+}
 
 Parser::~Parser() {}
 
@@ -77,6 +80,9 @@ SrcLoc Parser::ConsumeStartingGreater() {
 // TODO:
 SrcLoc Parser::ConsumeStartingCharOfCurToken(tok kind, size_t len) {
   return SrcLoc();
+}
+SrcLoc Parser::GetEndOfPrevLoc() const {
+  return lexer->GetLocForEndOfToken(SM, prevTokLoc);
 }
 
 // ParsingScope::ParsingScope(Parser &self, ASTScopeKind kind,

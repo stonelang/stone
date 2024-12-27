@@ -205,7 +205,7 @@ ERROR(error_case_stmt_without_body,none,
 ERROR(error_expected_type_for_function_result,PointsToFirstBadToken,
       "expected type for function result", ())
 
-ERROR(error_expected_arrow_after_function_param,none,
+ERROR(error_expected_arrow_after_function_decl,none,
       "expected '->' after function parameter tuple", ())
 
 

@@ -164,6 +164,8 @@ class Parser final {
 
   SourceFile &sourceFile;
 
+  SrcMgr &SM;
+
   /// The declaration context which is the source file
   DeclContext *curDC;
 
@@ -172,11 +174,11 @@ class Parser final {
   // This is the previous token pasrsed by the parser.
   Token prevTok;
 
-  /// This is the current token being considered by the parser.
-  Token curTok;
-
   /// The location of the previous tok.
   SrcLoc prevTokLoc;
+
+  /// This is the current token being considered by the parser.
+  Token curTok;
 
   /// Leading trivia for \c Tok.
   /// Always empty if !SF.shouldBuildSyntaxTree().
@@ -516,8 +518,33 @@ public:
   // void PushCurScope(ASTScope *scope) { parsingScopeCache.push_back(scope); }
 
 public:
-  InFlightDiagnostic Diagnose(SrcLoc loc, Diag<> diagID);
-  InFlightDiagnostic Diagnose(Token &curTok, Diag<> diagID);
+  /// Retrieve the location just past the end of the previous
+  /// source location.
+  SrcLoc GetEndOfPrevLoc() const;
+
+  InFlightDiagnostic diagnose(SrcLoc Loc, Diagnostic Diag) {
+    if (GetDiags().isDiagnosticPointsToFirstBadToken(Diag.getID()) &&
+        Loc == curTok.GetLoc() && curTok.IsAtStartOfLine())
+      Loc = GetEndOfPrevLoc();
+    return GetDiags().diagnose(Loc, Diag);
+  }
+
+  InFlightDiagnostic diagnose(Token Tok, Diagnostic Diag) {
+    return diagnose(Tok.GetLoc(), Diag);
+  }
+
+  template <typename... DiagArgTypes, typename... ArgTypes>
+  InFlightDiagnostic diagnose(SrcLoc Loc, Diag<DiagArgTypes...> DiagID,
+                              ArgTypes &&...Args) {
+    return diagnose(Loc, Diagnostic(DiagID, std::forward<ArgTypes>(Args)...));
+  }
+
+  template <typename... DiagArgTypes, typename... ArgTypes>
+  InFlightDiagnostic diagnose(Token Tok, Diag<DiagArgTypes...> DiagID,
+                              ArgTypes &&...Args) {
+    return diagnose(Tok.GetLoc(),
+                    Diagnostic(DiagID, std::forward<ArgTypes>(Args)...));
+  }
 };
 
 } // namespace stone

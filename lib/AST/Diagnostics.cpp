@@ -757,11 +757,11 @@ void DiagnosticEngine::FormatDiagnosticText(llvm::raw_ostream &Out,
                                             DiagnosticFormatOptions FormatOpts,
                                             DiagnosticFormatter *formatter) {
 
-  if (formatter) {
-    formatter->FormatDiagnosticText(Out, InText, Args, FormatOpts);
-  } else {
-    DiagnosticEngine::formatDiagnosticText(Out, InText, Args, FormatOpts);
-  }
+  // if (formatter) {
+  //   formatter->FormatDiagnosticText(Out, InText, Args, FormatOpts);
+  // } else {
+  DiagnosticEngine::formatDiagnosticText(Out, InText, Args, FormatOpts);
+  //}
 }
 
 /// Format the given diagnostic text and place the result in the given
