@@ -51,91 +51,13 @@ public:
   void operator=(const CompilerInstance &) = delete;
 
 public:
-  class Action {
-
-  protected:
-    CompilerInstance &instance;
-    Action *consumer = nullptr;
-
-  public:
-    Action(CompilerInstance &instance);
-    ~Action();
-
-  public:
-    /// Setup the execution and execute any dependencies
-    virtual bool SetupAction();
-
-    /// Execut the action
-    virtual bool ExecuteAction() = 0;
-
-    /// Finish any post steps after execution
-    virtual bool FinishAction() {}
-
-    /// Every exeuction must have a self action
-    virtual CompilerActionKind GetSelfActionKind() const = 0;
-
-    /// Check that the execution has an action
-    bool HasSelfActionKind() {
-      return CompilerOptions::IsAnyAction(GetSelfActionKind());
-    }
-
-    /// Check the nice name of the current action
-    llvm::StringRef GetSelfActionKindString() {
-      return CompilerOptions::GetActionString(GetSelfActionKind());
-    }
-
-    /// The main input action from the user.
-    CompilerActionKind GetPrimaryActionKind();
-
-    /// Check the nice name of the current action
-    llvm::StringRef GetPrimaryActionKindString() {
-      return CompilerOptions::GetActionString(GetPrimaryActionKind());
-    }
-
-    /// Determine if the main action and the self action is the same.
-    bool IsPrimaryActionKind() {
-      return GetSelfActionKind() == GetPrimaryActionKind();
-    }
-
-    /// Check that there exist a dependecy action
-    bool HasDepActionKind() {
-      return CompilerOptions::IsAnyAction(GetDepActionKind());
-    }
-
-    /// Get the dependency action
-    virtual CompilerActionKind GetDepActionKind() const {
-      return CompilerActionKind::None;
-    }
-    /// Check the nice name of the current action
-    llvm::StringRef GetDepActionKindString() {
-      return CompilerOptions::GetActionString(GetDepActionKind());
-    }
-    /// Update the callee
-    virtual void DepCompleted(Action *self) {}
-
-    /// Check that there exist a consumer
-    bool HasConsumer() { return GetConsumer() != nullptr; }
-
-    /// TODO: Consumers
-    ///  the the consumer
-    void SetConsumer(Action *C) { consumer = C; }
-
-    /// Return the consumer
-    Action *GetConsumer() { return consumer; }
-
-    /// Return the compiler
-    CompilerInstance &GetCompilerInstance();
-  };
-
-public:
   CompilerInstance(CompilerInvocation &invocation);
   bool Setup();
   bool ExecuteAction();
   bool ExecuteAction(CompilerActionKind kind);
-
+  bool ExecuteAction(CompilerAction &compilerAction);
 private:
   std::unique_ptr<CompilerAction> ConstructAction(CompilerActionKind kind);
-  bool ExecuteAction(CompilerAction &compilerAction);
 
 public:
   bool HasObservation() { return observation != nullptr; }

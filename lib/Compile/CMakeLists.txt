@@ -3,7 +3,6 @@ set(stone_compile_sources
   CompilerInstance.cpp
   CompilerInvocation.cpp
   CompilerOptions.cpp
-  CompilerAction.cpp
   CompilerInputsAndOutputs.cpp
   CompilerInputsConverter.cpp
   CompilerOptionsConverter.cpp
