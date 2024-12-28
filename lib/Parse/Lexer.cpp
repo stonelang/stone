@@ -1819,8 +1819,10 @@ void Lexer::diagnoseSingleQuoteStringLiteral(const char *TokStart,
                                              const char *TokEnd) {
   assert(*TokStart == '\'' && TokEnd[-1] == '\'');
 
-  // TODO: Not needed -- remove
-  assert(de);
+  // TODO: Not needed 
+  //!getDiags() return 
+
+   assert(de);
 
   auto startLoc = Lexer::getSrcLoc(TokStart);
   auto endLoc = Lexer::getSrcLoc(TokEnd);
@@ -1925,7 +1927,11 @@ void Lexer::lexStringLiteral(unsigned CustomDelimiterLen) {
   if (QuoteChar == '\'') {
     assert(!IsMultilineString && CustomDelimiterLen == 0 &&
            "Single quoted string cannot have custom delimitor, nor multiline");
-    diagnoseSingleQuoteStringLiteral(TokStart, CurPtr);
+
+    //ME(if de check)
+    if(de){
+      diagnoseSingleQuoteStringLiteral(TokStart, CurPtr);
+    }
   }
 
   if (wasErroneous)

@@ -37,7 +37,7 @@ protected:
   DiagnosticTextSlice(DiagnosticTextSliceKind kind) : kind(kind) {}
 
 public:
-  virtual void Merge() {}
+  virtual void Merge(llvm::raw_ostream &Out) {}
 };
 
 class IdentiferTextSlice : public DiagnosticTextSlice {
@@ -200,4 +200,6 @@ void CompilerDiagnosticFormatter::FormatDiagnosticText(
   Slices results;
   DiagnosticTextParser(SM.addMemBufferCopy(InText), SM, Out, FormatArgs)
       .Parse(results);
+
+  /// Merge()
 }
