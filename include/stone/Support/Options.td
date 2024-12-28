@@ -340,4 +340,15 @@ def SkipSubTaskExecution : Flag<["-"], "skip-subtask-execution">,
   InternalDebugOpt,
   HelpText<"Skip execution of subtasks when performing compilation">;
 
+def DiagnosticFormattingStyle : Separate<["-"], "diagnostic-style">,
+  Flags<[CompilerOption, DoesNotAffectIncrementalBuild]>,
+  MetaVarName<"<style>">,
+  HelpText<"The formatting style used when printing diagnostics ('stone' or 'llvm')">;
+
+def DiagnosticFormattingStyleEQ : Joined<["-"], "diagnostic-style=">,
+  Flags<[CompilerOption, DoesNotAffectIncrementalBuild]>,
+  MetaVarName<"<style>">, Alias<DiagnosticFormattingStyle>;
+
+
+
 include "CompilerOptions.td"

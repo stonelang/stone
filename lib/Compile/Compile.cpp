@@ -58,6 +58,7 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   if (status.IsError()) {
     return FinishCompile(Status::Error());
   }
+  printer.setFormattingStyle(invocation.GetDiagnosticOptions().formattingStyle);
 
   CompilerInstance compiler(invocation);
 
