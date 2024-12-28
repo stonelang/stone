@@ -56,6 +56,7 @@ public:
   bool ExecuteAction();
   bool ExecuteAction(CompilerActionKind kind);
   bool ExecuteAction(CompilerAction &compilerAction);
+
 private:
   std::unique_ptr<CompilerAction> ConstructAction(CompilerActionKind kind);
 

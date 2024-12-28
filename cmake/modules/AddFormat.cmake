@@ -25,6 +25,7 @@ set(stone_tools_files
 	${STONE_SOURCE_DIR}/tools/compile/*.cpp  
 	${STONE_SOURCE_DIR}/tools/driver/*.cpp  
 )
+
 set(stone_tests_files
 	${STONE_SOURCE_DIR}/tests/units/Basic/*.cpp 
 	#${STONE_SOURCE_DIR}/tests/units/Gen/*.cpp 
@@ -44,5 +45,6 @@ find_program(CLANG_FORMAT clang-format)
 		-style=llvm
 		${stone_lib_files}
 		${stone_include_files}
+		${STONE_SOURCE_DIR}/tryit/*.cpp
 	)
 endif()

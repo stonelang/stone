@@ -185,6 +185,9 @@ struct DiagnosticInfo final {
   /// This is a note which has a parent error or warning
   bool IsChildNote = false;
 
+  /// Show colors when this DiagnosticInfo is being printed.
+  bool ShowColors = true;
+
   /// Evaluates true when this object stores a diagnostic.
   explicit operator bool() const { return !FormatString.empty(); }
 
@@ -1815,7 +1818,10 @@ protected:
                             StringRef displayName);
 
   void queueBuffer(SrcMgr &sourceMgr, unsigned bufferID);
-  void printDiagnostic(SrcMgr &SM, const DiagnosticInfo &Info);
+  void PrintDiagnosticWithStoneFormattingStyle(SrcMgr &SM,
+                                               const DiagnosticInfo &Info);
+  void PrintDiagnosticWithLLVMFormattingStyle(SrcMgr &SM,
+                                              const DiagnosticInfo &Info);
 };
 
 } // namespace stone

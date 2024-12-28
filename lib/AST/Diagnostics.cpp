@@ -1265,8 +1265,28 @@ public:
 
 } // namespace
 
-void TextDiagnosticPrinter::printDiagnostic(SrcMgr &SM,
-                                            const DiagnosticInfo &Info) {
+void TextDiagnosticPrinter::PrintDiagnosticWithStoneFormattingStyle(
+    SrcMgr &SM, const DiagnosticInfo &Info) {
+  assert(HasDiagnosticFormatter() &&
+         "Compiler formatting requires a diagnostic-formatter!");
+
+
+  // Display the diagnostic.
+  ColoredStream coloredErrs{Stream};
+  llvm::raw_ostream &out = ForceColors ? coloredErrs : Stream;
+
+  llvm::SmallString<256> Text;
+  {
+    llvm::raw_svector_ostream Out(Text);
+    GetDiagnosticFormatter()->FormatDiagnosticText(Out, Info.FormatString,
+                                                 Info.FormatArgs);
+  } 
+  /// Format the message
+  /// Print the message
+}
+
+void TextDiagnosticPrinter::PrintDiagnosticWithLLVMFormattingStyle(
+    SrcMgr &SM, const DiagnosticInfo &Info) {
   // Determine what kind of diagnostic we're emitting.
   llvm::SourceMgr::DiagKind SMKind;
   switch (Info.Kind) {
@@ -1323,20 +1343,21 @@ void TextDiagnosticPrinter::handleDiagnostic(SrcMgr &SM,
   if (Info.Kind == DiagnosticKind::Error) {
     DidErrorOccur = true;
   }
-
   if (SuppressOutput) {
     return;
   }
-
   if (Info.IsChildNote) {
     return;
   }
-
   switch (FormattingStyle) {
   case DiagnosticOptions::FormattingStyle::Stone: {
+    PrintDiagnosticWithStoneFormattingStyle(SM, Info);
   }
   case DiagnosticOptions::FormattingStyle::LLVM: {
-    printDiagnostic(SM, Info);
+    PrintDiagnosticWithLLVMFormattingStyle(SM, Info);
+  }
+  default: {
+    assert(false && "Unknown formatting sytle -- unable to print diagnostic!");
   }
   }
 }
