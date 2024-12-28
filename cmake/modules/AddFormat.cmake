@@ -45,6 +45,6 @@ find_program(CLANG_FORMAT clang-format)
 		-style=llvm
 		${stone_lib_files}
 		${stone_include_files}
-		${STONE_SOURCE_DIR}/tryit/*.cpp
+		${stone_tools_files}
 	)
 endif()

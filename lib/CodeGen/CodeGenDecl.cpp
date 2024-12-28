@@ -52,8 +52,6 @@ void CodeGenModule::EmitFunDecl(FunDecl *funDecl) {
 
   assert(funDecl && "Null FundDecl");
   auto funType = GetFunctionType(funDecl);
-
-  
 }
 
 void CodeGenModule::EmitInterfaceDecl(InterfaceDecl *d) {}

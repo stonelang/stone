@@ -3,34 +3,18 @@
 #include "stone/Parse/ParserResult.h"
 using namespace stone;
 
-template <typename AlignTy> class SliceAllocation {
-public:
-  /// Disable non-placement new.
-  void *operator new(size_t) = delete;
-  void *operator new[](size_t) = delete;
-
-  /// Disable non-placement delete.
-  void operator delete(void *) = delete;
-  void operator delete[](void *) = delete;
-
-  /// Custom version of 'new' that uses the SILModule's BumpPtrAllocator with
-  /// precise alignment knowledge.  This is templated on the allocator type so
-  /// that this doesn't require including SILModule.h.
-  template <typename ContextTy>
-  void *operator new(size_t Bytes, const ContextTy &C,
-                     size_t Alignment = alignof(AlignTy)) {
-    return C.Allocate(Bytes, Alignment);
-  }
-};
 enum class DiagnosticTextSliceKind {
   None = 0,
   Identifer,
   Percent,
   Select,
   Error,
+  LBrace,
+  RBrace,
+
 };
 
-class DiagnosticTextSlice : public SliceAllocation<DiagnosticTextSlice> {
+class DiagnosticTextSlice {
   DiagnosticTextSliceKind kind;
 
 protected:
@@ -41,16 +25,19 @@ public:
 };
 
 class IdentiferTextSlice : public DiagnosticTextSlice {
+  llvm::StringRef Text;
 
 public:
   IdentiferTextSlice(llvm::StringRef Text)
-      : DiagnosticTextSlice(DiagnosticTextSliceKind::Identifer) {}
+      : DiagnosticTextSlice(DiagnosticTextSliceKind::Identifer), Text(Text) {}
 };
 
 class PercentTextSlice : public DiagnosticTextSlice {
+  unsigned index;
 
 public:
-  PercentTextSlice() : DiagnosticTextSlice(DiagnosticTextSliceKind::Percent) {}
+  PercentTextSlice(unsigned index)
+      : DiagnosticTextSlice(DiagnosticTextSliceKind::Percent), index(index) {}
 };
 
 class SelectTextSlice : public DiagnosticTextSlice {
@@ -71,7 +58,9 @@ using Slice = ParserResult<DiagnosticTextSlice>;
 using Slices = llvm::SmallVector<Slice>;
 
 // TODO: It would be nice to use the Parser
-class DiagnosticTextParser {
+struct DiagnosticTextParser {
+
+  SrcMgr &SM;
 
   llvm::raw_ostream &Out;
 
@@ -91,22 +80,17 @@ class DiagnosticTextParser {
   /// The location of the previous tok.
   SrcLoc PrevLoc;
 
-  /// Slices allocator
-  mutable llvm::BumpPtrAllocator allocator;
-
-public:
   DiagnosticTextParser(unsigned BufferID, SrcMgr &SM, llvm::raw_ostream &Out,
                        ArrayRef<DiagnosticArgument> Args)
-      : lexer(BufferID, SM, nullptr, nullptr), Out(Out), Args(Args) {}
-
-  void *Allocate(unsigned long Bytes, unsigned Alignment = 8) const {
-    if (Bytes == 0) {
-      return nullptr;
-    }
-    return allocator.Allocate(Bytes, Alignment);
+      : lexer(BufferID, SM, nullptr, nullptr), SM(SM), Out(Out), Args(Args) {
+    Consume();
+  }
+  DiagnosticTextParser(unsigned BufferID, SrcMgr &SM)
+      : lexer(BufferID, SM, nullptr, nullptr), SM(SM), Out(llvm::errs()),
+        Args({}) {
+    Consume();
   }
 
-public:
   const Token &PeekNext() const { return lexer.Peek(); }
   void Lex(Token &result) { lexer.Lex(result); }
   bool IsEOF() { return CurTok.GetKind() == tok::eof; }
@@ -121,36 +105,29 @@ public:
     return CurLoc;
   }
 
-  SrcLoc Consume(tok kind) {
-    assert(CurTok.Is(kind) && "Consuming wrong curTok type");
-    return Consume();
-  }
-
-  /// If the current curTok is the collectorified kind, consume it and
-  /// return true.  Otherwise, return false without consuming it.
-  bool ConsumeIf(tok kind) {
-    if (CurTok.IsNot(kind)) {
-      return false;
-    }
-    Consume(kind);
-    return true;
-  }
-  /// If the current curTok is the collectorified kind, consume it and
-  /// return true.  Otherwise, return false without consuming it.
-  bool ConsumeIf(tok kind, SrcLoc &consumedLoc) {
-    if (CurTok.IsNot(kind)) {
-      return false;
-    }
-    consumedLoc = Consume(kind);
-    return true;
-  }
-
-public:
   // "words '%0' "
   Slice ParseStringLiteralSlice() {
     Slice result;
-    assert(CurTok.GetKind() == tok::string_literal &&
-           "Expecting string literal");
+
+    // // llvm::StringRef expecting = "'% '"
+    // assert(CurTok.GetKind() == tok::string_literal &&
+    //        "Expecting string literal");
+    // auto CurText = CurTok.GetText();
+
+    // Slices slices;
+    // DiagnosticTextParser(SM.addMemBufferCopy(CurTok.GetText()), SM)
+    //     .Parse(slices);
+
+    // while (!CurText.empty()) {
+    //   if (CurText.find('%') == StringRef::npos) {
+    //     return Slice(CurText)
+    //     Consume();
+    //   }
+    //   auto splits = CurText.split('%');
+    //   if(!splits.second.empty()){
+    //     auto inTextIndex = splits.second.front();
+    //   }
+    // }
 
     Consume();
     return result;
@@ -158,18 +135,44 @@ public:
 
   Slice ParseIdentifierSlice() {
     Slice result;
+
+    // if(CurTok.GetText().equals("select")){
+    //   return ParseSelectSlice();
+    // }
     Consume();
     return result;
   }
 
   // "words  %selection{....}N "
-  void ParsePercent() {}
-  Slice ParseSelection() {
+  Slice ParsePercentSlice() {
+    assert(CurTok.GetKind() == tok::percent && "Expecting a percent");
+
     Slice result;
     Consume();
     return result;
   }
-  unsigned StripIndexFromString(llvm::StringRef CurText) {}
+
+  Slice ParseSelectSlice() {
+    Slice result;
+
+    // assert(CurTok.GetText() == "select" && "requires select modifiers");
+    // assert(PeekNext().IsLBrace() && " requires l_brace");
+    // StartAndEndTracker tracker (CurTok.GetText());
+
+    Consume();
+    return result;
+  }
+  unsigned StripIndexFromString(llvm::StringRef CurText) {
+
+    // size_t percentLoc = CurText.find('%');
+    // if (percentLoc == StringRef::npos) {
+
+    // }
+    // auto separators = CurText.split("%");
+    // if(separators.first == "%"){
+    //   // Check that the next one is a digit
+    // }
+  }
 
   void Parse(Slices &slices) {
 
@@ -195,6 +198,10 @@ public:
       slice = ParseIdentifierSlice();
       break;
     }
+    case tok::percent: {
+      slice = ParsePercentSlice();
+      break;
+    }
     default: {
       Consume();
       break;
@@ -210,7 +217,8 @@ void CompilerDiagnosticFormatter::FormatDiagnosticText(
     DiagnosticFormatOptions FormatOpts) {
 
   Slices results;
-  DiagnosticTextParser(SM.addMemBufferCopy(InText), SM, Out, FormatArgs)
+  DiagnosticTextParser(SM.addMemBufferCopy("Hi '%0' and'%1' and '%2' ok"), SM,
+                       Out, FormatArgs)
       .Parse(results);
 
   /// Merge()
