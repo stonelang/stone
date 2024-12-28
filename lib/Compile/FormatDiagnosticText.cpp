@@ -17,37 +17,36 @@ enum class DiagnosticTextSliceKind {
 
 class DiagnosticTextSlice {
   DiagnosticTextSliceKind kind;
-  llvm::StringRef Text;
+  SrcLoc Loc;
 
 public:
   DiagnosticTextSlice(
       DiagnosticTextSliceKind kind = DiagnosticTextSliceKind::None,
-      llvm::StringRef Text = llvm::StringRef())
-      : kind(kind), Text(Text) {}
+      SrcLoc Loc = SrcLoc())
+      : kind(kind), Loc(Loc) {}
   /// Evaluates true when this object stores a diagnostic.
   explicit operator bool() const {
-    return (kind != DiagnosticTextSliceKind::None && !Text.empty());
+    return (kind != DiagnosticTextSliceKind::None || !Loc.isValid());
   }
 
 public:
   virtual void Format(llvm::raw_ostream &Out) {}
 };
 
-class IdentiferTextSlice : public DiagnosticTextSlice {
+class IdentifierTextSlice : public DiagnosticTextSlice {
 public:
-  IdentiferTextSlice(llvm::StringRef Text)
-      : DiagnosticTextSlice(DiagnosticTextSliceKind::Identifer, Text) {}
+  IdentifierTextSlice(SrcLoc Loc)
+      : DiagnosticTextSlice(DiagnosticTextSliceKind::Identifer, Loc) {}
 
 public:
   void Format(llvm::raw_ostream &Out) override {}
 };
 
 class StringLiteralTextSlice : public DiagnosticTextSlice {
-    
 
 public:
-  StringLiteralTextSlice(llvm::StringRef Text)
-      : DiagnosticTextSlice(DiagnosticTextSliceKind::StringLiteral, Text) {}
+  StringLiteralTextSlice(SrcLoc Loc)
+      : DiagnosticTextSlice(DiagnosticTextSliceKind::StringLiteral, Loc) {}
 
 public:
   void Format(llvm::raw_ostream &Out) override {}
@@ -66,9 +65,6 @@ public:
 //   ErrorTextSlice(llvm::StringRef Text) :
 //   DiagnosticTextSlice(DiagnosticTextSliceKind::Error, Text) {}
 // };
-
-using Slice = ParserResult<DiagnosticTextSlice>;
-using Slices = llvm::SmallVector<Slice>;
 
 // TODO: It would be nice to use the Parser
 struct DiagnosticTextSlicer {
@@ -123,17 +119,12 @@ struct DiagnosticTextSlicer {
 
     assert(CurTok.GetKind() == tok::string_literal &&
            "Expecting string literal");
-    auto CurText = CurTok.GetText();
-
-    Consume();
-    return StringLiteralTextSlice(CurText);
+    return StringLiteralTextSlice(Consume());
   }
 
   DiagnosticTextSlice SliceIdentifier() {
     assert(CurTok.GetKind() == tok::identifier && "Expecting identifier");
-    auto CurText = CurTok.GetText();
-    Consume();
-    return StringLiteralTextSlice(CurText);
+    return IdentifierTextSlice(Consume());
   }
 
   // "words  %selection{....}N "
@@ -203,8 +194,8 @@ void CompilerDiagnosticFormatter::FormatDiagnosticText(
     DiagnosticFormatOptions FormatOpts) {
 
   llvm::SmallVector<DiagnosticTextSlice> results;
-  DiagnosticTextSlicer(SM.addMemBufferCopy("Hi '%0' and'%1' and '%2' ok"), SM,
-                       Out, FormatArgs)
+  DiagnosticTextSlicer(SM.addMemBufferCopy("Hi '%0' and '%1' ok"), SM, Out,
+                       FormatArgs)
       .Slice(results);
 
   /// Merge()
