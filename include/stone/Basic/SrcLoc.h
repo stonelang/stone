@@ -30,6 +30,7 @@ public:
   bool isValid() const { return Value.isValid(); }
   bool isInvalid() const { return !isValid(); }
 
+  explicit operator bool() const { return isValid(); }
   bool operator==(const SrcLoc &RHS) const { return RHS.Value == Value; }
   bool operator!=(const SrcLoc &RHS) const { return !operator==(RHS); }
 

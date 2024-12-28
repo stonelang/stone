@@ -1067,6 +1067,8 @@ private:
   /// diagnostics.
   bool IsPrettyPrintingDecl = false;
 
+  mutable llvm::BumpPtrAllocator allocator;
+
   friend class InFlightDiagnostic;
   friend class DiagnosticTransaction;
   friend class CompoundDiagnosticTransaction;
@@ -1078,6 +1080,16 @@ public:
       : SourceMgr(SourceMgr), ActiveDiagnostic(),
         TransactionStrings(TransactionAllocator) {}
 
+  llvm::BumpPtrAllocator &GetAllocator() { return allocator; }
+  /// Allocate - Allocate memory from the Driver bump pointer.
+  void *Allocate(unsigned long bytes, unsigned alignment = 8) const {
+    if (bytes == 0) {
+      return nullptr;
+    }
+    return allocator.Allocate(bytes, alignment);
+  }
+
+public:
   /// hadAnyError - return true if any *error* diagnostics have been emitted.
   bool hadAnyError() const { return state.hadAnyError(); }
 
@@ -1357,14 +1369,6 @@ public:
   /// \returns true if any diagnostic consumer gave an error while invoking
   //// \c finishProcessing.
   bool finishProcessing();
-
-  /// Format the given diagnostic text and place the result in the given
-  /// buffer.
-  void FormatDiagnosticText(
-      llvm::raw_ostream &Out, StringRef InText,
-      ArrayRef<DiagnosticArgument> FormatArgs,
-      DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions(),
-      DiagnosticFormatter *formatter = nullptr);
 
   /// Format the given diagnostic text and place the result in the given
   /// buffer.

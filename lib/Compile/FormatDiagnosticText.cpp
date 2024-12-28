@@ -1,3 +1,4 @@
+#include "stone/Basic/Allocation.h"
 #include "stone/Compile/CompilerInvocation.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/ParserResult.h"
@@ -15,41 +16,65 @@ enum class DiagnosticTextSliceKind {
 
 };
 
-class DiagnosticTextSlice {
+class DiagnosticTextSlice : public Allocation<DiagnosticTextSlice> {
+
+protected:
   DiagnosticTextSliceKind kind;
-  SrcLoc Loc;
+  llvm::StringRef Text;
 
 public:
   DiagnosticTextSlice(
       DiagnosticTextSliceKind kind = DiagnosticTextSliceKind::None,
-      SrcLoc Loc = SrcLoc())
-      : kind(kind), Loc(Loc) {}
+      llvm::StringRef Text = llvm::StringRef())
+      : kind(kind), Text(Text) {}
+
   /// Evaluates true when this object stores a diagnostic.
   explicit operator bool() const {
-    return (kind != DiagnosticTextSliceKind::None || !Loc.isValid());
+    return (kind != DiagnosticTextSliceKind::None && !Text.empty());
   }
 
 public:
-  virtual void Format(llvm::raw_ostream &Out) {}
+  // Format the text
+  virtual void Format(llvm::raw_ostream &Out,
+                      const DiagnosticArgument *Arg = nullptr) {}
+
+  // Get the text
+  llvm::StringRef GetText() { return Text; }
+
+  ///\return slice kind
+  DiagnosticTextSliceKind GetKind() { return kind; }
 };
 
 class IdentifierTextSlice : public DiagnosticTextSlice {
 public:
-  IdentifierTextSlice(SrcLoc Loc)
-      : DiagnosticTextSlice(DiagnosticTextSliceKind::Identifer, Loc) {}
+  IdentifierTextSlice(llvm::StringRef Text)
+      : DiagnosticTextSlice(DiagnosticTextSliceKind::Identifer, Text) {}
 
 public:
-  void Format(llvm::raw_ostream &Out) override {}
+  void Format(llvm::raw_ostream &Out,
+              const DiagnosticArgument *Arg = nullptr) override {
+    Out << Text;
+  }
 };
 
 class StringLiteralTextSlice : public DiagnosticTextSlice {
 
-public:
-  StringLiteralTextSlice(SrcLoc Loc)
-      : DiagnosticTextSlice(DiagnosticTextSliceKind::StringLiteral, Loc) {}
+  bool PercentFound = false;
+  unsigned PercentIndex;
 
 public:
-  void Format(llvm::raw_ostream &Out) override {}
+  StringLiteralTextSlice(llvm::StringRef Text)
+      : DiagnosticTextSlice(DiagnosticTextSliceKind::StringLiteral, Text) {}
+
+public:
+  void Format(llvm::raw_ostream &Out,
+              const DiagnosticArgument *Arg = nullptr) override {
+
+    size_t PercentLoc = Text.find('%');
+  }
+
+  unsigned GetPercentIndex() { return PercentIndex; }
+  bool HasPercentIndex() { return PercentFound != false; }
 };
 
 // class SelectTextSlice : public DiagnosticTextSlice {
@@ -73,6 +98,8 @@ struct DiagnosticTextSlicer {
 
   llvm::raw_ostream &Out;
 
+  DiagnosticEngine &DE;
+
   llvm::ArrayRef<DiagnosticArgument> Args;
 
   // Keep track of the args we have processed
@@ -89,14 +116,16 @@ struct DiagnosticTextSlicer {
   /// The location of the previous tok.
   SrcLoc PrevLoc;
 
-  DiagnosticTextSlicer(unsigned BufferID, SrcMgr &SM, llvm::raw_ostream &Out,
+  DiagnosticTextSlicer(unsigned BufferID, SrcMgr &SM, DiagnosticEngine &DE,
+                       llvm::raw_ostream &Out,
                        ArrayRef<DiagnosticArgument> Args)
-      : lexer(BufferID, SM, nullptr, nullptr), SM(SM), Out(Out), Args(Args) {
+      : lexer(BufferID, SM, nullptr, nullptr), SM(SM), DE(DE), Out(Out),
+        Args(Args) {
     Consume();
   }
-  DiagnosticTextSlicer(unsigned BufferID, SrcMgr &SM)
-      : lexer(BufferID, SM, nullptr, nullptr), SM(SM), Out(llvm::errs()),
-        Args({}) {
+  DiagnosticTextSlicer(unsigned BufferID, SrcMgr &SM, DiagnosticEngine &DE)
+      : lexer(BufferID, SM, nullptr, nullptr), SM(SM), DE(DE),
+        Out(llvm::errs()), Args({}) {
     Consume();
   }
 
@@ -105,26 +134,38 @@ struct DiagnosticTextSlicer {
   bool IsEOF() { return CurTok.GetKind() == tok::eof; }
   bool IsSlicing() { return !IsEOF(); }
 
-  SrcLoc Consume() {
-    PrevTok = CurTok;
-    auto CurLoc = CurTok.GetLoc();
+  SrcLoc ConsumeImpl() {
     assert(CurTok.IsNot(tok::eof) && "Lexing past eof!");
+    auto CurLoc = CurTok.GetLoc();
+    PrevTok = CurTok;
     Lex(CurTok);
+    return CurLoc;
+  }
+
+  SrcLoc Consume() {
+    auto CurLoc = ConsumeImpl();
     PrevLoc = CurLoc;
     return CurLoc;
   }
 
   // "'%N' "
-  DiagnosticTextSlice SliceStringLiteral() {
+  ParserResult<DiagnosticTextSlice> SliceStringLiteral() {
 
     assert(CurTok.GetKind() == tok::string_literal &&
            "Expecting string literal");
-    return StringLiteralTextSlice(Consume());
+    auto CurText = CurTok.GetText();
+    Consume();
+    return stone::MakeParserResult<StringLiteralTextSlice>(
+        new (DE) StringLiteralTextSlice(CurText));
   }
 
-  DiagnosticTextSlice SliceIdentifier() {
+  ParserResult<DiagnosticTextSlice> SliceIdentifier() {
     assert(CurTok.GetKind() == tok::identifier && "Expecting identifier");
-    return IdentifierTextSlice(Consume());
+
+    auto CurText = CurTok.GetText();
+    Consume();
+    return stone::MakeParserResult<IdentifierTextSlice>(
+        new (DE) IdentifierTextSlice(CurText));
   }
 
   // "words  %selection{....}N "
@@ -158,7 +199,7 @@ struct DiagnosticTextSlicer {
     // }
   }
 
-  void Slice(llvm::SmallVector<DiagnosticTextSlice> &results) {
+  void Slice(llvm::SmallVector<ParserResult<DiagnosticTextSlice>> &results) {
 
     if (CurTok.IsLast()) {
       Consume();
@@ -171,7 +212,7 @@ struct DiagnosticTextSlicer {
     }
   }
 
-  DiagnosticTextSlice SliceText() {
+  ParserResult<DiagnosticTextSlice> SliceText() {
     switch (CurTok.GetKind()) {
     case tok::string_literal: {
       return SliceStringLiteral();
@@ -184,7 +225,7 @@ struct DiagnosticTextSlicer {
       break;
     }
     }
-    return DiagnosticTextSlice();
+    return stone::ParserResult<DiagnosticTextSlice>();
   }
 };
 
@@ -193,10 +234,18 @@ void CompilerDiagnosticFormatter::FormatDiagnosticText(
     ArrayRef<DiagnosticArgument> FormatArgs,
     DiagnosticFormatOptions FormatOpts) {
 
-  llvm::SmallVector<DiagnosticTextSlice> results;
-  DiagnosticTextSlicer(SM.addMemBufferCopy("Hi '%0' and '%1' ok"), SM, Out,
-                       FormatArgs)
-      .Slice(results);
+  // llvm::raw_ostream &out = llvm::errs();
+
+  // llvm::SmallVector<ParserResult<DiagnosticTextSlice>> results;
+  // DiagnosticTextSlicer(SM.addMemBufferCopy("Hi, '%0' is ok"), SM, out,
+  //                      FormatArgs)
+  //     .Slice(results);
+
+  // for (auto slice : results) {
+  //   slice->Format(out);
+  // }
+
+  // out.flush();
 
   /// Merge()
 }

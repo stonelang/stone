@@ -751,19 +751,6 @@ static void formatDiagnosticArgument(StringRef Modifier,
   } // end switch
 }
 
-void DiagnosticEngine::FormatDiagnosticText(llvm::raw_ostream &Out,
-                                            StringRef InText,
-                                            ArrayRef<DiagnosticArgument> Args,
-                                            DiagnosticFormatOptions FormatOpts,
-                                            DiagnosticFormatter *formatter) {
-
-  // if (formatter) {
-  //   formatter->FormatDiagnosticText(Out, InText, Args, FormatOpts);
-  // } else {
-  DiagnosticEngine::formatDiagnosticText(Out, InText, Args, FormatOpts);
-  //}
-}
-
 /// Format the given diagnostic text and place the result in the given
 /// buffer.
 void DiagnosticEngine::formatDiagnosticText(
