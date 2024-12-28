@@ -53,7 +53,7 @@ public:
 public:
   void Format(llvm::raw_ostream &Out,
               const DiagnosticArgument *Arg = nullptr) override {
-    Out << Text;
+    Out << " " << Text;
   }
 };
 
@@ -71,6 +71,8 @@ public:
               const DiagnosticArgument *Arg = nullptr) override {
 
     size_t PercentLoc = Text.find('%');
+
+    Out << " two ";
   }
 
   unsigned GetPercentIndex() { return PercentIndex; }
