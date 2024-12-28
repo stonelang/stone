@@ -91,14 +91,6 @@ class DiagnosticTextParser {
   /// The location of the previous tok.
   SrcLoc PrevLoc;
 
-  /// Leading trivia for \c Tok.
-  /// Always empty if !SF.shouldBuildSyntaxTree().
-  llvm::StringRef LeadingTrivia;
-
-  /// Trailing trivia for \c Tok.
-  /// Always empty if !SF.shouldBuildSyntaxTree().
-  llvm::StringRef TrailingTrivia;
-
   /// Slices allocator
   mutable llvm::BumpPtrAllocator allocator;
 
@@ -117,9 +109,6 @@ public:
 public:
   const Token &PeekNext() const { return lexer.Peek(); }
   void Lex(Token &result) { lexer.Lex(result); }
-  void Lex(Token &result, llvm::StringRef &leading, llvm::StringRef &trailing) {
-    lexer.Lex(result, leading, trailing);
-  }
   bool IsEOF() { return CurTok.GetKind() == tok::eof; }
   bool IsParsing() { return !IsEOF(); }
 
@@ -127,7 +116,7 @@ public:
     PrevTok = CurTok;
     auto CurLoc = CurTok.GetLoc();
     assert(CurTok.IsNot(tok::eof) && "Lexing past eof!");
-    Lex(CurTok, LeadingTrivia, TrailingTrivia);
+    Lex(CurTok);
     PrevLoc = CurLoc;
     return CurLoc;
   }
@@ -203,20 +192,12 @@ public:
   }
 };
 
-static void ParseDiagnosticText(llvm::raw_ostream &Out, StringRef InText,
-                                ArrayRef<DiagnosticArgument> FormatArgs,
-                                DiagnosticFormatOptions FormatOpts, SrcMgr &SM,
-                                Slices &results) {
-
-  DiagnosticTextParser(SM.addMemBufferCopy(InText), SM, Out, FormatArgs)
-      .Parse(results);
-}
-
 void CompilerDiagnosticFormatter::FormatDiagnosticText(
     llvm::raw_ostream &Out, StringRef InText,
     ArrayRef<DiagnosticArgument> FormatArgs,
     DiagnosticFormatOptions FormatOpts) {
 
   Slices results;
-  ParseDiagnosticText(Out, InText, FormatArgs, FormatOpts, SM, results);
+  DiagnosticTextParser(SM.addMemBufferCopy(InText), SM, Out, FormatArgs)
+      .Parse(results);
 }

@@ -38,6 +38,25 @@ void CompilerInvocation::SetTargetTriple(llvm::StringRef triple) {
   langOpts.SetTarget(llvm::Triple(triple));
 }
 
+static Status ParseDiagnosticArgs(DiagnosticOptions &Opts,
+                                  llvm::opt::ArgList &Args,
+                                  DiagnosticEngine &Diags) {
+
+  if (const llvm::opt::Arg *arg =
+          Args.getLastArg(opts::OPT_DiagnosticFormattingStyle)) {
+    StringRef contents = arg->getValue();
+    if (contents == "llvm") {
+      Opts.formattingStyle = DiagnosticOptions::FormattingStyle::LLVM;
+    } else if (contents == "stone") {
+      Opts.formattingStyle = DiagnosticOptions::FormattingStyle::Stone;
+    } else {
+      // Diags.diagnose(SrcLoc(), diag::error_unsupported_option_argument,
+      //                arg->getOption().getPrefixedName(), arg->getValue());
+      return Status::Error();
+    }
+  }
+  return Status();
+}
 static Status ParseCompilerOptions(llvm::opt::InputArgList &args,
                                    LangOptions &langOpts,
                                    CompilerOptions &compilerOpts,
@@ -194,6 +213,11 @@ Status CompilerInvocation::ParseArgs(llvm::ArrayRef<const char *> args) {
   // TODO: Pass MemoryBuffers in ParseCommandLine
   auto status = ParseCompilerOptions(*inputArgList, langOpts, compilerOpts,
                                      GetDiags(), nullptr);
+  if (status.IsErrorOrHasCompletion()) {
+    return status;
+  }
+  status |=
+      ParseDiagnosticArgs(GetDiagnosticOptions(), *inputArgList, GetDiags());
   if (status.IsErrorOrHasCompletion()) {
     return status;
   }

@@ -32,7 +32,7 @@ SrcLoc Parser::ConsumeToken(ParsingNotification notification) {
       GetCodeCompletionCallbacks()->CompletedToken(&curTok);
     }
   }
-  Lex(curTok, leadingTrivia, trailingTrivia);
+  Lex(curTok);
   prevTokLoc = loc;
   return loc;
 }

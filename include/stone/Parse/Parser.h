@@ -180,14 +180,6 @@ class Parser final {
   /// This is the current token being considered by the parser.
   Token curTok;
 
-  /// Leading trivia for \c Tok.
-  /// Always empty if !SF.shouldBuildSyntaxTree().
-  llvm::StringRef leadingTrivia;
-
-  /// Trailing trivia for \c Tok.
-  /// Always empty if !SF.shouldBuildSyntaxTree().
-  llvm::StringRef trailingTrivia;
-
   /// The current curTok hash, or \c None if the parser isn't computing a hash
   /// for the curTok stream.
   std::optional<StableHasher> currentTokenHash;
@@ -266,9 +258,6 @@ public:
 private:
   void AddTopLevelDecl(ParserResult<Decl> result);
   void Lex(Token &result) { lexer->Lex(result); }
-  void Lex(Token &result, llvm::StringRef &leading, llvm::StringRef &trailing) {
-    lexer->Lex(result, leading, trailing);
-  }
 
 public:
   bool IsStartOfDecl();
@@ -481,9 +470,8 @@ public:
   // Routines to save and restore parser state.
 
   ParsingPosition GetParsingPosition() {
-    return ParsingPosition(
-        GetLexer().getStateForBeginningOfToken(curTok, leadingTrivia),
-        prevTokLoc);
+    return ParsingPosition(GetLexer().getStateForBeginningOfToken(curTok),
+                           prevTokLoc);
   }
   ParsingPosition GetParsingPosition(SrcLoc loc, SrcLoc previousLoc) {
     return ParsingPosition(GetLexer().getStateForBeginningOfTokenLoc(loc),
@@ -492,14 +480,15 @@ public:
   void RestoreParsingPosition(ParsingPosition parsingPos,
                               bool enableDiagnostics = false) {
     GetLexer().restoreState(parsingPos.lexingState, enableDiagnostics);
-    Lex(curTok, leadingTrivia, trailingTrivia);
+    Lex(curTok);
+
     prevTokLoc = parsingPos.prevLoc;
   }
 
   void BackTrackParsingPosition(ParsingPosition parsingPos) {
     assert(parsingPos.isValid());
     GetLexer().backtrackToState(parsingPos.lexingState);
-    Lex(curTok, leadingTrivia, trailingTrivia);
+    Lex(curTok);
     prevTokLoc = parsingPos.prevLoc;
   }
 

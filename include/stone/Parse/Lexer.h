@@ -3,7 +3,6 @@
 
 #include "stone/AST/Diagnostics.h"
 #include "stone/Basic/Token.h"
-#include "stone/Parse/Trivia.h"
 #include "stone/Support/LexerBase.h"
 #include "stone/Support/Statistics.h"
 
@@ -22,11 +21,6 @@ enum class CommentRetentionMode {
   None,
   AttachToNextToken,
   ReturnAsTokens,
-};
-
-enum class TriviaRetentionMode {
-  WithoutTrivia,
-  WithTrivia,
 };
 
 enum class HashbangMode : bool {
@@ -81,6 +75,10 @@ class Lexer final : public LexerBase {
   StatsReporter *se;
   LexerState state;
 
+  /// A queue of diagnostics to emit when a token is consumed. We want to queue
+  /// them, as the parser may backtrack and re-lex a token.
+  std::optional<DiagnosticQueue> DiagQueue;
+
   /// Pointer to the first character of the buffer, even in a lexer that
   /// scans a subrange of the buffer.
   const char *BufferStart;
@@ -116,17 +114,6 @@ class Lexer final : public LexerBase {
 
   const CommentRetentionMode RetainComments;
 
-  const TriviaRetentionMode TriviaRetention;
-
-  /// The current leading trivia for the next token.
-  ///
-  /// The StringRef points into the source buffer that is currently being lexed.
-  llvm::StringRef LeadingTrivia;
-
-  /// The current trailing trivia for the next token.
-  /// The StringRef points into the source buffer that is currently being lexed.
-  llvm::StringRef TrailingTrivia;
-
   /// The location at which the comment of the next token starts. \c nullptr if
   /// the next token doesn't have a comment.
   const char *CommentStart;
@@ -145,12 +132,24 @@ class Lexer final : public LexerBase {
   /// Don't use this constructor for other purposes, it does not initialize
   /// everything.
   Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
-        DiagnosticEngine *de, StatsReporter *se, LexerMode LexMode,
-        HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
-        TriviaRetentionMode TriviaRetention);
+        DiagnosticEngine *de, StatsReporter *SE, LexerMode LexMode,
+        HashbangMode HashbangAllowed, CommentRetentionMode RetainComments);
 
   void Lex();
   void initialize(unsigned Offset, unsigned EndOffset);
+
+  /// Retrieve the diagnostic engine for emitting diagnostics for the current
+  /// token.
+  DiagnosticEngine *getTokenDiags() {
+    return DiagQueue ? &DiagQueue->getDiags() : nullptr;
+  }
+
+  /// Retrieve the underlying diagnostic engine we emit diagnostics to. Note
+  /// this should only be used for diagnostics not concerned with the current
+  /// token.
+  DiagnosticEngine *getUnderlyingDiags() const {
+    return DiagQueue ? &DiagQueue->getUnderlyingDiags() : nullptr;
+  }
 
 public:
   //=Lexer options goes here=/
@@ -172,12 +171,10 @@ public:
   ///   means that APIs like GetLocForEndOfToken really ought to take
   ///   this flag; it's just that we don't care that much about fidelity
   ///   when parsing SIL files.
-  Lexer(
-      unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
-      StatsReporter *se, LexerMode LexMode,
-      HashbangMode HashbangAllowed = HashbangMode::Disallowed,
-      CommentRetentionMode RetainComments = CommentRetentionMode::None,
-      TriviaRetentionMode TriviaRetention = TriviaRetentionMode::WithoutTrivia);
+  Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
+        StatsReporter *se, LexerMode LexMode,
+        HashbangMode HashbangAllowed = HashbangMode::Disallowed,
+        CommentRetentionMode RetainComments = CommentRetentionMode::None);
 
   Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
         StatsReporter *se);
@@ -185,8 +182,7 @@ public:
   /// Create a lexer that scans a subrange of the source buffer.
   Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
         StatsReporter *se, LexerMode LexMode, HashbangMode HashbangAllowed,
-        CommentRetentionMode RetainComments,
-        TriviaRetentionMode TriviaRetention, unsigned Offset,
+        CommentRetentionMode RetainComments, unsigned Offset,
         unsigned EndOffset);
 
   /// Create a sub-lexer that lexes from the same buffer, but scans
@@ -205,22 +201,16 @@ public:
 
   /// Lex a token. If \c TriviaRetentionMode is \c WithTrivia, passed pointers
   /// to trivias are populated.
-  void Lex(Token &Result, llvm::StringRef &LeadingTriviaResult,
-           llvm::StringRef &TrailingTriviaResult) {
-    Result = NextToken;
-    if (TriviaRetention == TriviaRetentionMode::WithTrivia) {
-      LeadingTriviaResult = LeadingTrivia;
-      TrailingTriviaResult = TrailingTrivia;
-    }
-    if (Result.IsNot(tok::eof))
-      Lex();
-  }
-
   void Lex(Token &Result) {
-    llvm::StringRef LeadingTrivia, TrailingTrivia;
-    Lex(Result, LeadingTrivia, TrailingTrivia);
-  }
+    Result = NextToken;
+    // if (DiagQueue){
+    //   DiagQueue->emit();
+    // }
 
+    if (Result.IsNot(tok::eof)) {
+      Lex();
+    }
+  }
   /// Reset the lexer's buffer pointer to \p Offset bytes after the buffer
   /// start.
   void resetToOffset(size_t Offset) {
@@ -269,23 +259,16 @@ public:
   /// Returns the lexer state for the beginning of the given token.
   /// After restoring the state, lexer will return this token and continue from
   /// there.
-  LexerState
-  getStateForBeginningOfToken(const Token &Tok,
-                              const StringRef &LeadingTrivia = {}) const {
+  LexerState getStateForBeginningOfToken(const Token &Tok) const {
 
     // If the token has a comment attached to it, rewind to before the comment,
     // not just the start of the token.  This ensures that we will re-lex and
     // reattach the comment to the token if rewound to this state.
     SrcLoc TokStart = Tok.GetCommentStart();
-    if (TokStart.isInvalid())
+    if (TokStart.isInvalid()) {
       TokStart = Tok.GetLoc();
-    auto S = getStateForBeginningOfTokenLoc(TokStart);
-    if (TriviaRetention == TriviaRetentionMode::WithTrivia) {
-      S.leadingTrivia = LeadingTrivia;
-    } else {
-      S.leadingTrivia = StringRef();
     }
-    return S;
+    return getStateForBeginningOfTokenLoc(TokStart);
   }
 
   LexerState getStateForEndOfTokenLoc(SrcLoc Loc) const {
@@ -301,13 +284,12 @@ public:
   void restoreState(LexerState S, bool enableDiagnostics = false) {
     assert(S.IsValid());
     CurPtr = getBufferPtrForSrcLoc(S.loc);
-    // Don't reemit diagnostics while readvancing the lexer.
-    llvm::SaveAndRestore<stone::DiagnosticEngine *> DE(
-        de, enableDiagnostics ? de : nullptr);
     Lex();
-    // Restore Trivia.
-    if (TriviaRetention == TriviaRetentionMode::WithTrivia)
-      LeadingTrivia = S.leadingTrivia;
+
+    // TODO: Don't re-emit diagnostics from readvancing the lexer.
+    if (DiagQueue && !enableDiagnostics) {
+      /// DiagQueue->clear();
+    }
   }
 
   /// Restore the lexer state to a given state that is located before
@@ -594,13 +576,6 @@ public:
   SrcLoc GetLocForEndOfToken(const SrcMgr &sm, SrcLoc loc) override {
     return GetLocForEndOfTokenImpl(sm, loc);
   }
-};
-
-/// A lexer that can lex trivia into its pieces
-class TriviaLexer {
-public:
-  /// Decompose the triva in \p TriviaStr into their pieces.
-  static Trivia lexTrivia(StringRef TriviaStr);
 };
 
 /// Given an ordered token \param Array , get the iterator pointing to the first

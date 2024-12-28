@@ -41,7 +41,8 @@ class DiagnosticEngine;
 //   DiagnosticInstance() {}
 
 // public:
-//   void PrintDiagnostic(DiagnosticClient &printer, DiagnosticEngine &callback);
+//   void PrintDiagnostic(DiagnosticClient &printer, DiagnosticEngine
+//   &callback);
 // };
 
 // class DiagnosticFormatter {
@@ -76,7 +77,8 @@ class DiagnosticEngine;
 //   /// A custom diagnostic formatter to use
 //   virtual DiagnosticFormatter *GetDiagnosticFormatter() { return nullptr; }
 
-//   bool HasDiagnosticFormatter() { return GetDiagnosticFormatter() != nullptr; }
+//   bool HasDiagnosticFormatter() { return GetDiagnosticFormatter() != nullptr;
+//   }
 // };
 
 // class TextDiagnosticClient : public DiagnosticClient {

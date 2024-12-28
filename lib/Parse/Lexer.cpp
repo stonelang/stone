@@ -139,11 +139,10 @@ uint32_t stone::validateUTF8CharacterAndAdvance(const char *&Ptr,
 
 Lexer::Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
              DiagnosticEngine *de, StatsReporter *se, LexerMode LexMode,
-             HashbangMode HashbangAllowed, CommentRetentionMode RetainComments,
-             TriviaRetentionMode TriviaRetention)
+             HashbangMode HashbangAllowed, CommentRetentionMode RetainComments)
     : BufferID(BufferID), sm(sm), de(de), LexMode(LexMode),
       IsHashbangAllowed(HashbangAllowed == HashbangMode::Allowed),
-      RetainComments(RetainComments), TriviaRetention(TriviaRetention) {}
+      RetainComments(RetainComments) {}
 
 void Lexer::initialize(unsigned Offset, unsigned EndOffset) {
   assert(Offset <= EndOffset);
@@ -183,10 +182,9 @@ void Lexer::initialize(unsigned Offset, unsigned EndOffset) {
 
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
              StatsReporter *se, LexerMode LexMode, HashbangMode HashbangAllowed,
-             CommentRetentionMode RetainComments,
-             TriviaRetentionMode TriviaRetention)
+             CommentRetentionMode RetainComments)
     : Lexer(PrincipalCtor(), BufferID, sm, de, se, LexMode, HashbangAllowed,
-            RetainComments, TriviaRetention) {
+            RetainComments) {
 
   unsigned EndOffset = sm.getRangeForBuffer(BufferID).getByteLength();
 
@@ -196,15 +194,14 @@ Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
              StatsReporter *se)
     : Lexer(BufferID, sm, de, se, LexerMode::Stone, HashbangMode::Disallowed,
-            CommentRetentionMode::None, TriviaRetentionMode::WithoutTrivia) {}
+            CommentRetentionMode::None) {}
 
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
              StatsReporter *se, LexerMode LexMode, HashbangMode HashbangAllowed,
-             CommentRetentionMode RetainComments,
-             TriviaRetentionMode TriviaRetention, unsigned Offset,
+             CommentRetentionMode RetainComments, unsigned Offset,
              unsigned EndOffset)
     : Lexer(PrincipalCtor(), BufferID, sm, de, se, LexMode, HashbangAllowed,
-            RetainComments, TriviaRetention) {
+            RetainComments) {
 
   initialize(Offset, EndOffset);
 }
@@ -214,7 +211,7 @@ Lexer::Lexer(Lexer &Parent, LexerState BeginState, LexerState EndState)
             Parent.LexMode,
             Parent.IsHashbangAllowed ? HashbangMode::Allowed
                                      : HashbangMode::Disallowed,
-            Parent.RetainComments, Parent.TriviaRetention) {
+            Parent.RetainComments) {
 
   assert(BufferID == sm.findBufferContainingLoc(BeginState.loc) &&
          "state for the wrong buffer");
@@ -238,7 +235,7 @@ Token Lexer::getTokenAt(SrcLoc Loc) {
          "location from the wrong buffer");
 
   Lexer L(BufferID, sm, de, se, LexMode, HashbangMode::Allowed,
-          CommentRetentionMode::None, TriviaRetentionMode::WithoutTrivia);
+          CommentRetentionMode::None);
 
   L.restoreState(LexerState(Loc));
   return L.Peek();
@@ -260,15 +257,7 @@ void Lexer::formToken(tok Kind, const char *TokStart) {
       CommentLength = TokStart - CommentStart;
     }
   }
-
   StringRef TokenText{TokStart, static_cast<size_t>(CurPtr - TokStart)};
-
-  if (TriviaRetention == TriviaRetentionMode::WithTrivia && Kind != tok::eof) {
-    TrailingTrivia = lexTrivia(/*IsForTrailingTrivia=*/true, CurPtr);
-  } else {
-    TrailingTrivia = StringRef();
-  }
-
   NextToken.SetToken(Kind, TokenText, CommentLength);
 }
 
@@ -2414,6 +2403,11 @@ void Lexer::Lex() {
   assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
          "Current pointer out of range!");
 
+  // If we're re-lexing, clear out any previous diagnostics that weren't
+  // emitted.
+  if (DiagQueue) {
+    // TODO: DiagQueue->clear();
+  }
   const char *LeadingTriviaStart = CurPtr;
   if (CurPtr == BufferStart) {
     if (BufferStart < ContentStart) {
@@ -2426,7 +2420,7 @@ void Lexer::Lex() {
     NextToken.SetAtStartOfLine(false);
   }
 
-  LeadingTrivia = lexTrivia(/*IsForTrailingTrivia=*/false, LeadingTriviaStart);
+  lexTrivia(/*IsForTrailingTrivia=*/false, LeadingTriviaStart);
 
   // Remember the start of the token so we can form the text range.
   const char *TokStart = CurPtr;
@@ -2677,8 +2671,7 @@ Token Lexer::getTokenAtLocation(const SrcMgr &sm, SrcLoc Loc,
   // (making this option irrelevant), or the caller lexed comments and
   // we need to lex just the comment token.
   Lexer L(BufferID, sm, nullptr, nullptr, LexerMode::Stone,
-          HashbangMode::Allowed, commentRetentionMode,
-          TriviaRetentionMode::WithoutTrivia);
+          HashbangMode::Allowed, commentRetentionMode);
 
   L.restoreState(LexerState(Loc));
   return L.Peek();
@@ -2887,8 +2880,8 @@ static SrcLoc getLocForStartOfTokenInBuf(SrcMgr &SM, unsigned BufferID,
                                          unsigned BufferEnd) {
 
   Lexer L(BufferID, SM, nullptr, nullptr, LexerMode::Stone,
-          HashbangMode::Allowed, CommentRetentionMode::None,
-          TriviaRetentionMode::WithoutTrivia, BufferStart, BufferEnd);
+          HashbangMode::Allowed, CommentRetentionMode::None, BufferStart,
+          BufferEnd);
 
   // Lex tokens until we find the token that contains the source location.
   Token Tok;
@@ -3096,139 +3089,6 @@ bool tryAdvanceToEndOfConflictMarker(const char *&CurPtr,
 
   // No end of conflict marker found.
   return false;
-}
-
-Trivia TriviaLexer::lexTrivia(StringRef TriviaStr) {
-  const char *CurPtr = TriviaStr.begin();
-  const char *BufferEnd = TriviaStr.end();
-
-  Trivia Pieces;
-
-  while (CurPtr < BufferEnd) {
-    // Iterate through the trivia and lex them into pieces. In the switch
-    // statement in this loop we can
-    //  - 'continue' if we have successfully lexed a trivia piece to continue
-    //    with the next piece. In this case CurPtr points to the next character
-    //    to be lexed (which is not part of the lexed trivia).
-    //  - 'break' to perform the default handling defined towards the bottom of
-    //    the loop.
-
-    const char *TriviaStart = CurPtr;
-
-    switch (*CurPtr++) {
-    case '\n':
-      Pieces.AppendOrSquash(TriviaKind::Newline, 1);
-      continue;
-    case '\r':
-      if (CurPtr < BufferEnd && CurPtr[0] == '\n') {
-        Pieces.AppendOrSquash(TriviaKind::CarriageReturnLineFeed, 2);
-        ++CurPtr;
-        continue;
-      } else {
-        Pieces.AppendOrSquash(TriviaKind::CarriageReturn, 1);
-        continue;
-      }
-    case ' ':
-      Pieces.AppendOrSquash(TriviaKind::Space, 1);
-      continue;
-    case '\t':
-      Pieces.AppendOrSquash(TriviaKind::Tab, 1);
-      continue;
-    case '\v':
-      Pieces.AppendOrSquash(TriviaKind::VerticalTab, 1);
-      continue;
-    case '\f':
-      Pieces.AppendOrSquash(TriviaKind::Formfeed, 1);
-      continue;
-    case '/':
-      if (CurPtr < BufferEnd && CurPtr[0] == '/') {
-        // '// ...' comment.
-        bool isDocComment = CurPtr[1] == '/';
-        advanceToEndOfLine(CurPtr, BufferEnd);
-        size_t Length = CurPtr - TriviaStart;
-        Pieces.push_back(isDocComment ? TriviaKind::DocLineComment
-                                      : TriviaKind::LineComment,
-                         Length);
-        continue;
-      } else if (CurPtr < BufferEnd && CurPtr[0] == '*') {
-        // '/* ... */' comment.
-        bool isDocComment = CurPtr[1] == '*';
-        skipToEndOfSlashStarComment(CurPtr, BufferEnd);
-        size_t Length = CurPtr - TriviaStart;
-        Pieces.push_back(isDocComment ? TriviaKind::DocBlockComment
-                                      : TriviaKind::BlockComment,
-                         Length);
-        continue;
-      }
-      break;
-    case '#':
-      if (CurPtr < BufferEnd && CurPtr[0] == '!') {
-        // Hashbang '#!/path/to/stone'.
-        advanceToEndOfLine(CurPtr, BufferEnd);
-        size_t Length = CurPtr - TriviaStart;
-        Pieces.push_back(TriviaKind::GarbageText, Length);
-        continue;
-      }
-      break;
-    case '<':
-    case '>':
-      if (tryAdvanceToEndOfConflictMarker(CurPtr, BufferEnd)) {
-        // Conflict marker.
-        size_t Length = CurPtr - TriviaStart;
-        Pieces.push_back(TriviaKind::GarbageText, Length);
-        continue;
-      }
-      break;
-    case '\xEF':
-      if ((CurPtr + 1) < BufferEnd && CurPtr[0] == '\xBB' &&
-          CurPtr[1] == '\xBF') {
-        // BOM marker.
-        CurPtr = CurPtr + 2;
-        size_t Length = CurPtr - TriviaStart;
-        Pieces.push_back(TriviaKind::GarbageText, Length);
-        continue;
-      }
-      break;
-    case 0: {
-      size_t Length = CurPtr - TriviaStart;
-      Pieces.push_back(TriviaKind::GarbageText, Length);
-      continue;
-    }
-    default:
-      break;
-    }
-
-    // Default handling for anything that didn't 'continue' in the above switch
-    // statement.
-
-    for (; CurPtr < BufferEnd; ++CurPtr) {
-      bool HasFoundNextTriviaStart = false;
-      switch (*CurPtr) {
-      case '\n':
-      case '\r':
-      case ' ':
-      case '\t':
-      case '\v':
-      case '\f':
-      case '/':
-      case 0:
-        HasFoundNextTriviaStart = true;
-        break;
-      }
-      if (HasFoundNextTriviaStart) {
-        break;
-      }
-    }
-
-    size_t Length = CurPtr - TriviaStart;
-    Pieces.push_back(TriviaKind::GarbageText, Length);
-    continue;
-  }
-
-  assert(Pieces.getLength() == TriviaStr.size() &&
-         "Not all characters in the source string have been used in trivia "
-         "pieces");
-  return Pieces;
 }
 
 llvm::ArrayRef<Token> stone::slice_token_array(ArrayRef<Token> AllTokens,

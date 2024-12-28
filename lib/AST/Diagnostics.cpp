@@ -1270,7 +1270,6 @@ void TextDiagnosticPrinter::PrintDiagnosticWithStoneFormattingStyle(
   assert(HasDiagnosticFormatter() &&
          "Compiler formatting requires a diagnostic-formatter!");
 
-
   // Display the diagnostic.
   ColoredStream coloredErrs{Stream};
   llvm::raw_ostream &out = ForceColors ? coloredErrs : Stream;
@@ -1279,8 +1278,8 @@ void TextDiagnosticPrinter::PrintDiagnosticWithStoneFormattingStyle(
   {
     llvm::raw_svector_ostream Out(Text);
     GetDiagnosticFormatter()->FormatDiagnosticText(Out, Info.FormatString,
-                                                 Info.FormatArgs);
-  } 
+                                                   Info.FormatArgs);
+  }
   /// Format the message
   /// Print the message
 }
@@ -1352,9 +1351,11 @@ void TextDiagnosticPrinter::handleDiagnostic(SrcMgr &SM,
   switch (FormattingStyle) {
   case DiagnosticOptions::FormattingStyle::Stone: {
     PrintDiagnosticWithStoneFormattingStyle(SM, Info);
+    break;
   }
   case DiagnosticOptions::FormattingStyle::LLVM: {
     PrintDiagnosticWithLLVMFormattingStyle(SM, Info);
+    break;
   }
   default: {
     assert(false && "Unknown formatting sytle -- unable to print diagnostic!");
