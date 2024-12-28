@@ -146,18 +146,30 @@ public:
   }
 
 public:
+  // "words '%0' "
   Slice ParseStringLiteralSlice() {
     Slice result;
     assert(CurTok.GetKind() == tok::string_literal &&
            "Expecting string literal");
 
+    Consume();
     return result;
   }
 
   Slice ParseIdentifierSlice() {
     Slice result;
+    Consume();
     return result;
   }
+
+  // "words  %selection{....}N "
+  void ParsePercent() {}
+  Slice ParseSelection() {
+    Slice result;
+    Consume();
+    return result;
+  }
+  unsigned StripIndexFromString(llvm::StringRef CurText) {}
 
   void Parse(Slices &slices) {
 
@@ -173,7 +185,6 @@ public:
   }
 
   Slice ParseTextSlice() {
-
     Slice slice;
     switch (CurTok.GetKind()) {
     case tok::string_literal: {
@@ -184,10 +195,11 @@ public:
       slice = ParseIdentifierSlice();
       break;
     }
-    default:
+    default: {
+      Consume();
       break;
     }
-
+    }
     return slice;
   }
 };

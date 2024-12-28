@@ -1274,14 +1274,15 @@ void TextDiagnosticPrinter::PrintDiagnosticWithStoneFormattingStyle(
   ColoredStream coloredErrs{Stream};
   llvm::raw_ostream &out = ForceColors ? coloredErrs : Stream;
 
+  // (1) Format the message
   llvm::SmallString<256> Text;
   {
     llvm::raw_svector_ostream Out(Text);
     GetDiagnosticFormatter()->FormatDiagnosticText(Out, Info.FormatString,
                                                    Info.FormatArgs);
   }
-  /// Format the message
-  /// Print the message
+
+  // (2) Print the message
 }
 
 void TextDiagnosticPrinter::PrintDiagnosticWithLLVMFormattingStyle(

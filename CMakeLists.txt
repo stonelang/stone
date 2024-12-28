@@ -504,7 +504,6 @@ endif()
 
 add_subdirectory(lib)
 add_subdirectory(tools)
-add_subdirectory(tryit)
 #add_subdirectory(runtime)
 
 option(STONE_BUILD_EXAMPLES "Build STONE example programs by default." OFF)

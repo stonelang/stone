@@ -10,7 +10,8 @@ CodeGenModule::CodeGenModule(
       moduleNameAndOuptFileName(moduleNameAndOuptFileName),
       codeGenPassMgr(codeGen.GetCodeGenOptions(), nullptr),
       dataLayout(codeGen.GetClangDataLayoutString()),
-      clangCodeGen(CreateClangCodeGen()) {
+      clangCodeGen(CreateClangCodeGen()),
+      llvmModule(*clangCodeGen->GetModule()) {
 
   codeGen.AddCodeGenModule(sourceFile, this);
 

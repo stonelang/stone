@@ -84,8 +84,6 @@ bool ClangImporter::Setup(llvm::ArrayRef<const char *> argv, const char *arg0) {
   clangInstance->createASTContext();
   clangInstance->createASTReader();
 
-  // TODO: Create code generator
-
   return true;
 }
 
