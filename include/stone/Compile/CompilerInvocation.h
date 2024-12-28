@@ -38,7 +38,7 @@ public:
 
   void FormatDiagnosticText(
       llvm::raw_ostream &Out, StringRef InText,
-      ArrayRef<DiagnosticArgument> FormatArgs,
+      ArrayRef<DiagnosticArgument> FormatArgs,DiagnosticEngine& DE,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) override;
 };
 

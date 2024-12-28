@@ -920,7 +920,7 @@ public:
 public:
   virtual void FormatDiagnosticText(
       llvm::raw_ostream &Out, StringRef InText,
-      ArrayRef<DiagnosticArgument> FormatArgs,
+      ArrayRef<DiagnosticArgument> FormatArgs, DiagnosticEngine& DE,
       DiagnosticFormatOptions FormatOpts = DiagnosticFormatOptions()) = 0;
 };
 /// Abstract interface for classes that present diagnostics to the user.
@@ -1823,7 +1823,7 @@ protected:
 
   void queueBuffer(SrcMgr &sourceMgr, unsigned bufferID);
   void PrintDiagnosticWithStoneFormattingStyle(SrcMgr &SM,
-                                               const DiagnosticInfo &Info);
+                                               const DiagnosticInfo &Info, DiagnosticEngine* CB = nullptr);
   void PrintDiagnosticWithLLVMFormattingStyle(SrcMgr &SM,
                                               const DiagnosticInfo &Info);
 };

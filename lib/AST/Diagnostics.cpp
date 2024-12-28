@@ -1084,7 +1084,7 @@ void DiagnosticEngine::emitDiagnostic(const Diagnostic &diagnostic) {
 
     // Now, pass it off to the consumers
     for (auto &consumer : Consumers) {
-      consumer->handleDiagnostic(SourceMgr, *info);
+      consumer->handleDiagnostic(SourceMgr, *info, this);
     }
   }
 
@@ -1253,10 +1253,11 @@ public:
 } // namespace
 
 void TextDiagnosticPrinter::PrintDiagnosticWithStoneFormattingStyle(
-    SrcMgr &SM, const DiagnosticInfo &Info) {
+    SrcMgr &SM, const DiagnosticInfo &Info, DiagnosticEngine* CB) {
   assert(HasDiagnosticFormatter() &&
          "Compiler formatting requires a diagnostic-formatter!");
 
+  assert(CB && "custome stone diagnostic reporting requires a diagnostic engine!");
   // Display the diagnostic.
   ColoredStream coloredErrs{Stream};
   llvm::raw_ostream &out = ForceColors ? coloredErrs : Stream;
@@ -1266,7 +1267,7 @@ void TextDiagnosticPrinter::PrintDiagnosticWithStoneFormattingStyle(
   {
     llvm::raw_svector_ostream Out(Text);
     GetDiagnosticFormatter()->FormatDiagnosticText(Out, Info.FormatString,
-                                                   Info.FormatArgs);
+                                                   Info.FormatArgs, *CB);
   }
 
   // (2) Print the message
@@ -1338,7 +1339,7 @@ void TextDiagnosticPrinter::handleDiagnostic(SrcMgr &SM,
   }
   switch (FormattingStyle) {
   case DiagnosticOptions::FormattingStyle::Stone: {
-    PrintDiagnosticWithStoneFormattingStyle(SM, Info);
+    PrintDiagnosticWithStoneFormattingStyle(SM, Info, CB);
     break;
   }
   case DiagnosticOptions::FormattingStyle::LLVM: {

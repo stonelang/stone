@@ -2,7 +2,7 @@
 #define STONE_DRIVER_DRIVER_COMPILATION_ENTITY_H
 
 #include "stone/Basic/OptionSet.h"
-#include "stone/Driver/DriverAllocation.h"
+#include "stone/Basic/Allocation.h"
 #include "stone/Support/InputFile.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -29,7 +29,7 @@ enum class StepKind : uint8_t {
 using Steps = llvm::SmallVector<const Step *, 3>;
 constexpr size_t StepAlignInBits = 8;
 
-class alignas(1 << StepAlignInBits) Step : public DriverAllocation<Step> {
+class alignas(1 << StepAlignInBits) Step : public Allocation<Step> {
 
   StepKind kind;
   FileType fileType;

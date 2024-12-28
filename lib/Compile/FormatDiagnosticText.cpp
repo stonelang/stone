@@ -231,21 +231,23 @@ struct DiagnosticTextSlicer {
 
 void CompilerDiagnosticFormatter::FormatDiagnosticText(
     llvm::raw_ostream &Out, StringRef InText,
-    ArrayRef<DiagnosticArgument> FormatArgs,
+    ArrayRef<DiagnosticArgument> FormatArgs,DiagnosticEngine& DE,
     DiagnosticFormatOptions FormatOpts) {
 
-  // llvm::raw_ostream &out = llvm::errs();
+  llvm::raw_ostream &console = llvm::errs();
 
-  // llvm::SmallVector<ParserResult<DiagnosticTextSlice>> results;
-  // DiagnosticTextSlicer(SM.addMemBufferCopy("Hi, '%0' is ok"), SM, out,
-  //                      FormatArgs)
-  //     .Slice(results);
+  llvm::SmallVector<ParserResult<DiagnosticTextSlice>> results;
+  DiagnosticTextSlicer(SM.addMemBufferCopy("Hi, '%0' is ok"), SM, DE, console,
+                       FormatArgs)
+      .Slice(results);
 
-  // for (auto slice : results) {
-  //   slice->Format(out);
-  // }
-
-  // out.flush();
+  for (auto slice : results) {
+    if(slice){
+      slice.Get()->Format(console);
+    }
+    //slice.Format(console);
+  }
+  console.flush();
 
   /// Merge()
 }
