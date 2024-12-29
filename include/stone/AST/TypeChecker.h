@@ -1,5 +1,5 @@
-#ifndef STONE_SEM_TYPECHECKER_H
-#define STONE_SEM_TYPECHECKER_H
+#ifndef STONE_AST_TYPECHECKER_H
+#define STONE_AST_TYPECHECKER_H
 
 #include "stone/AST/Decl.h"
 #include "stone/AST/Module.h"

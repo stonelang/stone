@@ -13,7 +13,7 @@
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Parse/CodeCompletionCallbacks.h"
 #include "stone/Parse/Parser.h"
-#include "stone/Sem/TypeChecker.h"
+#include "stone/AST/TypeChecker.h"
 
 #include "stone/Support/Statistics.h"
 

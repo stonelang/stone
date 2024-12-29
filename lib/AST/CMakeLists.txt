@@ -33,6 +33,13 @@ set(stone_ast_sources
 	ClangImporter.cpp
 	ClangAST.cpp
 
+	TypeCheckDecl.cpp      
+  TypeCheckStmt.cpp       
+  TypeCheckVisibility.cpp
+  ImportResolution.cpp    
+  TypeCheckExpr.cpp       
+  TypeCheckType.cpp       
+  TypeChecker.cpp
 
 	LINK_LIBS
 	StoneSupport

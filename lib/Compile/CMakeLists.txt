@@ -12,7 +12,6 @@ set(stone_compile_sources
   LINK_LIBS
   StoneCodeGen
   StoneParse
-  StoneSem
   StoneSupport
   clangFrontend
 
