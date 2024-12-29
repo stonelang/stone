@@ -137,14 +137,14 @@ uint32_t stone::validateUTF8CharacterAndAdvance(const char *&Ptr,
 // Setup and Helper Methods
 //===----------------------------------------------------------------------===//
 
-Lexer::Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
+Lexer::Lexer(const PrincipalLexer &, unsigned BufferID, const SrcMgr &sm,
              DiagnosticEngine *de, StatsReporter *se, LexerMode LexMode,
              HashbangMode HashbangAllowed, CommentRetentionMode RetainComments)
     : BufferID(BufferID), sm(sm), de(de), LexMode(LexMode),
       IsHashbangAllowed(HashbangAllowed == HashbangMode::Allowed),
       RetainComments(RetainComments) {}
 
-void Lexer::initialize(unsigned Offset, unsigned EndOffset) {
+void Lexer::Initialize(unsigned Offset, unsigned EndOffset) {
   assert(Offset <= EndOffset);
 
   // Initialize buffer pointers.
@@ -174,7 +174,7 @@ void Lexer::initialize(unsigned Offset, unsigned EndOffset) {
 
   assert(NextToken.Is(tok::LAST));
 
-  Lex();
+  LexImpl();
   assert((NextToken.IsAtStartOfLine() || CurPtr != BufferStart) &&
          "The token should be at the beginning of the line, "
          "or we should be lexing from the middle of the buffer");
@@ -183,12 +183,12 @@ void Lexer::initialize(unsigned Offset, unsigned EndOffset) {
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
              StatsReporter *se, LexerMode LexMode, HashbangMode HashbangAllowed,
              CommentRetentionMode RetainComments)
-    : Lexer(PrincipalCtor(), BufferID, sm, de, se, LexMode, HashbangAllowed,
+    : Lexer(PrincipalLexer(), BufferID, sm, de, se, LexMode, HashbangAllowed,
             RetainComments) {
 
   unsigned EndOffset = sm.getRangeForBuffer(BufferID).getByteLength();
 
-  initialize(/*Offset=*/0, EndOffset);
+  Initialize(/*Offset=*/0, EndOffset);
 }
 
 Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, DiagnosticEngine *de,
@@ -200,14 +200,14 @@ Lexer::Lexer(unsigned BufferID, const SrcMgr &sm, stone::DiagnosticEngine *de,
              StatsReporter *se, LexerMode LexMode, HashbangMode HashbangAllowed,
              CommentRetentionMode RetainComments, unsigned Offset,
              unsigned EndOffset)
-    : Lexer(PrincipalCtor(), BufferID, sm, de, se, LexMode, HashbangAllowed,
+    : Lexer(PrincipalLexer(), BufferID, sm, de, se, LexMode, HashbangAllowed,
             RetainComments) {
 
-  initialize(Offset, EndOffset);
+  Initialize(Offset, EndOffset);
 }
 
 Lexer::Lexer(Lexer &Parent, LexerState BeginState, LexerState EndState)
-    : Lexer(PrincipalCtor(), Parent.BufferID, Parent.sm, Parent.de, Parent.se,
+    : Lexer(PrincipalLexer(), Parent.BufferID, Parent.sm, Parent.de, Parent.se,
             Parent.LexMode,
             Parent.IsHashbangAllowed ? HashbangMode::Allowed
                                      : HashbangMode::Disallowed,
@@ -221,7 +221,7 @@ Lexer::Lexer(Lexer &Parent, LexerState BeginState, LexerState EndState)
   unsigned Offset = sm.getLocOffsetInBuffer(BeginState.loc, BufferID);
   unsigned EndOffset = sm.getLocOffsetInBuffer(EndState.loc, BufferID);
 
-  initialize(Offset, EndOffset);
+  Initialize(Offset, EndOffset);
 }
 
 InFlightDiagnostic Lexer::diagnose(const char *loc, Diagnostic diatnostic) {
@@ -2405,7 +2405,7 @@ void Lexer::getStringLiteralSegments(const Token &Str,
 // Main Lexer Loop
 //===----------------------------------------------------------------------===//
 
-void Lexer::Lex() {
+void Lexer::LexImpl() {
   assert(CurPtr >= BufferStart && CurPtr <= BufferEnd &&
          "Current pointer out of range!");
 

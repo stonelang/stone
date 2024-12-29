@@ -126,17 +126,17 @@ class Lexer final : public LexerBase {
   Lexer(const Lexer &) = delete;
   void operator=(const Lexer &) = delete;
 
-  struct PrincipalCtor {};
+  struct PrincipalLexer {};
 
   /// The principal constructor used by public constructors below.
   /// Don't use this constructor for other purposes, it does not initialize
   /// everything.
-  Lexer(const PrincipalCtor &, unsigned BufferID, const SrcMgr &sm,
+  Lexer(const PrincipalLexer &, unsigned BufferID, const SrcMgr &sm,
         DiagnosticEngine *de, StatsReporter *SE, LexerMode LexMode,
         HashbangMode HashbangAllowed, CommentRetentionMode RetainComments);
 
-  void Lex();
-  void initialize(unsigned Offset, unsigned EndOffset);
+  void LexImpl();
+  void Initialize(unsigned Offset, unsigned EndOffset);
 
   /// Retrieve the diagnostic engine for emitting diagnostics for the current
   /// token.
@@ -208,7 +208,7 @@ public:
     // }
 
     if (Result.IsNot(tok::eof)) {
-      Lex();
+      LexImpl();
     }
   }
   /// Reset the lexer's buffer pointer to \p Offset bytes after the buffer
@@ -216,7 +216,7 @@ public:
   void resetToOffset(size_t Offset) {
     assert(BufferStart + Offset <= BufferEnd && "Offset after buffer end");
     CurPtr = BufferStart + Offset;
-    Lex();
+    LexImpl();
   }
 
   /// Cut off lexing at the current position. The next token to be lexed will
@@ -284,7 +284,7 @@ public:
   void restoreState(LexerState S, bool enableDiagnostics = false) {
     assert(S.IsValid());
     CurPtr = getBufferPtrForSrcLoc(S.loc);
-    Lex();
+    LexImpl();
 
     // TODO: Don't re-emit diagnostics from readvancing the lexer.
     if (DiagQueue && !enableDiagnostics) {

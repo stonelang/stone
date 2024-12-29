@@ -57,10 +57,13 @@ public:
   }
 };
 
+
 class StringLiteralTextSlice : public DiagnosticTextSlice {
 
   bool PercentFound = false;
   unsigned PercentIndex;
+  
+  //std::optional<unsigned> IndexID;
 
 public:
   StringLiteralTextSlice(llvm::StringRef Text)
@@ -75,8 +78,8 @@ public:
     Out << " two ";
   }
 
-  unsigned GetPercentIndex() { return PercentIndex; }
-  bool HasPercentIndex() { return PercentFound != false; }
+  // unsigned GetPercentIndex() { return PercentIndex; }
+  // bool HasPercentIndex() { return PercentFound != false; }
 };
 
 // class SelectTextSlice : public DiagnosticTextSlice {
@@ -151,7 +154,7 @@ struct DiagnosticTextSlicer {
   }
 
   // "'%N' "
-  ParserResult<DiagnosticTextSlice> SliceStringLiteral() {
+  stone::ParserResult<DiagnosticTextSlice> SliceStringLiteral() {
 
     assert(CurTok.GetKind() == tok::string_literal &&
            "Expecting string literal");
@@ -161,7 +164,7 @@ struct DiagnosticTextSlicer {
         new (DE) StringLiteralTextSlice(CurText));
   }
 
-  ParserResult<DiagnosticTextSlice> SliceIdentifier() {
+  stone::ParserResult<DiagnosticTextSlice> SliceIdentifier() {
     assert(CurTok.GetKind() == tok::identifier && "Expecting identifier");
 
     auto CurText = CurTok.GetText();
@@ -215,6 +218,7 @@ struct DiagnosticTextSlicer {
   }
 
   ParserResult<DiagnosticTextSlice> SliceText() {
+
     switch (CurTok.GetKind()) {
     case tok::string_literal: {
       return SliceStringLiteral();
@@ -247,9 +251,6 @@ void CompilerDiagnosticFormatter::FormatDiagnosticText(
     if(slice){
       slice.Get()->Format(console);
     }
-    //slice.Format(console);
   }
   console.flush();
-
-  /// Merge()
 }

@@ -28,17 +28,6 @@
 
 using namespace stone;
 
-// // Only allow allocation of Decls using the allocator in ASTContext.
-// void *Decl::operator new(std::size_t bytes, const ASTContext &tc,
-//                               unsigned alignment) {
-//   return tc.Allocate(bytes, alignment);
-// }
-
-// // Only allow allocation of Modules using the allocator in ASTContext.
-// void *Module::operator new(std::size_t bytes, const ASTContext &tc,
-//                                 unsigned alignment) {
-//   return tc.Allocate(bytes, alignment);
-// }
 
 template <typename DeclTy, typename AllocatorTy>
 void *Decl::AllocateMemory(AllocatorTy &allocatorTy, size_t baseSize,
