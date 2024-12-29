@@ -9,7 +9,7 @@
 
 namespace stone {
 
-enum class TypeLocKind : UInt8 {
+enum class TypeLocKind : uint8 {
 #define TYPE(id, parent) id,
 #define LAST_TYPE(id) Last_Type = id,
 #define TYPE_RANGE(Id, FirstId, LastId)                                        \

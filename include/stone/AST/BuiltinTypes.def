@@ -25,7 +25,7 @@ BUILTIN_TYPE(Null, NullType)
 
 //===- Unsigned Types -----------------------------------------------------===//
 UNSIGNED_TYPE(Bool, BoolType)
-UNSIGNED_TYPE(UInt8, UInt8Type)
+UNSIGNED_TYPE(uint8, uint8Type)
 UNSIGNED_TYPE(Byte,  ByteType)
 UNSIGNED_TYPE(UInt16, UInt16Type)
 UNSIGNED_TYPE(UInt32, UInt32Type)

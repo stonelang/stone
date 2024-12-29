@@ -18,7 +18,7 @@ class DeclNameTable;
 class GenericDecl;
 // class TypeSourceInfo
 
-enum class DeclNameKind : UInt8 {
+enum class DeclNameKind : uint8 {
   Basic = 0,
   Constructor,
   Destructor,

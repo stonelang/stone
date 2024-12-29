@@ -9,7 +9,7 @@
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeChunk.h"
 #include "stone/AST/TypeKind.h"
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/APFloat.h"
@@ -156,7 +156,7 @@ public:
   ///\return true if the type is uint8
   bool IsUIntType() const;
   ///\return true if the type is uint16
-  bool IsUInt8Type() const;
+  bool Isuint8Type() const;
   ///\return true if the type is uint16
   bool IsUInt16Type() const;
   ///\return true if the type is uint32
@@ -316,11 +316,11 @@ class UIntType : public BuiltinType {
 public:
   UIntType(const ASTContext &sc) : BuiltinType(TypeKind::UInt, sc) {}
 };
-class UInt8Type : public BuiltinType {
+class uint8Type : public BuiltinType {
   friend class ASTContext;
 
 public:
-  UInt8Type(const ASTContext &sc) : BuiltinType(TypeKind::UInt8, sc) {}
+  uint8Type(const ASTContext &sc) : BuiltinType(TypeKind::uint8, sc) {}
 };
 class UInt16Type : public BuiltinType {
   friend class ASTContext;

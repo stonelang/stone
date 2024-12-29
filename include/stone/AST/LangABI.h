@@ -1,11 +1,11 @@
 #ifndef STONE_AST_LANGABI_H
 #define STONE_AST_LANGABI_H
 
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 
 namespace stone {
 
-enum class ConstructorKind : UInt8 {
+enum class ConstructorKind : uint8 {
   None = 0,
   Complete,       ///< Complete object ctor
   Base,           ///< Base object ctor
@@ -14,7 +14,7 @@ enum class ConstructorKind : UInt8 {
   DefaultClosure, ///< Default closure variant of a ctor
 };
 
-enum class DesctructorKind : UInt8 {
+enum class DesctructorKind : uint8 {
   None = 0,
   Complete, ///< Complete object dtor
   Base,     ///< Base object dtor

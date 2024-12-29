@@ -1,9 +1,8 @@
 #ifndef STONE_STATS_STATS_H
 #define STONE_STATS_STATS_H
 
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 #include "stone/Basic/SrcMgr.h"
-
 #include "stone/Basic/ColorStream.h"
 #include "stone/Basic/List.h"
 

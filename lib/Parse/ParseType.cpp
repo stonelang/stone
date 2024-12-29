@@ -32,8 +32,8 @@ bool ParsingBuiltinTypeSpec::IsUIntType() const {
   return IsTypeKind(TypeKind::UInt);
 }
 
-bool ParsingBuiltinTypeSpec::IsUInt8Type() const {
-  return IsTypeKind(TypeKind::UInt8);
+bool ParsingBuiltinTypeSpec::Isuint8Type() const {
+  return IsTypeKind(TypeKind::uint8);
 }
 
 bool ParsingBuiltinTypeSpec::IsUInt16Type() const {
@@ -151,7 +151,7 @@ TypeKind Parser::ResolveBuiltinTypeKind(tok kind) {
   case tok::kw_uint:
     return TypeKind::UInt;
   case tok::kw_uint8:
-    return TypeKind::UInt8;
+    return TypeKind::uint8;
   case tok::kw_uint16:
     return TypeKind::UInt16;
   case tok::kw_uint32:

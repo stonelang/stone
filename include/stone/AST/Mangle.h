@@ -22,7 +22,7 @@ class FunctionDecl;
 class NamedDecl;
 class VarDecl;
 
-enum class MangleContextKind : UInt8 { None = 0, Itanium, Microsoft };
+enum class MangleContextKind : uint8 { None = 0, Itanium, Microsoft };
 
 class MangleContext {
   ASTContext &sc;

@@ -1,12 +1,12 @@
 #ifndef STONE_AST_LINKAGE_H
 #define STONE_AST_LINKAGE_H
 
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 
 namespace stone {
 /// Describes the different kinds of linkage
 /// (C++ [basic.link], C99 6.2.2) that an entity may have.
-enum class LinkageKind : UInt8 {
+enum class LinkageKind : uint8 {
   /// No linkage, which means that the entity is unique and
   /// can only be referred to from within its scope.
   None = 0,
@@ -47,7 +47,7 @@ enum class LinkageKind : UInt8 {
 /// A more specific kind of linkage than enum Linkage.
 ///
 /// This is relevant to CodeGen and Syntax file reading.
-enum class GlobalValueLinkageKind : UInt8 {
+enum class GlobalValueLinkageKind : uint8 {
   None = 0,
   Internal,
   External,

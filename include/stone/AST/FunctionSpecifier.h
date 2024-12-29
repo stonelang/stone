@@ -3,20 +3,20 @@
 
 #include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/SmallVector.h"
 
 namespace stone {
 
-enum class FunctionInlineSpecifierKind : UInt8 {
+enum class FunctionInlineSpecifierKind : uint8 {
   None = 0,
   Inline,
   ForcedInline,
 };
 
-enum class FunctionCallingConvention : UInt8 { Stone, C };
+enum class FunctionCallingConvention : uint8 { Stone, C };
 
 class FunctionSpecifierCollector final {
 

@@ -21,7 +21,7 @@ struct Builtin final {
   const CanType BuiltinInt128Type;
   const CanType BuiltinIntType;
 
-  const CanType BuiltinUInt8Type;
+  const CanType Builtinuint8Type;
   const CanType BuiltinUInt16Type;
   const CanType BuiltinUInt32Type;
   const CanType BuiltinUInt64Type;

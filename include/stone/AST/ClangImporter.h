@@ -1,7 +1,7 @@
 #ifndef STONE_AST_CLANG_IMPORTER_H
 #define STONE_AST_CLANG_IMPORTER_H
 
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 #include "stone/Basic/Status.h"
 
 #include "clang/Basic/TargetInfo.h"

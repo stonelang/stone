@@ -64,7 +64,7 @@ void Parser::RecordTokenHash(llvm::StringRef tokText) {
   if (currentTokenHash) {
     currentTokenHash->combine(tokText);
     // Add null byte to separate tokens.
-    currentTokenHash->combine(UInt8{0});
+    currentTokenHash->combine(uint8{0});
   }
 }
 SrcLoc Parser::ConsumeStartingLess() {

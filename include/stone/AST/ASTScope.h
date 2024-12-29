@@ -12,7 +12,7 @@
 
 namespace stone {
 class Decl;
-enum class ASTScopeKind : UInt8 {
+enum class ASTScopeKind : uint8 {
   None = 0,
   File,
   TopLevelDecl,

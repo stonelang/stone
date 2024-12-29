@@ -3,12 +3,12 @@
 
 // #include "stone/Basic/Located.h"
 
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 
 namespace stone {
 
 // TODO: You may not need this part
-enum class ImportKind : UInt8 {
+enum class ImportKind : uint8 {
   /// import Core.IO;
   Module = 0,
   /// import type Core.IO.OutputStream;

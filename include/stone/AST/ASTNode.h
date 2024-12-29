@@ -1,7 +1,7 @@
 #ifndef STONE_AST_ASTNODE_H
 #define STONE_AST_ASTNODE_H
 
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 
 #include "llvm/ADT/PointerUnion.h"
 
@@ -20,7 +20,7 @@ enum class ExprKind : uint8_t;
 enum class DeclKind : uint8_t;
 enum class StmtKind : uint8_t; // TODO: May not want uint8_t
 
-enum class ASTNodeStatus : UInt8 {
+enum class ASTNodeStatus : uint8 {
   None,
   Created,
   Parsed,

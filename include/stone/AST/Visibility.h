@@ -4,7 +4,7 @@
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/PointerIntPair.h"
@@ -13,7 +13,7 @@
 namespace stone {
 
 class DeclContext;
-enum class VisibilityLevel : UInt8 {
+enum class VisibilityLevel : uint8 {
   None = 0,
   Public,
   Private,

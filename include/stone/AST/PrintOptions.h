@@ -2,7 +2,7 @@
 #define STONE_AST_PRINTOPTIONS_H
 
 #include "stone/AST/Visibility.h"
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 
 #include "llvm/ADT/PointerUnion.h"
 

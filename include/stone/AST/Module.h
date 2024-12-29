@@ -9,7 +9,7 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/OptionSet.h"
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 #include "stone/Basic/Status.h"
 
 #include "llvm/ADT/SmallVector.h"
@@ -126,7 +126,7 @@ private:
 
 public:
   /// Flags that direct how the source file is parsed.
-  enum class ParsingFlags : UInt8 {
+  enum class ParsingFlags : uint8 {
     /// Whether to disable delayed parsing for nominal type, extension, and
     /// function bodies.
     ///

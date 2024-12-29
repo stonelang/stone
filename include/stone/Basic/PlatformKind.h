@@ -2,7 +2,7 @@
 #define STONE_BASIC_PLATFORM_KIND_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/VersionTuple.h"
@@ -12,7 +12,7 @@ namespace stone {
 class LangOptions;
 
 /// Available platforms for the availability attribute.
-enum class PlatformKind : UInt8 {
+enum class PlatformKind : uint8 {
   None,
 #define AVAILABILITY_PLATFORM(X, PrettyName) X,
 #include "stone/Basic/PlatformKind.def"

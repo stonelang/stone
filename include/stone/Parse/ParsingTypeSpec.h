@@ -48,7 +48,7 @@ class Parser;
 //   void NoteDelete(SrcLoc loc);
 // };
 
-// enum class TypeNullabilityKind : UInt8 {
+// enum class TypeNullabilityKind : uint8 {
 //   /// Values of this type can never be null.
 //   NotNullable = 0,
 //   /// Values of this type can be null.
@@ -242,7 +242,7 @@ public:
   ///\return true if the type is uint8
   bool IsUIntType() const;
   ///\return true if the type is uint16
-  bool IsUInt8Type() const;
+  bool Isuint8Type() const;
   ///\return true if the type is uint16
   bool IsUInt16Type() const;
   ///\return true if the type is uint32

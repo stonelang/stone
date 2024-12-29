@@ -2,7 +2,7 @@
 #define STONE_AST_QUAL_TYPE_H
 
 #include "stone/Basic/LLVM.h"
-#include "stone/Basic/STDAlias.h"
+#include "stone/Basic/Basic.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "stone/AST/QualSpecs.h"
@@ -48,12 +48,12 @@ class Type;
 class Type;
 class TypeWalker;
 
-enum class GCKind : UInt8 { None = 0, Weak, Strong };
+enum class GCKind : uint8 { None = 0, Weak, Strong };
 
 /// ref-qualifier associated with a function Type.
 /// This determines whether a member function's "this" object can be an
 /// lvalue, rvalue, or neither.
-enum class RefQualifierKind : UInt8 {
+enum class RefQualifierKind : uint8 {
   /// No ref-qualifier was provided.
   None = 0,
   /// An lvalue ref-qualifier was provided (\c &).
