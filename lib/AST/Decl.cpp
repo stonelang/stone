@@ -28,7 +28,6 @@
 
 using namespace stone;
 
-
 template <typename DeclTy, typename AllocatorTy>
 void *Decl::AllocateMemory(AllocatorTy &allocatorTy, size_t baseSize,
                            bool extraSace) {

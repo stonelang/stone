@@ -1253,11 +1253,12 @@ public:
 } // namespace
 
 void TextDiagnosticPrinter::PrintDiagnosticWithStoneFormattingStyle(
-    SrcMgr &SM, const DiagnosticInfo &Info, DiagnosticEngine* CB) {
+    SrcMgr &SM, const DiagnosticInfo &Info, DiagnosticEngine *CB) {
   assert(HasDiagnosticFormatter() &&
          "Compiler formatting requires a diagnostic-formatter!");
 
-  assert(CB && "custome stone diagnostic reporting requires a diagnostic engine!");
+  assert(CB &&
+         "custome stone diagnostic reporting requires a diagnostic engine!");
   // Display the diagnostic.
   ColoredStream coloredErrs{Stream};
   llvm::raw_ostream &out = ForceColors ? coloredErrs : Stream;

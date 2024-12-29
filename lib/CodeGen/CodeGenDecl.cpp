@@ -22,15 +22,15 @@ public:
 
 void CodeGenModule::EmitSourceFile(SourceFile &sourceFile) {
 
-  for (auto *topLevelDecl : sourceFile.GetTopLevelDecls()) {
-    EmitTopLevelDecl(topLevelDecl);
+  for (auto *globalDecl : sourceFile.GetTopLevelDecls()) {
+    EmitGlobalDecl(globalDecl);
   }
 }
 
-void CodeGenModule::EmitTopLevelDecl(Decl *topLevelDecl) {
+void CodeGenModule::EmitGlobalDecl(Decl *globalDecl) {
 
-  assert(topLevelDecl->IsTopLevel() && "Not a top-level declaration");
-  EmitDecl(topLevelDecl);
+  assert(globalDecl->IsTopLevel() && "Not a top-level declaration");
+  EmitDecl(globalDecl);
 }
 
 void CodeGenModule::EmitDecl(Decl *D) {

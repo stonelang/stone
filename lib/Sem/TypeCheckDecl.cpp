@@ -1,35 +1,44 @@
+#include "stone/AST/ASTVisitor.h"
 #include "stone/Sem/TypeChecker.h"
 
 using namespace stone;
 
-// class DeclChecking final : public DeclVisitor<DeclChecking> {
-//   TypeChecker &checker;
-//   ASTContext &sc;
-//   SourceFile *sf;
+class DeclChecker final : public DeclVisitor<DeclChecker> {
 
-// public:
-//   DeclChecking(TypeChecker &checker, ASTContext &sc, SourceFile *sf)
-//       : checker(checker), sc(sc), sf(sf) {}
+  ASTContext &AC;
+  SourceFile *SF;
 
-// public:
-//   void Visit(Decl *D) {
-//     DeclVisitor<DeclChecking>::Visit(D);
-//     //checker.CheckDecl(D);
-//   }
+public:
+  DeclChecker(ASTContext &AC, SourceFile *SF) : AC(AC), SF(SF) {}
 
-// public:
-//   void VisitFunDecl(FunDecl *funDecl) { checker.CheckAccessLevel(funDecl); }
+public:
+  void Visit(Decl *D) {
+    // DeclVisitor<DeclChecker>::Visit(D);
+    //  checker.CheckDecl(D);
+  }
 
-//   void VisitImportDecl(ImportDecl *importDecl) {}
-//   void VisitIfConfigDecl(IfConfigDecl *ifConfigDecl) {}
-// };
+public:
+  void VisitFunDecl(FunDecl *funDecl) {
+    TypeChecker::CheckVisibilityLevel(funDecl);
+  }
 
-// void TypeChecker::CheckDecl(Decl *d) {
+  // void VisitImportDecl(ImportDecl *importDecl) {}
+  // void VisitIfConfigDecl(IfConfigDecl *ifConfigDecl) {}
+};
 
-//   auto *sf = d->GetDeclContext()->GetParentSourceFile();
-//   DeclChecking(*this, d->GetASTContext(), sf).Visit(d);
-// }
+bool TypeChecker::CheckTopLevelDecls() {
 
-bool TypeChecker::CheckTopLevelDecls() {}
+  // for (auto topLevelDecl : sourceFile.topLevelDecls) {
+  //   if (!CheckTopLevelDecl(topLevelDecl)) {
 
-bool TypeChecker::CheckTopLevelDecl(Decl *topLevelDecl) {}
+  //   sourceFile.SetTypeCheckedStage();
+  // }
+}
+
+bool TypeChecker::CheckTopLevelDecl(Decl *topLevelDecl) { return true; }
+
+bool TypeChecker::CheckDecl(Decl *D) {
+
+  // auto *SF = D->GetDeclContext()->GetParentSourceFile();
+  // DeclChecker(*this, D->GetASTContext(), SF).Visit(d);
+}

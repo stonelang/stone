@@ -1,8 +1,8 @@
 #ifndef STONE_DRIVER_DRIVER_COMPILATION_ENTITY_H
 #define STONE_DRIVER_DRIVER_COMPILATION_ENTITY_H
 
-#include "stone/Basic/OptionSet.h"
 #include "stone/Basic/Allocation.h"
+#include "stone/Basic/OptionSet.h"
 #include "stone/Support/InputFile.h"
 
 #include "llvm/ADT/ArrayRef.h"

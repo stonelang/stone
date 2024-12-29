@@ -57,13 +57,12 @@ public:
   }
 };
 
-
 class StringLiteralTextSlice : public DiagnosticTextSlice {
 
   bool PercentFound = false;
   unsigned PercentIndex;
-  
-  //std::optional<unsigned> IndexID;
+
+  // std::optional<unsigned> IndexID;
 
 public:
   StringLiteralTextSlice(llvm::StringRef Text)
@@ -237,7 +236,7 @@ struct DiagnosticTextSlicer {
 
 void CompilerDiagnosticFormatter::FormatDiagnosticText(
     llvm::raw_ostream &Out, StringRef InText,
-    ArrayRef<DiagnosticArgument> FormatArgs,DiagnosticEngine& DE,
+    ArrayRef<DiagnosticArgument> FormatArgs, DiagnosticEngine &DE,
     DiagnosticFormatOptions FormatOpts) {
 
   llvm::raw_ostream &console = llvm::errs();
@@ -248,7 +247,7 @@ void CompilerDiagnosticFormatter::FormatDiagnosticText(
       .Slice(results);
 
   for (auto slice : results) {
-    if(slice){
+    if (slice) {
       slice.Get()->Format(console);
     }
   }

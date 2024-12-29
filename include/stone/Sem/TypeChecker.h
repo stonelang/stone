@@ -53,12 +53,6 @@ public:
 public:
   // Performs access-related checks for \p D.
   ///
-  /// At a high level, this checks the given declaration's signature does not
-  /// reference any other declarations that are less visible than the
-  /// declaration itself. Related checks may also be performed.
-  void CheckVisibilityLevel(Decl *D);
-
-  void CheckVisibilityLevel(QualType ty);
 
   /// Returns the kind of origin, implementation-only import or SPI declaration,
   /// that restricts exporting \p decl from the given file and context.
@@ -78,6 +72,15 @@ public:
   ///
   /// \returns true if \c t1 is a subtype of \c t2.
   bool IsSubTypeOf(QualType t1, QualType t2, DeclContext *dc);
+
+public:
+  /// At a high level, this checks the given declaration's signature does not
+  /// reference any other declarations that are less visible than the
+  /// declaration itself. Related checks may also be performed.
+  static void CheckVisibilityLevel(Decl *D);
+
+  /// Check the QualType visibility level
+  static void CheckVisibilityLevel(QualType ty);
 };
 
 } // namespace stone
