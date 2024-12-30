@@ -274,6 +274,7 @@ public:
   ParserStatus ParseQualifierList(ParsingDeclSpec &spec);
   ParserStatus ParsePublicVisibilityList(ParsingDeclSpec &spec);
   ParserResult<Decl> ParseDecl(ParsingDeclSpec &spec);
+
   ParserResult<ImportDecl> ParseImportDecl(ParsingDeclSpec &spec);
 
 public:
@@ -282,21 +283,22 @@ public:
 
 private:
   ParserStatus ParseFunctionSignature(ParsingDeclSpec &spec);
-
   ParserStatus ParseFunctionArguments(ParsingDeclSpec &spec);
+  ParserStatus ParseFunctionBody(ParsingDeclSpec &spec);
 
-public:
-  // ParserStatus ParseStorageSpec(ParsingDeclSpec &spec);
-  // ParserStatus ParseVisibilitySpec(ParsingDeclSpec &spec);
-  // ParserStatus ParseBuiltinTypeSpec(ParsingDeclSpec &spec);
-  // ParserStatus ParseNominalTypeSpec(ParsingDeclSpec &spec);
-  // ParserStatus ParseFunctionTypeSpec(ParsingDeclSpec &spec);
+      public :
+      // ParserStatus ParseStorageSpec(ParsingDeclSpec &spec);
+      // ParserStatus ParseVisibilitySpec(ParsingDeclSpec &spec);
+      // ParserStatus ParseBuiltinTypeSpec(ParsingDeclSpec &spec);
+      // ParserStatus ParseNominalTypeSpec(ParsingDeclSpec &spec);
+      // ParserStatus ParseFunctionTypeSpec(ParsingDeclSpec &spec);
 
-  ParserResult<VarDecl> ParseVarDecl(ParsingDeclSpec &spec);
+      ParserResult<VarDecl> ParseVarDecl(ParsingDeclSpec &spec);
 
 public:
   ParserResult<ParsingTypeSpec> ParseType();
   ParserResult<ParsingTypeSpec> ParseType(Diag<> diagID);
+  ParserResult<ParsingTypeSpec> ParseDeclResultType(Diag<> diagID);
   ParserResult<ParsingTypeSpec> ParseBuiltinType(Diag<> diagID);
 
 private:

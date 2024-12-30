@@ -180,26 +180,38 @@ ParserResult<ParsingTypeSpec> Parser::ParseType() {
   return ParseType(diag::expected_type);
 }
 
-ParserResult<ParsingTypeSpec> Parser::ParseType(Diag<> diagID) {
+ParserResult<ParsingTypeSpec> Parser::ParseType(Diag<> message) {
 
   if (GetCurTok().IsBuiltinType()) {
-    return ParseBuiltinType(diagID);
+    return ParseBuiltinType(message);
   }
 
   if (GetCurTok().IsFun()) {
-    return ParseFunctionType(diagID);
+    return ParseFunctionType(message);
   }
 }
 
-ParserResult<ParsingTypeSpec> Parser::ParseBuiltinType(Diag<> diagID) {
+ParserResult<ParsingTypeSpec> Parser::ParseDeclResultType(Diag<> message) {
+  /// TODO: There is more -- return ParseType for now
+  return ParseType(message);
+}
+
+ParserResult<ParsingTypeSpec> Parser::ParseBuiltinType(Diag<> message) {
 
   assert(GetCurTok().IsBuiltinType() &&
          "ParseBuiltinType requires a builtin-type token");
 
+  // (1) Resolve the current token kind to a builtin-type
   auto builtinTypeKind = ResolveBuiltinTypeKind(GetCurTok().GetKind());
+
+  // (2) Create the type spec
   auto builtinParsingTypeSpec =
       CreateParsingBuiltinTypeSpec(builtinTypeKind, ConsumeToken());
+
+  // (3) Resolve the type kind to a real type and update the spec
   builtinParsingTypeSpec->SetType(ResolveBuiltinType(builtinTypeKind));
+
+  // (4) Now, return the spec
   return stone::MakeParserResult<ParsingBuiltinTypeSpec>(
       builtinParsingTypeSpec);
 }

@@ -687,6 +687,9 @@ public:
   }
 
 public:
+  static FunDecl *Create(ASTContext& AC, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
+                         QualType result, DeclContext *parent);
+
   // static FunDecl *Create(DeclSpecifierCollector &collector,
   //                        ASTContext &astContext, DeclContext *parent);
 

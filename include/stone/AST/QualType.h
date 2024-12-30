@@ -1,8 +1,8 @@
 #ifndef STONE_AST_QUAL_TYPE_H
 #define STONE_AST_QUAL_TYPE_H
 
-#include "stone/Basic/LLVM.h"
 #include "stone/Basic/Basic.h"
+#include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "stone/AST/QualSpecs.h"

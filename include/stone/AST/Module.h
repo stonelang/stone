@@ -6,10 +6,10 @@
 #include "stone/AST/ASTWalker.h"
 #include "stone/AST/Decl.h"
 #include "stone/AST/Identifier.h"
+#include "stone/Basic/Basic.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/List.h"
 #include "stone/Basic/OptionSet.h"
-#include "stone/Basic/Basic.h"
 #include "stone/Basic/Status.h"
 
 #include "llvm/ADT/SmallVector.h"

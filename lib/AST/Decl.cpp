@@ -170,26 +170,16 @@ bool FunDecl::IsForward() const { return false; }
 
 bool FunDecl::HasReturn() const { return false; }
 
-// FunDecl *FunDecl::Create(DeclSpecifierCollector &collector,
-//                          ASTContext &astContext, DeclContext *parent) {
-//   size_t size = sizeof(FunDecl);
-//   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
+FunDecl *FunDecl::Create(ASTContext &AC, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
+                         QualType result, DeclContext *parent) {
 
-//   // auto memPtr = Decl::AllocateMemory<FunDecl>(astContext, size);
-//   // auto funDecl = ::new (memPtr) FunDecl(
-//   //     DeclKind::Fun,
-//   collector.GetFunctionSpecifierCollector().GetFunLoc(),
-//   //     collector.GetDeclNameCollector().GetName(),
-//   //     collector.GetDeclNameCollector().GetLoc(),
-//   //     collector.GetTypeSpecifierCollector().GetType(), parent);
+  size_t size = sizeof(FunDecl);
+  // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
+  void *funDeclPtr = Decl::AllocateMemory<FunDecl>(AC, size);
+  auto FD = ::new (funDeclPtr) FunDecl(DeclKind::Fun, funLoc, name, nameLoc, result, parent);
+  return FD;
+}
 
-//   // // call apply on the collector
-//   // funDecl->SetVisibilityLevel(
-//   //     collector.GetAccessSpecifierCollector().GetVisibilityLevel());
-//   // return funDecl;
-
-//   return nullptr;
-// }
 // FunDecl *FunDecl::CreateImplicit(DeclSpecifierCollector &collector,
 //                                  ASTContext &sc, DeclContext *parent) {
 

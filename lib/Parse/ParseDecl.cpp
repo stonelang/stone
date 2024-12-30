@@ -189,10 +189,18 @@ ParserResult<FunDecl> Parser::ParseFunDecl(ParsingDeclSpec &spec) {
 
   // Now, parse the function signature
   status |= ParseFunctionSignature(spec);
-
   if (status.IsError()) {
     return status;
   }
+  status |= ParseFunctionBody(spec);
+
+  // TODO: body check
+
+  // auto FD = FunDecl::Create(parsingDecl, astContext, GetCurDeclContext());
+  // assert(FD);
+
+  //  // Very simple for the time being
+  // return stone::MakeParserResult<Decl>(FD);
 }
 
 ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec) {
@@ -229,9 +237,17 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec) {
 
   parsingFunTypeSpec->SetArrow(arrowLoc);
 
-  // auto retType = ParseType(spec,
-  //     diag::error_expected_type_for_function_result);
+  // Before we check for qualifiers, there should not be any because this is a
+  // function fun Print() -> const T {}
+  // TODO: Check for qualifiers
+  status |= ParseQualifierList(spec);
+  auto resultType =
+      ParseDeclResultType(diag::error_expected_type_for_function_result);
 
+  // Update the decl-spec with the result type
+  parsingFunTypeSpec->SetResultType(resultType.Get());
+
+  // Jsut return success for now
   return MakeParserSuccess();
 }
 
@@ -258,23 +274,45 @@ ParserStatus Parser::ParseFunctionArguments(ParsingDeclSpec &spec) {
   return MakeParserSuccess();
 }
 
+ParserStatus Parser::ParseFunctionBody(ParsingDeclSpec &spec) {
+
+  assert(spec.HasParsingTypeSpec() &&
+         "ParseFunctionSignature requires a type-spec");
+  assert(spec.GetParsingTypeSpec()->IsFunction() &&
+         "ParseFunctionSignature type-pec is not function");
+
+  auto parsingFunTypeSpec = spec.GetParsingFunTypeSpec();
+
+  // TODO:  BraceStmtPair braceStmtPair;
+
+  // This is where you what to start a BracePairDelimeter
+  ParserStatus status;
+  // ParsingScope funBodyScope(*this, ScopeKind::FunctionBody,
+  //                           "parsing fun arguments");
+
+  assert(curTok.Is(tok::l_brace) && "Require '{' brace.");
+  auto lParenLoc = ConsumeToken(tok::l_brace);
+
+  assert(curTok.Is(tok::r_brace) && "Require '}' brace.");
+  auto rParenLoc = ConsumeToken(tok::r_brace);
+
+  // Simple for now
+  auto FB = BraceStmt::Create(lParenLoc, {}, rParenLoc, GetASTContext());
+
+  parsingFunTypeSpec->SetBody(FB);
+
+  // parsingFunTypeSpec->SetBody(functionBody,
+  // FunctionDecl::BodyStatus::Parsed);
+
+  return status;
+}
+
 ParserResult<VarDecl> Parser::ParseVarDecl(ParsingDeclSpec &spec) {
   ParserResult<VarDecl> result;
   auto parsingTypeSpecResult = ParseType();
 
   return result;
 }
-
-// ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec,
-//                                             Identifier basicName,
-//                                             DeclName &fullName) {
-
-//   ParserStatus status;
-//   status |= ParseFunctionArguments(spec);
-
-//   auto retType = ParseType(spec,
-//   diag::error_expected_type_for_function_result);
-// }
 
 // ParserStatus Parser::ParseFunctionArguments(ParsingDeclSpec &spec) {
 

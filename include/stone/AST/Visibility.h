@@ -3,8 +3,8 @@
 
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/TypeAlignment.h"
-#include "stone/Basic/LLVM.h"
 #include "stone/Basic/Basic.h"
+#include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/PointerIntPair.h"

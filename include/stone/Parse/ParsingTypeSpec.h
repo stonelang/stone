@@ -310,6 +310,7 @@ class ParsingFunTypeSpec : public ParsingTypeSpec {
   SrcLoc rParen;
 
   ParsingTypeSpec *resultType = nullptr;
+  BraceStmt *bodyStmt = nullptr;
 
 public:
   ParsingFunTypeSpec(SrcLoc loc)
@@ -318,6 +319,9 @@ public:
 public:
   void SetResultType(ParsingTypeSpec *resultTy) { resultType = resultType; }
   ParsingTypeSpec *GetResultType() { return resultType; }
+
+  void SetBody(BraceStmt *BS) { bodyStmt = BS; }
+  BraceStmt *GetBody() { return bodyStmt; }
 
   void SetArrow(SrcLoc loc) { arrowLoc = loc; }
   SrcLoc GetArrow() { return arrowLoc; }

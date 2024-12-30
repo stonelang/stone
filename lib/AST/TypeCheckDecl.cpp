@@ -12,14 +12,12 @@ public:
   DeclChecker(ASTContext &AC, SourceFile *SF) : AC(AC), SF(SF) {}
 
 public:
-  void Visit(Decl *D) {
-    // DeclVisitor<DeclChecker>::Visit(D);
-    //  checker.CheckDecl(D);
-  }
+  void Visit(Decl *D) { DeclVisitor<DeclChecker>::Visit(D); }
 
 public:
-  void VisitFunDecl(FunDecl *funDecl) {
-    TypeChecker::CheckVisibilityLevel(funDecl);
+  void VisitFunDecl(FunDecl *FD) {
+    TypeChecker::CheckVisibilityLevel(FD);
+    // TypeChecker::CheckParameterList(FD->GetParameters(), FD);
   }
 
   // void VisitImportDecl(ImportDecl *importDecl) {}
@@ -38,7 +36,6 @@ bool TypeChecker::CheckTopLevelDecls() {
 bool TypeChecker::CheckTopLevelDecl(Decl *topLevelDecl) { return true; }
 
 bool TypeChecker::CheckDecl(Decl *D) {
-
-  // auto *SF = D->GetDeclContext()->GetParentSourceFile();
-  // DeclChecker(*this, D->GetASTContext(), SF).Visit(d);
+  auto *SF = D->GetDeclContext()->GetParentSourceFile();
+  DeclChecker(D->GetASTContext(), SF).Visit(D);
 }

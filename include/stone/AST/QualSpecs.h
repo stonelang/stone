@@ -1,8 +1,8 @@
 #ifndef STONE_AST_QUALSPECS_H
 #define STONE_AST_QUALSPECS_H
 
-#include "stone/Basic/LLVM.h"
 #include "stone/Basic/Basic.h"
+#include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/SmallVector.h"

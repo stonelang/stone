@@ -1,8 +1,8 @@
 #ifndef STONE_BASIC_PLATFORM_KIND_H
 #define STONE_BASIC_PLATFORM_KIND_H
 
-#include "stone/Basic/LLVM.h"
 #include "stone/Basic/Basic.h"
+#include "stone/Basic/LLVM.h"
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/VersionTuple.h"

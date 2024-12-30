@@ -2,9 +2,9 @@
 #define STONE_STATS_STATS_H
 
 #include "stone/Basic/Basic.h"
-#include "stone/Basic/SrcMgr.h"
 #include "stone/Basic/ColorStream.h"
 #include "stone/Basic/List.h"
+#include "stone/Basic/SrcMgr.h"
 
 #include "clang/Basic/SourceManager.h"
 
