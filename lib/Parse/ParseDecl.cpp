@@ -194,10 +194,12 @@ ParserResult<FunDecl> Parser::ParseFunDecl(ParsingDeclSpec &spec) {
   }
   status |= ParseFunctionBody(spec);
 
-  // TODO: body check
-
-  // auto FD = FunDecl::Create(parsingDecl, astContext, GetCurDeclContext());
-  // assert(FD);
+  auto FD = FunDecl::Create(
+      GetASTContext(), spec.GetParsingFunTypeSpec()->GetStatic(),
+      spec.GetParsingFunTypeSpec()->GetLoc(), spec.declName,
+      spec.declNameLoc.GetLoc(),
+      spec.GetParsingFunTypeSpec()->GetResultType()->GetType(),
+      GetCurDeclContext());
 
   //  // Very simple for the time being
   // return stone::MakeParserResult<Decl>(FD);

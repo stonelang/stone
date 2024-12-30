@@ -239,7 +239,7 @@ ParserResult<ParsingTypeSpec> Parser::ParseBuiltinType(Diag<> message) {
          "ParseBuiltinType requires a builtin-type token");
 
   // (1) Resolve the current token kind to a builtin-type
-  auto builtinTypeKind = ResolveBuiltinTypeKind(GetCurTok().GetKind());
+  auto builtinTypeKind = Parser::ResolveBuiltinTypeKind(GetCurTok().GetKind());
 
   // (2) Create the type spec
   auto builtinParsingTypeSpec =
