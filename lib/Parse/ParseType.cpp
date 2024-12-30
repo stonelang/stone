@@ -5,12 +5,13 @@
 using namespace stone;
 
 void ParsingTypeSpec::SetType(QualType T) { ty = T; }
-bool ParsingTypeSpec::HasType() const { !ty; }
+bool ParsingTypeSpec::HasType() const { return (!ty ? false : true); }
 
 ParsingBuiltinTypeSpec::ParsingBuiltinTypeSpec(TypeKind kind, SrcLoc loc)
     : ParsingTypeSpec(ParsingTypeSpecKind::Builtin, loc), kind(kind) {
 
-  assert(IsBuiltinType(kind) && "Invalid builtin-type!");
+  assert(ParsingBuiltinTypeSpec::IsBuiltinType(kind) &&
+         "Invalid builtin-type!");
 }
 
 bool ParsingBuiltinTypeSpec::IsInt8Type() const {
@@ -127,7 +128,7 @@ bool ParsingBuiltinTypeSpec::IsVoidType() const {
   return IsTypeKind(TypeKind::Void);
 }
 
-bool ParsingBuiltinTypeSpec::IsBuiltinType(TypeKind kind) const {
+bool ParsingBuiltinTypeSpec::IsBuiltinType(TypeKind kind) {
   switch (kind) {
   case TypeKind::Void:
   case TypeKind::Null:

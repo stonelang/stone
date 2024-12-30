@@ -787,7 +787,7 @@ public:
   // Module *mod = nullptr;
 };
 
-///THINK: join a module -- this is also defined lower 
+/// THINK: join a module -- this is also defined lower
 // class JoinDecl final : public NamedDecl {
 //   SrcLoc joinLoc;
 

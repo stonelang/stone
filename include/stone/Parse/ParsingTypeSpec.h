@@ -218,7 +218,6 @@ class ParsingBuiltinTypeSpec : public ParsingTypeSpec {
   TypeKind kind;
 
   bool IsTypeKind(TypeKind k) const { return (kind == k); }
-  bool IsBuiltinType(TypeKind k) const;
 
 public:
   ParsingBuiltinTypeSpec(TypeKind kind, SrcLoc loc);
@@ -293,6 +292,9 @@ public:
   bool IsAutoType() const;
   ///\return true if the type is void
   bool IsVoidType() const;
+
+public:
+  static bool IsBuiltinType(TypeKind k);
 
 public:
   static bool classof(const ParsingTypeSpec *spec) {
