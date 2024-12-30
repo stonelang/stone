@@ -4,7 +4,11 @@
 
 using namespace stone;
 
-void ParsingTypeSpec::SetType(QualType T) { ty = T; }
+ParsingTypeSpec::ParsingTypeSpec(ParsingTypeSpecKind kind, SrcLoc loc)
+    : kind(kind), loc(loc) {}
+
+void ParsingTypeSpec::SetType(QualType qualType) { ty = qualType; }
+
 bool ParsingTypeSpec::HasType() const { return (!ty ? false : true); }
 
 ParsingBuiltinTypeSpec::ParsingBuiltinTypeSpec(TypeKind kind, SrcLoc loc)
@@ -238,26 +242,18 @@ ParserResult<ParsingTypeSpec> Parser::ParseBuiltinType(Diag<> message) {
   assert(GetCurTok().IsBuiltinType() &&
          "ParseBuiltinType requires a builtin-type token");
 
-  // (1) Resolve the current token kind to a builtin-type
   auto builtinTypeKind = Parser::ResolveBuiltinTypeKind(GetCurTok().GetKind());
-
-  // (2) Create the type spec
-  auto builtinParsingTypeSpec =
+  auto builtinTypeSpec =
       CreateParsingBuiltinTypeSpec(builtinTypeKind, ConsumeToken());
 
-  // (3) Resolve the type kind to a real type and update the spec
-  builtinParsingTypeSpec->SetType(ResolveBuiltinType(builtinTypeKind));
-
-  // (4) Now, return the spec
-  return stone::MakeParserResult<ParsingBuiltinTypeSpec>(
-      builtinParsingTypeSpec);
+  return stone::MakeParserResult<ParsingBuiltinTypeSpec>(builtinTypeSpec);
 }
 
 ParserResult<ParsingTypeSpec> Parser::ParseFunctionType(Diag<> diagID) {
 
   assert(GetCurTok().IsFun() && "ParseFunctionType requires a fun-type token");
-  auto parsingFunTypeSpec = CreateParsingFunTypeSpec(ConsumeToken());
-  return stone::MakeParserResult<ParsingFunTypeSpec>(parsingFunTypeSpec);
+  auto funTypeSpec = CreateParsingFunTypeSpec(ConsumeToken());
+  return stone::MakeParserResult<ParsingFunTypeSpec>(funTypeSpec);
 }
 
 QualType Parser::ResolveBuiltinType(TypeKind typeKind) {
@@ -276,9 +272,16 @@ QualType Parser::ResolveBuiltinType(TypeKind typeKind) {
   llvm_unreachable("Unable to resolve builtin-type");
 }
 
-ParsingBuiltinTypeSpec *Parser::CreateParsingBuiltinTypeSpec(TypeKind kind,
-                                                             SrcLoc loc) {
-  return new (*this) ParsingBuiltinTypeSpec(kind, loc);
+ParsingBuiltinTypeSpec *
+Parser::CreateParsingBuiltinTypeSpec(TypeKind builtinKind, SrcLoc loc) {
+
+  auto builtinTypeSpec = new (*this) ParsingBuiltinTypeSpec(builtinKind, loc);
+
+  auto builtinType = ResolveBuiltinType(builtinKind);
+
+  builtinTypeSpec->SetType(builtinType);
+
+  return builtinTypeSpec;
 }
 
 ParsingFunTypeSpec *Parser::CreateParsingFunTypeSpec(SrcLoc loc) {

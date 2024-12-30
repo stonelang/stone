@@ -1,0 +1,24 @@
+
+struct Electron {
+	public float64 mass; 
+}
+
+Electron::Electron() : Boson(0) {
+
+}
+Electron::Electron(float64 mass) {
+	this.mass = mass; 
+}
+
+Electron::~Electron() {
+}
+
+
+fun Test() -> void {
+
+	Electron* e = new Electron();
+
+	~Test{
+		delete e; 
+	}
+}

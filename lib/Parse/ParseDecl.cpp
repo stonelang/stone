@@ -36,7 +36,7 @@ bool Parser::ParseTopLevelDecls() {
     ParsingDeclSpec spec(*this);
     spec.GetParsingDeclOptions().AddAllowTopLevel();
     auto result = ParseTopLevelDecl(spec);
-    if (!ParsedTopLevelDecl(result)) {
+    if(!ParsedTopLevelDecl(result)){
       return false;
     }
     if (HasCodeCompletionCallbacks()) {
@@ -177,10 +177,10 @@ ParserResult<FunDecl> Parser::ParseFunDecl(ParsingDeclSpec &spec) {
 
   assert(GetCurTok().IsFun() && "ParseFunDecl requires a fun specifier");
 
-  auto parsingTypeSpecResult = ParseType();
-  assert(parsingTypeSpecResult && "Expected a fun type!");
+  auto funTypeSpec = ParseType();
+  assert(funTypeSpec && "Expected a fun type!");
 
-  spec.SetParsingTypeSpec(parsingTypeSpecResult.Get());
+  spec.SetParsingTypeSpec(funTypeSpec.Get());
 
   ParserStatus status;
   SrcLoc basicNameLoc;
@@ -201,8 +201,8 @@ ParserResult<FunDecl> Parser::ParseFunDecl(ParsingDeclSpec &spec) {
       spec.GetParsingFunTypeSpec()->GetResultType()->GetType(),
       GetCurDeclContext());
 
-  //  // Very simple for the time being
-  // return stone::MakeParserResult<Decl>(FD);
+  // Very simple for the time being
+  return stone::MakeParserResult<FunDecl>(FD);
 }
 
 ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec) {
@@ -212,7 +212,7 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec) {
   assert(spec.GetParsingTypeSpec()->IsFunction() &&
          "ParseFunctionSignature type-pec is not function");
 
-  auto parsingFunTypeSpec = spec.GetParsingFunTypeSpec();
+  auto funTypeSpec = spec.GetParsingFunTypeSpec();
 
   ParserStatus status;
 
@@ -237,7 +237,7 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec) {
     return MakeParserError();
   }
 
-  parsingFunTypeSpec->SetArrow(arrowLoc);
+  funTypeSpec->SetArrow(arrowLoc);
 
   // Before we check for qualifiers, there should not be any because this is a
   // function fun Print() -> const T {}
@@ -247,7 +247,7 @@ ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec) {
       ParseDeclResultType(diag::error_expected_type_for_function_result);
 
   // Update the decl-spec with the result type
-  parsingFunTypeSpec->SetResultType(resultType.Get());
+  funTypeSpec->SetResultType(resultType.Get());
 
   // Jsut return success for now
   return MakeParserSuccess();

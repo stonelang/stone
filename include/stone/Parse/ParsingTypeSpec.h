@@ -145,15 +145,14 @@ class ParsingTypeSpec : public ParserAllocation<ParsingTypeSpec> {
   llvm::SmallVector<ParsingTypeChunk, 8> parsingTypeChunks;
 
 protected:
-  ParsingTypeSpec(ParsingTypeSpecKind kind, SrcLoc loc = SrcLoc())
-      : kind(kind), loc(loc) {}
+  ParsingTypeSpec(ParsingTypeSpecKind kind, SrcLoc loc = SrcLoc());
 
 public:
   /// Determine if the primary thype is null
   bool HasType() const;
 
   /// Set the primary type
-  void SetType(QualType ty);
+  void SetType(QualType qualType);
 
   /// Return the primary type
   QualType GetType() { return ty; }
@@ -319,8 +318,13 @@ public:
   ParsingFunTypeSpec(SrcLoc loc)
       : ParsingTypeSpec(ParsingTypeSpecKind::Function, loc) {}
 
+  /// Evaluates true when this object stores a diagnostic.
+  explicit operator bool() const { return resultType != nullptr; }
+
 public:
-  void SetResultType(ParsingTypeSpec *resultTy) { resultType = resultType; }
+  /// TODO: C++ allows resultType = resultType which is something stone can
+  /// check/avoid
+  void SetResultType(ParsingTypeSpec *resultTy) { resultType = resultTy; }
   ParsingTypeSpec *GetResultType() { return resultType; }
 
   void SetBody(BraceStmt *BS) { bodyStmt = BS; }

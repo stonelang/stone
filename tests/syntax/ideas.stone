@@ -74,7 +74,10 @@ public forward fun Launch(const Projectile* projectile) -> bool;
 fun Main() -> int {
 	Projectile p = new Projectile();
 	Launch(p);
-	delete p; 
+
+	~Main{
+		delete p;
+	} 
 }
 public struct Projectile {
 

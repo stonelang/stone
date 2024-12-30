@@ -1,0 +1,8 @@
+
+
+pure struct ElectronOptions {
+	public float64 mass;
+
+	// errro private not allowed for pure struct 
+	private other; 
+}
