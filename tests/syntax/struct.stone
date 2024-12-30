@@ -4,6 +4,28 @@ public struct S0 {
 }
 
 
+
+fun S0::Print() -> void {
+
+}
+
+
+join S0 {
+
+	public S0(int i){
+	}
+	public ~S0() {
+	}
+
+	public fun Create() -> void {
+	}
+
+	public fun Destroy() -> void {
+	}
+}
+
+
+
 fun Main() -> int {
 	
 }

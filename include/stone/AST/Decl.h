@@ -634,6 +634,9 @@ public:
 
 /// Standalone function: fun F0() -> void {}
 class FunDecl : public FunctionDecl {
+
+  SrcLoc staticLoc;
+
   // TODO: You should aonly pass ASTContext and DeclContext
   SrcLoc funLoc;
   bool hasLBrace;
@@ -644,9 +647,10 @@ class FunDecl : public FunctionDecl {
 
   // TODO: We are removing SpecialNameLoc for now.
 public:
-  FunDecl(DeclKind kind, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-          QualType result, DeclContext *parent)
-      : FunctionDecl(kind, name, nameLoc, result, parent) {}
+  FunDecl(DeclKind kind, SrcLoc staticLoc, SrcLoc funLoc, DeclName name,
+          SrcLoc nameLoc, QualType result, DeclContext *parent)
+      : FunctionDecl(kind, name, nameLoc, result, parent), staticLoc(staticLoc),
+        funLoc(funLoc) {}
 
 public:
   bool IsMain() const;
@@ -687,8 +691,9 @@ public:
   }
 
 public:
-  static FunDecl *Create(ASTContext& AC, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-                         QualType result, DeclContext *parent);
+  static FunDecl *Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
+                         DeclName name, SrcLoc nameLoc, QualType result,
+                         DeclContext *parent);
 
   // static FunDecl *Create(DeclSpecifierCollector &collector,
   //                        ASTContext &astContext, DeclContext *parent);
@@ -750,6 +755,9 @@ public:
                           DeclContext *parent = nullptr);
 };
 
+// THINK: struct S { } join S { S() {} ~S() {} fun Print() -> void {} ...}
+class JoinDecl {};
+
 // Declarators and the like
 class StorageDecl : public ValueDecl {
 public:
@@ -779,11 +787,12 @@ public:
   // Module *mod = nullptr;
 };
 
-class JoinDecl final : public NamedDecl {
-  SrcLoc joinLoc;
+///THINK: join a module -- this is also defined lower 
+// class JoinDecl final : public NamedDecl {
+//   SrcLoc joinLoc;
 
-public:
-};
+// public:
+// };
 
 class TrustDecl final
     : public Decl,

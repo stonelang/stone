@@ -150,7 +150,7 @@ protected:
 
 public:
   /// Determine if the primary thype is null
-  bool IsTypeNull();
+  bool HasType() const;
 
   /// Set the primary type
   void SetType(QualType ty);
@@ -218,10 +218,10 @@ class ParsingBuiltinTypeSpec : public ParsingTypeSpec {
   TypeKind kind;
 
   bool IsTypeKind(TypeKind k) const { return (kind == k); }
+  bool IsBuiltinType(TypeKind k) const;
 
 public:
-  ParsingBuiltinTypeSpec(TypeKind kind, SrcLoc loc)
-      : ParsingTypeSpec(ParsingTypeSpecKind::Builtin, loc), kind(kind) {}
+  ParsingBuiltinTypeSpec(TypeKind kind, SrcLoc loc);
   TypeKind GetTypeKind() { return kind; }
 
 public:

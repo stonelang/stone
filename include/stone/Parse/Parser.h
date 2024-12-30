@@ -286,14 +286,14 @@ private:
   ParserStatus ParseFunctionArguments(ParsingDeclSpec &spec);
   ParserStatus ParseFunctionBody(ParsingDeclSpec &spec);
 
-      public :
-      // ParserStatus ParseStorageSpec(ParsingDeclSpec &spec);
-      // ParserStatus ParseVisibilitySpec(ParsingDeclSpec &spec);
-      // ParserStatus ParseBuiltinTypeSpec(ParsingDeclSpec &spec);
-      // ParserStatus ParseNominalTypeSpec(ParsingDeclSpec &spec);
-      // ParserStatus ParseFunctionTypeSpec(ParsingDeclSpec &spec);
+public:
+  // ParserStatus ParseStorageSpec(ParsingDeclSpec &spec);
+  // ParserStatus ParseVisibilitySpec(ParsingDeclSpec &spec);
+  // ParserStatus ParseBuiltinTypeSpec(ParsingDeclSpec &spec);
+  // ParserStatus ParseNominalTypeSpec(ParsingDeclSpec &spec);
+  // ParserStatus ParseFunctionTypeSpec(ParsingDeclSpec &spec);
 
-      ParserResult<VarDecl> ParseVarDecl(ParsingDeclSpec &spec);
+  ParserResult<VarDecl> ParseVarDecl(ParsingDeclSpec &spec);
 
 public:
   ParserResult<ParsingTypeSpec> ParseType();

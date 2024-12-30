@@ -4,9 +4,14 @@
 
 using namespace stone;
 
-bool ParsingTypeSpec::IsTypeNull() {}
+void ParsingTypeSpec::SetType(QualType T) { ty = T; }
+bool ParsingTypeSpec::HasType() const { !ty; }
 
-void ParsingTypeSpec::SetType(QualType ty) {}
+ParsingBuiltinTypeSpec::ParsingBuiltinTypeSpec(TypeKind kind, SrcLoc loc)
+    : ParsingTypeSpec(ParsingTypeSpecKind::Builtin, loc), kind(kind) {
+
+  assert(IsBuiltinType(kind) && "Invalid builtin-type!");
+}
 
 bool ParsingBuiltinTypeSpec::IsInt8Type() const {
   return IsTypeKind(TypeKind::Int8);
@@ -120,6 +125,37 @@ bool ParsingBuiltinTypeSpec::IsAutoType() const {
 }
 bool ParsingBuiltinTypeSpec::IsVoidType() const {
   return IsTypeKind(TypeKind::Void);
+}
+
+bool ParsingBuiltinTypeSpec::IsBuiltinType(TypeKind kind) const {
+  switch (kind) {
+  case TypeKind::Void:
+  case TypeKind::Null:
+  case TypeKind::Auto:
+  case TypeKind::Char:
+  case TypeKind::Char8:
+  case TypeKind::Char16:
+  case TypeKind::Char32:
+  case TypeKind::Int:
+  case TypeKind::Int8:
+  case TypeKind::Int16:
+  case TypeKind::Int32:
+  case TypeKind::Int64:
+  case TypeKind::UInt:
+  case TypeKind::uint8:
+  case TypeKind::UInt16:
+  case TypeKind::UInt32:
+  case TypeKind::UInt64:
+  case TypeKind::Float:
+  case TypeKind::Float32:
+  case TypeKind::Float64:
+  case TypeKind::Complex32:
+  case TypeKind::Complex64:
+  case TypeKind::Imaginary32:
+  case TypeKind::Imaginary64:
+    return true;
+  }
+  return false;
 }
 
 TypeKind Parser::ResolveBuiltinTypeKind(tok kind) {

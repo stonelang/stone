@@ -1,0 +1,17 @@
+public struct S0 {
+}
+
+
+public interface I0 {
+
+}
+join S0 : I0 {
+
+	public S0(int i) {
+	}
+	public ~S0() {
+	}
+	public fun Print() -> void {
+	}
+}
+

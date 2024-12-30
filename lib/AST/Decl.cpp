@@ -170,13 +170,15 @@ bool FunDecl::IsForward() const { return false; }
 
 bool FunDecl::HasReturn() const { return false; }
 
-FunDecl *FunDecl::Create(ASTContext &AC, SrcLoc funLoc, DeclName name, SrcLoc nameLoc,
-                         QualType result, DeclContext *parent) {
+FunDecl *FunDecl::Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
+                         DeclName name, SrcLoc nameLoc, QualType result,
+                         DeclContext *parent) {
 
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
   void *funDeclPtr = Decl::AllocateMemory<FunDecl>(AC, size);
-  auto FD = ::new (funDeclPtr) FunDecl(DeclKind::Fun, funLoc, name, nameLoc, result, parent);
+  auto FD = ::new (funDeclPtr)
+      FunDecl(DeclKind::Fun, staticLoc, funLoc, name, nameLoc, result, parent);
   return FD;
 }
 
