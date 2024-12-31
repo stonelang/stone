@@ -115,7 +115,9 @@ bool stone::PerformAction(CompilerInstance &instance) {
 
   switch (instance.GetPrimaryActionKind()) {
   case CompilerActionKind::Parse: {
-    return stone::PerformParse(instance);
+    return stone::PerformParse(instance, [](CompilerInstance &instance) {
+      return instance.GetInvocation().HasError();
+    });
   }
   case CompilerActionKind::EmitParse: {
     return stone::PerformParse(instance, [&](CompilerInstance &instance) {
@@ -175,6 +177,8 @@ bool stone::PerformParse(CompilerInstance &instance,
   // FrontendStatsTracer actionTracer(instance.GetStats(),
   //                                  GetSelfActionKindString());
 
+  llvm::outs() << "PerformParse" << '\n';
+
   auto CompletedParseSourceFile = [&](CompilerInstance &instance,
                                       SourceFile &sourceFile) -> void {
     if (instance.HasObservation()) {
@@ -193,25 +197,38 @@ bool stone::PerformParse(CompilerInstance &instance,
     CompletedParseSourceFile(instance, sourceFile);
     return true;
   });
-  return true;
+  return callback(instance);
 }
 
 /// \return true if syntax analysis is successful for a specific source file
-bool stone::PerformEmitParse(CompilerInstance &instance) {}
+bool stone::PerformEmitParse(CompilerInstance &instance) {
+  llvm::outs() << "PerformEmitParse" << '\n';
+}
 
 // \return true if syntax analysis is successful
 bool stone::PerformResolveImports(CompilerInstance &instance,
-                                  PerformResolveImportsCallback callback) {}
+                                  PerformResolveImportsCallback callback) {
+  llvm::outs() << "PerformResolveImports" << '\n';
+  return callback(instance);
+}
 
 // \return true if semantic analysis is successful
 bool stone::PerformSemanticAnalysis(CompilerInstance &instance,
-                                    PerformSemanticAnalysisCallback callback) {}
+                                    PerformSemanticAnalysisCallback callback) {
+  llvm::outs() << "PerformSemanticAnalysis" << '\n';
+
+  return callback(instance);
+}
 
 // \return true if emit-ast is true
-bool stone::PerformEmitAST(CompilerInstance &instance) {}
+bool stone::PerformEmitAST(CompilerInstance &instance) {
+  llvm::outs() << "PerformEmitParse" << '\n';
+}
 
 // \return true if the code generation was successfull
-bool stone::CompletedSemanticAnalysis(CompilerInstance &instance) {}
+bool stone::CompletedSemanticAnalysis(CompilerInstance &instance) {
+  llvm::outs() << "CompletedSemanticAnalysis" << '\n';
+}
 
 /// \retyrb true if we compiled an ir file.
 bool stone::PerformCompileLLVM(CompilerInstance &instance) {}
