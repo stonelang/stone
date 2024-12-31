@@ -276,9 +276,7 @@ ParsingBuiltinTypeSpec *
 Parser::CreateParsingBuiltinTypeSpec(TypeKind builtinKind, SrcLoc loc) {
 
   auto builtinTypeSpec = new (*this) ParsingBuiltinTypeSpec(builtinKind, loc);
-
   auto builtinType = ResolveBuiltinType(builtinKind);
-
   builtinTypeSpec->SetType(builtinType);
 
   return builtinTypeSpec;

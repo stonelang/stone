@@ -2,19 +2,19 @@
 #include "stone/AST/Diagnostics.h"
 #include "stone/AST/DiagnosticsCompile.h"
 #include "stone/AST/Module.h"
+#include "stone/AST/TypeChecker.h"
 #include "stone/Basic/About.h"
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/LLVMInit.h"
+#include "stone/CodeGen/CodeGenBackend.h"
+#include "stone/CodeGen/CodeGenContext.h"
+#include "stone/CodeGen/CodeGenModule.h"
+#include "stone/Compile/Compile.h"
 #include "stone/Compile/CompilerAction.h"
 #include "stone/Compile/CompilerInstance.h"
 #include "stone/Compile/CompilerObservation.h"
 #include "stone/Parse/CodeCompletionCallbacks.h"
 #include "stone/Parse/Parser.h"
-#include "stone/AST/TypeChecker.h"
-#include "stone/CodeGen/CodeGenBackend.h"
-#include "stone/CodeGen/CodeGenContext.h"
-#include "stone/CodeGen/CodeGenModule.h"
-#include "stone/Compile/Compile.h"
 #include "stone/Support/Statistics.h"
 
 using namespace stone;
@@ -60,74 +60,107 @@ int stone::Compile(llvm::ArrayRef<const char *> args, const char *arg0,
   }
   printer.setFormattingStyle(invocation.GetDiagnosticOptions().formattingStyle);
 
-  CompilerInstance compiler(invocation);
+  CompilerInstance instance(invocation);
 
-  if (!compiler.HasPrimaryAction()) {
-    // compiler.GetDiags().diagnose(diag::error_no_compile_action);
+  if (!instance.HasPrimaryAction()) {
+    // instance.GetDiags().diagnose(diag::error_no_compile_action);
     return FinishCompile(Status::Error());
   }
 
-  if (compiler.GetInvocation().GetCompilerOptions().IsImmediateAction()) {
-    compiler.ExecuteAction();
+  switch (instance.GetPrimaryActionKind()) {
+  case CompilerActionKind::PrintHelp: {
+    instance.GetInvocation().GetCompilerOptions().PrintHelp();
     return FinishCompile();
   }
-
-  compiler.SetObservation(observation);
-  if (compiler.HasObservation()) {
-    compiler.GetObservation()->CompletedCommandLineParsing(compiler);
+  case CompilerActionKind::PrintHelpHidden: {
+    instance.GetInvocation().GetCompilerOptions().PrintHelp(true);
+    return FinishCompile();
   }
-  // Now, setup the compiler
-  if (!compiler.Setup()) {
+  case CompilerActionKind::PrintVersion: {
+    stone::PrintCompilerVersion();
+    return FinishCompile();
+  }
+  case CompilerActionKind::PrintFeature: {
+    stone::PrintCompilerFeatures();
+    return FinishCompile();
+  }
+  default: {
+    break;
+  }
+  }
+
+  instance.SetObservation(observation);
+  if (instance.HasObservation()) {
+    instance.GetObservation()->CompletedCommandLineParsing(instance);
+  }
+  // Now, setup the instance
+  if (!instance.Setup()) {
     return FinishCompile(Status::Error());
   }
 
-  if (compiler.HasObservation()) {
-    compiler.GetObservation()->CompletedConfiguration(compiler);
+  if (instance.HasObservation()) {
+    instance.GetObservation()->CompletedConfiguration(instance);
   }
-  if (!compiler.ExecuteAction()) {
-    return FinishCompile(Status::Error());
+  if (!PerformCompile(instance)) {
+    return FinishCompile(false);
   }
   return FinishCompile();
 }
 
-bool PrintHelpAction::ExecuteAction() {
-  assert(GetSelfActionKind() == GetPrimaryActionKind() &&
-         "PrintHelpAction has to be the PrimaryAction!");
-
-  instance.GetInvocation().GetCompilerOptions().PrintHelp();
-  return true;
+bool stone::PerformCompile(CompilerInstance &instance) {
+  return PerformAction(instance);
 }
-bool PrintHelpHiddenAction::ExecuteAction() {
-  assert(GetSelfActionKind() == GetPrimaryActionKind() &&
-         "PrintHelpHiddenAction has to be the PrimaryAction!");
+/// \return true if compilie is successful
+bool stone::PerformAction(CompilerInstance &instance) {
 
-  instance.GetInvocation().GetCompilerOptions().PrintHelp(true);
-  return true;
+  switch (instance.GetPrimaryActionKind()) {
+  case CompilerActionKind::Parse: {
+    return stone::PerformParse(instance);
+  }
+  case CompilerActionKind::EmitParse: {
+    return stone::PerformParse(instance, [&](CompilerInstance &instance) {
+      return stone::PerformEmitParse(instance);
+    });
+  }
+  case CompilerActionKind::ResolveImports: {
+    return stone::PerformParse(instance, [&](CompilerInstance &instance) {
+      return stone::PerformResolveImports(instance);
+    });
+  }
+  case CompilerActionKind::TypeCheck: {
+    return stone::PerformSemanticAnalysis(instance);
+  }
+  case CompilerActionKind::EmitAST: {
+    return stone::PerformSemanticAnalysis(
+        instance,
+        [&](CompilerInstance &instance) { return PerformEmitAST(instance); });
+  }
+  case CompilerActionKind::EmitIR:
+  case CompilerActionKind::EmitBC:
+  case CompilerActionKind::EmitModule:
+  case CompilerActionKind::EmitObject:
+  case CompilerActionKind::MergeModules:
+  case CompilerActionKind::EmitAssembly: {
+    return stone::PerformSemanticAnalysis(
+        instance, [&](CompilerInstance &instance) {
+          return CompletedSemanticAnalysis(instance);
+        });
+  }
+  default: {
+    break;
+  }
+  }
 }
-bool PrintVersionAction::ExecuteAction() {
-  assert(GetSelfActionKind() == GetPrimaryActionKind() &&
-         "PrintVersionAction has to be the PrimaryAction!");
 
-  return true;
-}
+/// \return true if syntax analysis is successful
+bool stone::PerformParse(CompilerInstance &instance,
+                         PerformParseCallback callback) {
 
-bool PrintFeatureAction::ExecuteAction() {
-  assert(GetSelfActionKind() == GetPrimaryActionKind() &&
-         "PrintFeatureAction has to be the PrimaryAction!");
+  // FrontendStatsTracer actionTracer(instance.GetStats(),
+  //                                  GetSelfActionKindString());
 
-  return true;
-}
-
-bool ParseAction::ExecuteAction() {
-
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
-
-  instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-    if (!Parser(sourceFile, instance.GetASTContext()).ParseTopLevelDecls()) {
-      return false;
-    }
-    sourceFile.SetParsedStage();
+  auto CompletedParseSourceFile = [&](CompilerInstance &instance,
+                                      SourceFile &sourceFile) -> void {
     if (instance.HasObservation()) {
       auto codeCompletionCallbacks =
           instance.GetObservation()->GetCodeCompletionCallbacks();
@@ -135,183 +168,38 @@ bool ParseAction::ExecuteAction() {
         codeCompletionCallbacks->CompletedParseSourceFile(&sourceFile);
       }
     }
-    return true;
-  });
-  if (HasConsumer()) {
-    GetConsumer()->DepCompleted(this);
-  }
-  return true;
-}
-bool ResolveImportsAction::ExecuteAction() {
-
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
-
-  auto PeformResolveImports = [&](CompilerInstance &instance,
-                                  SourceFile &sourceFile) -> bool {
-    return true;
   };
-
   instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-    if (!PeformResolveImports(instance, sourceFile)) {
+    if (!Parser(sourceFile, instance.GetASTContext()).ParseTopLevelDecls()) {
       return false;
     }
-  });
-  return true;
-}
-void ResolveImportsAction::DepCompleted(CompilerAction *action) {}
-
-bool TypeCheckAction::ExecuteAction() {
-
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
-
-  llvm::outs() << GetSelfActionKindString() << '\n';
-  
-  instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
-    assert(sourceFile.HasParsed() &&
-           "Unable to type-check a source-file that was not parsed.");
-    if (!TypeChecker(sourceFile,
-                     instance.GetInvocation().GetTypeCheckerOptions())
-             .CheckTopLevelDecls()) {
-      return false;
-    }
+    sourceFile.SetParsedStage();
+    CompletedParseSourceFile(instance, sourceFile);
     return true;
   });
-  if (HasConsumer()) {
-    GetConsumer()->DepCompleted(this);
-  }
   return true;
 }
 
-void TypeCheckAction::DepCompleted(CompilerAction *dep) {}
+/// \return true if syntax analysis is successful for a specific source file
+bool stone::PerformEmitParse(CompilerInstance &instance) {}
 
-
-bool EmitCodeAction::ExecuteAction() {}
-
-void EmitCodeAction::AddCodeGenResult(CodeGenResult &&result) {
-  CodeGenResults.push_back(std::move(result));
+// \return true if syntax analysis is successful
+bool stone::PerformResolveImports(CompilerInstance &instance) {
+  stone::PerformParse(instance);
 }
 
-bool EmitIRAction::ExecuteAction() {
-  FrontendStatsTracer actionTracer(instance.GetStats(),
-                                   GetSelfActionKindString());
-
-  llvm::outs() << GetSelfActionKindString() << '\n';
-
-  /// Execute any requirements before executing emit-ir
-  EmitCodeAction::ExecuteAction();
-
-  // auto NotifyCodeGenConsumer = [&](CodeGenResult *result) -> void {
-  //   if (HasConsumer()) {
-  //     if (auto codeGenConsumer = llvm::cast<EmitCodeAction>(GetConsumer())) {
-  //       codeGenConsumer->ConsumeCodeGen(result);
-  //     }
-  //   }
-  // };
-  // if (instance.IsCompileForWholeModule()) {
-  //   // Perform whole modufle
-  //   const PrimaryFileSpecificPaths psps =
-  //       instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
-
-  //   std::vector<std::string> parallelOutputFilenames =
-  //       instance.GetCopyOfOutputFilenames();
-
-  //   llvm::StringRef outputFilename = psps.outputFilename;
-
-  //   CodeGenResult result =
-  //       EmitModuleDecl(instance.GetMainModule(), outputFilename, psps,
-  //                      parallelOutputFilenames, globalHash);
-
-  //   NotifyCodeGenConsumer(&result);
-  //   AddCodeGenResult(std::move(result));
-  // }
-  // if (instance.IsCompileForSourceFile()) {
-
-  //   instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
-  //     // Get the paths for the primary source file.
-  //     const PrimaryFileSpecificPaths psps =
-  //         instance.GetPrimaryFileSpecificPathsForSyntaxFile(primarySourceFile);
-
-  //     llvm::StringRef outputFilename = psps.outputFilename;
-
-  //     CodeGenResult result =
-  //         EmitSourceFile(primarySourceFile, outputFilename, psps,
-  //         globalHash);
-
-  //     if (!result) {
-  //       return false;
-  //     }
-
-  //     NotifyCodeGenConsumer(&result);
-  //     AddCodeGenResult(std::move(result));
-  //   });
-  // }
-  // if (HasConsumer()) {
-  //   GetConsumer()->DepCompleted(this);
-  // }
-
-  // if (ShouldOutput()) {
-  // }
-  return true;
+// \return true if semantic analysis is successful
+bool stone::PerformSemanticAnalysis(CompilerInstance &instance,
+                                    PerformSemanticAnalysisCallback callback) {
+  stone::PerformResolveImports(instance);
 }
 
-CodeGenResult EmitIRAction::EmitSourceFile(SourceFile &primarySourceFile,
-                                           llvm::StringRef moduleName,
-                                           const PrimaryFileSpecificPaths &sps,
-                                           llvm::GlobalVariable *&globalHash) {
+// \return true if emit-ast is true
+bool stone::PerformEmitAST(CompilerInstance &instance) {}
 
-  // assert(
-  //     primarySourceFile.HasTypeChecked() &&
-  //     "Unable to perform ir-gen on a source-file that was not
-  //     type-checked!");
+// \return true if the code generation was successfull
+bool stone::CompletedSemanticAnalysis(CompilerInstance &instance) {}
 
-  // CodeGenContext codeGenContext(instance.GetInvocation().GetCodeGenOptions(),
-  //                               instance.GetASTContext());
+/// \retyrb true if we compiled an ir file.
+bool stone::PerformCompileLLVM(CompilerInstance &instance) {}
 
-  // ModuleNameAndOuptFileName moduleNameAndOuptFileName =
-  //     std::make_pair(moduleName, sps.outputFilename);
-
-  // CodeGenModule codeGenModule(codeGenContext, nullptr,
-  //                             moduleNameAndOuptFileName);
-  // codeGenModule.EmitSourceFile(primarySourceFile);
-
-  // return CodeGenResult(std::move(codeGenContext.llvmContext),
-  //                      std::unique_ptr<llvm::Module>{
-  //                          codeGenModule.GetClangCodeGen().ReleaseModule()},
-  //                      std::move(codeGenContext.llvmTargetMachine),
-  //                      sps.outputFilename, globalHash);
-}
-
-///\return the generated module
-CodeGenResult
-EmitIRAction::EmitModuleDecl(ModuleDecl *moduleDecl, llvm::StringRef moduleName,
-                             const PrimaryFileSpecificPaths &sps,
-                             ArrayRef<std::string> parallelOutputFilenames,
-                             llvm::GlobalVariable *&globalHash) {}
-
-bool EmitObjectAction::ExecuteAction() {
-
-  FrontendStatsTracer emitObjectActionTracer(instance.GetStats(),
-                                             GetSelfActionKindString());
-
-  llvm::outs() << GetSelfActionKindString() << '\n';
-
-  return true;
-}
-
-void EmitObjectAction::ConsumeCodeGen(CodeGenResult *result) {
-
-  // CodeGenBackend::EmitOutputFile(
-  //     instance.GetInvocation().GetCodeGenOptions(), instance.GetASTContext(),
-  //     result->GetLLVMModule(), result->GetOutputFilename());
-}
-
-void EmitObjectAction::DepCompleted(CompilerAction *dep) {
-  // if (dep) {
-  //   assert((GetDepActionKind() == dep->GetSelfActionKind()) &&
-  //          "EmitObjectAction did not call the dependency!");
-  //   if (auto emitCodeAction = llvm::cast<EmitCodeAction>(dep)) {
-  //   }
-  // }
-}

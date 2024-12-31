@@ -46,6 +46,8 @@ class CompilerInstance final {
 
   CompilerObservation *observation = nullptr;
 
+  struct Implementation;
+
 public:
   CompilerInstance(const CompilerInstance &) = delete;
   void operator=(const CompilerInstance &) = delete;
@@ -53,12 +55,6 @@ public:
 public:
   CompilerInstance(CompilerInvocation &invocation);
   bool Setup();
-  bool ExecuteAction();
-  bool ExecuteAction(CompilerActionKind kind);
-  bool ExecuteAction(CompilerAction &compilerAction);
-
-private:
-  std::unique_ptr<CompilerAction> ConstructAction(CompilerActionKind kind);
 
 public:
   bool HasObservation() { return observation != nullptr; }
