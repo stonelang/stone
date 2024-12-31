@@ -8,10 +8,6 @@ set(stone_compile_sources
   CompilerOptionsConverter.cpp
   CompilerOutputsConverter.cpp
   FormatDiagnosticText.cpp
-  PerformEmitCode.cpp
-  PerformParseSourceFile.cpp
-  PerformTypeChecking.cpp
-  PerformTypeResolution.cpp
 
   LINK_LIBS
   StoneCodeGen

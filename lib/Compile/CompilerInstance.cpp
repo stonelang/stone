@@ -4,7 +4,6 @@
 #include "stone/Basic/Defer.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Compile/Compile.h"
 #include "stone/Compile/CompilerAction.h"
 #include "stone/Compile/CompilerInputFile.h"
 #include "stone/Compile/CompilerInvocation.h"

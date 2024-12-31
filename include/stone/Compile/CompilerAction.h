@@ -25,7 +25,7 @@ public:
   virtual bool ExecuteAction() = 0;
 
   /// Finish any post steps after execution
-  virtual bool FinishAction() {}
+  virtual bool FinishAction() { return true; }
 
   /// Every exeuction must have a self action
   virtual CompilerActionKind GetSelfActionKind() const = 0;
