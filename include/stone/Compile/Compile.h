@@ -29,15 +29,20 @@ bool PerformParse(CompilerInstance &instance,
 /// \return true if syntax analysis is successful for a specific source file
 bool PerformEmitParse(CompilerInstance &instance);
 
+using PerformResolveImportsCallback =
+    llvm::function_ref<bool(CompilerInstance &)>;
+
 // \return true if syntax analysis is successful
-bool PerformResolveImports(CompilerInstance &instance);
+bool PerformResolveImports(CompilerInstance &instance,
+                           PerformResolveImportsCallback callback = nullptr);
 
 using PerformSemanticAnalysisCallback =
     llvm::function_ref<bool(CompilerInstance &)>;
 
 // \return true if semantic analysis is successful
-bool PerformSemanticAnalysis(CompilerInstance &instance,
-                             PerformSemanticAnalysisCallback callback = nullptr);
+bool PerformSemanticAnalysis(
+    CompilerInstance &instance,
+    PerformSemanticAnalysisCallback callback = nullptr);
 
 // \return true if emit-ast is true
 bool PerformEmitAST(CompilerInstance &instance);

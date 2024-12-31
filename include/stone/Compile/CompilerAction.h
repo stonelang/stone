@@ -11,8 +11,5 @@ class CodeGenResult;
 class CompilerInstance;
 class CompilerObservation;
 
-  
-
-
 } // namespace stone
 #endif

@@ -128,12 +128,23 @@ bool stone::PerformAction(CompilerInstance &instance) {
     });
   }
   case CompilerActionKind::TypeCheck: {
-    return stone::PerformSemanticAnalysis(instance);
+    return stone::PerformParse(instance, [&](CompilerInstance &instance) {
+      return stone::PerformResolveImports(
+          instance, [&](CompilerInstance &instance) {
+            return stone::PerformSemanticAnalysis(instance);
+          });
+    });
   }
   case CompilerActionKind::EmitAST: {
-    return stone::PerformSemanticAnalysis(
-        instance,
-        [&](CompilerInstance &instance) { return PerformEmitAST(instance); });
+    return stone::PerformParse(instance, [&](CompilerInstance &instance) {
+      return stone::PerformResolveImports(
+          instance, [&](CompilerInstance &instance) {
+            return stone::PerformSemanticAnalysis(
+                instance, [&](CompilerInstance &instance) {
+                  return PerformEmitAST(instance);
+                });
+          });
+    });
   }
   case CompilerActionKind::EmitIR:
   case CompilerActionKind::EmitBC:
@@ -141,10 +152,15 @@ bool stone::PerformAction(CompilerInstance &instance) {
   case CompilerActionKind::EmitObject:
   case CompilerActionKind::MergeModules:
   case CompilerActionKind::EmitAssembly: {
-    return stone::PerformSemanticAnalysis(
-        instance, [&](CompilerInstance &instance) {
-          return CompletedSemanticAnalysis(instance);
-        });
+    return stone::PerformParse(instance, [&](CompilerInstance &instance) {
+      return stone::PerformResolveImports(
+          instance, [&](CompilerInstance &instance) {
+            return stone::PerformSemanticAnalysis(
+                instance, [&](CompilerInstance &instance) {
+                  return stone::CompletedSemanticAnalysis(instance);
+                });
+          });
+    });
   }
   default: {
     break;
@@ -184,15 +200,12 @@ bool stone::PerformParse(CompilerInstance &instance,
 bool stone::PerformEmitParse(CompilerInstance &instance) {}
 
 // \return true if syntax analysis is successful
-bool stone::PerformResolveImports(CompilerInstance &instance) {
-  stone::PerformParse(instance);
-}
+bool stone::PerformResolveImports(CompilerInstance &instance,
+                                  PerformResolveImportsCallback callback) {}
 
 // \return true if semantic analysis is successful
 bool stone::PerformSemanticAnalysis(CompilerInstance &instance,
-                                    PerformSemanticAnalysisCallback callback) {
-  stone::PerformResolveImports(instance);
-}
+                                    PerformSemanticAnalysisCallback callback) {}
 
 // \return true if emit-ast is true
 bool stone::PerformEmitAST(CompilerInstance &instance) {}
@@ -202,4 +215,3 @@ bool stone::CompletedSemanticAnalysis(CompilerInstance &instance) {}
 
 /// \retyrb true if we compiled an ir file.
 bool stone::PerformCompileLLVM(CompilerInstance &instance) {}
-
