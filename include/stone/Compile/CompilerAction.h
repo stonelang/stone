@@ -199,6 +199,9 @@ public:
 };
 
 class ParseAction : public ASTAction {
+
+  bool ParseSourceFile(SourceFile &SourceFile);
+
 public:
   ParseAction(CompilerInstance &instance) : ASTAction(instance) {}
 

@@ -36,7 +36,7 @@ bool Parser::ParseTopLevelDecls() {
     ParsingDeclSpec spec(*this);
     spec.GetParsingDeclOptions().AddAllowTopLevel();
     auto result = ParseTopLevelDecl(spec);
-    if(!ParsedTopLevelDecl(result)){
+    if (!ParsedTopLevelDecl(result)) {
       return false;
     }
     if (HasCodeCompletionCallbacks()) {

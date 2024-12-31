@@ -9,16 +9,12 @@ bool TypeCheckAction::ExecuteAction() {
   FrontendStatsTracer actionTracer(instance.GetStats(),
                                    GetSelfActionKindString());
 
-  auto TypeCheckSourceFile = [&](SourceFile &sourceFile,
-                                 TypeCheckerOptions &typeCheckerOpts) -> bool {
+  instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
     assert(sourceFile.HasParsed() &&
            "Unable to type-check a source-file that was not parsed.");
-    return TypeChecker(sourceFile, typeCheckerOpts).CheckTopLevelDecls();
-  };
-
-  instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
-    if (!TypeCheckSourceFile(
-            sourceFile, instance.GetInvocation().GetTypeCheckerOptions())) {
+    if (!TypeChecker(sourceFile,
+                     instance.GetInvocation().GetTypeCheckerOptions())
+             .CheckTopLevelDecls()) {
       return false;
     }
   });

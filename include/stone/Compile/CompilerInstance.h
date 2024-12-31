@@ -124,17 +124,17 @@ public:
   SourceFile *ComputeMainSourceFileForModule(ModuleDecl *mod) const;
 
 public:
-  ///\return all of the source files in the module
-  void ForEachSourceFileInMainModule(
-      std::function<void(SourceFile &sourceFile)> notify);
+  ///\return all of the source files in the module -- return true if successful
+  bool ForEachSourceFileInMainModule(
+      llvm::function_ref<bool(SourceFile &sourceFile)> notify);
 
   ///\return every primary file
-  void
-  ForEachPrimarySourceFile(std::function<void(SourceFile &sourceFile)> notify);
+  bool ForEachPrimarySourceFile(
+      llvm::function_ref<bool(SourceFile &sourceFile)> notify) const;
 
   /// all of the files to typecheck
-  void ForEachSourceFileToTypeCheck(
-      std::function<void(SourceFile &sourceFile)> notify);
+  bool ForEachSourceFileToTypeCheck(
+      llvm::function_ref<bool(SourceFile &sourceFile)> notify);
 
   ///\return true if the compile is for the entire module.
   bool IsWholeModuleCompilation() const {

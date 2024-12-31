@@ -12,12 +12,8 @@ bool ParseAction::ExecuteAction() {
   FrontendStatsTracer actionTracer(instance.GetStats(),
                                    GetSelfActionKindString());
 
-  auto ParseSourceFile = [&](SourceFile &sourceFile, ASTContext &AC) -> bool {
-    return Parser(sourceFile, AC).ParseTopLevelDecls();
-  };
-
   instance.ForEachSourceFileInMainModule([&](SourceFile &sourceFile) {
-    if (!ParseSourceFile(sourceFile, instance.GetASTContext())) {
+    if (!Parser(sourceFile, instance.GetASTContext()).ParseTopLevelDecls()) {
       return false;
     }
     sourceFile.SetParsedStage();
@@ -56,7 +52,6 @@ bool ResolveImportsAction::ExecuteAction() {
       return false;
     }
   });
-
   return true;
 }
 void ResolveImportsAction::DepCompleted(CompilerAction *action) {}

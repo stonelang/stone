@@ -43,6 +43,7 @@ bool EmitIRAction::ExecuteAction() {
     AddCodeGenResult(std::move(result));
   }
   if (instance.IsCompileForSourceFile()) {
+
     instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
       // Get the paths for the primary source file.
       const PrimaryFileSpecificPaths psps =
@@ -52,6 +53,10 @@ bool EmitIRAction::ExecuteAction() {
 
       CodeGenResult result =
           EmitSourceFile(primarySourceFile, outputFilename, psps, globalHash);
+
+      if (!result) {
+        return false;
+      }
 
       NotifyCodeGenConsumer(&result);
       AddCodeGenResult(std::move(result));

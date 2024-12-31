@@ -445,32 +445,48 @@ void CompilerInstance::SetupStats() {
       invocation.GetCompilerOptions().profileEntities);
 }
 
-void CompilerInstance::ForEachSourceFileInMainModule(
-    std::function<void(SourceFile &sourceFile)> notify) {
+bool CompilerInstance::ForEachSourceFileInMainModule(
+    llvm::function_ref<bool(SourceFile &sourceFile)> notify) {
   for (auto moduleFile : GetMainModule()->GetFiles()) {
     if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
-      notify(*sourceFile);
+      if (!notify(*sourceFile)) {
+        return false;
+      }
     }
   }
+  return true;
 }
-void CompilerInstance::ForEachPrimarySourceFile(
-    std::function<void(SourceFile &sourceFile)> notify) {
+bool CompilerInstance::ForEachPrimarySourceFile(
+    llvm::function_ref<bool(SourceFile &sourceFile)> notify) const {
   for (auto moduleFile : GetPrimarySourceFiles()) {
     if (auto *sourceFile = llvm::dyn_cast<SourceFile>(moduleFile)) {
-      notify(*sourceFile);
+      if (!notify(*sourceFile)) {
+        return false;
+      }
     }
   }
+  return true;
 }
 
-void CompilerInstance::ForEachSourceFileToTypeCheck(
-    std::function<void(SourceFile &sourceFile)> notify) {
+bool CompilerInstance::ForEachSourceFileToTypeCheck(
+    llvm::function_ref<bool(SourceFile &)> fn) {
   if (IsCompileForWholeModule()) {
-    ForEachSourceFileInMainModule(
-        [&](SourceFile &sourceFile) { notify(sourceFile); });
+    for (auto moduleFile : GetMainModule()->GetFiles()) {
+      auto *SF = dyn_cast<SourceFile>(moduleFile);
+      if (!SF) {
+        continue;
+      }
+      if (!fn(*SF))
+        return false;
+    }
   } else {
-    ForEachPrimarySourceFile(
-        [&](SourceFile &sourceFile) { notify(sourceFile); });
+    for (auto *SF : GetPrimarySourceFiles()) {
+      if (!fn(*SF)) {
+        return false;
+      }
+    }
   }
+  return true;
 }
 
 std::error_code CompilerInstance::CreateDirectory(std::string name) {
