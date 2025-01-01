@@ -50,9 +50,8 @@ using PerformSemanticAnalysisCallback =
     llvm::function_ref<bool(CompilerInstance &)>;
 
 // \return true if semantic analysis is successful
-bool PerformSemanticAnalysis(
-    CompilerInstance &instance,
-    PerformSemanticAnalysisCallback callback = nullptr);
+bool PerformSemanticAnalysis(CompilerInstance &instance,
+                             PerformSemanticAnalysisCallback callback);
 
 // \return true if emit-ast is true
 bool PerformEmitAST(CompilerInstance &instance);

@@ -115,7 +115,7 @@ bool stone::PerformAction(CompilerInstance &instance) {
   switch (instance.GetPrimaryActionKind()) {
   case CompilerActionKind::Parse: {
     return stone::PerformParse(instance, [](CompilerInstance &instance) {
-      return instance.GetInvocation().HasError();
+      return instance.HasError();
     });
   }
   case CompilerActionKind::EmitParse: {
@@ -134,7 +134,10 @@ bool stone::PerformAction(CompilerInstance &instance) {
     return stone::PerformParse(instance, [&](CompilerInstance &instance) {
       return stone::PerformResolveImports(
           instance, [&](CompilerInstance &instance) {
-            return stone::PerformSemanticAnalysis(instance);
+            return stone::PerformSemanticAnalysis(
+                instance, [&](CompilerInstance &instance) {
+                  return instance.HasError();
+                });
           });
     });
   }
