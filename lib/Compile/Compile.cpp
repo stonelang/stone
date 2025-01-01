@@ -296,7 +296,28 @@ CodeGenResult stone::PerformEmitSourceFile(CompilerInstance &instance,
                                            SourceFile &sourceFile,
                                            llvm::StringRef moduleName,
                                            const PrimaryFileSpecificPaths &sps,
-                                           llvm::GlobalVariable *globalHash) {}
+                                           llvm::GlobalVariable *globalHash) {
+
+  // assert(primarySourceFile.HasTypeChecked() &&
+  //     "Unable to perform ir-gen on a source-file that was not
+  //     type-checked!");
+
+  CodeGenContext codeGenContext(instance.GetInvocation().GetCodeGenOptions(),
+                                instance.GetASTContext());
+
+  ModuleNameAndOuptFileName moduleNameAndOuptFileName =
+      std::make_pair(moduleName, sps.outputFilename);
+
+  CodeGenModule codeGenModule(codeGenContext, nullptr,
+                              moduleNameAndOuptFileName);
+  codeGenModule.EmitSourceFile(sourceFile);
+
+  return CodeGenResult(std::move(codeGenContext.llvmContext),
+                       std::unique_ptr<llvm::Module>{
+                           codeGenModule.GetClangCodeGen().ReleaseModule()},
+                       std::move(codeGenContext.llvmTargetMachine),
+                       sps.outputFilename, globalHash);
+}
 
 // ///\return the generated module
 CodeGenResult
@@ -308,7 +329,12 @@ stone::PerformEmitModule(CompilerInstance &instance, ModuleDecl *moduleDecl,
 
 bool stone::PerformEmitBackend(CompilerInstance &instance,
                                llvm::StringRef outputFilename,
-                               llvm::Module *module,
-                               llvm::GlobalVariable *globalHash) {}
+                               llvm::Module *llvmModule,
+                               llvm::GlobalVariable *globalHash) {
+
+  return stone::CodeGenBackend::EmitOutputFile(
+      instance.GetInvocation().GetCodeGenOptions(), instance.GetASTContext(),
+      llvmModule, outputFilename, globalHash);
+}
 /// \retyrb true if we compiled an ir file.
 bool stone::PerformCompileLLVM(CompilerInstance &instance) {}

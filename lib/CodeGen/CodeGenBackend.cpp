@@ -68,7 +68,8 @@ void stone::EmbedBitCode(const CodeGenOptions &Opts, llvm::Module *Module) {}
 /// Emit a backend file
 bool CodeGenBackend::EmitOutputFile(const CodeGenOptions &Opts, ASTContext &AC,
                                     llvm::Module *Module,
-                                    StringRef OutputFilename) {
+                                    StringRef OutputFilename,
+                                    llvm::GlobalVariable *HashGlobal) {
 
   // Build TargetMachine.
   auto targetMachine = stone::CreateTargetMachine(Opts, AC);

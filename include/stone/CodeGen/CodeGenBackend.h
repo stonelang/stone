@@ -73,7 +73,8 @@ class CodeGenBackend final {
 
 public:
   static bool EmitOutputFile(const CodeGenOptions &Opts, ASTContext &Ctx,
-                             llvm::Module *Module, StringRef OutputFilename);
+                             llvm::Module *Module, StringRef OutputFilename,
+                             llvm::GlobalVariable *HashGlobal);
 
   static bool
   EmitOutputFile(const CodeGenOptions &Opts, DiagnosticEngine &Diags,
