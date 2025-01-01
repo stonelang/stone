@@ -35,7 +35,7 @@ using PerformParseCallback = llvm::function_ref<bool(CompilerInstance &)>;
 
 /// \return true if syntax analysis is successful
 bool PerformParse(CompilerInstance &instance,
-                  PerformParseCallback callback = nullptr);
+                  PerformParseCallback callback);
 
 /// \return true if syntax analysis is successful for a specific source file
 bool PerformEmitParse(CompilerInstance &instance);
