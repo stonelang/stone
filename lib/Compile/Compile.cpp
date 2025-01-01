@@ -193,7 +193,10 @@ bool stone::PerformParse(CompilerInstance &instance,
     CompletedParseSourceFile(instance, sourceFile);
     return true;
   });
-  return callback(instance);
+  if (callback) {
+    return callback(instance);
+  }
+  return instance.HasError();
 }
 
 /// \return true if syntax analysis is successful for a specific source file
@@ -220,7 +223,22 @@ bool stone::PerformSemanticAnalysis(CompilerInstance &instance,
       instance.GetStats(),
       instance.GetActionString(CompilerActionKind::TypeCheck));
 
-  return callback(instance);
+  instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
+    assert(sourceFile.HasParsed() &&
+           "Unable to type-check a source-file that was not parsed.");
+
+    if (!TypeChecker(sourceFile,
+                     instance.GetInvocation().GetTypeCheckerOptions())
+             .CheckTopLevelDecls()) {
+      return false;
+    }
+    return true;
+  });
+
+  if (callback) {
+    return callback(instance);
+  }
+  return instance.HasError();
 }
 
 // \return true if emit-ast is true
@@ -298,9 +316,7 @@ CodeGenResult stone::PerformEmitSourceFile(CompilerInstance &instance,
                                            const PrimaryFileSpecificPaths &sps,
                                            llvm::GlobalVariable *globalHash) {
 
-  // assert(primarySourceFile.HasTypeChecked() &&
-  //     "Unable to perform ir-gen on a source-file that was not
-  //     type-checked!");
+  assert(sourceFile.HasTypeChecked() && "source-file was not type-checked!");
 
   CodeGenContext codeGenContext(instance.GetInvocation().GetCodeGenOptions(),
                                 instance.GetASTContext());

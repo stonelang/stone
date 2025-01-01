@@ -81,6 +81,7 @@ public:
   llvm::StringRef GetActionString(CompilerActionKind kind) const {
     return invocation.GetCompilerOptions().GetActionString(kind);
   }
+  bool HasError() const { return invocation.HasError(); }
 
 public:
   ///\create the source files from the compiler input

@@ -41,6 +41,8 @@ set(stone_ast_sources
   TypeCheckType.cpp       
   TypeChecker.cpp
 
+  Visibility.cpp
+
 	LINK_LIBS
 	StoneSupport
 )

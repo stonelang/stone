@@ -17,25 +17,30 @@ public:
 public:
   void VisitFunDecl(FunDecl *FD) {
     TypeChecker::CheckVisibilityLevel(FD);
+
+    // TODO:
     // TypeChecker::CheckParameterList(FD->GetParameters(), FD);
   }
 
-  // void VisitImportDecl(ImportDecl *importDecl) {}
-  // void VisitIfConfigDecl(IfConfigDecl *ifConfigDecl) {}
+  void VisitStructDecl(StructDecl *structDecl) {}
 };
 
 bool TypeChecker::CheckTopLevelDecls() {
-
-  // for (auto topLevelDecl : sourceFile.topLevelDecls) {
-  //   if (!CheckTopLevelDecl(topLevelDecl)) {
-
-  //   sourceFile.SetTypeCheckedStage();
-  // }
+  for (auto topLevelDecl : sourceFile.topLevelDecls) {
+    if (!CheckTopLevelDecl(topLevelDecl)) {
+      return false;
+    }
+    sourceFile.SetTypeCheckedStage();
+  }
 }
 
-bool TypeChecker::CheckTopLevelDecl(Decl *topLevelDecl) { return true; }
+bool TypeChecker::CheckTopLevelDecl(Decl *topLevelDecl) {
+  /// Just return for now.
+  return CheckDecl(topLevelDecl);
+}
 
 bool TypeChecker::CheckDecl(Decl *D) {
   auto *SF = D->GetDeclContext()->GetParentSourceFile();
   DeclChecker(D->GetASTContext(), SF).Visit(D);
+  return true;
 }

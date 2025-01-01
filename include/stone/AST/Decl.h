@@ -591,10 +591,10 @@ public:
   };
 
 public:
-  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, QualType retType,
-               DeclContext *parent)
+  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+               QualType resultType, DeclContext *parent)
       : GenericContext(DeclContextKind::FunctionDecl, parent),
-        ValueDecl(kind, name, nameLoc, retType, parent) {}
+        ValueDecl(kind, name, nameLoc, resultType, parent) {}
 
 public:
   /// TODO:

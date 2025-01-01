@@ -5,6 +5,7 @@
 #include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/LLVM.h"
+#include "stone/Basic/PlatformKind.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/PointerIntPair.h"
@@ -102,6 +103,24 @@ public:
 
     return std::nullopt;
   }
+};
+
+class VisibilityContext {
+public:
+};
+
+class ExportContext {
+  DeclContext *DC;
+  ExportContext(DeclContext *DC, VisibilityContext runningOSVersion,
+                std::optional<PlatformKind> unavailablePlatformKind);
+
+public:
+  /// Create an instance describing the types that can be referenced from the
+  /// given declaration's signature.
+  ///
+  /// If the declaration is exported, the resulting context is restricted to
+  /// referencing exported types only. Otherwise it can reference anything.
+  static ExportContext ForDeclSignature(Decl *D);
 };
 
 } // namespace stone

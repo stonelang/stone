@@ -221,7 +221,7 @@ inline bool CanType::IsCanTypeOrNull() const {
 
 class BuiltinType : public Type {
 protected:
-  BuiltinType(TypeKind kind, const ASTContext &sc) : Type(kind, &sc) {
+  BuiltinType(TypeKind kind, const ASTContext &AC) : Type(kind, &AC) {
     // Bits.Type.IsBuiltin = true;
   }
 };
@@ -232,7 +232,7 @@ protected:
 
 // // class StringType : public BuiltinType {
 // // public:
-// //   StringType(const ASTContext &sc) : BuiltinType(TypeKind::String, sc) {}
+// //   StringType(const ASTContext &AC) : BuiltinType(TypeKind::String, AC) {}
 // // };
 
 class VoidType : public BuiltinType {
@@ -254,158 +254,161 @@ class IntType : public BuiltinType {
   friend ASTContext;
 
 public:
-  IntType(const ASTContext &sc) : BuiltinType(TypeKind::Int, sc) {}
+  IntType(const ASTContext &AC) : BuiltinType(TypeKind::Int, AC) {}
 
 public:
-  static IntType *Create(const ASTContext &sc);
+  static IntType *Create(const ASTContext &AC);
 };
 
 class Int8Type : public BuiltinType {
   friend ASTContext;
 
 public:
-  Int8Type(const ASTContext &sc) : BuiltinType(TypeKind::Int8, sc) {}
+  Int8Type(const ASTContext &AC) : BuiltinType(TypeKind::Int8, AC) {}
 
 public:
-  static Int8Type *Create(const ASTContext &sc);
+  static Int8Type *Create(const ASTContext &AC);
 };
 
 class Int16Type : public BuiltinType {
   friend ASTContext;
 
 public:
-  Int16Type(const ASTContext &sc) : BuiltinType(TypeKind::Int16, sc) {}
+  Int16Type(const ASTContext &AC) : BuiltinType(TypeKind::Int16, AC) {}
 
 public:
-  static Int16Type *Create(const ASTContext &sc);
+  static Int16Type *Create(const ASTContext &AC);
 };
 
 class Int32Type : public BuiltinType {
   friend ASTContext;
 
 public:
-  Int32Type(const ASTContext &sc) : BuiltinType(TypeKind::Int32, sc) {}
+  Int32Type(const ASTContext &AC) : BuiltinType(TypeKind::Int32, AC) {}
 
 public:
-  static Int16Type *Create(const ASTContext &sc);
+  static Int16Type *Create(const ASTContext &AC);
 };
 
 class Int64Type : public BuiltinType {
   friend ASTContext;
 
 public:
-  Int64Type(const ASTContext &sc) : BuiltinType(TypeKind::Int64, sc) {}
+  Int64Type(const ASTContext &AC) : BuiltinType(TypeKind::Int64, AC) {}
 
 public:
-  static Int64Type *Create(const ASTContext &sc);
+  static Int64Type *Create(const ASTContext &AC);
 };
 
 class Int128Type : public BuiltinType {
   friend ASTContext;
 
 public:
-  Int128Type(const ASTContext &sc) : BuiltinType(TypeKind::Int128, sc) {}
+  Int128Type(const ASTContext &AC) : BuiltinType(TypeKind::Int128, AC) {}
 
 public:
-  static Int128Type *Create(const ASTContext &sc);
+  static Int128Type *Create(const ASTContext &AC);
 };
 
 class UIntType : public BuiltinType {
   friend class ASTContext;
 
 public:
-  UIntType(const ASTContext &sc) : BuiltinType(TypeKind::UInt, sc) {}
+  UIntType(const ASTContext &AC) : BuiltinType(TypeKind::UInt, AC) {}
 };
 class uint8Type : public BuiltinType {
   friend class ASTContext;
 
 public:
-  uint8Type(const ASTContext &sc) : BuiltinType(TypeKind::uint8, sc) {}
+  uint8Type(const ASTContext &AC) : BuiltinType(TypeKind::uint8, AC) {}
 };
 class UInt16Type : public BuiltinType {
   friend class ASTContext;
 
 public:
-  UInt16Type(const ASTContext &sc) : BuiltinType(TypeKind::UInt16, sc) {}
+  UInt16Type(const ASTContext &AC) : BuiltinType(TypeKind::UInt16, AC) {}
 };
 
 class UInt32Type : public BuiltinType {
   friend class ASTContext;
 
 public:
-  UInt32Type(const ASTContext &sc) : BuiltinType(TypeKind::UInt32, sc) {}
+  UInt32Type(const ASTContext &AC) : BuiltinType(TypeKind::UInt32, AC) {}
 };
 
 class UInt64Type final : public BuiltinType {
   friend class ASTContext;
 
 public:
-  UInt64Type(const ASTContext &sc) : BuiltinType(TypeKind::UInt64, sc) {}
+  UInt64Type(const ASTContext &AC) : BuiltinType(TypeKind::UInt64, AC) {}
 };
 class UInt128Type final : public BuiltinType {
   friend class ASTContext;
 
 public:
-  UInt128Type(const ASTContext &sc) : BuiltinType(TypeKind::UInt128, sc) {}
+  UInt128Type(const ASTContext &AC) : BuiltinType(TypeKind::UInt128, AC) {}
 };
 
 class CharType final : public BuiltinType {
 public:
-  CharType(const ASTContext &sc) : BuiltinType(TypeKind::Char, sc) {}
+  CharType(const ASTContext &AC) : BuiltinType(TypeKind::Char, AC) {}
 };
+
 class Char8Type final : public BuiltinType {
 public:
-  Char8Type(const ASTContext &sc) : BuiltinType(TypeKind::Char8, sc) {}
+  Char8Type(const ASTContext &AC) : BuiltinType(TypeKind::Char8, AC) {}
 };
+
 class Char16Type final : public BuiltinType {
 public:
-  Char16Type(const ASTContext &sc) : BuiltinType(TypeKind::Char16, sc) {}
+  Char16Type(const ASTContext &AC) : BuiltinType(TypeKind::Char16, AC) {}
 };
+
 class Char32Type final : public BuiltinType {
 public:
-  Char32Type(const ASTContext &sc) : BuiltinType(TypeKind::Char32, sc) {}
+  Char32Type(const ASTContext &AC) : BuiltinType(TypeKind::Char32, AC) {}
 };
 
 class BoolType final : public BuiltinType {
 public:
-  BoolType(const ASTContext &sc) : BuiltinType(TypeKind::Bool, sc) {}
+  BoolType(const ASTContext &AC) : BuiltinType(TypeKind::Bool, AC) {}
 };
 
 class Complex32Type final : public BuiltinType {
   friend class ASTContext;
 
 public:
-  Complex32Type(const ASTContext &sc) : BuiltinType(TypeKind::Complex32, sc) {}
+  Complex32Type(const ASTContext &AC) : BuiltinType(TypeKind::Complex32, AC) {}
 };
 
 class Complex64Type final : public BuiltinType {
   friend class ASTContext;
 
 public:
-  Complex64Type(const ASTContext &sc) : BuiltinType(TypeKind::Complex64, sc) {}
+  Complex64Type(const ASTContext &AC) : BuiltinType(TypeKind::Complex64, AC) {}
 };
 
 class Imaginary32Type final : public BuiltinType {
   friend class ASTContext;
 
 public:
-  Imaginary32Type(const ASTContext &sc)
-      : BuiltinType(TypeKind::Imaginary32, sc) {}
+  Imaginary32Type(const ASTContext &AC)
+      : BuiltinType(TypeKind::Imaginary32, AC) {}
 };
 
 class Imaginary64Type final : public BuiltinType {
   friend class ASTContext;
 
 public:
-  Imaginary64Type(const ASTContext &sc)
-      : BuiltinType(TypeKind::Imaginary64, sc) {}
+  Imaginary64Type(const ASTContext &AC)
+      : BuiltinType(TypeKind::Imaginary64, AC) {}
 };
 
 class FloatType : public BuiltinType {
   friend ASTContext;
 
 public:
-  FloatType(const ASTContext &sc) : BuiltinType(TypeKind::Float, sc) {}
+  FloatType(const ASTContext &AC) : BuiltinType(TypeKind::Float, AC) {}
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
@@ -420,27 +423,27 @@ class Float16Type : public BuiltinType {
   friend ASTContext;
 
 public:
-  Float16Type(const ASTContext &sc) : BuiltinType(TypeKind::Float16, sc) {}
+  Float16Type(const ASTContext &AC) : BuiltinType(TypeKind::Float16, AC) {}
 };
 
 class Float32Type : public BuiltinType {
   friend ASTContext;
 
 public:
-  Float32Type(const ASTContext &sc) : BuiltinType(TypeKind::Float32, sc) {}
+  Float32Type(const ASTContext &AC) : BuiltinType(TypeKind::Float32, AC) {}
 };
 
 class Float64Type : public BuiltinType {
   friend ASTContext;
 
 public:
-  Float64Type(const ASTContext &sc) : BuiltinType(TypeKind::Float64, sc) {}
+  Float64Type(const ASTContext &AC) : BuiltinType(TypeKind::Float64, AC) {}
 };
 class Float128Type : public BuiltinType {
   friend ASTContext;
 
 public:
-  Float128Type(const ASTContext &sc) : BuiltinType(TypeKind::Float128, sc) {}
+  Float128Type(const ASTContext &AC) : BuiltinType(TypeKind::Float128, AC) {}
 };
 
 // // class TemplateParmType : public Type{
@@ -460,7 +463,7 @@ class FunType : public FunctionType,
   friend TrailingObjects;
 
 public:
-  FunType(QualType returnType, const ASTContext *sc);
+  FunType(QualType resultType, const ASTContext *AC);
 };
 
 class NominalType : public Type {
@@ -550,8 +553,8 @@ public:
 //   }
 
 // private:
-//   ModuleType(ModuleDecl *mod, const ASTContext &sc)
-//       : Type(TypeKind::Module, &sc), mod(mod) {}
+//   ModuleType(ModuleDecl *mod, const ASTContext &AC)
+//       : Type(TypeKind::Module, &AC), mod(mod) {}
 // };
 
 class SugarType : public Type {
