@@ -11,15 +11,18 @@ set( LLVM_LINK_COMPONENTS
 set(stone_codegen_sources
 		CodeGenBackend.cpp
 		CodeGenContext.cpp
-		CodeGenDecl.cpp 
-		CodeGenExpr.cpp
-		CodeGenStmt.cpp 
-		CodeGenType.cpp
 		CodeGenBuilder.cpp  
 		CodeGenFunction.cpp
 		CodeGenModule.cpp
 		CodeGenPassManager.cpp
-
+		GenClass.cpp
+		GenDecl.cpp 
+		GenExpr.cpp
+		GenInterface.cpp
+		GenStmt.cpp 
+		GenType.cpp
+		GenFun.cpp
+		GenStruct.cpp
 
 		LINK_LIBS
 		StoneAST

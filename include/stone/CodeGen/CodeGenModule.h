@@ -128,7 +128,7 @@ public:
 
   void EmitFunctionDecl(FunctionDecl *FD);
   void EmitFunctionDefinition();
-  void EmitFunDecl(FunDecl *D);
+  void EmitFunDecl(FunDecl *D, llvm::GlobalValue *GV);
 
   void EmitInterfaceDecl(InterfaceDecl *d);
   void EmitStructDecl(StructDecl *d);
@@ -143,7 +143,7 @@ public:
 public:
   // || TYPE RESOLUTION ||
   llvm::Type *GetType(const QualType ty);
-  llvm::FunctionType *GetFunctionType(const FunctionDecl *functionDecl);
+  llvm::FunctionType *GetFunctionType(const FunctionDecl *FD);
 };
 
 } // namespace stone

@@ -8,15 +8,16 @@ CodeGenFunction::CodeGenFunction(CodeGenModule &codeGenModule,
     : codeGenModule(codeGenModule), codeGenBuilder(codeGenModule),
       llvmFunction(llvmFunction) {}
 
+llvm::BasicBlock *CodeGenFunction::CreateBasicBlock(const llvm::Twine &name) {
+  return llvm::BasicBlock::Create(
+      GetCodGenModule().GetCodeGenContext().GetLLVMContext(), name);
+}
+
 void CodeGenFunction::EmitFunction(FunctionDecl *FD) {
 
   EmitPrologue();
 
   EmitEpilogue();
-}
-
-llvm::BasicBlock *CodeGenFunction::CreateBasicBlock(const llvm::Twine &name) {
-  return llvm::BasicBlock::Create(GetCodGenModule().GetCodeGenContext().GetLLVMContext(), name);
 }
 
 void CodeGenFunction::EmitPrologue() {

@@ -54,7 +54,7 @@ private:
 
 public:
   llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);
-  void EmitFunction(FunctionDecl *fd);
+  void EmitFunction(FunctionDecl *FD);
 };
 
 } // namespace stone
