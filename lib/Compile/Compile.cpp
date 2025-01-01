@@ -235,57 +235,52 @@ bool stone::PerformEmitCode(CompilerInstance &instance) {
 
   switch (instance.GetPrimaryActionKind()) {
   case CompilerActionKind::EmitIR: {
-
     return stone::PerformEmitIR(
         instance, [&](CompilerInstance &instance, CodeGenResult &result) {
           return instance.GetInvocation().HasError();
         });
   }
-  // case CompilerActionKind::EmitObject: {
-  //   return stone::PerformEmitIR(
-  //       instance, [](CompilerInstance &instance, CodeGenResult &result) {
-  //         return stone::PerformEmitBackend(instance, result);
-  //       });
-  // }
+  case CompilerActionKind::EmitObject: {
+    return stone::PerformEmitIR(
+        instance, [](CompilerInstance &instance, CodeGenResult &result) {
+          return stone::PerformEmitBackend(instance, result.GetOutputFilename(),
+                                           result.GetLLVMModule(),
+                                           result.GetGlobalHash());
+        });
+  }
   default: {
   }
   }
 }
-
 bool stone::PerformEmitIR(CompilerInstance &instance,
                           PerformEmitIRCallback callback) {
 
   llvm::GlobalVariable *globalHash;
   if (instance.IsCompileForWholeModule()) {
     // Perform whole modufle
-    // const PrimaryFileSpecificPaths psps =
-    //     instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+    const PrimaryFileSpecificPaths psps =
+        instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+    std::vector<std::string> parallelOutputFilenames =
+        instance.GetCopyOfOutputFilenames();
+    llvm::StringRef outputFilename = psps.outputFilename;
+    CodeGenResult result = stone::PerformEmitModule(
+        instance, instance.GetMainModule(), outputFilename, psps,
+        parallelOutputFilenames, globalHash);
 
-    // std::vector<std::string> parallelOutputFilenames =
-    //     instance.GetCopyOfOutputFilenames();
-
-    // llvm::StringRef outputFilename = psps.outputFilename;
-
-    // CodeGenResult result = stone::PerformEmitModule(
-    //     instance, instance.GetMainModule(), outputFilename, psps,
-    //     parallelOutputFilenames, globalHash);
-
-    // if (!result) {
-    //   return false;
-    // } else {
-    //   return callback(instance, result);
-    // }
+    if (!result) {
+      return false;
+    } else {
+      return callback(instance, result);
+    }
 
   } else if (instance.IsCompileForSourceFile()) {
     instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
       // Get the paths for the primary source file.
       const PrimaryFileSpecificPaths psps =
           instance.GetPrimaryFileSpecificPathsForSyntaxFile(primarySourceFile);
-
       llvm::StringRef outputFilename = psps.outputFilename;
       CodeGenResult result = stone::PerformEmitSourceFile(
           instance, primarySourceFile, outputFilename, psps, globalHash);
-
       if (!result) {
         return false;
       } else {
@@ -296,33 +291,12 @@ bool stone::PerformEmitIR(CompilerInstance &instance,
   assert(false && "invalid call to PerformEmitIR");
 }
 
-// // \return true if the code generation was successfull
-// bool stone::PerformEmitCodeImpl(CompilerInstance &instance,
-//                                 ModuleDeclOrModuleFile moduleOrFile,
-//                                 const PrimaryFileSpecificPaths &sps) {
-
-//   auto PerformCodeGenIR =
-//       [&](CompilerInstance &instance, ModuleDeclOrModuleFile moduleOrFile,
-//           const PrimaryFileSpecificPaths &sps) -> CodeGenResult {
-
-//     if (auto *SF = moduleOrFile.dyn_cast<SourceFile *>()) {
-//     } else {
-
-//       auto *MD = moduleOrFile.get<ModuleDecl *>();
-//     }
-//   };
-
-//   // auto *SF = moduleOrFile.dyn_cast<SourceFile *>();
-
-//   // auto  *MD = moduleOrFile.get<ModuleDecl *>();
-// }
-
 // // \return llvm::Module if IR generation is successful
 CodeGenResult stone::PerformEmitSourceFile(CompilerInstance &instance,
                                            SourceFile &sourceFile,
                                            llvm::StringRef moduleName,
                                            const PrimaryFileSpecificPaths &sps,
-                                           llvm::GlobalVariable *&globalHash) {}
+                                           llvm::GlobalVariable *globalHash) {}
 
 // ///\return the generated module
 CodeGenResult
@@ -330,11 +304,11 @@ stone::PerformEmitModule(CompilerInstance &instance, ModuleDecl *moduleDecl,
                          llvm::StringRef moduleName,
                          const PrimaryFileSpecificPaths &sps,
                          ArrayRef<std::string> parallelOutputFilenames,
-                         llvm::GlobalVariable *&globalHash) {}
+                         llvm::GlobalVariable *globalHash) {}
 
 bool stone::PerformEmitBackend(CompilerInstance &instance,
                                llvm::StringRef outputFilename,
                                llvm::Module *module,
-                               llvm::GlobalVariable *&globalHash) {}
+                               llvm::GlobalVariable *globalHash) {}
 /// \retyrb true if we compiled an ir file.
 bool stone::PerformCompileLLVM(CompilerInstance &instance) {}

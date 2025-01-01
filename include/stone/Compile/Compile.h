@@ -77,7 +77,7 @@ CodeGenResult PerformEmitSourceFile(CompilerInstance &instance,
                                     SourceFile &sourceFile,
                                     llvm::StringRef moduleName,
                                     const PrimaryFileSpecificPaths &sps,
-                                    llvm::GlobalVariable *&globalHash);
+                                    llvm::GlobalVariable *globalHash);
 
 // ///\return the generated module
 CodeGenResult
@@ -85,12 +85,11 @@ PerformEmitModule(CompilerInstance &instance, ModuleDecl *moduleDecl,
                   llvm::StringRef moduleName,
                   const PrimaryFileSpecificPaths &sps,
                   llvm::ArrayRef<std::string> parallelOutputFilenames,
-                  llvm::GlobalVariable *&globalHash);
+                  llvm::GlobalVariable *globalHash);
 
-// \return true if syntax analysis is successful
 bool PerformEmitBackend(CompilerInstance &instance,
                         llvm::StringRef outputFilename, llvm::Module *module,
-                        llvm::GlobalVariable *&globalHash);
+                        llvm::GlobalVariable *globalHash);
 
 // ///\return the IRTargetOptions
 IRTargetOptions GetIRTargetOptions(const CodeGenOptions &codeGenOpts,
