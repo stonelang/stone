@@ -125,7 +125,9 @@ bool stone::PerformAction(CompilerInstance &instance) {
   }
   case CompilerActionKind::ResolveImports: {
     return stone::PerformParse(instance, [&](CompilerInstance &instance) {
-      return stone::PerformResolveImports(instance);
+      return stone::PerformResolveImports(
+          instance,
+          [&](CompilerInstance &instance) { return instance.HasError(); });
     });
   }
   case CompilerActionKind::TypeCheck: {

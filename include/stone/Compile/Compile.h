@@ -34,8 +34,7 @@ bool PerformCompileLLVM(CompilerInstance &compiler);
 using PerformParseCallback = llvm::function_ref<bool(CompilerInstance &)>;
 
 /// \return true if syntax analysis is successful
-bool PerformParse(CompilerInstance &instance,
-                  PerformParseCallback callback);
+bool PerformParse(CompilerInstance &instance, PerformParseCallback callback);
 
 /// \return true if syntax analysis is successful for a specific source file
 bool PerformEmitParse(CompilerInstance &instance);
@@ -45,7 +44,7 @@ using PerformResolveImportsCallback =
 
 // \return true if syntax analysis is successful
 bool PerformResolveImports(CompilerInstance &instance,
-                           PerformResolveImportsCallback callback = nullptr);
+                           PerformResolveImportsCallback callback);
 
 using PerformSemanticAnalysisCallback =
     llvm::function_ref<bool(CompilerInstance &)>;
