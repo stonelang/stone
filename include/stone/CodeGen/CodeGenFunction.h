@@ -46,6 +46,15 @@ public:
 public:
   CodeGenModule &GetCodGenModule() { return codeGenModule; }
   llvm::Function *GetLLVMFunction() { return llvmFunction; }
+  CodeGenBuilder &GetCodeGenBuilder() { return codeGenBuilder; }
+
+private:
+  void EmitPrologue();
+  void EmitEpilogue();
+
+public:
+  llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);
+  void EmitFunction(FunctionDecl *fd);
 };
 
 } // namespace stone

@@ -1,5 +1,6 @@
 #include "stone/AST/ASTVisitor.h"
 #include "stone/AST/TypeChecker.h"
+#include "stone/AST/Visibility.h"
 
 using namespace stone;
 
@@ -16,7 +17,7 @@ public:
 
 public:
   void VisitFunDecl(FunDecl *FD) {
-    TypeChecker::CheckVisibilityLevel(FD);
+    stone::CheckVisibilityControl(FD);
 
     // TODO:
     // TypeChecker::CheckParameterList(FD->GetParameters(), FD);
@@ -24,20 +25,6 @@ public:
 
   void VisitStructDecl(StructDecl *structDecl) {}
 };
-
-bool TypeChecker::CheckTopLevelDecls() {
-  for (auto topLevelDecl : sourceFile.topLevelDecls) {
-    if (!CheckTopLevelDecl(topLevelDecl)) {
-      return false;
-    }
-    sourceFile.SetTypeCheckedStage();
-  }
-}
-
-bool TypeChecker::CheckTopLevelDecl(Decl *topLevelDecl) {
-  /// Just return for now.
-  return CheckDecl(topLevelDecl);
-}
 
 bool TypeChecker::CheckDecl(Decl *D) {
   auto *SF = D->GetDeclContext()->GetParentSourceFile();

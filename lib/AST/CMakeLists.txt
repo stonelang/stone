@@ -35,12 +35,10 @@ set(stone_ast_sources
 
 	TypeCheckDecl.cpp      
   TypeCheckStmt.cpp       
-  TypeCheckVisibility.cpp
   ImportResolution.cpp    
   TypeCheckExpr.cpp       
   TypeCheckType.cpp       
   TypeChecker.cpp
-
   Visibility.cpp
 
 	LINK_LIBS

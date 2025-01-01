@@ -13,10 +13,12 @@
 using namespace stone;
 
 ASTContext::ASTContext(LangOptions &langOpts, const SearchPathOptions &spOpts,
+                       TypeCheckerOptions &typeCheckerOpts,
                        ClangImporter &clangImporter, DiagnosticEngine &de,
                        StatsReporter *stats)
-    : langOpts(langOpts), searchPathOpts(spOpts), clangImporter(clangImporter),
-      de(de), stats(stats), identifierTable(allocator), builtin(*this) {
+    : langOpts(langOpts), searchPathOpts(spOpts),
+      typeCheckerOpts(typeCheckerOpts), clangImporter(clangImporter), de(de),
+      stats(stats), identifierTable(allocator), builtin(*this) {
 
   // Initialize all of the known identifiers.
   // This is done here because the allocation is not yet initialized.

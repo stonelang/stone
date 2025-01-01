@@ -39,16 +39,8 @@ enum class DowngradeToWarningKind : bool {
 };
 
 class TypeChecker final {
-  SourceFile &sourceFile;
-  TypeCheckerOptions &typeCheckerOpts;
-
 public:
-  TypeChecker(SourceFile &sourceFile, TypeCheckerOptions &typeCheckerOpts);
-
-public:
-  bool CheckTopLevelDecls();
-  bool CheckTopLevelDecl(Decl *topLevelDecl);
-  bool CheckDecl(Decl *D);
+  static bool CheckDecl(Decl *D);
 
 public:
   // Performs access-related checks for \p D.
@@ -74,13 +66,7 @@ public:
   bool IsSubTypeOf(QualType t1, QualType t2, DeclContext *dc);
 
 public:
-  /// At a high level, this checks the given declaration's signature does not
-  /// reference any other declarations that are less visible than the
-  /// declaration itself. Related checks may also be performed.
-  static void CheckVisibilityLevel(Decl *D);
-
-  /// Check the QualType visibility level
-  static void CheckVisibilityLevel(QualType ty);
+  static void CheckSourceFile(SourceFile &sourceFile);
 };
 
 } // namespace stone

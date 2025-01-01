@@ -227,9 +227,8 @@ bool stone::PerformSemanticAnalysis(CompilerInstance &instance,
     assert(sourceFile.HasParsed() &&
            "Unable to type-check a source-file that was not parsed.");
 
-    if (!TypeChecker(sourceFile,
-                     instance.GetInvocation().GetTypeCheckerOptions())
-             .CheckTopLevelDecls()) {
+    TypeChecker::CheckSourceFile(sourceFile);
+    if (!sourceFile.HasTypeChecked()) {
       return false;
     }
     return true;

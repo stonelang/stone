@@ -8,6 +8,7 @@
 #include "stone/AST/LangABI.h"
 #include "stone/AST/SearchPath.h"
 #include "stone/AST/Type.h"
+#include "stone/AST/TypeCheckerOptions.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcMgr.h"
@@ -89,6 +90,8 @@ class ASTContext final {
 
   LangOptions &langOpts;
 
+  TypeCheckerOptions &typeCheckerOpts;
+
   Builtin builtin;
 
   ClangImporter &clangImporter;
@@ -148,8 +151,8 @@ public:
   ASTContext &operator=(const ASTContext &) = delete;
 
   ASTContext(LangOptions &langOpts, const SearchPathOptions &searchPathOpts,
-             ClangImporter &clangImporter, DiagnosticEngine &DE,
-             StatsReporter *SR);
+             TypeCheckerOptions &typeCheckerOpts, ClangImporter &clangImporter,
+             DiagnosticEngine &DE, StatsReporter *SR);
 
   ~ASTContext();
 
@@ -174,6 +177,8 @@ public:
   SrcMgr &GetSrcMgr() { return de.GetSrcMgr(); }
 
   LangOptions &GetLangOptions() { return langOpts; }
+
+  TypeCheckerOptions &GetTypeCheckerOptions() { return typeCheckerOpts; }
 
   StatsReporter *GetStats() { return stats; }
   /// Set a new stats reporter.

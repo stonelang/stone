@@ -123,5 +123,13 @@ public:
   static ExportContext ForDeclSignature(Decl *D);
 };
 
+/// At a high level, this checks the given declaration's signature does not
+/// reference any other declarations that are less visible than the
+/// declaration itself. Related checks may also be performed.
+void CheckVisibilityControl(Decl *D);
+
+/// Check the QualType visibility level
+void CheckVisibilityControl(QualType ty);
+
 } // namespace stone
 #endif

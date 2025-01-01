@@ -2,10 +2,10 @@
 
 using namespace stone;
 
-TypeChecker::TypeChecker(SourceFile &sourceFile,
-                         TypeCheckerOptions &typeCheckerOpts)
-    : sourceFile(sourceFile), typeCheckerOpts(typeCheckerOpts) {}
+void TypeChecker::CheckSourceFile(SourceFile &sourceFile) {
 
-void TypeChecker::CheckVisibilityLevel(Decl *D) {}
-
-void TypeChecker::CheckVisibilityLevel(QualType ty) {}
+  for (auto D : sourceFile.GetTopLevelDecls()) {
+    TypeChecker::CheckDecl(D);
+    sourceFile.SetTypeCheckedStage();
+  }
+}

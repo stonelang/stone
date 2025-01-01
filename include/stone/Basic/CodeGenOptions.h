@@ -123,6 +123,12 @@ public:
     return codeGenOutputKind != CodeGenOutputKind::None;
   }
 
+  /// The command line string that is to be stored in the debug info.
+  std::string DebugFlags;
+
+  /// List of -Xcc -D macro definitions.
+  std::vector<std::string> ClangDefines;
+
   // TODO: vs llvm::CodeGenOpt::Level
   OptimizationMode optimizationMode = OptimizationMode::None;
 

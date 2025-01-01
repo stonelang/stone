@@ -328,7 +328,8 @@ bool CompilerInstance::SetupASTContext() {
 
   astContext = std::make_unique<ASTContext>(
       invocation.GetLangOptions(), invocation.GetSearchPathOptions(),
-      invocation.GetClangImporter(), invocation.GetDiags(), GetStats());
+      invocation.GetTypeCheckerOptions(), invocation.GetClangImporter(),
+      invocation.GetDiags(), GetStats());
 
   return true;
 }

@@ -48,11 +48,19 @@ void CodeGenModule::EmitDecl(Decl *D) {
   llvm_unreachable("bad decl kind!");
 }
 
-void CodeGenModule::EmitFunDecl(FunDecl *funDecl) {
+void CodeGenModule::EmitFunDecl(FunDecl *FD) {
 
-  assert(funDecl && "Null FundDecl");
-  auto funType = GetFunctionType(funDecl);
+  assert(FD && "Null FundDecl");
+
+  // EmitFunctionDecl(FD);
+
+  // if (FD->HasBody()) {
+  // }
+
+  // auto funType = GetFunctionType(funDecl);
 }
+
+void CodeGenModule::EmitFunctionDecl(FunctionDecl *FD) {}
 
 void CodeGenModule::EmitInterfaceDecl(InterfaceDecl *d) {}
 
