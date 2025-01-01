@@ -112,7 +112,6 @@ bool stone::PerformCompile(CompilerInstance &instance) {
 }
 /// \return true if compilie is successful
 bool stone::PerformAction(CompilerInstance &instance) {
-
   switch (instance.GetPrimaryActionKind()) {
   case CompilerActionKind::Parse: {
     return stone::PerformParse(instance, [](CompilerInstance &instance) {
@@ -159,7 +158,7 @@ bool stone::PerformAction(CompilerInstance &instance) {
           instance, [&](CompilerInstance &instance) {
             return stone::PerformSemanticAnalysis(
                 instance, [&](CompilerInstance &instance) {
-                  return stone::CompletedSemanticAnalysis(instance);
+                  return stone::PerformEmitCode(instance);
                 });
           });
     });
@@ -174,11 +173,8 @@ bool stone::PerformAction(CompilerInstance &instance) {
 bool stone::PerformParse(CompilerInstance &instance,
                          PerformParseCallback callback) {
 
-  // FrontendStatsTracer actionTracer(instance.GetStats(),
-  //                                  GetSelfActionKindString());
-
-  llvm::outs() << "PerformParse" << '\n';
-
+  FrontendStatsTracer frontendTracer(
+      instance.GetStats(), instance.GetActionString(CompilerActionKind::Parse));
   auto CompletedParseSourceFile = [&](CompilerInstance &instance,
                                       SourceFile &sourceFile) -> void {
     if (instance.HasObservation()) {
@@ -202,33 +198,137 @@ bool stone::PerformParse(CompilerInstance &instance,
 
 /// \return true if syntax analysis is successful for a specific source file
 bool stone::PerformEmitParse(CompilerInstance &instance) {
-  llvm::outs() << "PerformEmitParse" << '\n';
+  FrontendStatsTracer frontendTracer(
+      instance.GetStats(),
+      instance.GetActionString(CompilerActionKind::EmitParse));
 }
 
 // \return true if syntax analysis is successful
 bool stone::PerformResolveImports(CompilerInstance &instance,
                                   PerformResolveImportsCallback callback) {
-  llvm::outs() << "PerformResolveImports" << '\n';
+  FrontendStatsTracer frontendTracer(
+      instance.GetStats(),
+      instance.GetActionString(CompilerActionKind::ResolveImports));
+
   return callback(instance);
 }
 
 // \return true if semantic analysis is successful
 bool stone::PerformSemanticAnalysis(CompilerInstance &instance,
                                     PerformSemanticAnalysisCallback callback) {
-  llvm::outs() << "PerformSemanticAnalysis" << '\n';
+  FrontendStatsTracer frontendTracer(
+      instance.GetStats(),
+      instance.GetActionString(CompilerActionKind::TypeCheck));
 
   return callback(instance);
 }
 
 // \return true if emit-ast is true
 bool stone::PerformEmitAST(CompilerInstance &instance) {
-  llvm::outs() << "PerformEmitParse" << '\n';
+  FrontendStatsTracer frontendTracer(
+      instance.GetStats(),
+      instance.GetActionString(CompilerActionKind::EmitAST));
 }
 
 // \return true if the code generation was successfull
-bool stone::CompletedSemanticAnalysis(CompilerInstance &instance) {
-  llvm::outs() << "CompletedSemanticAnalysis" << '\n';
+bool stone::PerformEmitCode(CompilerInstance &instance) {
+
+  switch (instance.GetPrimaryActionKind()) {
+  case CompilerActionKind::EmitIR: {
+
+    return stone::PerformEmitIR(
+        instance, [](CompilerInstance &instance, CodeGenResult &result) {
+          return instance.GetInvocation().HasError();
+        });
+  }
+  // case CompilerActionKind::EmitObject: {
+  //   return stone::PerformEmitIR(
+  //       instance, [](CompilerInstance &instance, CodeGenResult &result) {
+  //         return stone::PerformEmitBackend(instance, result);
+  //       });
+  // }
+  default: {
+  }
+  }
+
+  // if (instance.IsCompileForWholeModule()) {
+  //   // Perform whole modufle
+  //   const PrimaryFileSpecificPaths psps =
+  //       instance.GetPrimaryFileSpecificPathsForWholeModuleOptimizationMode();
+
+  //   std::vector<std::string> parallelOutputFilenames =
+  //       instance.GetCopyOfOutputFilenames();
+
+  //   llvm::StringRef outputFilename = psps.outputFilename;
+
+  //   CodeGenResult result =
+  //       stone::PerformEmitModuleDecl(instance.GetMainModule(),
+  //       outputFilename,
+  //                                    psps, parallelOutputFilenames,
+  //                                    globalHash);
+  //   if (!result) {
+  //     return false;
+  //   }
+
+  // } else if (instance.IsCompileForSourceFile()) {
+  //   instance.ForEachPrimarySourceFile([&](SourceFile &primarySourceFile) {
+  //     // Get the paths for the primary source file.
+  //     const PrimaryFileSpecificPaths psps =
+  //         instance.GetPrimaryFileSpecificPathsForSyntaxFile(primarySourceFile);
+
+  //     llvm::StringRef outputFilename = psps.outputFilename;
+  //     CodeGenResult result = stone::PerformEmitSourceFile(
+  //         primarySourceFile, outputFilename, psps, globalHash);
+
+  //     if (!result) {
+  //       return false;
+  //     }
+  //   });
+  // }
 }
 
+bool stone::PerformEmitIR(CompilerInstance &instance,
+                          PerformEmitIRCallback callback) {}
+
+// // \return true if the code generation was successfull
+// bool stone::PerformEmitCodeImpl(CompilerInstance &instance,
+//                                 ModuleDeclOrModuleFile moduleOrFile,
+//                                 const PrimaryFileSpecificPaths &sps) {
+
+//   auto PerformCodeGenIR =
+//       [&](CompilerInstance &instance, ModuleDeclOrModuleFile moduleOrFile,
+//           const PrimaryFileSpecificPaths &sps) -> CodeGenResult {
+
+//     if (auto *SF = moduleOrFile.dyn_cast<SourceFile *>()) {
+//     } else {
+
+//       auto *MD = moduleOrFile.get<ModuleDecl *>();
+//     }
+//   };
+
+//   // auto *SF = moduleOrFile.dyn_cast<SourceFile *>();
+
+//   // auto  *MD = moduleOrFile.get<ModuleDecl *>();
+// }
+
+// // \return llvm::Module if IR generation is successful
+CodeGenResult stone::PerformEmitSourceFile(CompilerInstance &instance,
+                                           SourceFile *sourceFile,
+                                           llvm::StringRef moduleName,
+                                           const PrimaryFileSpecificPaths &sps,
+                                           llvm::GlobalVariable *&globalHash) {}
+
+// ///\return the generated module
+CodeGenResult
+stone::PerformEmitModule(CompilerInstance &instance, ModuleDecl *moduleDecl,
+                         llvm::StringRef moduleName,
+                         const PrimaryFileSpecificPaths &sps,
+                         ArrayRef<std::string> parallelOutputFilenames,
+                         llvm::GlobalVariable *&globalHash) {}
+
+bool stone::PerformEmitBackend(CompilerInstance &instance,
+                               llvm::StringRef outputFilename,
+                               llvm::Module *module,
+                               llvm::GlobalVariable *&globalHash) {}
 /// \retyrb true if we compiled an ir file.
 bool stone::PerformCompileLLVM(CompilerInstance &instance) {}

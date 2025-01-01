@@ -78,6 +78,9 @@ public:
   bool HasPrimaryAction() const {
     return invocation.GetCompilerOptions().HasPrimaryAction();
   }
+  llvm::StringRef GetActionString(CompilerActionKind kind) const {
+    return invocation.GetCompilerOptions().GetActionString(kind);
+  }
 
 public:
   ///\create the source files from the compiler input
