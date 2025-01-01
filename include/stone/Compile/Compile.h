@@ -4,7 +4,6 @@
 #include "stone/AST/Module.h"
 #include "stone/Basic/CodeGenOptions.h"
 
-
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/IR/Module.h"
 
@@ -19,7 +18,6 @@ class PrimaryFileSpecificPaths;
 class CodeGenOptions;
 class LangOptions;
 class ClangImporter;
-
 
 int Compile(llvm::ArrayRef<const char *> args, const char *arg0, void *mainAddr,
             CompilerObservation *observation = nullptr);
@@ -76,7 +74,7 @@ bool PerformEmitIR(CompilerInstance &instance, PerformEmitIRCallback callback);
 
 // // \return llvm::Module if IR generation is successful
 CodeGenResult PerformEmitSourceFile(CompilerInstance &instance,
-                                    SourceFile *sourceFile,
+                                    SourceFile &sourceFile,
                                     llvm::StringRef moduleName,
                                     const PrimaryFileSpecificPaths &sps,
                                     llvm::GlobalVariable *&globalHash);
@@ -88,7 +86,6 @@ PerformEmitModule(CompilerInstance &instance, ModuleDecl *moduleDecl,
                   const PrimaryFileSpecificPaths &sps,
                   llvm::ArrayRef<std::string> parallelOutputFilenames,
                   llvm::GlobalVariable *&globalHash);
-
 
 // \return true if syntax analysis is successful
 bool PerformEmitBackend(CompilerInstance &instance,
