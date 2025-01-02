@@ -201,7 +201,7 @@ public:
   bool IsImmediateAction() const;
 
   /// \return true if this is any action
-  bool IsAction(CompilerActionKind k) const { return GetPrimaryAction() == k; }
+  bool IsAction(CompilerActionKind K) const { return GetPrimaryAction() == K; }
 
   template <typename... T>
   bool IsAnyAction(CompilerActionKind K1, CompilerActionKind K2, T... K) const {

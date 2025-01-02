@@ -147,7 +147,7 @@ bool stone::PerformAction(CompilerInstance &instance) {
           instance, [&](CompilerInstance &instance) {
             return stone::PerformSemanticAnalysis(
                 instance, [&](CompilerInstance &instance) {
-                  return PerformEmitAST(instance);
+                  return stone::PerformEmitAST(instance);
                 });
           });
     });
@@ -248,7 +248,16 @@ bool stone::PerformEmitAST(CompilerInstance &instance) {
   FrontendStatsTracer frontendTracer(
       instance.GetStats(),
       instance.GetActionString(CompilerActionKind::EmitAST));
+  instance.ForEachSourceFileToTypeCheck([&](SourceFile &sourceFile) {
+    assert(sourceFile.HasTypeChecked() &&
+           "AST is not type-checked -- cannot emit!");
+    stone::PerformPrintAST(instance, sourceFile);
+    return true;
+  });
+  return instance.HasError();
 }
+void stone::PerformPrintAST(CompilerInstance &instance,
+                            SourceFile &sourceFile) {}
 
 // \return true if the code generation was successfull
 bool stone::PerformEmitCode(CompilerInstance &instance) {
@@ -290,7 +299,12 @@ bool stone::PerformEmitIR(CompilerInstance &instance,
     if (!result) {
       return false;
     } else {
-      return callback(instance, result);
+      if (!instance.GetInvocation().GetCompilerOptions().IsEmitIRAction()) {
+        return callback(instance, result);
+      } else {
+        stone::PerformPrintIR(instance, result.GetLLVMModule());
+        return true;
+      }
     }
 
   } else if (instance.IsCompileForSourceFile()) {
@@ -304,12 +318,20 @@ bool stone::PerformEmitIR(CompilerInstance &instance,
       if (!result) {
         return false;
       } else {
-        return callback(instance, result);
+        if (!instance.GetInvocation().GetCompilerOptions().IsEmitIRAction()) {
+          return callback(instance, result);
+        } else {
+          stone::PerformPrintIR(instance, result.GetLLVMModule());
+          return true;
+        }
       }
     });
   }
   assert(false && "invalid call to PerformEmitIR");
 }
+
+// Print the IR generated
+void stone::PerformPrintIR(CompilerInstance &instance, llvm::Module *M) {}
 
 // // \return llvm::Module if IR generation is successful
 CodeGenResult stone::PerformEmitSourceFile(CompilerInstance &instance,

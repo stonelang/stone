@@ -56,6 +56,9 @@ bool PerformSemanticAnalysis(CompilerInstance &instance,
 // \return true if emit-ast is true
 bool PerformEmitAST(CompilerInstance &instance);
 
+// Print the AST
+void PerformPrintAST(CompilerInstance &instance, SourceFile &sourceFile);
+
 // \return true if the code generation was successfull
 bool PerformEmitCode(CompilerInstance &instance);
 
@@ -65,10 +68,8 @@ using PerformEmitIRCallback =
 // \return true if the code generation was successfull
 bool PerformEmitIR(CompilerInstance &instance, PerformEmitIRCallback callback);
 
-// // \return true if the code generation was successfull
-// bool PerformEmitIR(CompilerInstance &instance,
-//                          ModuleDeclOrModuleFile moduleOrFile,
-//                          const PrimaryFileSpecificPaths &sps);
+// Print the IR generated
+void PerformPrintIR(CompilerInstance &instance, llvm::Module *M);
 
 // // \return llvm::Module if IR generation is successful
 CodeGenResult PerformEmitSourceFile(CompilerInstance &instance,
