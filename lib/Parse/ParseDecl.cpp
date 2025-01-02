@@ -118,7 +118,7 @@ ParserResult<Decl> Parser::ParseDecl(ParsingDeclSpec &spec) {
   if (status.IsError() || spec.HasQualifierOverflow()) {
     return DeclResult;
   }
-  status |= ParsePublicVisibilityList(spec);
+  status |= ParseVisibilityList(spec);
   if (status.IsError() || spec.HasVisibilityOverflow()) {
     return DeclResult;
   }
