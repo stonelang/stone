@@ -15,7 +15,6 @@ class Token;
 /// the encoding is invalid.
 uint32_t validateUTF8CharacterAndAdvance(const char *&Ptr, const char *End);
 
-
 enum class CommentRetentionMode {
   None,
   AttachToNextToken,

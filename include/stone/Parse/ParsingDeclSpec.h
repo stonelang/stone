@@ -122,6 +122,8 @@ struct ParsingDeclName final {
 
 class ParsingDeclSpecLoc final {
   SrcLoc Loc;
+
+  // May want to think about DiagID here
   llvm::SmallVector<SrcLoc, 5> overflow;
 
   void AddLoc(SrcLoc loc) {

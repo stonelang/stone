@@ -13,8 +13,7 @@ using uint64 = uint64_t;
 using int32 = int32_t;
 using int64 = int64_t;
 
-template <typename T> using SafePtr = std::unique_ptr<T>;
-template <typename F, typename S> using Pair = std::pair<F, S>;
+enum class status : bool { Success, Error };
 
 } // namespace stone
 #endif
