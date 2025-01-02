@@ -88,7 +88,7 @@ ParserStatus Parser::ParseQualifierList(ParsingDeclSpec &spec) {
   }
 }
 
-ParserStatus Parser::ParsePublicVisibilityList(ParsingDeclSpec &spec) {
+ParserStatus Parser::ParseVisibilityList(ParsingDeclSpec &spec) {
   ParserStatus status;
   while (IsParsing()) {
     switch (GetCurTok().GetKind()) {
