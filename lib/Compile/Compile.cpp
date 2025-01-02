@@ -168,10 +168,8 @@ bool stone::PerformAction(CompilerInstance &instance) {
           });
     });
   }
-  default: {
-    break;
   }
-  }
+  llvm_unreachable("Invalid action!");
 }
 
 /// \return true if syntax analysis is successful

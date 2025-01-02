@@ -20,9 +20,9 @@ using namespace stone;
 
 void CodeGenModule::EmitFunDecl(FunDecl *FD, llvm::GlobalValue *GV) {
 
-  //   assert(funDecl && "Null FundDecl");
+  assert(FD && "Null FundDecl!");
 
-  //   auto funDeclType = GetIRGenTypeResolver().GetFunctionType(funDecl);
+  auto funType = GetFunctionType(FD);
 
   //   EmitFunctionOptions emitFunctionOpts;
   //   emitFunctionOpts |= EmitFunctionFlags::IsForDefinition;

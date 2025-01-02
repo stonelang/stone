@@ -1,8 +1,9 @@
-#ifndef STONE_DRIVER_DRIVER_COMPILATION_ENTITY_H
-#define STONE_DRIVER_DRIVER_COMPILATION_ENTITY_H
+#ifndef STONE_DRIVER_DRIVER_STEP_H
+#define STONE_DRIVER_DRIVER_STEP_H
 
 #include "stone/Basic/Allocation.h"
 #include "stone/Basic/OptionSet.h"
+#include "stone/Driver/StepKind.h"
 #include "stone/Support/InputFile.h"
 
 #include "llvm/ADT/ArrayRef.h"
@@ -13,18 +14,6 @@
 namespace stone {
 class Step;
 class Driver;
-
-enum class StepKind : uint8_t {
-  Input = 0,
-  Compile,
-  Backend,
-  GeneratePCH,
-  MergeModule,
-  ModuleWrap,
-  Link,
-  Interpret,
-  AutolinkExtract,
-};
 
 using Steps = llvm::SmallVector<const Step *, 3>;
 constexpr size_t StepAlignInBits = 8;

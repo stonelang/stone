@@ -47,6 +47,9 @@ public:
   CodeGenBuilder(CodeGenModule &codeGenModule, llvm::BasicBlock *basicBlock);
 
   ~CodeGenBuilder();
+
+public:
+  void CreateCall();
 };
 
 } // namespace stone

@@ -37,15 +37,16 @@ class CodeGenFunction final {
   CodeGenModule &codeGenModule;
   CodeGenBuilder codeGenBuilder;
 
-  llvm::Function *llvmFunction = nullptr;
+  llvm::Function *curFunction = nullptr;
   llvm::BasicBlock *returnBB;
 
 public:
-  CodeGenFunction(CodeGenModule &codeGenModule, llvm::Function *llvmFunction);
+  CodeGenFunction(CodeGenModule &codeGenModule, llvm::Function *curFunction);
+  ~CodeGenFunction();
 
 public:
   CodeGenModule &GetCodGenModule() { return codeGenModule; }
-  llvm::Function *GetLLVMFunction() { return llvmFunction; }
+  llvm::Function *GetCurFunction() { return curFunction; }
   CodeGenBuilder &GetCodeGenBuilder() { return codeGenBuilder; }
 
 private:

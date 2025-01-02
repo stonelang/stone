@@ -1,6 +1,7 @@
-#ifndef STONE_COMPILE_COMPILEROPTIONS_H
-#define STONE_COMPILE_COMPILEROPTIONS_H
+#ifndef STONE_DRIVER_DRIVEROPTIONS_H
+#define STONE_DRIVER_DRIVEROPTIONS_H
 
+#include "stone/Driver/StepKind.h"
 #include "stone/Support/Options.h"
 
 #include "llvm/ADT/PointerIntPair.h"
@@ -27,6 +28,9 @@ class DriverOptions : public Options {
 public:
   /// \return the Action
   DriverActionKind GetPrimaryActionKind() const { return primaryActionKind; }
+
+public:
+  static llvm::ArrayRef<StepKind> GetStepKindList(DriverActionKind kind);
 };
 
 } // namespace stone
