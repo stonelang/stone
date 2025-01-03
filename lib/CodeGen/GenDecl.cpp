@@ -22,8 +22,8 @@ public:
 
 void CodeGenModule::EmitSourceFile(SourceFile &sourceFile) {
 
-  for (auto *globalDecl : sourceFile.GetTopLevelDecls()) {
-    EmitGlobalDecl(globalDecl);
+  for (auto *GD : sourceFile.GetTopLevelDecls()) {
+    EmitGlobalDecl(GD);
   }
 }
 
