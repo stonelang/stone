@@ -4,7 +4,6 @@
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Foreign.h"
 #include "stone/AST/InlineBitfield.h"
-#include "stone/AST/Modifier.h"
 #include "stone/AST/Ownership.h"
 #include "stone/AST/Type.h"
 #include "stone/AST/TypeAlignment.h"
@@ -90,8 +89,6 @@ protected:
 
   } Bits;
 
-  TypeModifierList Modifiers;
-
 public:
   AbstractType(TypeKind kind, const ASTContext *canTypeContext)
       : astContext(nullptr) {
@@ -111,9 +108,6 @@ public:
 
   /// getASTContext - Return the ASTContext that this type belongs to.
   ASTContext &GetASTContext();
-
-  const TypeModifierList &GetModifiers() const { return Modifiers; }
-  TypeModifierList &GetModifiers() { return Modifiers; }
 
 public:
   // We can do this because all types are generally cannonical types.

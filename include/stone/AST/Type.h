@@ -4,7 +4,7 @@
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
-
+#include "stone/AST/Modifier.h"
 #include "stone/AST/QualSpecs.h"
 
 #include "llvm/ADT/APFloat.h"
@@ -65,7 +65,7 @@ enum class RefQualifierKind : uint8 {
 
 class Type {
   AbstractType *typePtr;
-
+  TypeModifierList Modifiers;
 public:
   Type(AbstractType *typePtr = 0) : typePtr(typePtr) {}
 
@@ -78,6 +78,8 @@ public:
   }
   explicit operator bool() const { return typePtr != 0; }
 
+  const TypeModifierList &GetModifiers() const { return Modifiers; }
+  TypeModifierList &GetModifiers() { return Modifiers; }
 public:
   /// Walk this Type.
   ///

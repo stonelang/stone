@@ -6,7 +6,7 @@
 #include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcLoc.h"
-
+#include "stone/AST/ASTAllocation.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/iterator_range.h"
