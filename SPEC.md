@@ -78,11 +78,11 @@ if (x > 0) {
 ## Declarations
 
 ### Functions
-Functions are defined with `fun` and must use braces for their bodies. Function names are in upper case.
+Functions are defined with `fun` and must use braces for their bodies. Function names are in upper camel case.
 
 #### Example:
 ```stone
-public fun ADD(int a, int b) -> int {
+public fun Add(int a, int b) -> int {
     return a + b;
 }
 ```
@@ -104,9 +104,85 @@ Interfaces define behavior without implementation.
 #### Example:
 ```stone
 interface Fireable {
-    fun FIRE() -> bool;
+    fun Fire() -> bool;
 }
 ```
+
+### Virtual Functions
+Virtual functions provide polymorphism by allowing derived types to override base type behavior.
+
+#### Example:
+```stone
+struct Particle {
+    int mass;
+    int charge;
+}
+
+virtual public fun Particle::Fire() -> bool {
+    return false;  // Default behavior
+}
+
+struct Electron : Particle {
+}
+
+override public fun Electron::Fire() -> bool {
+    return true;
+}
+```
+
+### Anonymous Functions
+Anonymous functions allow inline function definitions for quick computations.
+
+#### Example:
+```stone
+public fun Main() -> void {
+    auto square = fun(int x) -> int {
+        return x * x;
+    };
+
+    print(square(5)); // Outputs: 25
+}
+```
+
+## Pointers and Cleanup
+
+Stone provides `ptr`, `ref`, and `val` for pointer management, ensuring safe and readable memory operations. Cleanup code can be written using `~fun()`.
+
+#### Example:
+```stone
+public fun Main() -> void {
+    ptr int particleMass = ref 10;
+    ptr int particleCharge = ref 1;
+
+    ~fun() {
+        delete particleMass;
+        delete particleCharge;
+        print("Resources cleaned up.");
+    }
+
+    print("Particle mass: " + auto particleMass);
+}
+```
+
+#### Example:
+```stone
+public fun Main() -> void {
+    int x = 10, y = 20;
+
+    ptr ... int p1 = ref x;
+    ptr .. int p2 = ref y;
+
+    auto result = (auto ... p1) * 2 + (auto .. p2);
+    print(result);  // Outputs: 40
+
+    ~fun() {
+        delete p1;
+        delete p2;
+        print("Pointers cleaned up.");
+    }
+}
+```
+
 
 ## Built-in and Reserved Keywords
 
@@ -127,7 +203,6 @@ interface Fireable {
 - `volatile`
 - `restrict`
 - `mutable`
-- `trust`
 - `delete`
 - `operator`
 - `fun`
@@ -148,13 +223,9 @@ interface Fireable {
 
 ### Reserved Declaration Keywords
 - `type`
-- `safe`
 - `ptr`
-- `val`
 - `any`
 - `object`
-- `own`
-- `forward`
 - `class`
 - `immutable`
 - `module`
@@ -190,23 +261,59 @@ Modules in Stone are explicit and scalable. Files must declare their `space`, an
 
 ### Example:
 ```stone
-// Particle.lang
-join Physics.Particle;
+// Particle.stone
+join Physics;
 
 struct Particle {
     int mass;
     int charge;
 }
+```
 
-// Main.lang
+```stone
+// Electron.stone
+join Physics;
+
+struct Electron : Particle {
+}
+
+public fun Electron::Electron(ptr int mass, ptr int charge) -> void {
+    this.mass = auto mass;
+    this.charge = auto charge;
+}
+```
+
+```stone
+// Main.stone
 import Physics;
 
 space Simulation;
 
-public fun MAIN() -> void {
-    print("Hello, Stone!");
+public fun Main() -> void {
+    ptr int electronMass = ref 9;
+    ptr int electronCharge = ref -1;
+
+    auto electron = Electron(ref electronMass, ref electronCharge);
+
+    ~fun() {
+        delete electronMass;
+        delete electronCharge;
+        print("Cleanup complete.");
+    }
+
+    print("Electron charge: " + auto electronCharge);
 }
 ```
 
-Modules are built independently and linked using the `--module` and `--import-module` flags. This ensures clarity and scalability in larger projects.
+Modules are built independently and linked using the `stone` compiler:
+
+### Build Process:
+1. Compile modules:
+    ```bash
+    stone --module Physics Particle.stone Electron.stone
+    ```
+2. Compile and link `Main.stone` with `Physics`:
+    ```bash
+    stone --import-module Physics Main.stone -o Simulation
+    ```
 
