@@ -53,6 +53,9 @@ public:
 class InlineDeclAttribute : public DeclAttribute {
 public:
 };
+class AlignDeclAttribute : public DeclAttribute {
+public:
+};
 class ExternDeclAttribute : public DeclAttribute {
 public:
 };

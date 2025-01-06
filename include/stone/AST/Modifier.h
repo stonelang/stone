@@ -1,8 +1,8 @@
-#ifndef STONE_AST_PROLOGUE_H
-#define STONE_AST_PROLOGUE_H
+#ifndef STONE_AST_MODIFIER_H
+#define STONE_AST_MODIFIER_H
 
 #include "stone/AST/Identifier.h"
-#include "stone/AST/PrologueKind.h"
+#include "stone/AST/ModifierKind.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/Memory.h"
 #include "stone/Basic/SrcLoc.h"
@@ -16,10 +16,9 @@
 
 namespace stone {
 
-class alignas(1 << ModifiersAlignInBits) Modifier
+class alignas(1 << ModifierAlignInBits) Modifier
     : public ASTAllocation<Modifier> {};
 
-};
 class DeclModifier : public Modifier {
   DeclModifier *Next = nullptr;
 };
@@ -29,9 +28,9 @@ class StaticDeclModifier : public StorageDeclModifier {};
 class ExternDeclModifier : public StorageDeclModifier {};
 
 class VisibilityDeclModifier : public DeclModifier {};
-class PublicDeclModifier : public VisibilityModifier {};
-class ProtectedDeclModifier : public VisibilityModifier {};
-class PrivateModifier : public VisibilityModifier {};
+class PublicDeclModifier : public VisibilityDeclModifier {};
+class ProtectedDeclModifier : public VisibilityDeclModifier {};
+class PrivateDeclModifier : public VisibilityDeclModifier {};
 
 /// Attributes that may be applied to declarations.
 class DeclModifierList {
@@ -52,7 +51,7 @@ class StoneTypeModifier : public TypeModifier {};
 class AccessTypeModifier : public TypeModifier {};
 class PtrTypeModifier : public AccessTypeModifier {};
 class OwnTypeModifier : public AccessTypeModifier {};
-class MoveTypeModifier : public AccessTypeModifier {};
+// class MoveTypeModifier : public AccessTypeModifier {};
 class RefTypeModifier : public AccessTypeModifier {};
 class ArrayTypeModifier : public AccessTypeModifier {};
 

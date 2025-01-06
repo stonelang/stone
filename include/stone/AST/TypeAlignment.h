@@ -19,6 +19,7 @@ class DeclContext;
 class ModuleFile;
 class Attribute;
 
+constexpr size_t ModifierAlignInBits = 3;
 constexpr size_t AttributeAlignInBits = 3;
 constexpr size_t PrologueAlignInBits = 3;
 constexpr size_t DeclAlignInBits = 3;

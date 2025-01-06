@@ -2,6 +2,7 @@
 #define STONE_AST_DECL_H
 
 #include "stone/AST/ASTAllocation.h"
+#include "stone/AST/Attribute.h"
 #include "stone/AST/DeclContext.h"
 #include "stone/AST/DeclKind.h"
 #include "stone/AST/DeclName.h"
@@ -10,6 +11,7 @@
 #include "stone/AST/IfConfig.h"
 #include "stone/AST/Import.h"
 #include "stone/AST/InlineBitfield.h"
+#include "stone/AST/Modifier.h"
 #include "stone/AST/Storage.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeLoc.h"
