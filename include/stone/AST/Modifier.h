@@ -19,8 +19,16 @@ namespace stone {
 class alignas(1 << ModifierAlignInBits) Modifier
     : public ASTAllocation<Modifier> {};
 
+enum class DeclModifierScope : uint8_t {
+  None = 0, // Default, unspecified scope
+  Global,   // For global declarations
+  Member,   // For class or struct members
+  Local     // For local variables or parameters
+};
+
 class DeclModifier : public Modifier {
   DeclModifier *Next = nullptr;
+  DeclModifierScope scope = DeclModifierScope::None;
 };
 
 class StorageDeclModifier : public DeclModifier {};
@@ -38,22 +46,43 @@ class DeclModifierList {
   DeclModifier *modifiers;
 };
 
+enum class TypeModifierScope : uint8_t { None = 0, Global, Parameter, Local };
+
 class TypeModifier : public Modifier {
   TypeModifier *Next = nullptr;
+  TypeModifierScope scope = TypeModifierScope::None;
+
+public:
+  TypeModifier(TypeModifierScope scope) : scope(scope) {}
 };
 
-class MutableTypeModifier : public TypeModifier {};
-class VolatileTypeModifier : public TypeModifier {};
-class ConstTypeModifier : public TypeModifier {};
-class PureTypeModifier : public TypeModifier {};
-class StoneTypeModifier : public TypeModifier {};
+// class MutableTypeModifier : public TypeModifier {
 
-class AccessTypeModifier : public TypeModifier {};
-class PtrTypeModifier : public AccessTypeModifier {};
-class OwnTypeModifier : public AccessTypeModifier {};
-// class MoveTypeModifier : public AccessTypeModifier {};
-class RefTypeModifier : public AccessTypeModifier {};
-class ArrayTypeModifier : public AccessTypeModifier {};
+// };
+// class VolatileTypeModifier : public TypeModifier {};
+class ConstTypeModifier : public TypeModifier {
+
+public:
+  ConstTypeModifier(TypeModifierScope scope) : TypeModifier(scope) {}
+};
+// class PureTypeModifier : public TypeModifier {};
+// class StoneTypeModifier : public TypeModifier {};
+
+class AccessTypeModifier : public TypeModifier {
+public:
+  AccessTypeModifier(TypeModifierScope scope) : TypeModifier(scope) {}
+};
+class PtrTypeModifier : public AccessTypeModifier {
+public:
+  PtrTypeModifier(TypeModifierScope scope) : AccessTypeModifier(scope) {}
+};
+// class OwnTypeModifier : public AccessTypeModifier {};
+//  class MoveTypeModifier : public AccessTypeModifier {};
+class RefTypeModifier : public AccessTypeModifier {
+public:
+  RefTypeModifier(TypeModifierScope scope) : AccessTypeModifier(scope) {}
+};
+// class ArrayTypeModifier : public AccessTypeModifier {};
 
 /// Attributes that may be applied to declarations.
 class TypeModifierList {
