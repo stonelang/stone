@@ -15,12 +15,13 @@
 #include "llvm/Support/VersionTuple.h"
 
 namespace stone {
+class DeclAttributeList;
 
 class alignas(1 << AttributeAlignInBits) Attribute
     : public MemoryAllocation<Attribute> {
 public:
-  /// The location of the '[['.
-  const SrcLoc llBracketLoc;
+  /// The location of the '['.
+  const SrcLoc lBracketLoc;
 
   /// The source range of the attribute.
   const SrcRange range;
@@ -32,8 +33,8 @@ public:
   SrcRange GetRange() const { return range; }
 
   SrcRange GetRangeWithLLBracket() const {
-    if (llBracketLoc.isValid()) {
-      return {llBracketLoc, range.End};
+    if (lBracketLoc.isValid()) {
+      return {lBracketLoc, range.End};
     }
     return range;
   }
@@ -41,17 +42,35 @@ public:
   Attribute(const Attribute &) = delete;
 
 protected:
-  Attribute(SrcLoc llBracketLoc, SrcRange range)
-      : llBracketLoc(llBracketLoc), range(range) {}
+  Attribute(SrcLoc lBracketLoc, SrcRange range)
+      : lBracketLoc(lBracketLoc), range(range) {}
 };
 
-class DeclAttribute : public Attribute {};
-
-class SpecializeAttribute : public DeclAttribute {};
-
-class AttributeSpecs {
+class DeclAttribute : public Attribute {
 public:
-  AttributeSpecs() {}
+};
+
+class InlineDeclAttribute : public DeclAttribute {
+public:
+};
+class ExternDeclAttribute : public DeclAttribute {
+public:
+};
+
+/// Attributes that may be applied to declarations.
+class DeclAttributeList {
+  /// Linked list of declaration attributes.
+  DeclAttribute *attributes;
+};
+
+class TypeAttribute : public Attribute {
+public:
+};
+
+/// Attributes that may be applied to declarations.
+class TypeAttributeList {
+  /// Linked list of declaration attributes.
+  TypeAttribute *attributes;
 };
 
 } // namespace stone

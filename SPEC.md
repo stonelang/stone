@@ -278,8 +278,8 @@ struct Electron : Particle {
 }
 
 public fun Electron::Electron(ptr int mass, ptr int charge) -> void {
-    this.mass = auto mass;
-    this.charge = auto charge;
+    this:mass = auto mass;
+    this:charge = auto charge;
 }
 ```
 
