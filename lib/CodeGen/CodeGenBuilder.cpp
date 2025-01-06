@@ -1,6 +1,6 @@
 #include "stone/CodeGen/CodeGenBuilder.h"
-#include "stone/CodeGen/CodeGenModule.h"
 #include "stone/CodeGen/CodeGenFunction.h"
+#include "stone/CodeGen/CodeGenModule.h"
 using namespace stone;
 
 void CodeGenBuilderInserter::InsertHelper(
