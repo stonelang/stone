@@ -5,8 +5,7 @@ using namespace stone;
 
 CodeGenFunction::CodeGenFunction(CodeGenModule &codeGenModule,
                                  llvm::Function *curFunction)
-    : codeGenModule(codeGenModule), codeGenBuilder(codeGenModule),
-      curFunction(curFunction) {
+    : codeGenModule(codeGenModule), curFunction(curFunction) {
 
   EmitPrologue();
 }
@@ -34,3 +33,8 @@ llvm::BasicBlock *CodeGenFunction::CreateBasicBlock(const llvm::Twine &name) {
 void CodeGenFunction::EmitFunction(FunctionDecl *FD) {}
 
 void CodeGenFunction::EmitEpilogue() {}
+
+void CodeGenFunction::InsertHelper(llvm::Instruction *instruction,
+                                   const llvm::Twine &name,
+                                   llvm::BasicBlock *basicBlock,
+                                   llvm::BasicBlock::iterator insertPt) const {}

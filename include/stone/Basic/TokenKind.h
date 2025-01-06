@@ -2,7 +2,7 @@
 #define STONE_BASIC_TOKENKIND_H
 
 #include "stone/Basic/LLVM.h"
- 
+
 namespace stone {
 
 enum class tok : uint8_t {

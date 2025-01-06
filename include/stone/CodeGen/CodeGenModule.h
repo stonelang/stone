@@ -4,6 +4,7 @@
 #include "stone/AST/ASTVisitor.h"
 #include "stone/AST/Diagnostics.h"
 #include "stone/AST/Module.h"
+#include "stone/CodeGen/CodeGenBuilder.h"
 #include "stone/CodeGen/CodeGenContext.h"
 #include "stone/CodeGen/CodeGenPassManager.h"
 
@@ -92,6 +93,7 @@ private:
   SourceFile *sourceFile;
   llvm::Module &llvmModule;
   CodeGenPassManager codeGenPassMgr;
+  CodeGenBuilder codeGenBuilder;
   ModuleNameAndOuptFileName moduleNameAndOuptFileName;
   std::unique_ptr<clang::CodeGenerator> clangCodeGen;
   const llvm::DataLayout dataLayout;
@@ -119,6 +121,8 @@ public:
   }
   CodeGenPassManager &GetCodeGenPassManager() { return codeGenPassMgr; }
   clang::CodeGenerator &GetClangCodeGen() { return *clangCodeGen; }
+  CodeGenBuilder &GetCodeGenBuilder() { return codeGenBuilder; }
+
   const llvm::DataLayout &GetDataLayout() { return dataLayout; }
 
 public:

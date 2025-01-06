@@ -2,7 +2,6 @@
 #define STONE_CODEGEN_CODEGENFUNCTION_H
 
 #include "stone/AST/ASTVisitor.h"
-#include "stone/CodeGen/CodeGenBuilder.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/IR/CallingConv.h"
@@ -32,11 +31,21 @@ public:
   unsigned InstanceFunction : 1;
 };
 
+class CodeGenLoopInfoStack final {
+public:
+  // void InsertHelper(llvm::Instruction *I) {
+  //     // Example: Apply loop unroll metadata
+  //     llvm::MDNode *UnrollHint =
+  //         llvm::MDNode::get(I->getContext(),
+  //                           llvm::MDString::get(I->getContext(),
+  //                           "llvm.loop.unroll.enable"));
+  //     I->setMetadata("llvm.loop", UnrollHint);
+  // }
+};
+
 class CodeGenFunction final {
 
   CodeGenModule &codeGenModule;
-  CodeGenBuilder codeGenBuilder;
-
   llvm::Function *curFunction = nullptr;
   llvm::BasicBlock *returnBB;
 
@@ -47,7 +56,6 @@ public:
 public:
   CodeGenModule &GetCodGenModule() { return codeGenModule; }
   llvm::Function *GetCurFunction() { return curFunction; }
-  CodeGenBuilder &GetCodeGenBuilder() { return codeGenBuilder; }
 
 private:
   void EmitPrologue();
@@ -56,6 +64,11 @@ private:
 public:
   llvm::BasicBlock *CreateBasicBlock(const llvm::Twine &name);
   void EmitFunction(FunctionDecl *FD);
+
+public:
+  void InsertHelper(llvm::Instruction *instruction, const llvm::Twine &name,
+                    llvm::BasicBlock *basicBlock,
+                    llvm::BasicBlock::iterator insertPt) const;
 };
 
 } // namespace stone

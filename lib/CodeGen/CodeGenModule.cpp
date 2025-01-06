@@ -8,6 +8,7 @@ CodeGenModule::CodeGenModule(
     ModuleNameAndOuptFileName moduleNameAndOuptFileName)
     : codeGen(codeGen), sourceFile(sourceFile),
       moduleNameAndOuptFileName(moduleNameAndOuptFileName),
+      codeGenBuilder(*this),
       codeGenPassMgr(codeGen.GetCodeGenOptions(), nullptr),
       dataLayout(codeGen.GetClangDataLayoutString()),
       clangCodeGen(CreateClangCodeGen()),

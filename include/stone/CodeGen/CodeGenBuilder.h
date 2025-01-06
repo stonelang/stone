@@ -15,12 +15,11 @@ class CodeGenFunction;
 
 class CodeGenBuilderInserter : public llvm::IRBuilderDefaultInserter {
 private:
-  CodeGenFunction *codeGenFunction = nullptr;
+  CodeGenFunction *CGF = nullptr;
 
 public:
   CodeGenBuilderInserter() = default;
-  explicit CodeGenBuilderInserter(CodeGenFunction *codeGenFunction)
-      : codeGenFunction(codeGenFunction) {}
+  explicit CodeGenBuilderInserter(CodeGenFunction *CGF) : CGF(CGF) {}
 
 public:
   /// This forwards to CodeGenFunction::InsertHelper.
@@ -33,18 +32,22 @@ using CodeGenBuilderBase =
     llvm::IRBuilder<llvm::ConstantFolder, CodeGenBuilderInserter>;
 
 class CodeGenBuilder final : public CodeGenBuilderBase {
-  CodeGenModule &codeGenModule;
+  CodeGenModule &CGM;
 
 public:
-  CodeGenBuilder(CodeGenModule &codeGenModule);
+  using CodeGenBuilderBase::CodeGenBuilderBase;
 
-  CodeGenBuilder(CodeGenModule &codeGenModule,
-                 const llvm::ConstantFolder &constFoler,
-                 const CodeGenBuilderInserter &inserter);
+public:
+  CodeGenBuilder(CodeGenModule &CGM);
 
-  CodeGenBuilder(CodeGenModule &codeGenModule, llvm::Instruction *instruction);
+  // CodeGenBuilder(CodeGenModule &codeGenModule,
+  //                const llvm::ConstantFolder &constFoler,
+  //                const CodeGenBuilderInserter &inserter);
 
-  CodeGenBuilder(CodeGenModule &codeGenModule, llvm::BasicBlock *basicBlock);
+  // CodeGenBuilder(CodeGenModule &codeGenModule, llvm::Instruction
+  // *instruction);
+
+  // CodeGenBuilder(CodeGenModule &codeGenModule, llvm::BasicBlock *basicBlock);
 
   ~CodeGenBuilder();
 
