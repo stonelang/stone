@@ -253,6 +253,12 @@ protected:
 
   } Bits;
 
+  // Storage for the declaration attributes.
+  DeclAttributeList Attributes;
+
+  // Storage for the declaration attributes.
+  DeclModifierList Modifiers;
+
   /// The next declaration in the list of declarations within this
   /// member context.
   Decl *nextDecl = nullptr;
@@ -310,6 +316,12 @@ public:
     }
     return *context.get<ASTContext *>();
   }
+
+  const DeclAttributeList &GetAttributes() const { return Attributes; }
+  DeclAttributeList &GetAttributes() { return Attributes; }
+
+  const DeclModifierList &GetModifiers() const { return Modifiers; }
+  DeclModifierList &GetModifiers() { return Modifiers; }
 
 public:
   bool IsTopLevel() { return Bits.Decl.IsTopLevel; }
