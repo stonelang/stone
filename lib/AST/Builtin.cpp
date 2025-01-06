@@ -1,6 +1,6 @@
 #include "stone/AST/Builtin.h"
 #include "stone/AST/ASTContext.h"
-#include "stone/AST/Type.h"
+#include "stone/AST/AbstractType.h"
 #include "stone/Basic/Memory.h"
 
 using namespace stone;
@@ -20,7 +20,7 @@ Builtin::Builtin(const ASTContext &AC)
       BuiltinInt64Type(new(AC) Int64Type(AC)),
       BuiltinInt128Type(new(AC) Int128Type(AC)),
       BuiltinIntType(new(AC) IntType(AC)),
-      Builtinuint8Type(new(AC) uint8Type(AC)),
+      BuiltinUInt8Type(new(AC) UInt8Type(AC)),
       BuiltinUInt16Type(new(AC) UInt16Type(AC)),
       BuiltinUInt32Type(new(AC) UInt32Type(AC)),
       BuiltinUInt64Type(new(AC) UInt64Type(AC)),

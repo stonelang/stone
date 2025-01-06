@@ -25,7 +25,7 @@ class Decl;
 namespace stone {
 
 class Decl;
-class QualType;
+class Type;
 class ConstructorDecl;
 class FuncDecl;
 class AliasDecl;
@@ -93,11 +93,11 @@ template <typename T>
 struct FullyQualified<
     T,
     typename std::enable_if<std::is_convertible<T, stone::Type>::value>::type> {
-  stone::QualType t;
+  stone::Type t;
 
 public:
   FullyQualified(T t) : t(t){};
-  stone::QualType getType() const { return t; }
+  stone::Type getType() const { return t; }
 };
 
 enum class DiagnosticArgumentKind {
@@ -225,7 +225,7 @@ class DiagnosticArgument final {
     StringRef StringVal;
     Identifier IdentifierVal;
     const Decl *DeclVal;
-    QualType TypeVal;
+    Type TypeVal;
     DiagnosticInfo *DiagnosticVal;
     llvm::VersionTuple VersionVal;
     const clang::NamedDecl *ClangDecl;
@@ -250,8 +250,7 @@ public:
   DiagnosticArgument(const Decl *D)
       : Kind(DiagnosticArgumentKind::Decl), DeclVal(D) {}
 
-  DiagnosticArgument(QualType T)
-      : Kind(DiagnosticArgumentKind::Type), TypeVal(T) {}
+  DiagnosticArgument(Type T) : Kind(DiagnosticArgumentKind::Type), TypeVal(T) {}
 
   DiagnosticArgument(llvm::VersionTuple V)
       : Kind(DiagnosticArgumentKind::VersionTuple), VersionVal(V) {}
@@ -301,7 +300,7 @@ public:
     return DeclVal;
   }
 
-  QualType getAsType() const {
+  Type getAsType() const {
     assert(Kind == DiagnosticArgumentKind::Type);
     return TypeVal;
   }

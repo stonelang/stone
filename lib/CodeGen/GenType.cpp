@@ -1,11 +1,11 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/Global.h"
-#include "stone/AST/QualType.h"
+#include "stone/AST/Type.h"
 #include "stone/CodeGen/CodeGenModule.h"
 
 using namespace stone;
 
-llvm::Type *CodeGenModule::GetType(const QualType QT) { return nullptr; }
+llvm::Type *CodeGenModule::GetType(const Type QT) { return nullptr; }
 
 llvm::FunctionType *CodeGenModule::GetFunctionType(const FunctionDecl *FD) {
 

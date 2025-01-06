@@ -1,7 +1,7 @@
 #ifndef STONE_PARSE_PARSING_TYPE_H
 #define STONE_PARSE_PARSING_TYPE_H
 
-#include "stone/AST/QualType.h"
+#include "stone/AST/Type.h"
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/ParserAllocation.h"
 
@@ -139,7 +139,7 @@ enum class ParsingTypeSpecKind : uint8_t {
 class ParsingTypeSpec : public ParserAllocation<ParsingTypeSpec> {
   friend Parser;
 
-  QualType ty;
+  Type ty;
   SrcLoc loc;
   ParsingTypeSpecKind kind;
   llvm::SmallVector<ParsingTypeChunk, 8> parsingTypeChunks;
@@ -152,10 +152,10 @@ public:
   bool HasType() const;
 
   /// Set the primary type
-  void SetType(QualType qualType);
+  void SetType(Type qualType);
 
   /// Return the primary type
-  QualType GetType() { return ty; }
+  Type GetType() { return ty; }
 
   /// Return the primary type location
   SrcLoc GetLoc() const { return loc; }

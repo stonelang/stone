@@ -10,11 +10,11 @@
 namespace stone {
 class Type;
 class DeclSpec;
-class QualType;
+class Type;
 class ASTContext;
 
 class QualSpecs final {
-  friend QualType;
+  friend Type;
   friend DeclSpec;
   friend ASTContext;
 

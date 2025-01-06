@@ -36,7 +36,7 @@ public:
 public:
   Expr(StmtKind kind) : ValueStmt(kind) {}
 
-  // StmtKind kind, QualType qualTy, ExprValueKind VK, ExprObjectKind OK
+  // StmtKind kind, Type qualTy, ExprValueKind VK, ExprObjectKind OK
 
   /// This recursively walks the AST rooted at this expression.
   Expr *Walk(ASTWalker &walker);

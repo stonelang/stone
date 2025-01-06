@@ -2,7 +2,7 @@
 #define STONE_AST_AVAILABILITY_H
 
 #include "stone/AST/Attribute.h"
-#include "stone/AST/QualType.h"
+#include "stone/AST/Type.h"
 #include "stone/Basic/LLVM.h"
 #include "llvm/Support/VersionTuple.h"
 

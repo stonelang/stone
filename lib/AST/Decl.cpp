@@ -171,7 +171,7 @@ bool FunDecl::IsForward() const { return false; }
 bool FunDecl::HasReturn() const { return false; }
 
 FunDecl *FunDecl::Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
-                         DeclName name, SrcLoc nameLoc, QualType result,
+                         DeclName name, SrcLoc nameLoc, Type result,
                          DeclContext *parent) {
 
   size_t size = sizeof(FunDecl);

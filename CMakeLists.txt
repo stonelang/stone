@@ -503,7 +503,7 @@ if(LLVM_ENABLE_MODULES)
 endif()
 
 add_subdirectory(lib)
-add_subdirectory(tools)
+#add_subdirectory(tools)
 #add_subdirectory(runtime)
 
 option(STONE_BUILD_EXAMPLES "Build STONE example programs by default." OFF)

@@ -11,7 +11,7 @@ class SourceFile;
 class ModuleDecl;
 class Expr;
 class Stmt;
-class QualType;
+class Type;
 class ValueDecl;
 
 /// Problematic origin of an exported type.
@@ -63,7 +63,7 @@ public:
   /// \param dc The context of the check.
   ///
   /// \returns true if \c t1 is a subtype of \c t2.
-  bool IsSubTypeOf(QualType t1, QualType t2, DeclContext *dc);
+  bool IsSubTypeOf(Type t1, Type t2, DeclContext *dc);
 
 public:
   static void CheckSourceFile(SourceFile &sourceFile);

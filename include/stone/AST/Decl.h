@@ -395,17 +395,17 @@ public:
 
 class ValueDecl : public NamedDecl {
 
-  QualType type;
+  Type type;
   VisibilityLevel visibilityKind;
 
 public:
-  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, QualType type,
+  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type type,
             UnifiedContext context)
       : NamedDecl(kind, name, nameLoc, context), type(type) {}
 
 public:
-  void SetType(QualType inputType) { type = inputType; }
-  QualType GetType() { return type; }
+  void SetType(Type inputType) { type = inputType; }
+  Type GetType() { return type; }
 
 public:
   /// IsInstanceMember - Determine whether this value is an instance member
@@ -453,7 +453,7 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   /// this TypeDecl.  It is a cache maintained by
   /// ASTContext::getTypedefType, ASTContext::getTagDeclKind, and
   /// ASTContext::getTemplateTypeParmType, and TemplateTypeParmDecl.
-  mutable const QualType *typeForDecl = nullptr;
+  mutable const Type *typeForDecl = nullptr;
 
   /// The start of the source range for this declaration.
   // SrcLoc startLoc;
@@ -461,7 +461,7 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   // SrcLoc nameLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, QualType type,
+  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, Type type,
            UnifiedContext context)
       : ValueDecl(kind, name, nameLoc, type, context) {}
 
@@ -470,8 +470,8 @@ public:
   // check out ASTContext::getTypeDeclType or one of
   // ASTContext::getTypedefType, ASTContext::getRecordType, etc. if you
   // already know the specific kind of node this is.
-  const QualType *GetTypeForDecl() const { return typeForDecl; }
-  void SetTypeForDecl(const QualType *TD) { typeForDecl = TD; }
+  const Type *GetTypeForDecl() const { return typeForDecl; }
+  void SetTypeForDecl(const Type *TD) { typeForDecl = TD; }
 
   // SrcLoc GetBeginSrcLoc() const LLVM_READONLY { return LocStart; }
   // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
@@ -515,14 +515,14 @@ public:
 class GenericTypeDecl : public GenericContext, public TypeDecl {
 public:
   GenericTypeDecl(DeclKind K, DeclContext *DC, Identifier name, SrcLoc nameLoc,
-                  QualType type,
+                  Type type,
                   /*llvm::ArrayRef<InheritedEntry> inherited,*/
                   GenericParamList *genericParams = nullptr);
 };
 
 class GenericTypeParamDecl final
     : public TypeDecl,
-      private llvm::TrailingObjects<GenericTypeParamDecl, QualType *, SrcLoc> {
+      private llvm::TrailingObjects<GenericTypeParamDecl, Type *, SrcLoc> {
   friend TrailingObjects;
 };
 
@@ -605,8 +605,8 @@ public:
   };
 
 public:
-  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-               QualType resultType, DeclContext *parent)
+  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type resultType,
+               DeclContext *parent)
       : GenericContext(DeclContextKind::FunctionDecl, parent),
         ValueDecl(kind, name, nameLoc, resultType, parent) {}
 
@@ -656,13 +656,13 @@ class FunDecl : public FunctionDecl {
   bool hasLBrace;
 
   /// fun GetObject() -> Object* { return obj; } where obj is the returnType.
-  /// and Oject* is the QualType which is the resultType
+  /// and Oject* is the Type which is the resultType
   TypeLoc result;
 
   // TODO: We are removing SpecialNameLoc for now.
 public:
   FunDecl(DeclKind kind, SrcLoc staticLoc, SrcLoc funLoc, DeclName name,
-          SrcLoc nameLoc, QualType result, DeclContext *parent)
+          SrcLoc nameLoc, Type result, DeclContext *parent)
       : FunctionDecl(kind, name, nameLoc, result, parent), staticLoc(staticLoc),
         funLoc(funLoc) {}
 
@@ -706,7 +706,7 @@ public:
 
 public:
   static FunDecl *Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
-                         DeclName name, SrcLoc nameLoc, QualType result,
+                         DeclName name, SrcLoc nameLoc, Type result,
                          DeclContext *parent);
 
   // static FunDecl *Create(DeclSpecifierCollector &collector,
@@ -781,7 +781,7 @@ class VarDecl : public StorageDecl {
 public:
   /// Get the type of the variable within its context. If the context is
   /// generic, this will use archetypes.
-  // QualType GetQualType() const;
+  // Type GetType() const;
 
   // VarDecl(Type ty);
 

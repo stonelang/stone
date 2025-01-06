@@ -1,11 +1,11 @@
-#include "stone/AST/Type.h"
+#include "stone/AST/AbstractType.h"
 #include "stone/AST/TypeLoc.h"
 #include "stone/Basic/Memory.h"
 
 using namespace stone;
 
-// == Type ==//
-bool Type::IsBasic() {
+// == AbstractType ==//
+bool AbstractType::IsBasic() {
   switch (GetKind()) {
   case TypeKind::Float:
   case TypeKind::Int:
@@ -15,7 +15,7 @@ bool Type::IsBasic() {
   }
 }
 
-bool Type::IsNominalType() {
+bool AbstractType::IsNominalType() {
   switch (GetKind()) {
   case TypeKind::Interface:
   case TypeKind::Struct:
@@ -25,7 +25,7 @@ bool Type::IsNominalType() {
   }
 }
 
-FunType::FunType(QualType returnType, const ASTContext *astContext)
+FunType::FunType(Type returnType, const ASTContext *astContext)
     : FunctionType(TypeKind::Fun, returnType, astContext) {}
 
 // VoidType *VoidType::Create(const ASTContext &astContext,
@@ -43,14 +43,14 @@ FunType::FunType(QualType returnType, const ASTContext *astContext)
 // }
 
 // == Type == //
-bool QualType::Walk(TypeWalker &walker) const {}
+bool Type::Walk(TypeWalker &walker) const {}
 
 // == TypeQualifierCollector == //
 
 /// Collect any qualifiers on the given type and return an
 /// unqualified type.  The qualifiers are assumed to be consistent
 /// with those already in the type.
-// const Type *TypeQualifierCollector::StripQualsFromType(QualType type) {
+// const Type *TypeQualifierCollector::StripQualsFromType(Type type) {
 //   // TODO:
 //   //  AddFastQualifiers(type.GetLocalFastQualifiers());
 //   //  if (!type.HasLocalNonFastQualifiers()){
@@ -59,16 +59,16 @@ bool QualType::Walk(TypeWalker &walker) const {}
 //   return nullptr;
 // }
 
-// QualType TypeQualifierCollector::ApplyQualsToType(const ASTContext &sc,
-//                                                   QualType qt) const {
+// Type TypeQualifierCollector::ApplyQualsToType(const ASTContext &sc,
+//                                                   Type qt) const {
 //   // You can do this because the type was saved in the ASTContext
 //   // So, look up the type from the context and apple the qualifiers to it.
-//   return QualType();
+//   return Type();
 // }
 
 // // THINK about this
 // /// Apply the collected qualifiers to the given type.
-// QualType TypeQualifierCollector::ApplyQualsToType(const ASTContext
+// Type TypeQualifierCollector::ApplyQualsToType(const ASTContext
 // &Context,
 //                                        const Type *ty) const {}
 
@@ -79,7 +79,7 @@ SrcLoc TypeLoc::GetLoc() const { return SrcLoc(); }
 
 SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
 
-void TypeLoc::SetType(QualType ty) {}
+void TypeLoc::SetType(Type ty) {}
 
 // FunType *TypeFactory::MakeFunType(Type result);
 

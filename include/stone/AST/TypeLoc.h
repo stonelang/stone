@@ -1,7 +1,7 @@
 #ifndef STONE_AST_TYPELOC_H
 #define STONE_AST_TYPELOC_H
 
-#include "stone/AST/QualType.h"
+#include "stone/AST/Type.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/SrcLoc.h"
 
@@ -19,14 +19,14 @@ enum class TypeLocKind : uint8 {
 
 /// Example: int a = 0;  The start loc is i and the range is i ...t
 class alignas(1 << TypeAlignInBits) TypeLoc {
-  // TODO: This may actually be QualType instead of jus Type
-  // But since QualType implements Type, it may not matter.
-  QualType ty;
+  // TODO: This may actually be Type instead of jus Type
+  // But since Type implements Type, it may not matter.
+  Type ty;
 
 public:
   TypeLoc() {}
-  TypeLoc(QualType ty) : ty(ty) {}
-  // TypeLoc(TypeRep *tyRep, QualType ty) : tyRep(tyRep) { SetType(ty); }
+  TypeLoc(Type ty) : ty(ty) {}
+  // TypeLoc(TypeRep *tyRep, Type ty) : tyRep(tyRep) { SetType(ty); }
 
   bool WasValidated() const { return !ty.IsNull(); }
   bool IsError() const;
@@ -39,10 +39,10 @@ public:
 
   // bool HasLoc() const { return tyRep != nullptr; }
 
-  QualType GetType() const { return ty; }
+  Type GetType() const { return ty; }
 
   // bool IsNull() const { return GetType().IsNull() && tyRep == nullptr; }
-  void SetType(QualType ty);
+  void SetType(Type ty);
 };
 
 } // namespace stone

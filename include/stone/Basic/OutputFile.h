@@ -1,7 +1,7 @@
 #ifndef STONE_BASIC_OUTPUTFILE_H
 #define STONE_BASIC_OUTPUTFILE_H
 
-#include "stone/Basic/FileQualType.h"
+#include "stone/Basic/FileType.h"
 #include "llvm/Support/FileSystem.h"
 
 namespace stone {

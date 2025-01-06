@@ -14,14 +14,14 @@
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
-class QualType;
+class Type;
 class FunctionType;
 class IntegerType;
 class PointerType;
 } // namespace llvm
 
 namespace stone {
-class QualType;
+class Type;
 class SourceFile;
 class AutoDecl;
 class Decl;
@@ -146,7 +146,7 @@ public:
 
 public:
   // || TYPE RESOLUTION ||
-  llvm::Type *GetType(const QualType ty);
+  llvm::Type *GetType(const Type ty);
   llvm::FunctionType *GetFunctionType(const FunctionDecl *FD);
 };
 

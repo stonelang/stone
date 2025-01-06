@@ -22,5 +22,5 @@ ExportContext ExportContext::ForDeclSignature(Decl *D) {}
 /// declaration itself. Related checks may also be performed.
 void stone::CheckVisibilityControl(Decl *D) {}
 
-/// Check the QualType visibility level
-void stone::CheckVisibilityControl(QualType ty) {}
+/// Check the Type visibility level
+void stone::CheckVisibilityControl(Type ty) {}

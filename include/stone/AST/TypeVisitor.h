@@ -1,7 +1,7 @@
 #ifndef STONE_AST_TYPEVISITOR_H
 #define STONE_AST_TYPEVISITOR_H
 
-#include "stone/AST/Type.h"
+#include "stone/AST/AbstractType.h"
 #include "llvm/Support/ErrorHandling.h"
 
 namespace stone {
@@ -10,7 +10,7 @@ namespace stone {
 template <typename ImplTy, typename RetTy = void, typename... Args>
 class TypeVisitor {
 public:
-  RetTy Visit(QualType T, Args... args) {
+  RetTy Visit(Type T, Args... args) {
     switch (T->GetKind()) {
 #define TYPE(KIND, PARENT)                                                     \
   case TypeKind::KIND:                                                         \
@@ -35,7 +35,7 @@ public:
 #include "stone/AST/TypeKind.def"
 
 public:
-  void VisitType(QualType t) {}
+  void VisitType(Type t) {}
 };
 
 // namespace syn {

@@ -2,7 +2,7 @@
 #define STONE_AST_DECLNAME_H
 
 #include "stone/AST/Identifier.h"
-#include "stone/AST/QualType.h"
+#include "stone/AST/Type.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/OperatorKind.h"
 
@@ -152,10 +152,10 @@ public:
 //   friend class DeclNameTable;
 
 //   /// The type associated with this declaration name.
-//   QualType ty;
+//   Type ty;
 
 // public:
-//   SpecialDeclNameExtra(QualType inputTy) : ty(inputTy) {}
+//   SpecialDeclNameExtra(Type inputTy) : ty(inputTy) {}
 //   void Profile(llvm::FoldingSetNodeID &ID) {
 //     // TODO: ID.AddPointer(ty.GetAsOpaquePtr());
 //   }

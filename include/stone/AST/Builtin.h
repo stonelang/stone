@@ -21,7 +21,7 @@ struct Builtin final {
   const CanType BuiltinInt128Type;
   const CanType BuiltinIntType;
 
-  const CanType Builtinuint8Type;
+  const CanType BuiltinUInt8Type;
   const CanType BuiltinUInt16Type;
   const CanType BuiltinUInt32Type;
   const CanType BuiltinUInt64Type;
@@ -33,7 +33,7 @@ struct Builtin final {
   const CanType BuiltinNullType;
   const CanType BuiltinBoolType;
 
-  QualType GetType(llvm::StringRef name);
+  Type GetType(llvm::StringRef name);
 
   // Declare the set of builtin identifiers.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \

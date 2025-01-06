@@ -32,7 +32,7 @@ enum class ASTDescription : uint8_t {
   Decl,
   Stmt,
   Expr,
-  QualType,
+  Type,
 };
 
 struct ASTNode : public llvm::PointerUnion<Expr *, Stmt *, Decl *> {

@@ -6,10 +6,10 @@
 namespace stone {
 
 /// Defines the address space values used by the address space qualifier
-/// of QualType.
+/// of Type.
 ///
 enum class AddressSpaceKind : unsigned {
-  // The default value 0 is the value used in QualType for the situation
+  // The default value 0 is the value used in Type for the situation
   // where there is no address space qualifier.
   Default = 0,
 

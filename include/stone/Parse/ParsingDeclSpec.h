@@ -253,10 +253,10 @@ public:
   unsigned GetFastTypeQualifierFlags();
 
   /// Apply the collected qualifiers to the given type.
-  QualType ApplyQualSpecs(Type *typePtr);
+  Type ApplyQualSpecs(Type *typePtr);
 
   /// Apply the collected qualifiers to the given type.
-  void ApplyQualSpecs(QualType &ty);
+  void ApplyQualSpecs(Type &ty);
 
   QualSpecs GetQualSpecs() const;
 

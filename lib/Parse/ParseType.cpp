@@ -7,7 +7,7 @@ using namespace stone;
 ParsingTypeSpec::ParsingTypeSpec(ParsingTypeSpecKind kind, SrcLoc loc)
     : kind(kind), loc(loc) {}
 
-void ParsingTypeSpec::SetType(QualType qualType) { ty = qualType; }
+void ParsingTypeSpec::SetType(Type qualType) { ty = qualType; }
 
 bool ParsingTypeSpec::HasType() const { return (!ty ? false : true); }
 
@@ -256,7 +256,7 @@ ParserResult<ParsingTypeSpec> Parser::ParseFunctionType(Diag<> diagID) {
   return stone::MakeParserResult<ParsingFunTypeSpec>(funTypeSpec);
 }
 
-QualType Parser::ResolveBuiltinType(TypeKind typeKind) {
+Type Parser::ResolveBuiltinType(TypeKind typeKind) {
   switch (typeKind) {
   case TypeKind::Int:
     return GetASTContext().GetBuiltin().BuiltinIntType;

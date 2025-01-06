@@ -4,7 +4,7 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/Global.h"
 #include "stone/AST/LangABI.h"
-#include "stone/AST/QualType.h"
+#include "stone/AST/Type.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/Support/Casting.h"

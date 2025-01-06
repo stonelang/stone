@@ -9,7 +9,7 @@
 
 namespace stone {
 
-class QualType;
+class Type;
 enum class TypeWalkerAction {
   None = 0,
   Continue,
@@ -22,12 +22,12 @@ class TypeWalker {
 public:
   /// This method is called when first visiting a type before walking into its
   /// children.
-  virtual TypeWalkerAction WalkToTypePreChildren(QualType ty) {
+  virtual TypeWalkerAction WalkToTypePreChildren(Type ty) {
     return TypeWalkerAction::Continue;
   }
 
   /// This method is called after visiting a type's children.
-  virtual TypeWalkerAction WalkToTypePostChildren(QualType ty) {
+  virtual TypeWalkerAction WalkToTypePostChildren(Type ty) {
     return TypeWalkerAction::Continue;
   }
 

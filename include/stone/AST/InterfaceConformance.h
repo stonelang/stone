@@ -3,7 +3,7 @@
 
 // #include "stone/AST/ConcreteDeclRef.h"
 // #include "stone/AST/Decl.h"
-// #include "stone/AST/QualType.h"
+// #include "stone/AST/Type.h"
 // #include "stone/AST/TypeAlignments.h"
 // #include "stone/AST/Type.h"
 // #include "stone/AST/Witness.h"

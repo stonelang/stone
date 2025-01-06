@@ -303,7 +303,7 @@ public:
 
 private:
   static TypeKind ResolveBuiltinTypeKind(tok kind);
-  QualType ResolveBuiltinType(TypeKind typeKind);
+  Type ResolveBuiltinType(TypeKind typeKind);
 
 public:
   ParserResult<ParsingTypeSpec> ParseFunctionType(Diag<> diagID);

@@ -1,7 +1,7 @@
 #ifndef STONE_AST_SUBSTITUTIONMAP_H
 #define STONE_AST_SUBSTITUTIONMAP_H
 
-#include "stone/AST/QualType.h"
+#include "stone/AST/Type.h"
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMapInfo.h"

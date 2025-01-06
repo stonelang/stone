@@ -14,7 +14,7 @@ class Decl;
 class Stmt;
 class Expr;
 class Module;
-class QualType;
+class Type;
 class ASTWalker;
 
 enum class SemanticRefKind : uint8_t {
@@ -40,7 +40,7 @@ public:
     ParentASTNode(Decl *D) : parentKind(ASTDescription::Decl), Ptr(D) {}
     ParentASTNode(Stmt *S) : parentKind(ASTDescription::Stmt), Ptr(S) {}
     ParentASTNode(Expr *E) : parentKind(ASTDescription::Expr), Ptr(E) {}
-    ParentASTNode(QualType *Q) : parentKind(ASTDescription::QualType), Ptr(Q) {}
+    ParentASTNode(Type *Q) : parentKind(ASTDescription::Type), Ptr(Q) {}
 
     bool IsNull() const { return Ptr == nullptr; }
 
@@ -65,10 +65,9 @@ public:
       return parentKind == ASTDescription::Expr ? static_cast<Expr *>(Ptr)
                                                 : nullptr;
     }
-    QualType *CastToQualType() const {
-      return (parentKind == ASTDescription::QualType)
-                 ? static_cast<QualType *>(Ptr)
-                 : nullptr;
+    Type *CastToType() const {
+      return (parentKind == ASTDescription::Type) ? static_cast<Type *>(Ptr)
+                                                  : nullptr;
     }
   };
 
@@ -153,12 +152,12 @@ public:
   /// walking into its children.  If it returns false, the subtree is skipped.
   ///
   /// \param T The TypeRepr to check.
-  virtual bool WalkToQualTypePre(QualType *T) { return true; }
+  virtual bool WalkToTypePre(Type *T) { return true; }
 
   /// This method is called after visiting the children of a TypeRepr.
   /// If it returns false, the remaining traversal is terminated and returns
   /// failure.
-  virtual bool WalkToQualTypePost(QualType *T) { return true; }
+  virtual bool WalkToTypePost(Type *T) { return true; }
 
   // /// This method configures whether the walker should explore into the
   // generic

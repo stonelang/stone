@@ -128,8 +128,8 @@ public:
 /// declaration itself. Related checks may also be performed.
 void CheckVisibilityControl(Decl *D);
 
-/// Check the QualType visibility level
-void CheckVisibilityControl(QualType ty);
+/// Check the Type visibility level
+void CheckVisibilityControl(Type ty);
 
 } // namespace stone
 #endif
