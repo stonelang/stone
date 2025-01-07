@@ -4,20 +4,20 @@
 
 
 #ifndef DECL_MODIFIER
-#define DECL_MODIFIER(ID, Parent) MODIFIER(ID, parent)
+#define DECL_MODIFIER(ID, Parent) MODIFIER(ID, Parent)
 #endif
 
 #ifndef STORAGE_DECL_MODIFIER
-#define STORAGE_DECL_MODIFIER(ID, Parent) DECL_MODIFIER(ID, parent)
+#define STORAGE_DECL_MODIFIER(ID, Parent) DECL_MODIFIER(ID, Parent)
 #endif
 
 #ifndef VISIBILITY_DECL_MODIFIER
-#define VISIBILITY_DECL_MODIFIER(ID, Parent) DECL_MODIFIER(ID, parent)
+#define VISIBILITY_DECL_MODIFIER(ID, Parent) DECL_MODIFIER(ID, Parent)
 #endif
 
 
 #ifndef TYPE_MODIFIER
-#define TYPE_MODIFIER(ID, Parent) MODIFIER(ID, parent)
+#define TYPE_MODIFIER(ID, Parent) MODIFIER(ID, Parent)
 #endif
 
 

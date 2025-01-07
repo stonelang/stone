@@ -116,19 +116,31 @@ public:
 // class StoneTypeModifier : public TypeModifier {};
 
 class AccessTypeModifier : public TypeModifier {
+  unsigned levels;
+
 public:
-  AccessTypeModifier(ModifierKind kind) : TypeModifier(kind) {}
+  AccessTypeModifier(ModifierKind kind, unsigned levels)
+      : TypeModifier(kind), levels(levels) {}
+
+public:
+  /// Get the number of levels for this access modifier.
+  unsigned GetLevels() const { return levels; }
+
+  /// Set the number of levels for this access modifier.
+  void SetLevels(int newLevels) { levels = newLevels; }
 };
 class PointerTypeModifier : public AccessTypeModifier {
 public:
-  PointerTypeModifier() : AccessTypeModifier(ModifierKind::Pointer) {}
+  PointerTypeModifier(unsigned levels = 1)
+      : AccessTypeModifier(ModifierKind::Pointer, levels) {}
 };
 // class OwnTypeModifier : public AccessTypeModifier {};
 // class MoveTypeModifier : public AccessTypeModifier {};
 
 class ReferenceTypeModifier : public AccessTypeModifier {
 public:
-  ReferenceTypeModifier() : AccessTypeModifier(ModifierKind::Reference) {}
+  ReferenceTypeModifier(unsigned levels = 1)
+      : AccessTypeModifier(ModifierKind::Reference, levels) {}
 };
 
 // class ArrayTypeModifier : public AccessTypeModifier {};

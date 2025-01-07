@@ -1,7 +1,8 @@
+
 #include "stone/AST/DiagnosticsParse.h"
+
 #include "stone/Parse/Parser.h"
 #include "stone/Parse/ParsingDeclSpec.h"
-
 using namespace stone;
 
 ParsingDeclSpec::~ParsingDeclSpec() {}
@@ -109,6 +110,12 @@ ParserStatus Parser::ParseVisibilityList(ParsingDeclSpec &spec) {
     }
     return status;
   }
+}
+
+ParserResult<Decl> Parser::ParseDecl() {
+
+  DeclAttributeList dal;
+  DeclModifierList dml;
 }
 
 ParserResult<Decl> Parser::ParseDecl(ParsingDeclSpec &spec) {

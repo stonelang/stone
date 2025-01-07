@@ -8,6 +8,7 @@
 #include "stone/AST/DiagnosticsParse.h"
 #include "stone/AST/Expr.h"
 #include "stone/AST/Identifier.h"
+#include "stone/AST/Modfifier.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
 #include "stone/Basic/StableHasher.h"
@@ -273,7 +274,12 @@ public:
 
   ParserStatus ParseQualifierList(ParsingDeclSpec &spec);
   ParserStatus ParseVisibilityList(ParsingDeclSpec &spec);
+
   ParserResult<Decl> ParseDecl(ParsingDeclSpec &spec);
+
+  ParserResult<Decl> ParseDecl();
+  ParserStatus ParseDeclAttributeList(DeclAttributeList &dal);
+  ParserStatus ParseDeclModifierList(DeclModifierList &dml);
 
   ParserResult<ImportDecl> ParseImportDecl(ParsingDeclSpec &spec);
 
