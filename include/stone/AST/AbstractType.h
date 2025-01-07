@@ -125,7 +125,9 @@ public:
   bool IsCanTypeComputed() const { return !canType.IsNull(); }
 
 public:
-  TypeKind GetKind() const { return static_cast<TypeKind>(Bits.AbstractType.Kind); }
+  TypeKind GetKind() const {
+    return static_cast<TypeKind>(Bits.AbstractType.Kind);
+  }
 
 public:
   ///\return true if the type is a builtin type.
@@ -418,7 +420,9 @@ public:
 public:
   static FloatType *Create(const ASTContext &astContext);
 
-  static bool classof(const AbstractType *T) { return T->GetKind() == TypeKind::Float; }
+  static bool classof(const AbstractType *T) {
+    return T->GetKind() == TypeKind::Float;
+  }
 };
 
 class Float16Type : public BuiltinType {

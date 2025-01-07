@@ -1,11 +1,11 @@
 #ifndef STONE_AST_TYPE_H
 #define STONE_AST_TYPE_H
 
+#include "stone/AST/Modifier.h"
+#include "stone/AST/QualSpecs.h"
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
-#include "stone/AST/Modifier.h"
-#include "stone/AST/QualSpecs.h"
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -66,6 +66,7 @@ enum class RefQualifierKind : uint8 {
 class Type {
   AbstractType *typePtr;
   TypeModifierList Modifiers;
+
 public:
   Type(AbstractType *typePtr = 0) : typePtr(typePtr) {}
 
@@ -80,6 +81,7 @@ public:
 
   const TypeModifierList &GetModifiers() const { return Modifiers; }
   TypeModifierList &GetModifiers() { return Modifiers; }
+
 public:
   /// Walk this Type.
   ///

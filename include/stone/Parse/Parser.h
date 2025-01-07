@@ -296,6 +296,8 @@ public:
   ParserResult<VarDecl> ParseVarDecl(ParsingDeclSpec &spec);
 
 public:
+  // ParserResult<Type> ParseType();
+
   ParserResult<ParsingTypeSpec> ParseType();
   ParserResult<ParsingTypeSpec> ParseType(Diag<> diagID);
   ParserResult<ParsingTypeSpec> ParseDeclResultType(Diag<> diagID);
