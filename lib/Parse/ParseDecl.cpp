@@ -114,8 +114,8 @@ ParserStatus Parser::ParseVisibilityList(ParsingDeclSpec &spec) {
 
 ParserResult<Decl> Parser::ParseDecl() {
 
-  DeclAttributeList dal;
-  DeclModifierList dml;
+  DeclAttributeList attributeLis;
+  DeclModifierList modifierList;
 }
 
 ParserResult<Decl> Parser::ParseDecl(ParsingDeclSpec &spec) {

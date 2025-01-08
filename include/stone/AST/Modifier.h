@@ -13,6 +13,8 @@
 #include "llvm/Support/TrailingObjects.h"
 #include "llvm/Support/VersionTuple.h"
 
+#include <cstdint>
+
 namespace stone {
 
 enum class ModifierKind : uint8_t {
@@ -21,6 +23,53 @@ enum class ModifierKind : uint8_t {
 #include "ModifierKind.def"
 };
 
+// Define the enum class
+enum class ModifierAvailability : uint8_t {
+  None = 0,        // Default, unspecified availability
+  Active = 1 << 0, // Modifier is active
+  Ignore = 1 << 1, // Modifier is ignored
+};
+
+// Enable bitwise operations for the enum class
+inline ModifierAvailability operator|(ModifierAvailability lhs,
+                                      ModifierAvailability rhs) {
+  return static_cast<ModifierAvailability>(static_cast<uint8_t>(lhs) |
+                                           static_cast<uint8_t>(rhs));
+}
+
+inline ModifierAvailability operator&(ModifierAvailability lhs,
+                                      ModifierAvailability rhs) {
+  return static_cast<ModifierAvailability>(static_cast<uint8_t>(lhs) &
+                                           static_cast<uint8_t>(rhs));
+}
+
+inline ModifierAvailability operator^(ModifierAvailability lhs,
+                                      ModifierAvailability rhs) {
+  return static_cast<ModifierAvailability>(static_cast<uint8_t>(lhs) ^
+                                           static_cast<uint8_t>(rhs));
+}
+
+inline ModifierAvailability operator~(ModifierAvailability availability) {
+  return static_cast<ModifierAvailability>(~static_cast<uint8_t>(availability));
+}
+
+inline ModifierAvailability &operator|=(ModifierAvailability &lhs,
+                                        ModifierAvailability rhs) {
+  lhs = lhs | rhs;
+  return lhs;
+}
+
+inline ModifierAvailability &operator&=(ModifierAvailability &lhs,
+                                        ModifierAvailability rhs) {
+  lhs = lhs & rhs;
+  return lhs;
+}
+
+inline ModifierAvailability &operator^=(ModifierAvailability &lhs,
+                                        ModifierAvailability rhs) {
+  lhs = lhs ^ rhs;
+  return lhs;
+}
 enum class ModifierScope : uint8_t {
   None = 0, // Default, unspecified scope
   Global,   // For global declarations
@@ -33,6 +82,8 @@ class alignas(1 << ModifierAlignInBits) Modifier
     : public ASTAllocation<Modifier> {
   ModifierKind Kind;
   ModifierScope scope;
+  SrcLoc loc;
+  ModifierAvailability availability = ModifierAvailability::None;
 
 public:
   Modifier(ModifierKind Kind) : Kind(Kind) {}
@@ -41,6 +92,25 @@ public:
   ModifierKind GetKind() { return Kind; }
   ModifierScope GetScope() { return scope; }
   void SetScope(ModifierScope S) { scope = S; }
+
+  void SetLoc(SrcLoc L) { loc = L; }
+  SrcLoc GetLoc() { return loc; }
+
+public:
+  // Add an availability state
+  void AddAvailability(ModifierAvailability availabilityState) {
+    availability |= availabilityState;
+  }
+
+  // Remove an availability state
+  void RemoveAvailability(ModifierAvailability availabilityState) {
+    availability &= ~availabilityState;
+  }
+
+  // Check if an availability state is set
+  bool CheckAvailability(ModifierAvailability availabilityState) const {
+    return static_cast<bool>(availability & availabilityState);
+  }
 };
 
 class DeclModifier : public Modifier {

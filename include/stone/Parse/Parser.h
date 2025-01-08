@@ -278,8 +278,8 @@ public:
   ParserResult<Decl> ParseDecl(ParsingDeclSpec &spec);
 
   ParserResult<Decl> ParseDecl();
-  ParserStatus ParseDeclAttributeList(DeclAttributeList &dal);
-  ParserStatus ParseDeclModifierList(DeclModifierList &dml);
+  ParserStatus ParseDeclAttributeList(DeclAttributeList &attributeList);
+  ParserStatus ParseDeclModifierList(DeclModifierList &modifierList);
 
   ParserResult<ImportDecl> ParseImportDecl(ParsingDeclSpec &spec);
 
