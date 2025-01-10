@@ -128,6 +128,7 @@ public:
   TypeKind GetKind() const {
     return static_cast<TypeKind>(Bits.AbstractType.Kind);
   }
+  llvm::StringRef GetName() const;
 
 public:
   ///\return true if the type is a builtin type.
@@ -321,6 +322,7 @@ public:
   bool IsFloat() const { return false; }
   bool IsImaginary() const { return false; }
   bool IsComplex() const { return false; }
+  // Power();
 };
 
 class IntType : public NumberType {
@@ -516,6 +518,14 @@ public:
   Char32Type(const ASTContext &AC) : BuiltinType(TypeKind::Char32, AC) {}
 };
 
+class StringType final : public BuiltinType {
+public:
+  StringType(const ASTContext &AC) : BuiltinType(TypeKind::String, AC) {}
+
+public:
+  size_t GetLength() const;
+};
+
 class BoolType final : public BuiltinType {
 public:
   BoolType(const ASTContext &AC) : BuiltinType(TypeKind::Bool, AC) {}
@@ -524,16 +534,17 @@ public:
 // // class TemplateParmType : public Type{
 // // };
 
-class FunctionType : public AbstractType {
+class AbstractFunctionType : public AbstractType {
   Type returnType;
 
 public:
-  FunctionType(TypeKind kind, Type returnType, const ASTContext *canTypeCtx)
+  AbstractFunctionType(TypeKind kind, Type returnType,
+                       const ASTContext *canTypeCtx)
       : AbstractType(kind, canTypeCtx) {}
 };
 
 // You are returning Type for now, it may have to be Type
-class FunType : public FunctionType,
+class FunType : public AbstractFunctionType,
                 private llvm::TrailingObjects<FunType, Type> {
   friend TrailingObjects;
 
@@ -565,16 +576,110 @@ class InterfaceType final : public NominalType {
 public:
 };
 
-class EnumType final : public NominalType {};
+class EnumType final : public NominalType {
+
+public:
+  // GetString();
+};
 
 class DeducedType : public AbstractType {
 protected:
   friend class ASTContext; // ASTContext creates these
 };
-
+// own auto in = new int
 class AutoType final : public DeducedType, public llvm::FoldingSetNode {
 public:
 };
+
+class AccessType : public Type {
+  // Base class for access-related types.
+};
+
+class AbstractPointerType : public AccessType {
+  // Base class for pointer types.
+};
+
+class PtrType : public AbstractPointerType {
+  // General pointer type.
+};
+
+class MemberPointerType : public AbstractPointerType {
+  // Specialized pointer type for members.
+};
+
+class OwnType : public AbstractPointerType {
+  // Pointer type with ownership semantics.
+};
+
+class OwnPtrType : public AbstractPointerType {
+  // Pointer type with ownership semantics.
+};
+
+class MoveType : public AbstractPointerType {
+  // Pointer type with move semantics.
+};
+
+class AbstractReferenceType : public AccessType {
+  // Base class for reference types.
+};
+
+class RefType : public AbstractReferenceType {
+  // General reference type.
+};
+
+// class AbstractPointerType : public Type {
+// public:
+// };
+
+// class PointerType : public AbstractPointerType {
+// public:
+// };
+
+// class MemberPointerType : public PointerType {
+// public:
+// };
+
+// class TypedPointerType : public PointerType {
+//   //     Type* pointeeType;
+
+//   // public:
+//   //     TypedPointer(Type* pointeeType) : pointeeType(pointeeType) {}
+
+//   //     Type* GetPointeeType() const { return pointeeType; }
+// };
+
+// class OwnType : public PointerType {
+//   // public:
+//   //     OwnPointer(Type* pointeeType) : TypedPointer(pointeeType) {}
+
+//   //     void TakeOwnership() {
+//   //         // Add ownership semantics
+//   //     }
+// };
+
+// class MoveType : public PointerType {
+//   // public:
+//   //     MovePointer(Type* pointeeType) : TypedPointer(pointeeType) {}
+
+//   //     void MoveTo(MovePointer& target) {
+//   //         // Add move semantics
+//   //     }
+// };
+
+// class AbstractReferenceType : public Type {
+//   // public:
+//   //     virtual ~AbstractReference() = default;
+// };
+
+// class RefType : public AbstractReferenceType {
+//   //     Type* referencedType;
+
+//   // public:
+//   //     ReferenceType(Type* referencedType) : referencedType(referencedType)
+//   {}
+
+//   //     Type* GetReferencedType() const { return referencedType; }
+// };
 
 // class ChunkType : public Type, public llvm::FoldingSetNode {};
 

@@ -1,0 +1,405 @@
+
+   // Primitives
+own int x = 10;                  // `x` owns the integer value 10
+Borrow(x);                       // Borrowing `x` without transferring ownership -- ref x would also work
+Take(move x);                    // Transfer ownership of `x`
+
+fun Borrow(ref int i) -> void {
+    print("Borrowed int: " + in i);
+}
+
+fun Take(own int i) -> void {
+    print("Took ownership of int: " + in i);
+}
+
+// Pointers
+own ptr int y = ref 20;          // `y` owns a pointer to the integer value 20
+Borrow(y);                       // Borrowing the pointer without transferring ownership -- or ref y
+Take(move y);                    // Transfer ownership of the pointer
+
+fun Borrow(ref ptr int p) -> void {
+    print("Borrowed pointer to int: " + in p);
+}
+
+fun Take(own ptr int p) -> void {
+    print("Took ownership of pointer to int: " + in p);
+}
+
+// Complex Types
+struct Circle using Shape {
+    double radius = 0.0;
+}
+
+fun Circle:Circle(double r) -> void {
+    radius = r;
+}
+
+virtual public fun Circle:Print() -> void {
+    print("Circle radius: " + in radius);
+}
+
+own Circle c = Circle(5.0);      // `c` owns a Circle instance
+Borrow(c);                       // Borrowing `c` without transferring ownership -- 
+TakeC(move c);                   // Transfer ownership of `c`
+
+fun Borrow(ref Circle circle) -> void {
+    circle:Print();
+}
+
+fun TakeC(own Circle circle) -> void {
+    print("Took ownership of Circle:");
+    circle:Print();
+}
+
+// Pointer to a complex type
+own ptr Circle pc = new Circle(10.0);  // `pc` owns a pointer to a Circle instance
+Borrow(pc);                            // Borrowing the pointer without transferring ownership
+TakeCByPtr(move pc);                        // Transfer ownership of the pointer
+
+fun Borrow(ref ptr Circle pCircle) -> void {
+    pCircle:Print();
+}
+
+fun TakeCByPtr(own ptr Circle pCircle) -> void {
+    print("Took ownership of pointer to Circle:");
+    pCircle:Print();
+}
+
+fun TakeCbyRef(own Circle pCircle) -> void {
+    print("Took ownership of pointer to Circle:");
+    pCircle:Print();
+}
+
+
+// Ownership and Move Semantics Combined
+own Circle c2 = Circle(7.0);
+TakeCByRef(move c2);  // Transfer ownership to TakeC
+
+
+
+type T = const ptr int; 
+
+auto(T) fun Max(T a, T b){
+}
+auto result = type(int) Max(1, 2);
+
+auto result = using(T) Max(1, 2)
+
+auto result = type(int, string) Do(1, "test"); // type casting problems?
+type IntString = type(int, string)
+
+auto result = IntString Do(1, "test");
+
+
+type(int):Size() 
+
+
+using Proton 
+static public fun Create() -> ptr Proton {
+
+}
+
+
+
+
+auto(T) struct Box {
+    T value;
+}
+
+using(int) Box public fun GetValue() -> int {
+    return this:value; // Accessing member `value`
+}
+
+public fun Main() -> void {
+    using(int) own  Box intBox = new Box();
+    intBox:value = 42;
+    print("Value in Box: " + intBox:GetValue());
+}
+
+
+
+#include <string>
+#include <vector>
+#include <memory>
+#include <iostream>
+
+// -----------------------------------------
+// Base Classes
+// -----------------------------------------
+
+// Base for all declarations
+class Decl {
+protected:
+    std::shared_ptr<TypeMetadata> metadata;
+
+public:
+    virtual ~Decl() = default;
+
+    virtual void Print() const = 0;
+
+    void SetMetadata(const std::shared_ptr<TypeMetadata> &meta) {
+        metadata = meta;
+    }
+
+    std::shared_ptr<TypeMetadata> GetMetadata() const {
+        return metadata;
+    }
+};
+
+// Base for value declarations (e.g., variables, functions)
+class ValueDecl : public Decl {
+protected:
+    std::string declName;
+    std::string declLoc;
+
+public:
+    ValueDecl(const std::string &name, const std::string &loc)
+        : declName(name), declLoc(loc) {}
+
+    std::string GetName() const { return declName; }
+    std::string GetLocation() const { return declLoc; }
+};
+
+// Base for all function declarations
+class AbstractFunctionDecl : public ValueDecl {
+protected:
+    std::shared_ptr<Type> returnType;
+
+public:
+    AbstractFunctionDecl(const std::string &name, const std::string &loc, std::shared_ptr<Type> returnType)
+        : ValueDecl(name, loc), returnType(returnType) {}
+
+    std::shared_ptr<Type> GetReturnType() const { return returnType; }
+};
+
+// Specific function declaration
+class FunDecl : public AbstractFunctionDecl {
+public:
+    FunDecl(const std::string &name, const std::string &loc, std::shared_ptr<Type> returnType)
+        : AbstractFunctionDecl(name, loc, returnType) {}
+
+    void Print() const override {
+        std::cout << "Function: " << declName << " -> " << returnType->GetName() << std::endl;
+        if (metadata) {
+            std::cout << metadata->Describe() << std::endl;
+        }
+    }
+};
+
+// -----------------------------------------
+// Type Classes
+// -----------------------------------------
+
+// Base for all types
+class AbstractType {
+public:
+    virtual ~AbstractType() = default;
+    virtual std::string GetName() const = 0;
+};
+
+// Specific type implementation
+class IntType : public AbstractType {
+public:
+    std::string GetName() const override { return "int"; }
+};
+
+// Wrapper for type with potential modifiers
+class Type {
+private:
+    std::shared_ptr<AbstractType> underlyingType;
+    std::vector<std::string> modifiers;
+    std::shared_ptr<TypeMetadata> metadata;
+
+public:
+    Type(std::shared_ptr<AbstractType> type) : underlyingType(type) {}
+
+    void AddModifier(const std::string &modifier) {
+        modifiers.push_back(modifier);
+    }
+
+    void SetMetadata(const std::shared_ptr<TypeMetadata> &meta) {
+        metadata = meta;
+    }
+
+    std::shared_ptr<TypeMetadata> GetMetadata() const {
+        return metadata;
+    }
+
+    std::string GetName() const {
+        std::string name;
+        for (const auto &mod : modifiers) {
+            name += mod + " ";
+        }
+        name += underlyingType->GetName();
+        return name;
+    }
+};
+
+// -----------------------------------------
+// Type Metadata
+// -----------------------------------------
+
+class TypeMetadata {
+private:
+    std::string typeName;
+    std::vector<std::string> fields;
+
+public:
+    TypeMetadata(const std::string &typeName) : typeName(typeName) {}
+
+    void AddField(const std::string &field) { fields.push_back(field); }
+
+    std::string Describe() const {
+        std::string description = "Type: " + typeName + "\nFields:\n";
+        for (const auto &field : fields) {
+            description += " - " + field + "\n";
+        }
+        return description;
+    }
+};
+
+// -----------------------------------------
+// Example Parsing and Usage
+// -----------------------------------------
+
+int main() {
+    // Create int type with metadata
+    auto intType = std::make_shared<IntType>();
+    auto returnType = std::make_shared<Type>(intType);
+    auto typeMeta = std::make_shared<TypeMetadata>(intType->GetName());
+    typeMeta->AddField("Sign: Signed");
+    returnType->SetMetadata(typeMeta);
+
+    // Add public modifier
+    returnType->AddModifier("public");
+
+    // Create function declaration with metadata
+    FunDecl mainFunction("Main", "main.stone:1", returnType);
+    auto funcMeta = std::make_shared<TypeMetadata>("Main");
+    funcMeta->AddField("Return Type: int");
+    mainFunction.SetMetadata(funcMeta);
+
+    // Print details
+    mainFunction.Print();
+
+    return 0;
+}
+
+
+
+
+
+
+own ptr Circle pc = new Circle(10.0);   
+
+
+Borrow(pc);                            
+TakeCByPtr(move pc);                         
+
+fun Borrow(ref ptr Circle pCircle) -> void {
+    pCircle:Print();
+}
+
+fun TakeCByPtr(own ptr Circle pCircle) -> void {
+    print("Took ownership of pointer to Circle:");
+    pCircle:Print();
+}
+
+fun TakeCbyRef(own Circle pCircle) -> void {
+    print("Took ownership of pointer to Circle:");
+    pCircle:Print();
+}
+
+
+// Ownership and Move Semantics Combined
+own Circle c2 = Circle(7.0);
+TakeCByRef(move c2);  // Transfer ownership to TakeC
+
+
+public struct Accelerator {
+
+}
+
+using Accelerator 
+virtual public fun Fire() -> bool {
+}
+
+public struct ParticleAccelerator using Accelerator {
+
+}
+
+using ParticleAccelerator 
+override public fun ParticleAccelerator:Fire() {
+
+}
+
+
+
+struct Particle {
+}
+
+public struct Electron using Particle {
+
+}
+
+public fun Particle::Fire(int* i ) -> void {
+
+}
+
+
+auto(T where T using Resource) 
+struct ResourceManager {
+    ptr own T resource;
+}
+
+auto T 
+using ResourceManager(ptr own T res) {
+        this:resource = res;
+}
+using ~ResourceManager() {
+    print("Cleaning up ResourceManager...");
+        if (this:resource != null) {
+            this:resource:Cleanup();
+            delete this:resource;
+        }
+}
+
+
+public struct Particle using Resource {
+    int mass;
+    int charge;
+}
+
+using Particle 
+public fun Cleanup() -> void {
+    print("Cleaning up Particle with mass: " + this:mass);
+}
+public fun Main() -> void {
+    // Create a Particle instance
+    ptr own Particle particle = new Particle();
+    particle:mass = 42;
+    particle:charge = 1;
+
+    // Use ResourceManager to manage the Particle
+    using Particle own ResourceManager manager = new ResourceManager(move particle);
+
+    print("Particle mass: " + manager:resource:mass);
+
+    // Cleanup resources
+    ~fun() {
+        delete manager; // Cleans up both ResourceManager and Particle
+    }
+}
+
+
+Project/
+    Particle/ 
+        Particle.stone // join package Project; module Particle;
+        Electron.stone // join module Particle;
+    Simulation/ Main.stone 
+        Main.stone // module Simulation; using module Particle;
+
+  Package.stone // pacakge Project;  
+
+
+

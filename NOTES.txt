@@ -1,2 +1,81 @@
 **LLVM version: 18.1.1
  
+
+   // Primitives
+own int x = 10;                  // `x` owns the integer value 10
+Borrow(x);                       // Borrowing `x` without transferring ownership -- ref x would also work
+Take(move x);                    // Transfer ownership of `x`
+
+fun Borrow(ref int i) -> void {
+    print("Borrowed int: " + in i);
+}
+
+fun Take(own int i) -> void {
+    print("Took ownership of int: " + in i);
+}
+
+// Pointers
+own ptr int y = ref 20;          // `y` owns a pointer to the integer value 20
+Borrow(y);                       // Borrowing the pointer without transferring ownership -- or ref y
+Take(move y);                    // Transfer ownership of the pointer
+
+fun Borrow(ref ptr int p) -> void {
+    print("Borrowed pointer to int: " + in p);
+}
+
+fun Take(own ptr int p) -> void {
+    print("Took ownership of pointer to int: " + in p);
+}
+
+// Complex Types
+struct Circle {
+    double radius = 0.0;
+}
+
+fun Circle:Circle(double r) -> void {
+    radius = r;
+}
+
+virtual fun Circle:Print() -> void {
+    print("Circle radius: " + in radius);
+}
+
+own Circle c = Circle(5.0);      // `c` owns a Circle instance
+Borrow(c);                       // Borrowing `c` without transferring ownership -- 
+TakeC(move c);                   // Transfer ownership of `c`
+
+fun Borrow(ref Circle circle) -> void {
+    circle:Print();
+}
+
+fun TakeC(own Circle circle) -> void {
+    print("Took ownership of Circle:");
+    circle:Print();
+}
+
+// Pointer to a complex type
+own ptr Circle pc = new Circle(10.0);  // `pc` owns a pointer to a Circle instance
+Borrow(pc);                            // Borrowing the pointer without transferring ownership
+TakeCByPtr(move pc);                        // Transfer ownership of the pointer
+
+fun Borrow(ref ptr Circle pCircle) -> void {
+    pCircle:Print();
+}
+
+fun TakeCByPtr(own ptr Circle pCircle) -> void {
+    print("Took ownership of pointer to Circle:");
+    pCircle:Print();
+}
+
+fun TakeCbyRef(own Circle pCircle) -> void {
+    print("Took ownership of pointer to Circle:");
+    pCircle:Print();
+}
+
+
+// Ownership and Move Semantics Combined
+own Circle c2 = Circle(7.0);
+TakeCByRef(move c2);  // Transfer ownership to TakeC
+
+
+

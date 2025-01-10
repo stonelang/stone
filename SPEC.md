@@ -118,14 +118,14 @@ struct Particle {
     int charge;
 }
 
-virtual public fun Particle::Fire() -> bool {
+virtual public fun Particle:Fire() -> bool {
     return false;  // Default behavior
 }
 
 struct Electron : Particle {
 }
 
-override public fun Electron::Fire() -> bool {
+override public fun Electron:Fire() -> bool {
     return true;
 }
 ```
@@ -172,7 +172,7 @@ public fun Main() -> void {
     ptr ... int p1 = ref x;
     ptr .. int p2 = ref y;
 
-    auto result = (auto ... p1) * 2 + (auto .. p2);
+    auto result = (in ... p1) * 2 + (in .. p2);
     print(result);  // Outputs: 40
 
     ~fun() {
@@ -259,8 +259,9 @@ public fun Main() -> void {
 ## Modules
 Modules in Stone are explicit and scalable. Files must declare their `space`, and the `join` keyword defines their module.
 
-### Example:
-```stone
+### Example: 
+```stone 
+// Create Physics/Physics.module 
 // Particle.stone
 join Physics;
 
@@ -277,7 +278,7 @@ join Physics;
 struct Electron : Particle {
 }
 
-public fun Electron::Electron(ptr int mass, ptr int charge) -> void {
+public fun Electron:Electron(ptr int mass, ptr int charge) -> void {
     this:mass = auto mass;
     this:charge = auto charge;
 }
@@ -287,13 +288,13 @@ public fun Electron::Electron(ptr int mass, ptr int charge) -> void {
 // Main.stone
 import Physics;
 
-space Simulation;
+join Simulation;
 
 public fun Main() -> void {
     ptr int electronMass = ref 9;
     ptr int electronCharge = ref -1;
 
-    auto electron = Electron(ref electronMass, ref electronCharge);
+    auto electron = new Electron(ref electronMass, ref electronCharge);
 
     ~fun() {
         delete electronMass;

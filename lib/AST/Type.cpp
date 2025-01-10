@@ -4,6 +4,16 @@
 
 using namespace stone;
 
+static bool IsTypeKind(TypeKind kind) {
+  switch (kind) {
+  case TypeKind::Float:
+  case TypeKind::Int:
+    return true;
+  default:
+    return false;
+  }
+}
+
 // == AbstractType ==//
 bool AbstractType::IsBasic() {
   switch (GetKind()) {
@@ -26,18 +36,20 @@ bool AbstractType::IsNominalType() {
 }
 
 FunType::FunType(Type returnType, const ASTContext *astContext)
-    : FunctionType(TypeKind::Fun, returnType, astContext) {}
+    : AbstractFunctionType(TypeKind::Fun, returnType, astContext) {}
 
 // VoidType *VoidType::Create(const ASTContext &astContext,
 // MemoryAllocationArena arena) {
 //   return new (astContext) VoidType(astContext);
 // }
 
-// NullType* NullType::Create(const ASTContext& sc, MemoryAllocationArena arena)
+// NullType* NullType::Create(const ASTContext& sc, MemoryAllocationArena
+// arena)
 // {
 //   return new(sc, arena) NullType(sc);
 // }
-// BoolType* BoolType::Create(const ASTContext& sc, MemoryAllocationArena arena)
+// BoolType* BoolType::Create(const ASTContext& sc, MemoryAllocationArena
+// arena)
 // {
 //   return new(sc, arena) BoolType(sc);
 // }
@@ -62,8 +74,8 @@ bool Type::Walk(TypeWalker &walker) const {}
 // Type TypeQualifierCollector::ApplyQualsToType(const ASTContext &sc,
 //                                                   Type qt) const {
 //   // You can do this because the type was saved in the ASTContext
-//   // So, look up the type from the context and apple the qualifiers to it.
-//   return Type();
+//   // So, look up the type from the context and apple the qualifiers to
+//   it. return Type();
 // }
 
 // // THINK about this

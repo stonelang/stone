@@ -3,114 +3,120 @@
 #endif
 
 #ifndef TYPE_SPEC
-#define TYPE_SPEC(ID, Parent) TYPE(ID, parent)
+#define TYPE_SPEC(ID, Parent) TYPE(ID, Parent)
 #endif
 
 #ifndef ALWAYS_CANONICAL_TYPE
-#define ALWAYS_CANONICAL_TYPE(ID, Parent) TYPE_SPEC(ID, parent)
+#define ALWAYS_CANONICAL_TYPE(ID, Parent) TYPE_SPEC(ID, Parent)
 #endif
 
 #ifndef BUILTIN_TYPE
 #define BUILTIN_TYPE(ID, Parent) ALWAYS_CANONICAL_TYPE(ID, Parent)
 #endif
 
-
 #ifndef SIGNED_BUILTIN_TYPE
 #define SIGNED_BUILTIN_TYPE(ID, Parent) BUILTIN_TYPE(ID, Parent)
 #endif
-
 
 #ifndef UNSIGNED_BUILTIN_TYPE
 #define UNSIGNED_BUILTIN_TYPE(ID, Parent) BUILTIN_TYPE(ID, Parent)
 #endif
 
- 
-/// Most metaprograms do not care about abstract types, so the default
-/// is to ignore them.
 #ifndef ABSTRACT_TYPE
 #define ABSTRACT_TYPE(ID, Parent)
 #endif
-
 
 #ifndef ABSTRACT_SUGARED_TYPE
 #define ABSTRACT_SUGARED_TYPE(ID, Parent) ABSTRACT_TYPE(ID, Parent)
 #endif
 
-/// A convenience for determining the range of types.  These will always
-/// appear immediately after the last member.
 #ifndef TYPE_RANGE
-#define TYPE_RANGE(ID, First, Last)
+#define TYPE_RANGE(ID, First, Last) /* Specify range metadata */
 #endif
 
 #ifndef LAST_TYPE
 #define LAST_TYPE(ID)
 #endif
 
+// Definitions for all types begin here
 ABSTRACT_TYPE(Builtin, Type)
-  ABSTRACT_TYPE(Number,              BuiltinType)
-    SIGNED_BUILTIN_TYPE(Int,         NumberType)
-    SIGNED_BUILTIN_TYPE(Int8,        NumberType)
-    SIGNED_BUILTIN_TYPE(Int16,       NumberType)
-    SIGNED_BUILTIN_TYPE(Int32,       NumberType)
-    SIGNED_BUILTIN_TYPE(Int64,       NumberType)
-    SIGNED_BUILTIN_TYPE(Int128,      NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt,      NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt8,     NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt16,    NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt32,    NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt64,    NumberType)
-    UNSIGNED_BUILTIN_TYPE(UInt128,   NumberType)
-    //BUILTIN_TYPE(Real,       NumberType)
-    BUILTIN_TYPE(Float,       NumberType)
-    BUILTIN_TYPE(Float16,     NumberType)
-    BUILTIN_TYPE(Float32,     NumberType)
-    BUILTIN_TYPE(Float64,     NumberType)
-    BUILTIN_TYPE(Float128,    NumberType)
-    BUILTIN_TYPE(Complex32,   NumberType)
-    BUILTIN_TYPE(Complex64,   NumberType)
+  ABSTRACT_TYPE(Number, BuiltinType)
+    SIGNED_BUILTIN_TYPE(Int, NumberType)
+    SIGNED_BUILTIN_TYPE(Int8, NumberType)
+    SIGNED_BUILTIN_TYPE(Int16, NumberType)
+    SIGNED_BUILTIN_TYPE(Int32, NumberType)
+    SIGNED_BUILTIN_TYPE(Int64, NumberType)
+    SIGNED_BUILTIN_TYPE(Int128, NumberType)
+    UNSIGNED_BUILTIN_TYPE(UInt, NumberType)
+    UNSIGNED_BUILTIN_TYPE(UInt8, NumberType)
+    UNSIGNED_BUILTIN_TYPE(UInt16, NumberType)
+    UNSIGNED_BUILTIN_TYPE(UInt32, NumberType)
+    UNSIGNED_BUILTIN_TYPE(UInt64, NumberType)
+    UNSIGNED_BUILTIN_TYPE(UInt128, NumberType)
+    BUILTIN_TYPE(Float, NumberType)
+    BUILTIN_TYPE(Float16, NumberType)
+    BUILTIN_TYPE(Float32, NumberType)
+    BUILTIN_TYPE(Float64, NumberType)
+    BUILTIN_TYPE(Float128, NumberType)
+    BUILTIN_TYPE(Complex32, NumberType)
+    BUILTIN_TYPE(Complex64, NumberType)
     BUILTIN_TYPE(Imaginary32, NumberType)
     BUILTIN_TYPE(Imaginary64, NumberType)
-  UNSIGNED_BUILTIN_TYPE(Bool,      BuiltinType)
-  UNSIGNED_BUILTIN_TYPE(Char,      BuiltinType)
-  UNSIGNED_BUILTIN_TYPE(Char8,     BuiltinType)
-  UNSIGNED_BUILTIN_TYPE(Char16,    BuiltinType)
-  UNSIGNED_BUILTIN_TYPE(Char32,    BuiltinType)
-  
-  //BUILTIN_TYPE(Tuple,   BuiltinType)
+  UNSIGNED_BUILTIN_TYPE(Bool, BuiltinType)
+  UNSIGNED_BUILTIN_TYPE(Char, BuiltinType)
+  UNSIGNED_BUILTIN_TYPE(Char8, BuiltinType)
+  UNSIGNED_BUILTIN_TYPE(Char16, BuiltinType)
+  UNSIGNED_BUILTIN_TYPE(Char32, BuiltinType)
   BUILTIN_TYPE(Null, BuiltinType)
   BUILTIN_TYPE(Void, BuiltinType)
-  TYPE_RANGE(Builtin, Int, Void)
+  BUILTIN_TYPE(String, BuiltinType)
+TYPE_RANGE(Builtin, Int, String)
+
 ABSTRACT_TYPE(Deduced, Type)
   TYPE_SPEC(Auto, DeducedType)
-  TYPE_RANGE(Deduced, Auto, Auto) 
-ABSTRACT_TYPE(Function, Type)
-  TYPE_SPEC(Fun, FunctionType)
-  TYPE_RANGE(Function, Fun, Fun)
+TYPE_RANGE(Deduced, Auto, Auto)
+
+ABSTRACT_TYPE(AbstractFunction, Type)
+  TYPE_SPEC(Fun, AbstractFunctionType)
+TYPE_RANGE(AbstractFunction, Fun, Fun)
+
+
+ABSTRACT_TYPE(Access, Type)
+ABSTRACT_TYPE(AbstractPointer, AccessType)
+  TYPE_SPEC(Ptr, AbstractPointerType)            
+  TYPE_SPEC(MemberPointer, AbstractPointerType)  
+  TYPE_SPEC(Own, AbstractPointerType)            
+  TYPE_SPEC(OwnPtr, AbstractPointerType)         
+  TYPE_SPEC(Move, AbstractPointerType)           
+  TYPE_RANGE(AbstractPointer, Ptr, Move)
+ABSTRACT_TYPE(AbstractReference, AccessType)
+  TYPE_SPEC(Ref, AbstractReferenceType)          
+  TYPE_RANGE(AbstractReference, Ref, Ref)
+TYPE_RANGE(Access, Ptr, Ref)
+
+
+
+
 ABSTRACT_TYPE(Nominal, Type)
   TYPE_SPEC(Enum, NominalType)
   TYPE_SPEC(Struct, NominalType)
   TYPE_SPEC(Class, NominalType)
   TYPE_SPEC(Interface, NominalType)
-  TYPE_RANGE(Nominal, Enum, Interface)
-  LAST_TYPE(Interface)
-//ABSTRACT_TYPE(AbstractPointer, Type)
-  //TYPE(Pointer, AbstractPointerType)
-  //TYPE(MemberPointer, AbstractPointerType)
-  //TYPE_RANGE(AbstractPointer, Pointer, MemberPointer)
-//ABSTRACT_TYPE(AbstractReference, Type)
-  //TYPE(RValueReference, AbstractReferenceType)
-  //TYPE(LValueReference, AbstractReferenceType)
-  //TYPE_RANGE(AbstractReference, RValueReference, LValueReference)
+TYPE_RANGE(Nominal, Enum, Interface)
+LAST_TYPE(Interface)
+
 ABSTRACT_SUGARED_TYPE(Sugar, Type)
   TYPE_SPEC(Alias, SugarType)
-  TYPE_RANGE(Sugar, Alias, Alias)
+TYPE_RANGE(Sugar, Alias, Alias)
 
-#undef TYPE_RANGE
-#undef TYPE_SPEC
-#undef ABSTRACT_TYPE
-#undef UNCHECKED_TYPE
-#undef SWEETENED_TYPE
-#undef BUILTIN_TYPE
-#undef ALWAYS_CANONICAL_TYPE
+// Cleanup
 #undef TYPE
+#undef TYPE_SPEC
+#undef ALWAYS_CANONICAL_TYPE
+#undef BUILTIN_TYPE
+#undef SIGNED_BUILTIN_TYPE
+#undef UNSIGNED_BUILTIN_TYPE
+#undef ABSTRACT_TYPE
+#undef ABSTRACT_SUGARED_TYPE
+#undef TYPE_RANGE
 #undef LAST_TYPE

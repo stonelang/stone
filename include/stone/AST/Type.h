@@ -6,6 +6,8 @@
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
+#include "stone/AST/TypeMetadata.h"
+
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -66,7 +68,7 @@ enum class RefQualifierKind : uint8 {
 class Type {
   AbstractType *typePtr;
   TypeModifierList Modifiers;
-
+  // TypeMetadata* metadata;
 public:
   Type(AbstractType *typePtr = 0) : typePtr(typePtr) {}
 
@@ -92,6 +94,8 @@ public:
 public:
   // void SetTypeChunkList(TypeChunkList *inputChunks) { thunks = inputChunks; }
   // TypeChunkList *GetTypeChunkList() { return thunks; }
+
+  // static const TypeMetadata &Reflect(const Type &type)l
 
 private:
   // Direct comparison is disabled for types, because they may not be canonical.
