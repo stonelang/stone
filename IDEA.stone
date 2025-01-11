@@ -392,14 +392,5 @@ public fun Main() -> void {
 }
 
 
-Project/
-    Particle/ 
-        Particle.stone // join package Project; module Particle;
-        Electron.stone // join module Particle;
-    Simulation/ Main.stone 
-        Main.stone // module Simulation; using module Particle;
-
-  Package.stone // pacakge Project;  
-
 
 
