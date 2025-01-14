@@ -1,5 +1,5 @@
-#include "stone/AST/Types.h"
 #include "stone/AST/TypeLoc.h"
+#include "stone/AST/Types.h"
 #include "stone/Basic/Memory.h"
 
 using namespace stone;

@@ -1,10 +1,10 @@
 #ifndef STONE_AST_TYPEMETADATA_H
 #define STONE_AST_TYPEMETADATA_H
 
-namespace clang {
+namespace stone {
 class TypeMetadata {
 public:
 };
 
-} // namespace clang
+} // namespace stone
 #endif

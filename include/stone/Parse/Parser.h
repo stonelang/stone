@@ -11,8 +11,8 @@
 #include "stone/AST/Modfifier.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
-#include "stone/Basic/StableHasher.h"
 #include "stone/AST/TypeResult.h"
+#include "stone/Basic/StableHasher.h"
 
 #include "stone/Parse/CodeCompletionCallbacks.h"
 #include "stone/Parse/Lexer.h"

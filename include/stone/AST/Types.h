@@ -538,8 +538,7 @@ class FunctionType : public AbstractType {
   Type returnType;
 
 public:
-  FunctionType(TypeKind kind, Type returnType,
-                       const ASTContext *canTypeCtx)
+  FunctionType(TypeKind kind, Type returnType, const ASTContext *canTypeCtx)
       : AbstractType(kind, canTypeCtx) {}
 };
 
