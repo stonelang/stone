@@ -12,12 +12,12 @@
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
 #include "stone/Basic/StableHasher.h"
+#include "stone/AST/TypeResult.h"
 
 #include "stone/Parse/CodeCompletionCallbacks.h"
 #include "stone/Parse/Lexer.h"
 #include "stone/Parse/ParserResult.h"
 #include "stone/Support/Statistics.h"
-
 #include "llvm/Support/Timer.h"
 
 #include <memory>
