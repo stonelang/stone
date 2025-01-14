@@ -534,17 +534,17 @@ public:
 // // class TemplateParmType : public Type{
 // // };
 
-class AbstractFunctionType : public AbstractType {
+class FunctionType : public AbstractType {
   Type returnType;
 
 public:
-  AbstractFunctionType(TypeKind kind, Type returnType,
+  FunctionType(TypeKind kind, Type returnType,
                        const ASTContext *canTypeCtx)
       : AbstractType(kind, canTypeCtx) {}
 };
 
 // You are returning Type for now, it may have to be Type
-class FunType : public AbstractFunctionType,
+class FunType : public FunctionType,
                 private llvm::TrailingObjects<FunType, Type> {
   friend TrailingObjects;
 

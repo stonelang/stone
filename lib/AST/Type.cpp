@@ -36,7 +36,7 @@ bool AbstractType::IsNominalType() {
 }
 
 FunType::FunType(Type returnType, const ASTContext *astContext)
-    : AbstractFunctionType(TypeKind::Fun, returnType, astContext) {}
+    : FunctionType(TypeKind::Fun, returnType, astContext) {}
 
 // VoidType *VoidType::Create(const ASTContext &astContext,
 // MemoryAllocationArena arena) {

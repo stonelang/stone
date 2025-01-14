@@ -2,12 +2,12 @@
 #define TYPE(ID, Parent)
 #endif
 
-#ifndef TYPE_SPEC
-#define TYPE_SPEC(ID, Parent) TYPE(ID, Parent)
+#ifndef TYPE_SPECIFIER
+#define TYPE_SPECIFIER(ID, Parent) TYPE(ID, Parent)
 #endif
 
 #ifndef ALWAYS_CANONICAL_TYPE
-#define ALWAYS_CANONICAL_TYPE(ID, Parent) TYPE_SPEC(ID, Parent)
+#define ALWAYS_CANONICAL_TYPE(ID, Parent) TYPE_SPECIFIER(ID, Parent)
 #endif
 
 #ifndef BUILTIN_TYPE
@@ -73,43 +73,43 @@ ABSTRACT_TYPE(Builtin, Type)
 TYPE_RANGE(Builtin, Int, String)
 
 ABSTRACT_TYPE(Deduced, Type)
-  TYPE_SPEC(Auto, DeducedType)
+  TYPE_SPECIFIER(Auto, DeducedType)
 TYPE_RANGE(Deduced, Auto, Auto)
 
-ABSTRACT_TYPE(AbstractFunction, Type)
-  TYPE_SPEC(Fun, AbstractFunctionType)
-TYPE_RANGE(AbstractFunction, Fun, Fun)
+ABSTRACT_TYPE(Function, Type)
+  TYPE_SPECIFIER(Fun, FunctionType)
+TYPE_RANGE(Function, Fun, Fun)
 
 
 ABSTRACT_TYPE(Access, Type)
 ABSTRACT_TYPE(Pointer, AccessType)
-  TYPE_SPEC(Raw, PointerType)            
-  // TYPE_SPEC(MemberPointer, AbstractPointerType)  
-  // TYPE_SPEC(Own, AbstractPointerType)            
-  // TYPE_SPEC(OwnPtr, AbstractPointerType)         
-  // TYPE_SPEC(Move, AbstractPointerType)           
+  TYPE_SPECIFIER(Raw, PointerType)            
+  // TYPE_SPECIFIER(MemberPointer, AbstractPointerType)  
+  // TYPE_SPECIFIER(Own, AbstractPointerType)            
+  // TYPE_SPECIFIER(OwnPtr, AbstractPointerType)         
+  TYPE_SPECIFIER(Move, AbstractPointerType)           
   // TYPE_RANGE(AbstractPointer, Ptr, Move)
 ABSTRACT_TYPE(Reference, AccessType)
-  TYPE_SPEC(Ref, ReferenceType)          
+  TYPE_SPECIFIER(Ref, ReferenceType)          
   TYPE_RANGE(Reference, Ref, Ref)
 TYPE_RANGE(Access, Raw, Ref)
 
 
 ABSTRACT_TYPE(Nominal, Type)
-  TYPE_SPEC(Enum, NominalType)
-  TYPE_SPEC(Struct, NominalType)
-  TYPE_SPEC(Class, NominalType)
-  TYPE_SPEC(Interface, NominalType)
+  TYPE_SPECIFIER(Enum, NominalType)
+  TYPE_SPECIFIER(Struct, NominalType)
+  TYPE_SPECIFIER(Class, NominalType)
+  TYPE_SPECIFIER(Interface, NominalType)
 TYPE_RANGE(Nominal, Enum, Interface)
 LAST_TYPE(Interface)
 
 ABSTRACT_SUGARED_TYPE(Sugar, Type)
-  TYPE_SPEC(Alias, SugarType)
+  TYPE_SPECIFIER(Alias, SugarType)
 TYPE_RANGE(Sugar, Alias, Alias)
 
 // Cleanup
 #undef TYPE
-#undef TYPE_SPEC
+#undef TYPE_SPECIFIER
 #undef ALWAYS_CANONICAL_TYPE
 #undef BUILTIN_TYPE
 #undef SIGNED_BUILTIN_TYPE
