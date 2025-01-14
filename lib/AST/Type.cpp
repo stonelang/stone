@@ -1,4 +1,4 @@
-#include "stone/AST/AbstractType.h"
+#include "stone/AST/Types.h"
 #include "stone/AST/TypeLoc.h"
 #include "stone/Basic/Memory.h"
 

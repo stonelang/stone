@@ -1,7 +1,7 @@
 #ifndef STONE_AST_TYPEVISITOR_H
 #define STONE_AST_TYPEVISITOR_H
 
-#include "stone/AST/AbstractType.h"
+#include "stone/AST/Types.h"
 #include "llvm/Support/ErrorHandling.h"
 
 namespace stone {

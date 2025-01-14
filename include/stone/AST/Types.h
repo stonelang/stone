@@ -591,47 +591,47 @@ class AutoType final : public DeducedType, public llvm::FoldingSetNode {
 public:
 };
 
-class AccessType : public Type {
+class AccessType : public AbstractType {
   // Base class for access-related types.
 };
 
-class AbstractPointerType : public AccessType {
+class PointerType : public AccessType {
   // Base class for pointer types.
 };
 
-class PtrType : public AbstractPointerType {
+class RawType : public PointerType {
   // General pointer type.
 };
 
-class MemberPointerType : public AbstractPointerType {
+class MemberPointerType : public PointerType {
   // Specialized pointer type for members.
 };
 
-class OwnType : public AbstractPointerType {
+class OwnType : public PointerType {
   // Pointer type with ownership semantics.
 };
 
-class OwnPtrType : public AbstractPointerType {
+class OwnRawType : public PointerType {
   // Pointer type with ownership semantics.
 };
 
-class MoveType : public AbstractPointerType {
+class MoveType : public PointerType {
   // Pointer type with move semantics.
 };
 
-class AbstractReferenceType : public AccessType {
+class ReferenceType : public AccessType {
   // Base class for reference types.
 };
 
-class RefType : public AbstractReferenceType {
+class RefType : public ReferenceType {
   // General reference type.
 };
 
-// class AbstractPointerType : public Type {
+// class PointerType : public Type {
 // public:
 // };
 
-// class PointerType : public AbstractPointerType {
+// class PointerType : public PointerType {
 // public:
 // };
 
@@ -683,26 +683,26 @@ class RefType : public AbstractReferenceType {
 
 // class ChunkType : public Type, public llvm::FoldingSetNode {};
 
-// class AbstractPointerType : public Type, public llvm::FoldingSetNode {
+// class PointerType : public Type, public llvm::FoldingSetNode {
 
 //   Type pointeeType;
 
 // public:
-//   AbstractPointerType(TypeKind kind, const ASTContext &astContext)
+//   PointerType(TypeKind kind, const ASTContext &astContext)
 //       : Type(kind, &astContext) {}
 // };
 
-// class PointerType : public AbstractPointerType {
+// class PointerType : public PointerType {
 
 //   // PointerType(Type pointeeType, Type canType)
-//   //     : AbstractPointerType(Pointer, CanonicalPtr,
+//   //     : PointerType(Pointer, CanonicalPtr,
 //   Pointee->getDependence()),
 //   //       PointeeType(Pointee) {}
 
 // public:
 // };
 
-// class MemberPointerType : public AbstractPointerType {
+// class MemberPointerType : public PointerType {
 
 // public:
 // };

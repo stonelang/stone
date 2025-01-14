@@ -82,19 +82,17 @@ TYPE_RANGE(AbstractFunction, Fun, Fun)
 
 
 ABSTRACT_TYPE(Access, Type)
-ABSTRACT_TYPE(AbstractPointer, AccessType)
-  TYPE_SPEC(Ptr, AbstractPointerType)            
-  TYPE_SPEC(MemberPointer, AbstractPointerType)  
-  TYPE_SPEC(Own, AbstractPointerType)            
-  TYPE_SPEC(OwnPtr, AbstractPointerType)         
-  TYPE_SPEC(Move, AbstractPointerType)           
-  TYPE_RANGE(AbstractPointer, Ptr, Move)
-ABSTRACT_TYPE(AbstractReference, AccessType)
-  TYPE_SPEC(Ref, AbstractReferenceType)          
-  TYPE_RANGE(AbstractReference, Ref, Ref)
-TYPE_RANGE(Access, Ptr, Ref)
-
-
+ABSTRACT_TYPE(Pointer, AccessType)
+  TYPE_SPEC(Raw, PointerType)            
+  // TYPE_SPEC(MemberPointer, AbstractPointerType)  
+  // TYPE_SPEC(Own, AbstractPointerType)            
+  // TYPE_SPEC(OwnPtr, AbstractPointerType)         
+  // TYPE_SPEC(Move, AbstractPointerType)           
+  // TYPE_RANGE(AbstractPointer, Ptr, Move)
+ABSTRACT_TYPE(Reference, AccessType)
+  TYPE_SPEC(Ref, ReferenceType)          
+  TYPE_RANGE(Reference, Ref, Ref)
+TYPE_RANGE(Access, Raw, Ref)
 
 
 ABSTRACT_TYPE(Nominal, Type)
