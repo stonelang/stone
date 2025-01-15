@@ -1,14 +1,14 @@
 
 /// TYPESTATE(Id, Parent)
-///   The TypeResult's enumerator value is TypeResultKind::Id.  The TypeResult's
-///   class name is Id##TypeResult, and the name of its base class is Parent.
+///   The TypeState's enumerator value is TypeStateKind::Id.  The TypeState's
+///   class name is Id##TypeState, and the name of its base class is Parent.
 #ifndef TYPESTATE
-# error Included TypeResultNodes.def without defining TYPESTATE!
+# error Included TypeStateNode.def without defining TYPESTATE!
 #endif
 
 /// An abstract node is an abstract base class in the hierarchy;
 /// it is never a most-derived type, and it does not have an enumerator in
-/// TypeResultKind.
+/// TypeStateKind.
 ///
 /// Most metaprograms do not care about abstract classes, so the default
 /// is to ignore them.
@@ -18,7 +18,7 @@
 
 /// SPECIFIER_TYPESTATE(Id, Parent)
 ///
-/// A specific TypeResult that's a child of SpecifierTypeResult.
+/// A specific TypeState that's a child of SpecifierTypeState.
 #ifndef SPECIFIER_TYPESTATE
 #define SPECIFIER_TYPESTATE TYPESTATE
 #endif
@@ -28,36 +28,36 @@
 #endif
  
 
-ABSTRACT_TYPESTATE(DeclRef, TypeResult)
-  ABSTRACT_TYPESTATE(Identifier, DeclRefTypeResult)
-    TYPESTATE(SimpleIdentifier, IdentifierTypeResult)
-    //TYPESTATE(GenericIdentifier, IdentifierTypeResult)
-  TYPESTATE(Member, DeclRefTypeResult)
+ABSTRACT_TYPESTATE(DeclRef, TypeState)
+  ABSTRACT_TYPESTATE(Identifier, DeclRefTypeState)
+    TYPESTATE(SimpleIdentifier, IdentifierTypeState)
+    //TYPESTATE(GenericIdentifier, IdentifierTypeState)
+  TYPESTATE(Member, DeclRefTypeState)
 
-TYPESTATE(Function, TypeResult)
-// TYPESTATE(Array, TypeResult)
-// TYPESTATE(Dictionary, TypeResult)
-// TYPESTATE(Optional, TypeResult)
-// TYPESTATE(ImplicitlyUnwrappedOptional, TypeResult)
-// TYPESTATE(Tuple, TypeResult)
-// TYPESTATE(Composition, TypeResult)
-// TYPESTATE(Metatype, TypeResult)
-// TYPESTATE(Vararg, TypeResult)
-// TYPESTATE(PackExpansion, TypeResult)
-// TYPESTATE(Protocol, TypeResult)
-// TYPESTATE(OpaqueReturn, TypeResult)
-// TYPESTATE(NamedOpaqueReturn, TypeResult)
-// TYPESTATE(Existential, TypeResult)
-// TYPESTATE(Pack, TypeResult)
-// TYPESTATE(PackElement, TypeResult)
-// TYPESTATE(Placeholder, TypeResult)
-// ABSTRACT_TYPESTATE(Specifier, TypeResult)
-//   SPECIFIER_TYPESTATE(Ownership, SpecifierTypeResult)
-//   SPECIFIER_TYPESTATE(Isolated, SpecifierTypeResult)
-//   SPECIFIER_TYPESTATE(CompileTimeConst, SpecifierTypeResult)
-// TYPESTATE(Fixed, TypeResult)
-// TYPESTATE(SILBox, TypeResult)
-// TYPESTATE(Self, TypeResult)
+TYPESTATE(Function, TypeState)
+// TYPESTATE(Array, TypeState)
+// TYPESTATE(Dictionary, TypeState)
+// TYPESTATE(Optional, TypeState)
+// TYPESTATE(ImplicitlyUnwrappedOptional, TypeState)
+// TYPESTATE(Tuple, TypeState)
+// TYPESTATE(Composition, TypeState)
+// TYPESTATE(Metatype, TypeState)
+// TYPESTATE(Vararg, TypeState)
+// TYPESTATE(PackExpansion, TypeState)
+// TYPESTATE(Protocol, TypeState)
+// TYPESTATE(OpaqueReturn, TypeState)
+// TYPESTATE(NamedOpaqueReturn, TypeState)
+// TYPESTATE(Existential, TypeState)
+// TYPESTATE(Pack, TypeState)
+// TYPESTATE(PackElement, TypeState)
+// TYPESTATE(Placeholder, TypeState)
+// ABSTRACT_TYPESTATE(Specifier, TypeState)
+//   SPECIFIER_TYPESTATE(Ownership, SpecifierTypeState)
+//   SPECIFIER_TYPESTATE(Isolated, SpecifierTypeState)
+//   SPECIFIER_TYPESTATE(CompileTimeConst, SpecifierTypeState)
+// TYPESTATE(Fixed, TypeState)
+// TYPESTATE(SILBox, TypeState)
+// TYPESTATE(Self, TypeState)
 LAST_TYPESTATE(Function)
 
 #undef SPECIFIER_TYPESTATE

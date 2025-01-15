@@ -15,6 +15,8 @@ enum class TypeStateKind : uint8_t {
 };
 
 class TypeStateFlags {
+  friend class ASTContext;
+  friend class TypeState;
 
 public:
   enum ID : uint8_t {
@@ -30,6 +32,7 @@ public:
 
 public:
   explicit TypeStateFlags() { AddFlag(TypeStateFlags::None); }
+  explicit operator bool() const { !HasFlag(TypeStateFlags::None); }
 
 public:
   bool HasFlag(TypeStateFlags::ID f) const { return (flags & f) == f; }
@@ -73,7 +76,7 @@ class TypeState {
 
   TypeStateKind kind;
   SrcLoc loc;
-  Type *ty;
+  Type *ty = nullptr;
   // TypeModifierList modifiers;
 
 public:
