@@ -1,0 +1,66 @@
+
+/// TYPESTATE(Id, Parent)
+///   The TypeResult's enumerator value is TypeResultKind::Id.  The TypeResult's
+///   class name is Id##TypeResult, and the name of its base class is Parent.
+#ifndef TYPESTATE
+# error Included TypeResultNodes.def without defining TYPESTATE!
+#endif
+
+/// An abstract node is an abstract base class in the hierarchy;
+/// it is never a most-derived type, and it does not have an enumerator in
+/// TypeResultKind.
+///
+/// Most metaprograms do not care about abstract classes, so the default
+/// is to ignore them.
+#ifndef ABSTRACT_TYPESTATE
+#define ABSTRACT_TYPESTATE(Id, Parent)
+#endif
+
+/// SPECIFIER_TYPESTATE(Id, Parent)
+///
+/// A specific TypeResult that's a child of SpecifierTypeResult.
+#ifndef SPECIFIER_TYPESTATE
+#define SPECIFIER_TYPESTATE TYPESTATE
+#endif
+
+#ifndef LAST_TYPESTATE
+#define LAST_TYPESTATE(Id)
+#endif
+ 
+
+ABSTRACT_TYPESTATE(DeclRef, TypeResult)
+  ABSTRACT_TYPESTATE(Identifier, DeclRefTypeResult)
+    TYPESTATE(SimpleIdentifier, IdentifierTypeResult)
+    //TYPESTATE(GenericIdentifier, IdentifierTypeResult)
+  TYPESTATE(Member, DeclRefTypeResult)
+
+TYPESTATE(Function, TypeResult)
+// TYPESTATE(Array, TypeResult)
+// TYPESTATE(Dictionary, TypeResult)
+// TYPESTATE(Optional, TypeResult)
+// TYPESTATE(ImplicitlyUnwrappedOptional, TypeResult)
+// TYPESTATE(Tuple, TypeResult)
+// TYPESTATE(Composition, TypeResult)
+// TYPESTATE(Metatype, TypeResult)
+// TYPESTATE(Vararg, TypeResult)
+// TYPESTATE(PackExpansion, TypeResult)
+// TYPESTATE(Protocol, TypeResult)
+// TYPESTATE(OpaqueReturn, TypeResult)
+// TYPESTATE(NamedOpaqueReturn, TypeResult)
+// TYPESTATE(Existential, TypeResult)
+// TYPESTATE(Pack, TypeResult)
+// TYPESTATE(PackElement, TypeResult)
+// TYPESTATE(Placeholder, TypeResult)
+// ABSTRACT_TYPESTATE(Specifier, TypeResult)
+//   SPECIFIER_TYPESTATE(Ownership, SpecifierTypeResult)
+//   SPECIFIER_TYPESTATE(Isolated, SpecifierTypeResult)
+//   SPECIFIER_TYPESTATE(CompileTimeConst, SpecifierTypeResult)
+// TYPESTATE(Fixed, TypeResult)
+// TYPESTATE(SILBox, TypeResult)
+// TYPESTATE(Self, TypeResult)
+LAST_TYPESTATE(Function)
+
+#undef SPECIFIER_TYPESTATE
+#undef ABSTRACT_TYPESTATE
+#undef TYPESTATE
+#undef LAST_TYPESTATE

@@ -1,4 +1,5 @@
 #include "stone/AST/TypeLoc.h"
+#include "stone/AST/TypeState.h"
 #include "stone/AST/Types.h"
 #include "stone/Basic/Memory.h"
 
