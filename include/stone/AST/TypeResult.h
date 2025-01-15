@@ -1,9 +1,7 @@
 #ifndef STONE_AST_TYPERESULT_H
 #define STONE_AST_TYPERESULT_H
 
-
 #include "stone/Basic/SrcLoc.h"
-
 
 namespace stone {
 
@@ -14,13 +12,15 @@ enum class TypeResultKind : uint8_t {
 };
 
 class TypeResult {
+  TypeResultKind kind;
   SrcLoc loc;
-  Type *tyPtr = nullptr;
-  //TypeModifierList syntacticModifiers;
+  UnderlyingType *underlyingType;
+  // TypeModifierList syntacticModifiers;
 
 public:
-
-  explicit TypeResult(TypeResultKind kind, SrcLoc loc, Type* tyPtr = nullptr)
+  explicit TypeResult(TypeResultKind kind, SrcLoc loc,
+                      UnderlyingType *underlyingType)
+      : kind(kind), loc(loc), underlyingType(underlyingType) {}
 };
 
 } // namespace stone
