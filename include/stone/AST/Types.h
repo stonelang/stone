@@ -5,10 +5,10 @@
 #include "stone/AST/Foreign.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/Ownership.h"
-#include "stone/AST/Type.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeChunk.h"
 #include "stone/AST/TypeKind.h"
+#include "stone/AST/TypeState.h"
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/SrcLoc.h"
 
@@ -46,6 +46,7 @@
 namespace stone {
 
 class Type;
+class TypeState;
 class TypeWalker;
 class CanType;
 class SugarType;
@@ -88,6 +89,9 @@ protected:
                                  IsBuiltin : 1);
 
   } Bits;
+
+  /// This could be a TypeState
+  Type *underlyingType = nullptr;
 
 public:
   UnderlyingType(TypeKind kind, const ASTContext *canTypeContext)
@@ -538,17 +542,18 @@ class FunctionType : public UnderlyingType {
   Type returnType;
 
 public:
-  FunctionType(TypeKind kind, Type returnType, const ASTContext *canTypeCtx)
+  FunctionType(TypeKind kind, TypeState returnType,
+               const ASTContext *canTypeCtx)
       : UnderlyingType(kind, canTypeCtx) {}
 };
 
 // You are returning Type for now, it may have to be Type
 class FunType : public FunctionType,
-                private llvm::TrailingObjects<FunType, Type> {
+                private llvm::TrailingObjects<FunType, TypeState> {
   friend TrailingObjects;
 
 public:
-  FunType(Type resultType, const ASTContext *AC);
+  FunType(TypeState resultType, const ASTContext *AC);
 };
 
 class NominalType : public UnderlyingType {

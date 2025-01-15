@@ -36,7 +36,7 @@ bool UnderlyingType::IsNominalType() {
   }
 }
 
-FunType::FunType(Type returnType, const ASTContext *astContext)
+FunType::FunType(TypeState returnType, const ASTContext *astContext)
     : FunctionType(TypeKind::Fun, returnType, astContext) {}
 
 // VoidType *VoidType::Create(const ASTContext &astContext,
@@ -110,3 +110,6 @@ void TypeLoc::SetType(Type ty) {}
 //                              const ASTContext &astContext) {
 //   return new (astContext) FloatType(bitWidthKind, astContext);
 // }
+
+// == Type == //
+bool TypeState::Walk(TypeWalker &walker) const {}

@@ -1,11 +1,12 @@
 #ifndef STONE_AST_TYPERESULT_H
 #define STONE_AST_TYPERESULT_H
 
+#include "stone/AST/Modifier.h"
+#include "stone/AST/TypeMetadata.h"
 #include "stone/Basic/SrcLoc.h"
 #include <stdint.h>
 
 namespace stone {
-
 class Type;
 
 enum class TypeStateKind : uint8_t {
@@ -71,26 +72,47 @@ public:
   void RemoveInvalid() { RemoveFlag(TypeStateFlags::Invalid); }
 };
 
-class TypeState {
+class alignas(1 << TypeAlignInBits) TypeState
+    : public ASTAllocation<std::aligned_storage<8, 8>::type> {
   friend class ASTContext;
 
   TypeStateKind kind;
   SrcLoc loc;
-  Type *ty = nullptr;
-  // TypeModifierList modifiers;
+  Type *typePtr = nullptr;
+  TypeModifierList modifiers;
 
 public:
   TypeStateFlags Flags;
 
 public:
   explicit TypeState(TypeStateKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
-  virtual ~TypeState() = default;
   // Explicit conversion for validity checks
-  explicit operator bool() const { return ty != nullptr; }
+  explicit operator bool() const { return typePtr != nullptr; }
 
 public:
-  Type *GetType() const { return ty; }
-  void SetType(Type *t) { ty = t; }
+  bool IsNull() const { return typePtr == 0; }
+  Type *GetType() const { return typePtr; }
+  void SetType(Type *t) { typePtr = t; }
+
+  const TypeModifierList &GetModifiers() const { return modifiers; }
+  TypeModifierList &GetModifiers() { return modifiers; }
+
+public:
+  /// Walk this Type.
+  ///
+  /// Returns true if the walk was aborted.
+  bool Walk(TypeWalker &walker) const;
+  bool Walk(TypeWalker &&walker) const { return Walk(walker); }
+
+private:
+  // Direct comparison is disabled for types, because they may not be canonical.
+  void operator==(TypeState T) const = delete;
+  void operator!=(TypeState T) const = delete;
+};
+
+class FunctionTypeState : public TypeState {
+public:
+  FunctionTypeState(SrcLoc loc) : TypeState(TypeStateKind::Function, loc) {}
 };
 
 } // namespace stone
