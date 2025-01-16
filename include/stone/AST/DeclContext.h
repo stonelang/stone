@@ -33,7 +33,7 @@ class Expr;
 class InterfaceDecl;
 class SourceFile;
 class Type;
-class Module;
+class ModuleDecl;
 class ModuleFile;
 class NominalTypeDecl;
 class ValueDecl;

@@ -8,32 +8,32 @@ namespace stone {
 
 struct Builtin final {
 
-  const CanType BuiltinFloat16Type;  /// 32-bit IEEE floating point
-  const CanType BuiltinFloat32Type;  /// 32-bit IEEE floating point
-  const CanType BuiltinFloat64Type;  /// 64-bit IEEE floating point
-  const CanType BuiltinFloat128Type; /// 128-bit IEEE floating point
-  const CanType BuiltinFloatType;    /// 128-bit IEEE floating point
+  const Type *BuiltinFloat16Type;  /// 32-bit IEEE floating point
+  const Type *BuiltinFloat32Type;  /// 32-bit IEEE floating point
+  const Type *BuiltinFloat64Type;  /// 64-bit IEEE floating point
+  const Type *BuiltinFloat128Type; /// 128-bit IEEE floating point
+  const Type *BuiltinFloatType;    /// 128-bit IEEE floating point
 
-  const CanType BuiltinInt8Type;
-  const CanType BuiltinInt16Type;
-  const CanType BuiltinInt32Type;
-  const CanType BuiltinInt64Type;
-  const CanType BuiltinInt128Type;
-  const CanType BuiltinIntType;
+  const Type *BuiltinInt8Type;
+  const Type *BuiltinInt16Type;
+  const Type *BuiltinInt32Type;
+  const Type *BuiltinInt64Type;
+  const Type *BuiltinInt128Type;
+  const Type *BuiltinIntType;
 
-  const CanType BuiltinUInt8Type;
-  const CanType BuiltinUInt16Type;
-  const CanType BuiltinUInt32Type;
-  const CanType BuiltinUInt64Type;
-  const CanType BuiltinUInt128Type;
-  const CanType BuiltinUIntType;
+  const Type *BuiltinUInt8Type;
+  const Type *BuiltinUInt16Type;
+  const Type *BuiltinUInt32Type;
+  const Type *BuiltinUInt64Type;
+  const Type *BuiltinUInt128Type;
+  const Type *BuiltinUIntType;
 
-  const CanType BuiltinAnyType;
-  const CanType BuiltinVoidType;
-  const CanType BuiltinNullType;
-  const CanType BuiltinBoolType;
+  const Type *BuiltinAnyType;
+  const Type *BuiltinVoidType;
+  const Type *BuiltinNullType;
+  const Type *BuiltinBoolType;
 
-  Type GetType(llvm::StringRef name);
+  // Type GetType(llvm::StringRef name);
 
   // Declare the set of builtin identifiers.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \

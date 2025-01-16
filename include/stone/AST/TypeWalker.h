@@ -9,7 +9,8 @@
 
 namespace stone {
 
-class Type;
+class TypeState;
+
 enum class TypeWalkerAction {
   None = 0,
   Continue,
@@ -22,12 +23,12 @@ class TypeWalker {
 public:
   /// This method is called when first visiting a type before walking into its
   /// children.
-  virtual TypeWalkerAction WalkToTypePreChildren(Type ty) {
+  virtual TypeWalkerAction WalkToTypePreChildren(TypeState *ty) {
     return TypeWalkerAction::Continue;
   }
 
   /// This method is called after visiting a type's children.
-  virtual TypeWalkerAction WalkToTypePostChildren(Type ty) {
+  virtual TypeWalkerAction WalkToTypePostChildren(TypeState *ty) {
     return TypeWalkerAction::Continue;
   }
 
@@ -38,3 +39,4 @@ protected:
 };
 
 } // namespace stone
+#endif

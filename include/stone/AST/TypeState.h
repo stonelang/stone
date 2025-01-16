@@ -3,8 +3,40 @@
 
 #include "stone/AST/Modifier.h"
 #include "stone/AST/TypeMetadata.h"
+#include "stone/AST/TypeWalker.h"
+#include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
+
+#include "llvm/ADT/APFloat.h"
+#include "llvm/ADT/APInt.h"
+#include "llvm/ADT/APSInt.h"
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/DenseMapInfo.h"
+#include "llvm/ADT/FoldingSet.h"
+#include "llvm/ADT/Hashing.h"
+#include "llvm/ADT/PointerIntPair.h"
+#include "llvm/ADT/PointerUnion.h"
+#include "llvm/ADT/STLExtras.h"
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/Twine.h"
+#include "llvm/ADT/iterator_range.h"
+#include "llvm/Support/Casting.h"
+#include "llvm/Support/ErrorHandling.h"
+#include "llvm/Support/PointerLikeTypeTraits.h"
+#include "llvm/Support/TrailingObjects.h"
+#include "llvm/Support/type_traits.h"
+
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <optional>
 #include <stdint.h>
+#include <string>
+#include <type_traits>
+#include <utility>
 
 namespace stone {
 class Type;
@@ -78,21 +110,29 @@ class alignas(1 << TypeAlignInBits) TypeState
 
   TypeStateKind kind;
   SrcLoc loc;
-  Type *typePtr = nullptr;
+  Type *typePtr;
   TypeModifierList modifiers;
+  TypeMetadata metadata;
 
 public:
   TypeStateFlags Flags;
 
 public:
-  explicit TypeState(TypeStateKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
+  explicit TypeState(TypeStateKind kind, SrcLoc loc, Type *typePtr = nullptr)
+      : kind(kind), loc(loc), typePtr(typePtr) {}
   // Explicit conversion for validity checks
   explicit operator bool() const { return typePtr != nullptr; }
 
 public:
-  bool IsNull() const { return typePtr == 0; }
+  bool IsNull() const { return typePtr == nullptr; }
   Type *GetType() const { return typePtr; }
   void SetType(Type *t) { typePtr = t; }
+
+  /// Get the representative location of this type, for diagnostic
+  /// purposes.
+  /// This location is not necessarily the start location of the TypeRep.
+  SrcLoc GetLoc() const;
+  SrcRange GetSrcRange() const;
 
   const TypeModifierList &GetModifiers() const { return modifiers; }
   TypeModifierList &GetModifiers() { return modifiers; }
@@ -108,6 +148,11 @@ private:
   // Direct comparison is disabled for types, because they may not be canonical.
   void operator==(TypeState T) const = delete;
   void operator!=(TypeState T) const = delete;
+};
+
+class ModuleTypeState : public TypeState {
+public:
+  ModuleTypeState(SrcLoc loc) : TypeState(TypeStateKind::Module, loc) {}
 };
 
 class FunctionTypeState : public TypeState {

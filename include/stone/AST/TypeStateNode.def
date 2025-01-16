@@ -33,7 +33,8 @@ ABSTRACT_TYPESTATE(DeclRef, TypeState)
     TYPESTATE(SimpleIdentifier, IdentifierTypeState)
     //TYPESTATE(GenericIdentifier, IdentifierTypeState)
   TYPESTATE(Member, DeclRefTypeState)
-
+  
+TYPESTATE(Module, TypeState)
 TYPESTATE(Function, TypeState)
 // TYPESTATE(Array, TypeState)
 // TYPESTATE(Dictionary, TypeState)

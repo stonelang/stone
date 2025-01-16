@@ -1,6 +1,5 @@
-#include "stone/AST/TypeLoc.h"
+#include "stone/AST/Type.h"
 #include "stone/AST/TypeState.h"
-#include "stone/AST/Types.h"
 #include "stone/Basic/Memory.h"
 
 using namespace stone;
@@ -15,8 +14,8 @@ static bool IsTypeKind(TypeKind kind) {
   }
 }
 
-// == UnderlyingType ==//
-bool UnderlyingType::IsBasic() {
+// == Type ==//
+bool Type::IsBuiltinType() const {
   switch (GetKind()) {
   case TypeKind::Float:
   case TypeKind::Int:
@@ -26,7 +25,7 @@ bool UnderlyingType::IsBasic() {
   }
 }
 
-bool UnderlyingType::IsNominalType() {
+bool Type::IsNominalType() {
   switch (GetKind()) {
   case TypeKind::Interface:
   case TypeKind::Struct:
@@ -36,8 +35,8 @@ bool UnderlyingType::IsNominalType() {
   }
 }
 
-FunType::FunType(TypeState returnType, const ASTContext *astContext)
-    : FunctionType(TypeKind::Fun, returnType, astContext) {}
+FunType::FunType(TypeState *returnType)
+    : FunctionType(TypeKind::Fun, returnType) {}
 
 // VoidType *VoidType::Create(const ASTContext &astContext,
 // MemoryAllocationArena arena) {
@@ -55,8 +54,49 @@ FunType::FunType(TypeState returnType, const ASTContext *astContext)
 //   return new(sc, arena) BoolType(sc);
 // }
 
-// == Type == //
-bool Type::Walk(TypeWalker &walker) const {}
+BitWidth NumberType::GetBitWidth() const {
+  switch (GetKind()) {
+  case TypeKind::Int:
+  case TypeKind::UInt:
+  case TypeKind::Float:
+    return BitWidth::Size;
+  case TypeKind::Int8:
+    return BitWidth::Size8;
+  case TypeKind::Int16:
+    return BitWidth::Size16;
+  case TypeKind::Int32:
+    return BitWidth::Size32;
+  case TypeKind::Int64:
+    return BitWidth::Size64;
+  case TypeKind::Int128:
+    return BitWidth::Size128;
+  case TypeKind::UInt8:
+    return BitWidth::Size8;
+  case TypeKind::UInt16:
+    return BitWidth::Size16;
+  case TypeKind::UInt32:
+    return BitWidth::Size32;
+  case TypeKind::UInt64:
+    return BitWidth::Size64;
+  case TypeKind::UInt128:
+    return BitWidth::Size128;
+  case TypeKind::Float16:
+    return BitWidth::Size16;
+  case TypeKind::Float32:
+    return BitWidth::Size32;
+  case TypeKind::Float64:
+    return BitWidth::Size64;
+  case TypeKind::Float128:
+    return BitWidth::Size128;
+  case TypeKind::Complex32:
+    return BitWidth::Size32;
+  case TypeKind::Imaginary32:
+    return BitWidth::Size32;
+  case TypeKind::Imaginary64:
+    return BitWidth::Size64;
+  }
+  llvm_unreachable("Unknown number type");
+}
 
 // == TypeQualifierCollector == //
 
@@ -85,14 +125,8 @@ bool Type::Walk(TypeWalker &walker) const {}
 // &Context,
 //                                        const Type *ty) const {}
 
-// == TypeLoc == //
-bool TypeLoc::IsError() const { return true; }
-
-SrcLoc TypeLoc::GetLoc() const { return SrcLoc(); }
-
-SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
-
-void TypeLoc::SetType(Type ty) {}
+SrcLoc TypeState::GetLoc() const { return SrcLoc(); }
+SrcRange TypeState::GetSrcRange() const { return SrcRange(); }
 
 // FunType *TypeFactory::MakeFunType(Type result);
 

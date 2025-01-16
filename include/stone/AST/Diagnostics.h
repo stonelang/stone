@@ -3,7 +3,6 @@
 
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/TypeLoc.h"
 #include "stone/Basic/Version.h"
 #include "stone/Support/DiagnosticOptions.h"
 
@@ -25,7 +24,7 @@ class Decl;
 namespace stone {
 
 class Decl;
-class Type;
+class TypeState;
 class ConstructorDecl;
 class FuncDecl;
 class AliasDecl;
@@ -107,7 +106,7 @@ enum class DiagnosticArgumentKind {
   Unsigned,
   Identifier,
   Decl,
-  Type,
+  TypeState,
   VersionTuple,
   Diagnostic,
   ClangDecl
@@ -225,7 +224,7 @@ class DiagnosticArgument final {
     StringRef StringVal;
     Identifier IdentifierVal;
     const Decl *DeclVal;
-    Type TypeVal;
+    TypeState *TypeStateVal;
     DiagnosticInfo *DiagnosticVal;
     llvm::VersionTuple VersionVal;
     const clang::NamedDecl *ClangDecl;
@@ -250,7 +249,8 @@ public:
   DiagnosticArgument(const Decl *D)
       : Kind(DiagnosticArgumentKind::Decl), DeclVal(D) {}
 
-  DiagnosticArgument(Type T) : Kind(DiagnosticArgumentKind::Type), TypeVal(T) {}
+  DiagnosticArgument(TypeState *T)
+      : Kind(DiagnosticArgumentKind::TypeState), TypeStateVal(T) {}
 
   DiagnosticArgument(llvm::VersionTuple V)
       : Kind(DiagnosticArgumentKind::VersionTuple), VersionVal(V) {}
@@ -300,9 +300,9 @@ public:
     return DeclVal;
   }
 
-  Type getAsType() const {
-    assert(Kind == DiagnosticArgumentKind::Type);
-    return TypeVal;
+  TypeState *getAsTypeState() const {
+    assert(Kind == DiagnosticArgumentKind::TypeState);
+    return TypeStateVal;
   }
 
   llvm::VersionTuple getAsVersionTuple() const {

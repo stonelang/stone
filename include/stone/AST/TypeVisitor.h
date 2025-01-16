@@ -1,7 +1,7 @@
 #ifndef STONE_AST_TYPEVISITOR_H
 #define STONE_AST_TYPEVISITOR_H
 
-#include "stone/AST/Types.h"
+#include "stone/AST/Type.h"
 #include "llvm/Support/ErrorHandling.h"
 
 namespace stone {
@@ -10,12 +10,14 @@ namespace stone {
 template <typename ImplTy, typename RetTy = void, typename... Args>
 class TypeVisitor {
 public:
-  RetTy Visit(Type T, Args... args) {
-    switch (T->GetKind()) {
+  RetTy Visit(TypeState *T, Args... args) {
+    assert(T && "Cannot visit a null Type!");
+    switch (T->GetType()->GetKind()) {
 #define TYPE(KIND, PARENT)                                                     \
   case TypeKind::KIND:                                                         \
     return static_cast<ImplTy *>(this)->Visit##KIND##Type(                     \
-        static_cast<KIND##Type *>(T.GetPtr()), ::std::forward<Args>(args)...);
+        static_cast<KIND##Type *>(T->GetType()),                               \
+        ::std::forward<Args>(args)...);
 #include "stone/AST/TypeKind.def"
     }
     llvm_unreachable("Not reachable, all cases handled");
@@ -35,7 +37,7 @@ public:
 #include "stone/AST/TypeKind.def"
 
 public:
-  void VisitType(Type t) {}
+  void VisitType(TypeState *ts) {}
 };
 
 // namespace syn {

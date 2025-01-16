@@ -1,5 +1,6 @@
 #include "stone/AST/Module.h"
 #include "stone/AST/ASTContext.h"
+#include "stone/AST/TypeState.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -18,9 +19,11 @@ using namespace stone;
 ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
-ModuleDecl::ModuleDecl(Identifier name, ASTContext &sc, ModuleDecl *parent)
+ModuleDecl::ModuleDecl(Identifier name, ASTContext &AC, ModuleDecl *parent)
     : DeclContext(DeclContextKind::ModuleDecl),
-      TypeDecl(DeclKind::Module, name, SrcLoc(), Type(), &sc), parent(parent) {
+      TypeDecl(DeclKind::Module, name, SrcLoc(),
+               new(AC) ModuleTypeState(SrcLoc()), &AC),
+      parent(parent) {
 
   SetVisibilityLevel(VisibilityLevel::Public);
 

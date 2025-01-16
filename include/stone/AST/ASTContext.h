@@ -6,6 +6,7 @@
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Import.h"
 #include "stone/AST/LangABI.h"
+#include "stone/AST/Module.h"
 #include "stone/AST/SearchPath.h"
 #include "stone/AST/Type.h"
 #include "stone/AST/TypeCheckerOptions.h"
@@ -61,7 +62,7 @@ class MethodDecl;
 class RecordDecl;
 class Expr;
 class MangleContext;
-class Module;
+class ModuleDecl;
 class Stmt;
 class ASTContext;
 class Decl;

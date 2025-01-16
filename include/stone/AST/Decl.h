@@ -14,7 +14,6 @@
 #include "stone/AST/Modifier.h"
 #include "stone/AST/Storage.h"
 #include "stone/AST/TypeAlignment.h"
-#include "stone/AST/TypeLoc.h"
 #include "stone/AST/Visibility.h"
 #include "stone/Basic/AddressSpace.h"
 #include "stone/Basic/LLVM.h"
@@ -307,8 +306,7 @@ public:
     return GetDeclContextForModule();
   }
 
-  Module *GetModuleContext() const;
-
+  ModuleDecl *GetModuleContext() const;
   ASTContext &GetASTContext() const {
     auto dc = context.dyn_cast<DeclContext *>();
     if (dc) {
@@ -395,17 +393,17 @@ public:
 
 class ValueDecl : public NamedDecl {
 
-  Type type;
+  TypeState *typeState;
   VisibilityLevel visibilityKind;
 
 public:
-  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type type,
+  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, TypeState *typeState,
             UnifiedContext context)
-      : NamedDecl(kind, name, nameLoc, context), type(type) {}
+      : NamedDecl(kind, name, nameLoc, context), typeState(typeState) {}
 
 public:
-  void SetType(Type inputType) { type = inputType; }
-  Type GetType() { return type; }
+  void SetType(TypeState *ts) { typeState = ts; }
+  TypeState *GetTypeState() { return typeState; }
 
 public:
   /// IsInstanceMember - Determine whether this value is an instance member
@@ -453,7 +451,7 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   /// this TypeDecl.  It is a cache maintained by
   /// ASTContext::getTypedefType, ASTContext::getTagDeclKind, and
   /// ASTContext::getTemplateTypeParmType, and TemplateTypeParmDecl.
-  mutable const Type *typeForDecl = nullptr;
+  mutable const TypeState *typeForDecl = nullptr;
 
   /// The start of the source range for this declaration.
   // SrcLoc startLoc;
@@ -461,17 +459,17 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   // SrcLoc nameLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, Type type,
+  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, TypeState *typeState,
            UnifiedContext context)
-      : ValueDecl(kind, name, nameLoc, type, context) {}
+      : ValueDecl(kind, name, nameLoc, typeState, context) {}
 
 public:
   // Low-level accessor. If you just want the type defined by this node,
   // check out ASTContext::getTypeDeclType or one of
   // ASTContext::getTypedefType, ASTContext::getRecordType, etc. if you
   // already know the specific kind of node this is.
-  const Type *GetTypeForDecl() const { return typeForDecl; }
-  void SetTypeForDecl(const Type *TD) { typeForDecl = TD; }
+  const TypeState *GetTypeForDecl() const { return typeForDecl; }
+  void SetTypeForDecl(const TypeState *TS) { typeForDecl = TS; }
 
   // SrcLoc GetBeginSrcLoc() const LLVM_READONLY { return LocStart; }
   // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
@@ -515,14 +513,14 @@ public:
 class GenericTypeDecl : public GenericContext, public TypeDecl {
 public:
   GenericTypeDecl(DeclKind K, DeclContext *DC, Identifier name, SrcLoc nameLoc,
-                  Type type,
+                  TypeState *typeState,
                   /*llvm::ArrayRef<InheritedEntry> inherited,*/
                   GenericParamList *genericParams = nullptr);
 };
 
 class GenericTypeParamDecl final
     : public TypeDecl,
-      private llvm::TrailingObjects<GenericTypeParamDecl, Type *, SrcLoc> {
+      private llvm::TrailingObjects<GenericTypeParamDecl, TypeState *, SrcLoc> {
   friend TrailingObjects;
 };
 
@@ -539,7 +537,7 @@ class AliasDecl : public GenericTypeDecl {
   SrcLoc typeEndLoc;
 
   /// The location of the right-hand side of the typealias binding
-  TypeLoc underlyingTy;
+  // TypeLoc underlyingTy;
 
 public:
 };
@@ -605,8 +603,8 @@ public:
   };
 
 public:
-  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type resultType,
-               DeclContext *parent)
+  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
+               TypeState *resultType, DeclContext *parent)
       : GenericContext(DeclContextKind::FunctionDecl, parent),
         ValueDecl(kind, name, nameLoc, resultType, parent) {}
 
@@ -657,12 +655,12 @@ class FunDecl : public FunctionDecl {
 
   /// fun GetObject() -> Object* { return obj; } where obj is the returnType.
   /// and Oject* is the Type which is the resultType
-  TypeLoc result;
+  // TypeLoc result;
 
   // TODO: We are removing SpecialNameLoc for now.
 public:
   FunDecl(DeclKind kind, SrcLoc staticLoc, SrcLoc funLoc, DeclName name,
-          SrcLoc nameLoc, Type result, DeclContext *parent)
+          SrcLoc nameLoc, TypeState *result, DeclContext *parent)
       : FunctionDecl(kind, name, nameLoc, result, parent), staticLoc(staticLoc),
         funLoc(funLoc) {}
 
@@ -706,7 +704,7 @@ public:
 
 public:
   static FunDecl *Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
-                         DeclName name, SrcLoc nameLoc, Type result,
+                         DeclName name, SrcLoc nameLoc, TypeState *result,
                          DeclContext *parent);
 
   // static FunDecl *Create(DeclSpecifierCollector &collector,
