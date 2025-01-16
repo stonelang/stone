@@ -1,0 +1,151 @@
+#ifndef DECL
+#define DECL(ID, Parent)
+#endif
+
+#ifndef ABSTRACT_DECL
+#define ABSTRACT_DECL(ID, Parent)
+#endif
+
+/// CONTEXT_DECL(ID, Parent)
+///   Used for Decls that are also DeclContexts.
+#ifndef CONTEXT_DECL
+#define CONTEXT_DECL(ID, Parent) DECL(ID, Parent)
+#endif
+
+/// ITERABLE_NONTEMPLATE_DECL(ID, Parent)
+///   Used for Decls that are also IterableDeclContexts and DeclContexts.
+#ifndef ITERABLE_NONTEMPLATE_DECL
+#ifdef ITERABLE_DECL
+#define ITERABLE_NONTEMPLATE_DECL(ID, Parent) ITERABLE_DECL(ID, Parent)
+#else
+#define ITERABLE_NONTEMPLATE_DECL(ID, Parent) CONTEXT_DECL(ID, Parent)
+#endif
+#endif
+
+/// TEMPLATE_DECL(ID, Parent)
+///   Used for Decls that are also GenericContexts.
+#ifndef TEMPLATE_DECL
+#define TEMPLATE_DECL(ID, Parent) CONTEXT_DECL(ID, Parent)
+#endif
+
+/// TEMPLATE_VALUE_DECL(ID, Parent)
+///   Used for subclasses of ValueDecl that are also GenericContexts.
+#ifndef TEMPLATE_VALUE_DECL
+#ifdef VALUE_DECL
+#define TEMPLATE_VALUE_DECL(ID, Parent) VALUE_DECL(ID, Parent)
+#else
+#define TEMPLATE_VALUE_DECL(ID, Parent) TEMPLATE_DECL(ID, Parent)
+#endif
+#endif
+
+/// ITERABLE_TEMPLATE_DECL(ID, Parent)
+///   Used for Decls that are IterableDeclContexts and GenericContexts.
+#ifndef ITERABLE_TEMPLATE_DECL
+#ifdef ITERABLE_DECL
+#define ITERABLE_TEMPLATE_DECL(ID, Parent) ITERABLE_DECL(ID, Parent)
+#else
+#define ITERABLE_TEMPLATE_DECL(ID, Parent) TEMPLATE_DECL(ID, Parent)
+#endif
+#endif
+
+/// CONTEXT_VALUE_DECL(ID, Parent)
+///   Used for subclasses of ValueDecl that are also DeclContexts.
+#ifndef CONTEXT_VALUE_DECL
+#ifdef VALUE_DECL
+#define CONTEXT_VALUE_DECL(ID, Parent) VALUE_DECL(ID, Parent)
+#else
+#define CONTEXT_VALUE_DECL(ID, Parent) CONTEXT_DECL(ID, Parent)
+#endif
+#endif
+
+/// ITERABLE_TEMPLATE_VALUE_DECL(ID, Parent)
+///   Used for subclasses of ValueDecl that are IterableDeclContexts
+///   and GenericContexts.
+#ifndef ITERABLE_TEMPLATE_VALUE_DECL
+#ifdef VALUE_DECL
+#define ITERABLE_TEMPLATE_VALUE_DECL(ID, Parent) VALUE_DECL(ID, Parent)
+#else
+#define ITERABLE_TEMPLATE_VALUE_DECL(ID, Parent) ITERABLE_TEMPLATE_DECL(ID, Parent)
+#endif
+#endif
+
+/// OPERATOR_DECL(ID, Parent)
+///   Used for subclasses of OperatorDecl.
+#ifndef OPERATOR_DECL
+#define OPERATOR_DECL(ID, Parent) DECL(ID, Parent)
+#endif
+
+/// NOMINAL_TYPE_DECL(ID, Parent)
+///   Used for subclasses of NominalTypeDecl.
+#ifndef NOMINAL_TYPE_DECL
+#define NOMINAL_TYPE_DECL(ID, Parent) ITERABLE_TEMPLATE_VALUE_DECL(ID, Parent)
+#endif
+
+/// ABSTRACT_FUNCTION_DECL(ID, Parent)
+///   Used for subclasses of AbstractFunction.
+#ifndef ABSTRACT_FUNCTION_DECL
+#define ABSTRACT_FUNCTION_DECL(ID, Parent) TEMPLATE_VALUE_DECL(ID, Parent)
+#endif
+
+/// VALUE_DECL(ID, Parent)
+///   Used for subclasses of ValueDecl.
+#ifndef VALUE_DECL
+#define VALUE_DECL(ID, Parent) DECL(ID, Parent)
+#endif
+
+/// A convenience for determining the range of declarations.
+#ifndef DECL_RANGE
+#define DECL_RANGE(ID, First, Last)
+#endif
+
+#ifndef LAST_DECL
+#define LAST_DECL(ID)
+#endif
+
+// Declaration hierarchy starts here
+ABSTRACT_DECL(Value, Decl)
+    ABSTRACT_DECL(Type, ValueDecl)
+        ABSTRACT_DECL(NominalType, TypeDecl)
+            NOMINAL_TYPE_DECL(Enum, NominalTypeDecl)
+            NOMINAL_TYPE_DECL(Struct, NominalTypeDecl)
+            NOMINAL_TYPE_DECL(Class, NominalTypeDecl)
+            NOMINAL_TYPE_DECL(Interface, NominalTypeDecl)
+            DECL_RANGE(NominalType, Enum, Interface)
+        VALUE_DECL(Alias, TypeDecl)
+        CONTEXT_VALUE_DECL(Module, TypeDecl)
+        DECL_RANGE(Type, Enum, Module)
+    ABSTRACT_DECL(Function, ValueDecl)
+        ABSTRACT_FUNCTION_DECL(Fun, FunctionDecl)
+        ABSTRACT_FUNCTION_DECL(Constructor, FunctionDecl)
+        ABSTRACT_FUNCTION_DECL(Destructor, FunctionDecl)
+        DECL_RANGE(Function, Fun, Destructor)
+    ABSTRACT_DECL(Storage, ValueDecl)
+        VALUE_DECL(Var, StorageDecl)
+        VALUE_DECL(Param, VarDecl)
+        DECL_RANGE(Storage, Var, Param)
+    DECL_RANGE(Value, Enum, Param)
+DECL(Space, Decl)
+DECL(Using, Decl)
+DECL(Label, Decl)
+DECL_RANGE(Value, Enum, Label)
+
+DECL(IfConfig, Decl)
+LAST_DECL(IfConfig)
+
+// Cleanup
+#undef NOMINAL_TYPE_DECL
+#undef CONTEXT_DECL
+#undef ITERABLE_NONTEMPLATE_DECL
+#undef TEMPLATE_DECL
+#undef ITERABLE_TEMPLATE_DECL
+#undef ITERABLE_DECL
+#undef CONTEXT_VALUE_DECL
+#undef TEMPLATE_VALUE_DECL
+#undef ITERABLE_TEMPLATE_VALUE_DECL
+#undef ABSTRACT_FUNCTION_DECL
+#undef VALUE_DECL
+#undef DECL_RANGE
+#undef ABSTRACT_DECL
+#undef OPERATOR_DECL
+#undef DECL
+#undef LAST_DECL
