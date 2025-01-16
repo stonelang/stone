@@ -1,5 +1,6 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/ASTContext.h"
+#include "stone/AST/DeclState.h"
 #include "stone/AST/Generics.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"

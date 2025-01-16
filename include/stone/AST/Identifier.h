@@ -189,6 +189,19 @@ public:
   }
 };
 
+class DeclIdentifier final {
+  Identifier identifier;
+  SrcLoc loc;
+
+public:
+  explicit DeclIdentifier(Identifier identifier, SrcLoc loc)
+      : identifier(identifier), loc(loc) {}
+
+public:
+  Identifier GetIdentifier() { return identifier; }
+  SrcLoc GetLoc() { return loc; }
+};
+
 namespace detail {
 /// SpecialDeclName is used as a base of various uncommon special names.
 /// This class is needed since DeclName has not enough space to store
