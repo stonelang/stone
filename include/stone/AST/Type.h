@@ -81,7 +81,6 @@ protected:
 
   } Bits;
 
-  /// TypeState?
   Type *underlyingType;
   bool HasUnderlyingType() const { return underlyingType != nullptr; }
 
