@@ -25,7 +25,7 @@ public:
   void SetDecl(Decl *decl) { D = decl; }
   Decl *GetDecl() { return D; }
 
- private:
+private:
   // Direct comparison is disabled for states
   void operator==(DeclState D) const = delete;
   void operator!=(DeclState D) const = delete;
