@@ -7,6 +7,11 @@
 #include "stone/AST/Property.h"
 #include "stone/AST/TypeAlignment.h"
 
+#include "llvm/ADT/BitVector.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/Support/Allocator.h"
+#include <cassert>
+
 namespace stone {
 
 class alignas(1 << DeclAlignInBits) DeclState final : ASTAllocation<DeclState> {
@@ -15,16 +20,21 @@ class alignas(1 << DeclAlignInBits) DeclState final : ASTAllocation<DeclState> {
 public:
   Decl *D = nullptr;
   SrcLoc kindLoc;
-  // DeclProperties
 
-  // DeclAttributeList attributes;
-  // DeclModifierList modifiers;
-  // DeclTemplateList templates;
+  // Efficient memory allocation
+  llvm::BumpPtrAllocator allocator;
+  // Stores properties with metadata
+  llvm::DenseMap<PropertyKind, Property *> properties;
+  // Tracks property presence
+  llvm::BitVector propertyMask;
 
 public:
-  DeclState() = default;
+  DeclState() : DeclState(nullptr) {}
 
-  explicit DeclState(Decl *decl) : D(decl) {}
+  explicit DeclState(Decl *decl)
+      : D(decl),
+        propertyMask(static_cast<size_t>(PropertyKind::Last_Type) + 1) {}
+
   // Overload the bool operator
   explicit operator bool() const { return D != nullptr; }
 

@@ -7,6 +7,7 @@
 #include "stone/AST/TypeAlignment.h"
 #include "stone/Basic/SrcLoc.h"
 
+#include "llvm/ADT/DenseMapInfo.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/iterator_range.h"
@@ -37,27 +38,25 @@ class alignas(1 << PropertyAlignInBits) Property
     : public ASTAllocation<Property> {
   PropertyKind kind;
   SrcLoc loc;
+  PropertyScope scope;
 
 public:
   Property(PropertyKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
 
 public:
-  bool IsModifier() const;
-  bool IsAttribute() const;
+  PropertyKind GetKind() { return kind; }
+  SrcLoc GetLoc() { return loc; }
+  PropertyScope GetScope() { return scope; }
 
 public:
-  bool IsStatic() const { return kind == PropertyKind::Static; }
-  bool IsExern() const { return kind == PropertyKind::Extern; }
-  bool IsPublic() const { return kind == PropertyKind::Public; }
-  bool IsProtected() const { return kind == PropertyKind::Protected; }
-  bool IsPrivate() const { return kind == PropertyKind::Private; }
-  bool IsConst() const { return kind == PropertyKind::Const; }
-  bool IsStone() const { return kind == PropertyKind::Const; }
-  bool IsPure() const { return kind == PropertyKind::Pure; }
-  bool IsVolaltile() const { return kind == PropertyKind::Volatile; }
+  // bool IsModifier() const {
+  //   return kind >= PropertyKind::First_ModifierType &&
+  //          kind <= PropertyKind::Last_ModifierType;
+  // }
 
-  bool IsDeprecated() const { return kind == PropertyKind::Deprecated; }
-  bool IsAligned() const { return kind == PropertyKind::Aligned; }
+  // bool IsAttribute() const;
+
+  bool Matches(PropertyKind targetKind) const { return kind == targetKind; }
 };
 
 class Modifier : public Property {
@@ -119,7 +118,8 @@ public:
 
 class DeprecatedAttribute : public DeclAttribute {
 public:
-  DeprecatedAttribute(SrcLoc loc) : DeclAttribute(PropertyKind::Deprecated, loc) {}
+  DeprecatedAttribute(SrcLoc loc)
+      : DeclAttribute(PropertyKind::Deprecated, loc) {}
 };
 
 class TypeAttribute : public Attribute {
@@ -132,5 +132,28 @@ public:
 };
 
 } // namespace stone
+
+namespace llvm {
+template <> struct DenseMapInfo<stone::PropertyKind> {
+  static inline stone::PropertyKind getEmptyKey() {
+    return stone::PropertyKind::None; // Ensure this value is not used as a
+                                      // valid key
+  }
+
+  static inline stone::PropertyKind getTombstoneKey() {
+    return static_cast<stone::PropertyKind>(
+        static_cast<uint8_t>(stone::PropertyKind::Last_Type) +
+        1); // Value beyond valid range
+  }
+
+  static unsigned getHashValue(stone::PropertyKind kind) {
+    return static_cast<unsigned>(kind);
+  }
+
+  static bool isEqual(stone::PropertyKind lhs, stone::PropertyKind rhs) {
+    return lhs == rhs;
+  }
+};
+} // namespace llvm
 
 #endif
