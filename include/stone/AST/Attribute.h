@@ -46,24 +46,24 @@ protected:
       : lBracketLoc(lBracketLoc), range(range) {}
 };
 
-class DeclAttribute : public Attribute {
-public:
-};
+// class DeclAttribute : public Attribute {
+// public:
+// };
 
-class InlineDeclAttribute : public DeclAttribute {
-public:
-};
-class AlignDeclAttribute : public DeclAttribute {
-public:
-};
-class ExternDeclAttribute : public DeclAttribute {
-public:
-};
+// class InlineDeclAttribute : public DeclAttribute {
+// public:
+// };
+// class AlignDeclAttribute : public DeclAttribute {
+// public:
+// };
+// class ExternDeclAttribute : public DeclAttribute {
+// public:
+// };
 
 /// Attributes that may be applied to declarations.
 class DeclAttributeList {
   /// Linked list of declaration attributes.
-  DeclAttribute *attributes;
+ // DeclAttribute *attributes;
 };
 
 class TypeAttribute : public Attribute {
@@ -73,7 +73,7 @@ public:
 /// Attributes that may be applied to declarations.
 class TypeAttributeList {
   /// Linked list of declaration attributes.
-  TypeAttribute *attributes;
+  //TypeAttribute *attributes;
 };
 
 } // namespace stone

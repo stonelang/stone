@@ -25,6 +25,14 @@ enum class PropertyKind : uint8_t {
 #include "stone/AST/PropertyNode.def"
 };
 
+enum class PropertyScope : uint8_t {
+  None = 0, // Default, unspecified scope
+  Global,   // For global declarations
+  Member,   // For class or struct members
+  Param,    // For param members
+  Local     // For local variables or parameters
+};
+
 class alignas(1 << PropertyAlignInBits) Property
     : public ASTAllocation<Property> {
   PropertyKind kind;
@@ -39,10 +47,20 @@ public:
   ModifierProperty(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
 };
 
-// class AttributeProperty : public Property {
-// public:
-//   ModifierProperty(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
-// };
+class DeclModifier : public ModifierProperty {
+public:
+  DeclModifier(PropertyKind kind, SrcLoc loc) : ModifierProperty(kind, loc) {}
+};
+
+class AttributeProperty : public Property {
+public:
+  AttributeProperty(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
+};
+
+class DeclAttribute : public AttributeProperty {
+public:
+  DeclAttribute(PropertyKind kind, SrcLoc loc) : AttributeProperty(kind, loc) {}
+};
 
 } // namespace stone
 
