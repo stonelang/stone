@@ -35,11 +35,11 @@
 #endif
 
 // Property hierarchy starts here
-// Abstract base properties
-ABSTRACT_PROPERTY(Modifier, Property)
 
+// Root properties for declarations and types
+ABSTRACT_PROPERTY(Decl, Property)
     // Declaration-specific modifiers
-    ABSTRACT_PROPERTY(DeclModifier, Modifier)
+    ABSTRACT_PROPERTY(DeclModifier, DeclProperty)
         DECL_MODIFIER(Static, DeclModifier)
         DECL_MODIFIER(Extern, DeclModifier)
         DECL_MODIFIER(Public, DeclModifier)
@@ -47,26 +47,25 @@ ABSTRACT_PROPERTY(Modifier, Property)
         DECL_MODIFIER(Private, DeclModifier)
         PROPERTY_RANGE(DeclModifier, Static, Private)
 
-    // Type-specific modifiers
-    ABSTRACT_PROPERTY(TypeModifier, Modifier)
-        TYPE_MODIFIER(Const, TypeModifier)
-        TYPE_MODIFIER(Pure, TypeModifier)
-        TYPE_MODIFIER(Stone, TypeModifier)
-        TYPE_MODIFIER(Volatile, TypeModifier)
-        PROPERTY_RANGE(TypeModifier, Const, Volatile)
-
-ABSTRACT_PROPERTY(Attribute, Property)
-
     // Declaration-specific attributes
-    ABSTRACT_PROPERTY(DeclAttribute, Attribute)
+    ABSTRACT_PROPERTY(DeclAttribute, DeclProperty)
         DECL_ATTRIBUTE(Deprecated, DeclAttribute)
         DECL_ATTRIBUTE(Final, DeclAttribute)
         DECL_ATTRIBUTE(Override, DeclAttribute)
         DECL_ATTRIBUTE(Inline, DeclAttribute)
         PROPERTY_RANGE(DeclAttribute, Deprecated, Inline)
 
+ABSTRACT_PROPERTY(Type, Property)
+    // Type-specific modifiers
+    ABSTRACT_PROPERTY(TypeModifier, TypeProperty)
+        TYPE_MODIFIER(Const, TypeModifier)
+        TYPE_MODIFIER(Pure, TypeModifier)
+        TYPE_MODIFIER(Stone, TypeModifier)
+        TYPE_MODIFIER(Volatile, TypeModifier)
+        PROPERTY_RANGE(TypeModifier, Const, Volatile)
+
     // Type-specific attributes
-    ABSTRACT_PROPERTY(TypeAttribute, Attribute)
+    ABSTRACT_PROPERTY(TypeAttribute, TypeProperty)
         TYPE_ATTRIBUTE(Nullable, TypeAttribute)
         TYPE_ATTRIBUTE(Aligned, TypeAttribute)
         TYPE_ATTRIBUTE(Packed, TypeAttribute)

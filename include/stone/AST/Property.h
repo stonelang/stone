@@ -26,6 +26,13 @@ enum class PropertyKind : uint8_t {
 #include "stone/AST/PropertyNode.def"
 };
 
+// Define the enum class
+enum class PropertyAvailability : uint8_t {
+  None = 1 << 0,   // Default, unspecified availability
+  Active = 1 << 1, // Modifier is active
+  Ignore = 1 << 2, // Modifier is ignored
+};
+
 enum class PropertyScope : uint8_t {
   None = 0, // Default, unspecified scope
   Global,   // For global declarations
@@ -39,6 +46,7 @@ class alignas(1 << PropertyAlignInBits) Property
   PropertyKind kind;
   SrcLoc loc;
   PropertyScope scope;
+  PropertyAvailability availability;
 
 public:
   Property(PropertyKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
@@ -46,7 +54,23 @@ public:
 public:
   PropertyKind GetKind() { return kind; }
   SrcLoc GetLoc() { return loc; }
+
+public:
+  void SetScope(PropertyScope S) { scope = S; }
   PropertyScope GetScope() { return scope; }
+  bool IsGlobal() const { return scope == PropertyScope::Global; }
+  bool IsMember() const { return scope == PropertyScope::Member; }
+  bool IsParam() const { return scope == PropertyScope::Param; }
+  bool IsLocal() const { return scope == PropertyScope::Local; }
+
+public:
+  PropertyAvailability GetAvailability() const { return availability; }
+  void SetAvailability(PropertyAvailability avail) { availability = avail; }
+  // Check specific availability states
+  bool IsActive() const { return availability == PropertyAvailability::Active; }
+  bool IsIgnored() const {
+    return availability == PropertyAvailability::Ignore;
+  }
 
 public:
   // bool IsModifier() const {
@@ -59,14 +83,14 @@ public:
   bool Matches(PropertyKind targetKind) const { return kind == targetKind; }
 };
 
-class Modifier : public Property {
+class DeclProperty : public Property {
 public:
-  Modifier(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
+  DeclProperty(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
 };
 
-class DeclModifier : public Modifier {
+class DeclModifier : public DeclProperty {
 public:
-  DeclModifier(PropertyKind kind, SrcLoc loc) : Modifier(kind, loc) {}
+  DeclModifier(PropertyKind kind, SrcLoc loc) : DeclProperty(kind, loc) {}
 
 public:
   bool IsStorage() const;
@@ -96,24 +120,9 @@ public:
   PrivateModifier(SrcLoc loc) : DeclModifier(PropertyKind::Private, loc) {}
 };
 
-class TypeModifier : public Modifier {
+class DeclAttribute : public DeclProperty {
 public:
-  TypeModifier(PropertyKind kind, SrcLoc loc) : Modifier(kind, loc) {}
-};
-
-class ConstModifier : public TypeModifier {
-public:
-  ConstModifier(SrcLoc loc) : TypeModifier(PropertyKind::Const, loc) {}
-};
-
-class Attribute : public Property {
-public:
-  Attribute(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
-};
-
-class DeclAttribute : public Attribute {
-public:
-  DeclAttribute(PropertyKind kind, SrcLoc loc) : Attribute(kind, loc) {}
+  DeclAttribute(PropertyKind kind, SrcLoc loc) : DeclProperty(kind, loc) {}
 };
 
 class DeprecatedAttribute : public DeclAttribute {
@@ -122,9 +131,24 @@ public:
       : DeclAttribute(PropertyKind::Deprecated, loc) {}
 };
 
-class TypeAttribute : public Attribute {
+class TypeProperty : public Property {
 public:
-  TypeAttribute(PropertyKind kind, SrcLoc loc) : Attribute(kind, loc) {}
+  TypeProperty(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
+};
+
+class TypeModifier : public TypeProperty {
+public:
+  TypeModifier(PropertyKind kind, SrcLoc loc) : TypeProperty(kind, loc) {}
+};
+
+class ConstModifier : public TypeModifier {
+public:
+  ConstModifier(SrcLoc loc) : TypeModifier(PropertyKind::Const, loc) {}
+};
+
+class TypeAttribute : public TypeProperty {
+public:
+  TypeAttribute(PropertyKind kind, SrcLoc loc) : TypeProperty(kind, loc) {}
 };
 class AlignAttribute : public TypeAttribute {
 public:
