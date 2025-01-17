@@ -80,6 +80,10 @@ enum class ModifierScope : uint8_t {
 
 class alignas(1 << ModifierAlignInBits) Modifier
     : public ASTAllocation<Modifier> {
+
+  friend class DeclModifierList;
+  friend class TypeModifierList;
+
   ModifierKind Kind;
   ModifierScope scope;
   SrcLoc loc;
@@ -161,7 +165,7 @@ public:
 /// Attributes that may be applied to declarations.
 class DeclModifierList {
   /// Linked list of declaration attributes.
-  DeclModifier *modifiers;
+  DeclModifier *head;
 
 public:
   template <typename T, typename D> class iterator_base {
@@ -185,11 +189,11 @@ public:
     T &operator->() const { return *Impl; }
   };
 
-  // /// Add a constructed DeclAttribute to this list.
-  // void Add(Modifier *modifier) {
-  //   modifier->Next = modifiers;
-  //   modifiers = modifier;
-  // }
+  /// Add a constructed DeclAttribute to this list.
+  void Add(DeclModifier *modifier) {
+    modifier->Next = head;
+    head = modifier;
+  }
 
   // /// Add multiple constructed DeclAttributes to this list.
   // void Add(DeclModifierList &modifier) {
@@ -229,7 +233,7 @@ public:
 /// Attributes that may be applied to declarations.
 class TypeModifierList {
   /// Linked list of declaration attributes.
-  TypeModifier *modifiers;
+  TypeModifier *head;
 };
 
 } // namespace stone
