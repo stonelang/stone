@@ -6,6 +6,7 @@
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
 #include "stone/AST/Type.h"
+#include "stone/AST/TypeState.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
@@ -154,8 +155,7 @@ bool FunDecl::IsMain() const {
   if (IsInstanceMember()) {
     return false;
   }
-
-  return GetBasicName() == GetASTContext().GetBuiltin().BuiltinMainIdentifier;
+  return GetIdentifier() == GetASTContext().GetBuiltin().BuiltinMainIdentifier;
 }
 
 /// True if the function is a defer body.
@@ -172,16 +172,19 @@ bool FunDecl::IsForward() const { return false; }
 bool FunDecl::HasReturn() const { return false; }
 
 FunDecl *FunDecl::Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
-                         DeclName name, SrcLoc nameLoc, TypeState *result,
+                         DeclName name, TypeState *result,
                          DeclContext *parent) {
 
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
   void *funDeclPtr = Decl::AllocateMemory<FunDecl>(AC, size);
   auto FD = ::new (funDeclPtr)
-      FunDecl(DeclKind::Fun, staticLoc, funLoc, name, nameLoc, result, parent);
+      FunDecl(DeclKind::Fun, staticLoc, name, result, parent);
   return FD;
 }
+// FunDecl(DeclKind kind, SrcLoc staticLoc, DeclName name,
+//          TypeState *result, DeclContext *parent)
+
 
 // FunDecl *FunDecl::CreateImplicit(DeclSpecifierCollector &collector,
 //                                  ASTContext &sc, DeclContext *parent) {

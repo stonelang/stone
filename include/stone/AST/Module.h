@@ -246,7 +246,7 @@ public:
 
 class ModuleDecl final : public DeclContext,
                          public TypeDecl,
-                         public MemoryAllocation<ModuleDecl> {
+                         public ASTAllocation<ModuleDecl> {
 
   // TODO: This is not yet implemented
   ModuleDecl *parent = nullptr;

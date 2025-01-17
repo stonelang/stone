@@ -21,8 +21,7 @@ ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
 
 ModuleDecl::ModuleDecl(Identifier name, ASTContext &AC, ModuleDecl *parent)
     : DeclContext(DeclContextKind::ModuleDecl),
-      TypeDecl(DeclKind::Module, name, SrcLoc(),
-               new(AC) ModuleTypeState(SrcLoc()), &AC),
+      TypeDecl(DeclKind::Module, name, new(AC) ModuleTypeState(SrcLoc()), &AC),
       parent(parent) {
 
   SetVisibilityLevel(VisibilityLevel::Public);
@@ -56,7 +55,7 @@ void ModuleDecl::AddFile(ModuleFile &file) {
 
 Identifier ModuleDecl::GetRealName() const {
   // This will return the real name for an alias (if used) or getName()
-  return GetASTContext().GetRealModuleName(GetBasicName());
+  return GetASTContext().GetRealModuleName(GetIdentifier());
 }
 
 bool ModuleDecl::Walk(ASTWalker &waker) {}

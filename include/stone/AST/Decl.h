@@ -81,8 +81,8 @@ class alignas(1 << DeclAlignInBits) Decl : public ASTAllocation<Decl> {
 
 protected:
   DeclKind kind;
+  SrcLoc kindLoc;
   DeclName name;
-  SrcLoc loc;
   UnifiedContext context;
 
 protected:
@@ -271,8 +271,8 @@ public:
   Decl &operator=(Decl &&) = delete;
 
 protected:
-  Decl(DeclKind kind, DeclName name = DeclName(), UnifiedContext context)
-      : kind(kind), context(context) {}
+  Decl(DeclKind kind, DeclName name, UnifiedContext context)
+      : kind(kind), name(name), context(context) {}
 
 public:
   DeclKind GetKind() const { return kind; }
@@ -280,7 +280,7 @@ public:
   Identifier GetIdentifier() const {
     return GetName().GetDeclNameBaseIdentifier();
   }
-  SrcLoc GetLoc() const { return loc; }
+  SrcLoc GetLoc() const { return kindLoc; }
 
 public:
   DeclContext *GetDeclContextForModule() const;
@@ -324,56 +324,15 @@ public:
                               bool extraSace = false);
 };
 
-class NamedDecl : public Decl {
-  /// The name of this declaration, which is typically a normal
-  /// identifier but may also be a special ty of name (C++
-  /// constructor, etc.)
-  DeclName name;
-  SrcLoc nameLoc;
-
-protected:
-  NamedDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-            UnifiedContext context)
-      : Decl(kind, context), name(name), nameLoc(nameLoc) {}
-
-public:
-  /// Get the identifier that names this declaration, if there is one.
-  ///
-  /// This will return NULL if this declaration has no name (e.g., for
-  /// an unnamed class) or if the name is a special name such ast a C++
-  /// constructor.
-  Identifier GetBasicName() const { return name.GetDeclNameBaseIdentifier(); }
-
-  /// Get the name of identifier for this declaration as a StringRef.
-  ///
-  /// This requires that the declaration have a name and that it be a simple
-  /// identifier.
-  llvm::StringRef GetBasicNameText() const {
-    return GetBasicName().GetString();
-  }
-
-  void SetDeclName(DeclName name) { this->name = name; }
-  DeclName GetDeclName() { return name; }
-
-  void SetDeclNameLoc(SrcLoc nameLoc) { this->nameLoc = nameLoc; }
-  SrcLoc GetDeclNameLoc() { return nameLoc; }
-
-public:
-  static bool classof(const Decl *d) {
-    return d->GetKind() >= DeclKind::FirstNamedDecl &&
-           d->GetKind() <= DeclKind::LastNamedDecl;
-  }
-};
-
-class ValueDecl : public NamedDecl {
+class ValueDecl : public Decl {
 
   TypeState *typeState;
   VisibilityLevel visibilityKind;
 
 public:
-  ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, TypeState *typeState,
+  ValueDecl(DeclKind kind, DeclName name, TypeState *typeState,
             UnifiedContext context)
-      : NamedDecl(kind, name, nameLoc, context), typeState(typeState) {}
+      : Decl(kind, name, context), typeState(typeState) {}
 
 public:
   void SetType(TypeState *ts) { typeState = ts; }
@@ -433,9 +392,9 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   // SrcLoc nameLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier name, SrcLoc nameLoc, TypeState *typeState,
+  TypeDecl(DeclKind kind, Identifier name, TypeState *typeState,
            UnifiedContext context)
-      : ValueDecl(kind, name, nameLoc, typeState, context) {}
+      : ValueDecl(kind, name, typeState, context) {}
 
 public:
   // Low-level accessor. If you just want the type defined by this node,
@@ -516,11 +475,11 @@ class AliasDecl : public GenericTypeDecl {
 public:
 };
 
-class LabelDecl : public NamedDecl {
+class LabelDecl : public Decl {
 public:
 };
 
-class SpaceDecl final : public NamedDecl, public DeclContext {
+class SpaceDecl final : public Decl, public DeclContext {
 
   SrcLoc lBraceStartLoc;
   SrcLoc rBraceEndLoc;
@@ -529,7 +488,7 @@ class SpaceDecl final : public NamedDecl, public DeclContext {
 public:
   SpaceDecl(Identifier name, SrcLoc nameLoc, DeclContext *parentDC,
             SpaceDecl *parent = nullptr)
-      : NamedDecl(DeclKind::Space, name, nameLoc, context),
+      : Decl(DeclKind::Space, name, context),
         DeclContext(DeclContextKind::SpaceDecl, parentDC) {}
 
 public:
@@ -577,10 +536,10 @@ public:
   };
 
 public:
-  FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-               TypeState *resultType, DeclContext *parent)
+  FunctionDecl(DeclKind kind, DeclName name, TypeState *resultType,
+               DeclContext *parent)
       : GenericContext(DeclContextKind::FunctionDecl, parent),
-        ValueDecl(kind, name, nameLoc, resultType, parent) {}
+        ValueDecl(kind, name, resultType, parent) {}
 
 public:
   /// TODO:
@@ -633,9 +592,9 @@ class FunDecl : public FunctionDecl {
 
   // TODO: We are removing SpecialNameLoc for now.
 public:
-  FunDecl(DeclKind kind, SrcLoc staticLoc, SrcLoc funLoc, DeclName name,
-          SrcLoc nameLoc, TypeState *result, DeclContext *parent)
-      : FunctionDecl(kind, name, nameLoc, result, parent), staticLoc(staticLoc),
+  FunDecl(DeclKind kind, SrcLoc staticLoc, DeclName name,
+          TypeState *result, DeclContext *parent)
+      : FunctionDecl(kind, name, result, parent), staticLoc(staticLoc),
         funLoc(funLoc) {}
 
 public:
@@ -678,8 +637,7 @@ public:
 
 public:
   static FunDecl *Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
-                         DeclName name, SrcLoc nameLoc, TypeState *result,
-                         DeclContext *parent);
+                         DeclName name, TypeState *result, DeclContext *parent);
 
   // static FunDecl *Create(DeclSpecifierCollector &collector,
   //                        ASTContext &astContext, DeclContext *parent);
@@ -765,7 +723,7 @@ class ParamDecl : public VarDecl {
 public:
 };
 
-class ImportDecl final : public NamedDecl {
+class ImportDecl final : public Decl {
   SrcLoc importLoc;
   ImportKind importKind;
 
@@ -774,7 +732,7 @@ public:
 };
 
 /// THINK: join a module -- this is also defined lower
-// class JoinDecl final : public NamedDecl {
+// class JoinDecl final : public Decl {
 //   SrcLoc joinLoc;
 
 // public:
@@ -787,6 +745,12 @@ class TrustDecl final
 public:
 };
 
+class UsingDecl final
+    : public Decl,
+      public llvm::TrailingObjects<TrustDecl, GenericParamList *> {
+
+public:
+};
 /// IfConfigDecl - This class represents #if/#else/#endif blocks.
 /// Active and inactive block members are stored separately, with the
 /// actionion being that active members will be handed back to the enclosing
@@ -843,8 +807,9 @@ public:
 class OperatorDecl : public Decl {};
 
 /// Top level expressions, and statements
-class TopLevelCodeDecl final : public DeclContext, public Decl {
-public:
-};
+// class TopLevelCodeDecl final :, public Decl, public DeclContext {
+// public:
+// };
+
 } // namespace stone
 #endif

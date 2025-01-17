@@ -7,10 +7,11 @@ namespace stone {
 
 enum class DeclKind : uint8 {
   None,
+#define DECL(Id, Parent) Id,
 #define LAST_DECL(Id) Count = Id,
 #define DECL_RANGE(Id, FirstId, LastId)                                        \
   First##Id##Decl = FirstId, Last##Id##Decl = LastId,
-#include "stone/AST/DeclNode.def"
+#include "stone/AST/DeclKind.def"
 };
 
 enum class PrettyDeclKind : uint8 {
