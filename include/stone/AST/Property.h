@@ -42,24 +42,33 @@ public:
   Property(PropertyKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
 };
 
-class ModifierProperty : public Property {
+class Modifier : public Property {
 public:
-  ModifierProperty(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
+  Modifier(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
 };
 
-class DeclModifier : public ModifierProperty {
+class DeclModifier : public Modifier {
 public:
-  DeclModifier(PropertyKind kind, SrcLoc loc) : ModifierProperty(kind, loc) {}
+  DeclModifier(PropertyKind kind, SrcLoc loc) : Modifier(kind, loc) {}
+};
+class TypeModifier : public Modifier {
+public:
+  TypeModifier(PropertyKind kind, SrcLoc loc) : Modifier(kind, loc) {}
 };
 
-class AttributeProperty : public Property {
+class Attribute : public Property {
 public:
-  AttributeProperty(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
+  Attribute(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
 };
 
-class DeclAttribute : public AttributeProperty {
+class DeclAttribute : public Attribute {
 public:
-  DeclAttribute(PropertyKind kind, SrcLoc loc) : AttributeProperty(kind, loc) {}
+  DeclAttribute(PropertyKind kind, SrcLoc loc) : Attribute(kind, loc) {}
+};
+
+class TypeAttribute : public Attribute {
+public:
+  TypeAttribute(PropertyKind kind, SrcLoc loc) : Attribute(kind, loc) {}
 };
 
 } // namespace stone

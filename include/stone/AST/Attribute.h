@@ -17,34 +17,34 @@
 namespace stone {
 class DeclAttributeList;
 
-class alignas(1 << AttributeAlignInBits) Attribute
-    : public MemoryAllocation<Attribute> {
-public:
-  /// The location of the '['.
-  const SrcLoc lBracketLoc;
+// class alignas(1 << AttributeAlignInBits) Attribute
+//     : public MemoryAllocation<Attribute> {
+// public:
+//   /// The location of the '['.
+//   const SrcLoc lBracketLoc;
 
-  /// The source range of the attribute.
-  const SrcRange range;
+//   /// The source range of the attribute.
+//   const SrcRange range;
 
-  /// The location of the attribute.
-  SrcLoc GetSrcLoc() const { return range.Start; }
+//   /// The location of the attribute.
+//   SrcLoc GetSrcLoc() const { return range.Start; }
 
-  /// Return the source range of the attribute.
-  SrcRange GetRange() const { return range; }
+//   /// Return the source range of the attribute.
+//   SrcRange GetRange() const { return range; }
 
-  SrcRange GetRangeWithLLBracket() const {
-    if (lBracketLoc.isValid()) {
-      return {lBracketLoc, range.End};
-    }
-    return range;
-  }
+//   SrcRange GetRangeWithLLBracket() const {
+//     if (lBracketLoc.isValid()) {
+//       return {lBracketLoc, range.End};
+//     }
+//     return range;
+//   }
 
-  Attribute(const Attribute &) = delete;
+//   Attribute(const Attribute &) = delete;
 
-protected:
-  Attribute(SrcLoc lBracketLoc, SrcRange range)
-      : lBracketLoc(lBracketLoc), range(range) {}
-};
+// protected:
+//   Attribute(SrcLoc lBracketLoc, SrcRange range)
+//       : lBracketLoc(lBracketLoc), range(range) {}
+// };
 
 // class DeclAttribute : public Attribute {
 // public:
@@ -63,17 +63,17 @@ protected:
 /// Attributes that may be applied to declarations.
 class DeclAttributeList {
   /// Linked list of declaration attributes.
- // DeclAttribute *attributes;
+  // DeclAttribute *attributes;
 };
 
-class TypeAttribute : public Attribute {
-public:
-};
+// class TypeAttribute : public Attribute {
+// public:
+// };
 
 /// Attributes that may be applied to declarations.
 class TypeAttributeList {
   /// Linked list of declaration attributes.
-  //TypeAttribute *attributes;
+  // TypeAttribute *attributes;
 };
 
 } // namespace stone
