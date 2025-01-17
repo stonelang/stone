@@ -200,13 +200,13 @@ FunDecl *FunDecl::Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
 //   return nullptr;
 // }
 
-ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &astContext) {
+ModuleDecl *ModuleDecl::Create(DeclName name, ASTContext &astContext) {
   size_t size = sizeof(ModuleDecl);
   auto declPtr = Decl::AllocateMemory<ModuleDecl>(astContext, size);
   return ::new (declPtr) ModuleDecl(name, astContext);
 }
 
-ModuleDecl *ModuleDecl::CreateMainModule(Identifier name,
+ModuleDecl *ModuleDecl::CreateMainModule(DeclName name,
                                          ASTContext &astContext) {
   auto mainModuleDecl = ModuleDecl::Create(name, astContext);
   mainModuleDecl->Bits.ModuleDecl.IsMainModule = true;

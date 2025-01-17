@@ -1,6 +1,7 @@
 #ifndef STONE_AST_DIAGNOSTICS_H
 #define STONE_AST_DIAGNOSTICS_H
 
+#include "stone/AST/Type.h"
 #include "stone/AST/DeclName.h"
 #include "stone/AST/Identifier.h"
 #include "stone/Basic/Version.h"
@@ -24,6 +25,7 @@ class Decl;
 namespace stone {
 
 class Decl;
+class Type;
 class TypeState;
 class ConstructorDecl;
 class FuncDecl;
@@ -93,7 +95,7 @@ struct FullyQualified<
     T,
     typename std::enable_if<std::is_convertible<T, stone::Type>::value>::type> {
   stone::Type t;
-
+//TODO: TypeState 
 public:
   FullyQualified(T t) : t(t){};
   stone::Type getType() const { return t; }

@@ -2,212 +2,124 @@
 #define STONE_AST_DECLNAME_H
 
 #include "stone/AST/Identifier.h"
-#include "stone/AST/Type.h"
-#include "stone/Basic/LLVM.h"
-#include "stone/Basic/OperatorKind.h"
-
+#include "stone/Basic/SrcLoc.h"
+#include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/FoldingSet.h"
+#include "llvm/ADT/PointerUnion.h"
+#include "llvm/Support/TrailingObjects.h"
 
 namespace stone {
-class PrintingPolicy;
-
 class ASTContext;
-class DeclName;
-class DeclNameTable;
 
-class GenericDecl;
-// class TypeSourceInfo
-
-enum class DeclNameKind : uint8 {
-  Basic = 0,
+enum class DeclNameKind : uint8_t {
+  Identifier = 0,
   Constructor,
   Destructor,
   Operator,
   LiteralOperator,
   UsingDirective,
+  Compound,
 };
 
 class DeclNameBase final {
   Identifier identifier;
-  /// In a special DeclName representing a subscript, this opaque pointer
-  /// is used as the data of the base name identifier.
-  /// This is an implementation detail that should never leak outside of
-  /// DeclName.
-  static const Identifier::Aligner BasicIdentifierAligner;
-  /// As above, for special constructor DeclNames.
-  static const Identifier::Aligner ConstructorIdentifierAligner;
-  /// As above, for special destructor DeclNames.
-  static const Identifier::Aligner DestructorIdentifierAligner;
-
-  static const Identifier::Aligner OperatorIdentifierAligner;
+  SrcLoc identifierLoc;
 
 public:
   DeclNameBase() : DeclNameBase(Identifier()) {}
-  DeclNameBase(Identifier I) : identifier(I) {}
+  DeclNameBase(Identifier I, SrcLoc identifierLoc = SrcLoc())
+      : identifier(I), identifierLoc(identifierLoc) {}
 
 public:
-  static DeclNameBase CreateConstructor() {
-    return DeclNameBase(
-        Identifier((const char *)&DeclNameBase::ConstructorIdentifierAligner));
-  }
-
-  static DeclNameBase CreateDestructor() {
-    return DeclNameBase(
-        Identifier((const char *)&DeclNameBase::DestructorIdentifierAligner));
-  }
-
-  static DeclNameBase CreateOperator() {
-    return DeclNameBase(
-        Identifier((const char *)&DeclNameBase::OperatorIdentifierAligner));
-  }
-
-  DeclNameKind GetKind() const {
-    if (identifier.GetPointer() ==
-        (const char *)&DeclNameBase::ConstructorIdentifierAligner) {
-      return DeclNameKind::Constructor;
-    } else if (identifier.GetPointer() ==
-               (const char *)&DeclNameBase::DestructorIdentifierAligner) {
-      return DeclNameKind::Destructor;
-    } else if (identifier.GetPointer() ==
-               (const char *)&DeclNameBase::OperatorIdentifierAligner) {
-      return DeclNameKind::Operator;
-    } else {
-      return DeclNameKind::Basic;
-    }
-  }
-
-  bool IsBasic() const { return GetKind() == DeclNameKind::Basic; }
-  bool IsSpecial() const { return GetKind() != DeclNameKind::Basic; }
-
-  // bool IsSubscript() const { return getKind() == Kind::Subscript; }
-
-  /// Return the identifier backing the name. Assumes that the name is not
-  /// special.
-  Identifier GetIdentifier() const {
-    assert(!IsSpecial() && "Cannot retrieve identifier from special names");
-    return identifier;
-  }
-
-  bool operator==(StringRef Str) const {
-    return !IsSpecial() && GetIdentifier().IsEqual(Str);
-  }
-  bool operator!=(StringRef Str) const { return !(*this == Str); }
-  bool operator==(DeclNameBase RHS) const {
-    return identifier == RHS.identifier;
-  }
-  bool operator!=(DeclNameBase RHS) const { return !(*this == RHS); }
-
-  bool operator<(DeclNameBase RHS) const {
-    return identifier.GetPointer() < RHS.identifier.GetPointer();
-  }
+  bool IsValid() const { return !identifier.IsEmpty(); }
+  const SrcLoc &GetLoc() const { return identifierLoc; }
+  Identifier GetIdentifier() const { return identifier; }
   const void *GetAsOpaquePointer() const { return identifier.GetPointer(); }
-
   static DeclNameBase GetFromOpaquePointer(void *P) {
     return Identifier::GetFromOpaquePointer(P);
   }
+
+public:
+  bool operator==(const DeclNameBase &RHS) const {
+    return identifier == RHS.identifier && identifierLoc == RHS.identifierLoc;
+  }
+  bool operator!=(const DeclNameBase &RHS) const { return !(*this == RHS); }
 };
 
 /// Represents a compound declaration name.
-struct alignas(Identifier) CompoundDeclName final
+struct CompoundDeclName final
     : llvm::FoldingSetNode,
       private llvm::TrailingObjects<CompoundDeclName, Identifier> {
-
   friend TrailingObjects;
   friend class DeclName;
 
-  size_t NumArgs;
-  DeclNameBase nameBase;
+  size_t numArgs;
+  DeclNameBase baseName;
 
-  explicit CompoundDeclName(DeclNameBase nameBase, size_t NumArgs)
-      : nameBase(nameBase), NumArgs(NumArgs) {}
+  explicit CompoundDeclName(DeclNameBase baseName, size_t numArgs)
+      : baseName(std::move(baseName)), numArgs(numArgs) {}
 
-  llvm::ArrayRef<Identifier> getArgumentNames() const {
-    return {getTrailingObjects<Identifier>(), NumArgs};
-  }
-  llvm::MutableArrayRef<Identifier> getArgumentNames() {
-    return {getTrailingObjects<Identifier>(), NumArgs};
+  llvm::ArrayRef<Identifier> GetArgumentNames() const {
+    return {getTrailingObjects<Identifier>(), numArgs};
   }
 
-  /// Uniquing for the ASTContext.
-  static void Profile(llvm::FoldingSetNodeID &id, DeclNameBase nameBase,
-                      ArrayRef<Identifier> argumentNames);
-
-  void Profile(llvm::FoldingSetNodeID &id) {
-    Profile(id, nameBase, getArgumentNames());
+  llvm::MutableArrayRef<Identifier> GetArgumentNames() {
+    return {getTrailingObjects<Identifier>(), numArgs};
   }
+
+  // /// Uniquing for the ASTContext.
+  // static void Profile(llvm::FoldingSetNodeID &ID, DeclNameBase nameBase,
+  //                     llvm::ArrayRef<Identifier> argumentNames);
+
+  // void Profile(llvm::FoldingSetNodeID &id) {
+  //   Profile(id, BaseName, GetArgumentNames());
+  // }
 };
 
-class DeclName {
-  friend class NamedDecl;
-  friend class ASTContext;
-
-  // DeclNameKind declNameKind;
-
-  /// Either a single identifier piece stored inline, or a reference to a
-  /// compound declaration name.
+class DeclName final {
+  DeclNameKind kind;
   llvm::PointerUnion<DeclNameBase, CompoundDeclName *> nameBaseOrCompound;
 
-  explicit DeclName(void *opaquePtr)
-      : nameBaseOrCompound(
-            decltype(nameBaseOrCompound)::getFromOpaqueValue(opaquePtr)) {}
-
 public:
-  DeclName() : nameBaseOrCompound(DeclNameBase()) {}
+  DeclName()
+      : kind(DeclNameKind::Identifier), nameBaseOrCompound(DeclNameBase()) {}
 
-  /// Build a simple value name with one component.
-  /*implicit*/
-  DeclName(DeclNameBase basicName) : nameBaseOrCompound(basicName) {}
+  explicit DeclName(DeclNameKind kind, DeclNameBase baseName)
+      : kind(kind), nameBaseOrCompound(std::move(baseName)) {}
 
-  /*implicit*/
-  DeclName(Identifier basicName) : DeclName(DeclNameBase(basicName)) {}
+  explicit DeclName(CompoundDeclName *compound)
+      : kind(DeclNameKind::Compound), nameBaseOrCompound(compound) {}
 
-  DeclNameBase GetDeclNameBase() const {
-    if (auto compound = nameBaseOrCompound.dyn_cast<CompoundDeclName *>()) {
-      return compound->nameBase;
-    }
+  DeclNameKind GetKind() const { return kind; }
+  bool IsCompound() const { return kind == DeclNameKind::Compound; }
+  bool IsSpecial() const {
+    return kind == DeclNameKind::Constructor ||
+           kind == DeclNameKind::Destructor || kind == DeclNameKind::Operator ||
+           kind == DeclNameKind::LiteralOperator ||
+           kind == DeclNameKind::UsingDirective;
+  }
+
+  const DeclNameBase &GetDeclNameBase() const {
+    assert(!IsCompound() && "Cannot get DeclNameBase from a compound name");
     return nameBaseOrCompound.get<DeclNameBase>();
   }
 
-  /// Assert that the base name is not special and return its identifier.
-  Identifier GetDeclNameBaseIdentifier() const {
-    auto declNameBase = GetDeclNameBase();
-    assert(!declNameBase.IsSpecial() &&
-           "Can't retrieve the identifier of a special base name");
-    return declNameBase.GetIdentifier();
+  CompoundDeclName *GetCompoundName() const {
+    assert(IsCompound() && "Cannot get compound name from a simple DeclName");
+    return nameBaseOrCompound.get<CompoundDeclName *>();
   }
 
-  // public:
-  void Print(ColorStream &os, const PrintingPolicy *policy = nullptr) const;
-  void Dump() const;
-
-public:
-  int Compare(DeclName other);
-};
-
-// Take a look at name look
-class DeclNameTable final {
-  /// Used to allocate elements in the FoldingSets below.
-  // llvm::FoldingSet<DeclName> constructors;
-  // llvm::FoldingSet<DeclName> destructors;
-
-public:
-  //   /// Returns the decl name constructor for the given Type.
-  // Declame GetConstructorDeclName(Identifier identifier);
-
-  // /// Returns the name of a C++ destructor for the given Type.
-  // Declame GetDestructorDeclName(Identifier identifier);
-
-  // DeclName GetSpecialName(Special::NameKind Kind,
-  //                                   CanType Ty);
+  static DeclName CreateConstructor(ASTContext &AC, SrcLoc loc);
+  static DeclName CreateDestructor(ASTContext &AC, SrcLoc loc);
+  static DeclName CreateOperator(ASTContext &AC, SrcLoc loc);
+  static DeclName CreateCompound(ASTContext &AC, DeclNameBase base);
 };
 
 } // namespace stone
-
 namespace llvm {
 
 raw_ostream &operator<<(raw_ostream &OS, stone::DeclNameBase D);
 raw_ostream &operator<<(raw_ostream &OS, stone::DeclName I);
-// raw_ostream &operator<<(raw_ostream &OS, swift::DeclNameRef I);
 
 // DeclBaseNames hash just like pointers.
 template <> struct DenseMapInfo<stone::DeclNameBase> {
@@ -240,5 +152,7 @@ public:
         PointerLikeTypeTraits<stone::Identifier>::NumLowBitsAvailable
   };
 };
-} // end namespace llvm
+
+} // namespace llvm
+
 #endif

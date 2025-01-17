@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "stone/AST/ASTAllocation.h"
 #include "stone/AST/ASTNode.h"
 #include "stone/AST/IfConfig.h"
 #include "stone/AST/StmtKind.h"
@@ -34,7 +35,7 @@ class VarDecl;
 class Expr;
 class ASTContext;
 
-class Stmt : public MemoryAllocation<Stmt> {
+class Stmt : public ASTAllocation<Stmt> {
   StmtKind kind;
 
 public:

@@ -278,7 +278,7 @@ public:
   DeclKind GetKind() const { return kind; }
   DeclName GetName() const { return name; }
   Identifier GetIdentifier() const {
-    return GetName().GetDeclNameBaseIdentifier();
+    return GetName().GetDeclNameBase().GetIdentifier();
   }
   SrcLoc GetLoc() const { return kindLoc; }
 
@@ -392,7 +392,7 @@ class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
   // SrcLoc nameLoc;
 
 protected:
-  TypeDecl(DeclKind kind, Identifier name, TypeState *typeState,
+  TypeDecl(DeclKind kind, DeclName name, TypeState *typeState,
            UnifiedContext context)
       : ValueDecl(kind, name, typeState, context) {}
 
@@ -445,7 +445,7 @@ public:
 
 class GenericTypeDecl : public GenericContext, public TypeDecl {
 public:
-  GenericTypeDecl(DeclKind K, DeclContext *DC, Identifier name, SrcLoc nameLoc,
+  GenericTypeDecl(DeclKind K, DeclContext *DC, DeclName name,
                   TypeState *typeState,
                   /*llvm::ArrayRef<InheritedEntry> inherited,*/
                   GenericParamList *genericParams = nullptr);
@@ -486,8 +486,7 @@ class SpaceDecl final : public Decl, public DeclContext {
   SpaceDecl *parent;
 
 public:
-  SpaceDecl(Identifier name, SrcLoc nameLoc, DeclContext *parentDC,
-            SpaceDecl *parent = nullptr)
+  SpaceDecl(DeclName name, DeclContext *parentDC, SpaceDecl *parent = nullptr)
       : Decl(DeclKind::Space, name, context),
         DeclContext(DeclContextKind::SpaceDecl, parentDC) {}
 

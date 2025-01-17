@@ -103,7 +103,10 @@ class ASTContext final {
       llvm::StringMap<Identifier::Aligner, llvm::BumpPtrAllocator &>;
   mutable IdentifierTable identifierTable;
 
-  mutable DeclNameTable declNames;
+  // using DeclNameTable =
+  //    llvm::StringMap<DeclName, llvm::BumpPtrAllocator &>;
+
+  // mutable DeclNameTable declNames;
 
   /// All builtin types will be stored here.
   mutable llvm::SmallVector<Type *, 0> builtinTypes;
@@ -169,7 +172,7 @@ public:
 
   Identifier GetIdentifier(llvm::StringRef identifierText) const;
 
-  DeclNameTable &GetDeclNameTable() { return declNames; }
+  // DeclNameTable &GetDeclNameTable() { return declNames; }
 
   DiagnosticEngine &GetDiags() { return de; }
   ///

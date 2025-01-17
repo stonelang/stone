@@ -19,7 +19,7 @@ using namespace stone;
 ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
-ModuleDecl::ModuleDecl(Identifier name, ASTContext &AC, ModuleDecl *parent)
+ModuleDecl::ModuleDecl(DeclName name, ASTContext &AC, ModuleDecl *parent)
     : DeclContext(DeclContextKind::ModuleDecl),
       TypeDecl(DeclKind::Module, name, new(AC) ModuleTypeState(SrcLoc()), &AC),
       parent(parent) {

@@ -255,7 +255,7 @@ class ModuleDecl final : public DeclContext,
   mutable Identifier moduleABIName;
 
 public:
-  ModuleDecl(Identifier name, ASTContext &tc, ModuleDecl *parent = nullptr);
+  ModuleDecl(DeclName name, ASTContext &tc, ModuleDecl *parent = nullptr);
 
 public:
   using Decl::GetASTContext;
@@ -320,8 +320,8 @@ public:
   }
 
 public:
-  static ModuleDecl *Create(Identifier name, ASTContext &astContext);
-  static ModuleDecl *CreateMainModule(Identifier name, ASTContext &astContext);
+  static ModuleDecl *Create(DeclName name, ASTContext &astContext);
+  static ModuleDecl *CreateMainModule(DeclName name, ASTContext &astContext);
   static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }
 };
 
