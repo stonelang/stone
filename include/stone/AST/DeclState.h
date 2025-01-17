@@ -8,6 +8,8 @@
 namespace stone {
 
 class alignas(1 << DeclAlignInBits) DeclState final : ASTAllocation<DeclState> {
+  friend class ASTContext;
+
 public:
   Decl *D = nullptr;
   // DeclAttributeList attributes;

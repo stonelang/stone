@@ -82,7 +82,6 @@ protected:
   } Bits;
 
   Type *underlyingType;
-  bool HasUnderlyingType() const { return underlyingType != nullptr; }
 
 public:
   Type(TypeKind kind, Type *typePtr = nullptr) : underlyingType(typePtr) {
@@ -90,19 +89,13 @@ public:
   }
 
 public:
-  bool IsBasic();
-
-public:
-  /// isCanonical - Return true if this is a canonical type.
+  TypeKind GetKind() const { return static_cast<TypeKind>(Bits.Type.Kind); }
+  llvm::StringRef GetName() const;
   bool IsCanType() const {
     return (Bits.Type.IsCanonical && !HasUnderlyingType());
   }
-
   Type *GetUnderlyingType() const { return underlyingType; }
-
-public:
-  TypeKind GetKind() const { return static_cast<TypeKind>(Bits.Type.Kind); }
-  llvm::StringRef GetName() const;
+  bool HasUnderlyingType() const { return underlyingType != nullptr; }
 
 public:
   ///\return true if the type is a builtin type.

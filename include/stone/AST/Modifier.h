@@ -169,51 +169,27 @@ public:
 };
 
 // class MutableTypeModifier : public TypeModifier { };
-// class VolatileTypeModifier : public TypeModifier {};
 
-// class VolatileTypeModifier : public TypeModifier {
+class VolatileTypeModifier : public TypeModifier {
 
-// public:
-//   VolatileTypeModifier() : TypeModifier(ModifierKind::Volatile) {}
-// };
-
+public:
+  VolatileTypeModifier() : TypeModifier(ModifierKind::Volatile) {}
+};
 class ConstTypeModifier : public TypeModifier {
 
 public:
   ConstTypeModifier() : TypeModifier(ModifierKind::Const) {}
 };
-// class PureTypeModifier : public TypeModifier {};
-// class StoneTypeModifier : public TypeModifier {};
-
-class AccessTypeModifier : public TypeModifier {
-  unsigned levels;
+class PureTypeModifier : public TypeModifier {
 
 public:
-  AccessTypeModifier(ModifierKind kind, unsigned levels)
-      : TypeModifier(kind), levels(levels) {}
-
-public:
-  /// Get the number of levels for this access modifier.
-  unsigned GetLevels() const { return levels; }
-
-  /// Set the number of levels for this access modifier.
-  void SetLevels(int newLevels) { levels = newLevels; }
+  PureTypeModifier() : TypeModifier(ModifierKind::Pure) {}
 };
-class PointerTypeModifier : public AccessTypeModifier {
-public:
-  PointerTypeModifier(unsigned levels = 1)
-      : AccessTypeModifier(ModifierKind::Pointer, levels) {}
-};
-// class OwnTypeModifier : public AccessTypeModifier {};
-// class MoveTypeModifier : public AccessTypeModifier {};
+class StoneTypeModifier : public TypeModifier {
 
-class ReferenceTypeModifier : public AccessTypeModifier {
 public:
-  ReferenceTypeModifier(unsigned levels = 1)
-      : AccessTypeModifier(ModifierKind::Reference, levels) {}
+  StoneTypeModifier() : TypeModifier(ModifierKind::Stone) {}
 };
-
-// class ArrayTypeModifier : public AccessTypeModifier {};
 
 /// Attributes that may be applied to declarations.
 class TypeModifierList {
