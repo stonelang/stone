@@ -185,7 +185,6 @@ FunDecl *FunDecl::Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
 // FunDecl(DeclKind kind, SrcLoc staticLoc, DeclName name,
 //          TypeState *result, DeclContext *parent)
 
-
 // FunDecl *FunDecl::CreateImplicit(DeclSpecifierCollector &collector,
 //                                  ASTContext &sc, DeclContext *parent) {
 

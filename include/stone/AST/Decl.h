@@ -592,8 +592,8 @@ class FunDecl : public FunctionDecl {
 
   // TODO: We are removing SpecialNameLoc for now.
 public:
-  FunDecl(DeclKind kind, SrcLoc staticLoc, DeclName name,
-          TypeState *result, DeclContext *parent)
+  FunDecl(DeclKind kind, SrcLoc staticLoc, DeclName name, TypeState *result,
+          DeclContext *parent)
       : FunctionDecl(kind, name, result, parent), staticLoc(staticLoc),
         funLoc(funLoc) {}
 
