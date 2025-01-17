@@ -162,6 +162,41 @@ public:
 class DeclModifierList {
   /// Linked list of declaration attributes.
   DeclModifier *modifiers;
+
+public:
+  template <typename T, typename D> class iterator_base {
+    T *Impl;
+
+  public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = T *;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type *;
+    using reference = value_type &;
+
+    explicit iterator_base(T *Impl) : Impl(Impl) {}
+    D &operator++() {
+      Impl = Impl->Next;
+      return (D &)*this;
+    }
+    bool operator==(const iterator_base &X) const { return X.Impl == Impl; }
+    bool operator!=(const iterator_base &X) const { return X.Impl != Impl; }
+    T *operator*() const { return Impl; }
+    T &operator->() const { return *Impl; }
+  };
+
+  // /// Add a constructed DeclAttribute to this list.
+  // void Add(Modifier *modifier) {
+  //   modifier->Next = modifiers;
+  //   modifiers = modifier;
+  // }
+
+  // /// Add multiple constructed DeclAttributes to this list.
+  // void Add(DeclModifierList &modifier) {
+  //   for (auto modifier : modifier) {
+  //     Add(attr);
+  //   }
+  // }
 };
 
 class TypeModifier : public Modifier {
@@ -169,8 +204,6 @@ class TypeModifier : public Modifier {
 public:
   TypeModifier(ModifierKind Kind) : Modifier(Kind) {}
 };
-
-// class MutableTypeModifier : public TypeModifier { };
 
 class VolatileTypeModifier : public TypeModifier {
 
