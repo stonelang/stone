@@ -165,36 +165,36 @@ public:
 /// Attributes that may be applied to declarations.
 class DeclModifierList {
   /// Linked list of declaration attributes.
-  DeclModifier *head;
+  //   DeclModifier *head;
 
-public:
-  template <typename T, typename D> class iterator_base {
-    T *Impl;
+  // public:
+  //   template <typename T, typename D> class iterator_base {
+  //     T *Impl;
 
-  public:
-    using iterator_category = std::forward_iterator_tag;
-    using value_type = T *;
-    using difference_type = std::ptrdiff_t;
-    using pointer = value_type *;
-    using reference = value_type &;
+  //   public:
+  //     using iterator_category = std::forward_iterator_tag;
+  //     using value_type = T *;
+  //     using difference_type = std::ptrdiff_t;
+  //     using pointer = value_type *;
+  //     using reference = value_type &;
 
-    explicit iterator_base(T *Impl) : Impl(Impl) {}
-    D &operator++() {
-      Impl = Impl->Next;
-      return (D &)*this;
-    }
-    bool operator==(const iterator_base &X) const { return X.Impl == Impl; }
-    bool operator!=(const iterator_base &X) const { return X.Impl != Impl; }
-    T *operator*() const { return Impl; }
-    T &operator->() const { return *Impl; }
-  };
+  //     explicit iterator_base(T *Impl) : Impl(Impl) {}
+  //     D &operator++() {
+  //       Impl = Impl->Next;
+  //       return (D &)*this;
+  //     }
+  //     bool operator==(const iterator_base &X) const { return X.Impl == Impl;
+  //     } bool operator!=(const iterator_base &X) const { return X.Impl !=
+  //     Impl; } T *operator*() const { return Impl; } T &operator->() const {
+  //     return *Impl; }
+  //   };
 
-  /// Add a constructed DeclAttribute to this list.
-  void Add(DeclModifier *modifier) {
-    modifier->Next = head;
-    head = modifier;
-  }
-  void Remove();
+  //   /// Add a constructed DeclAttribute to this list.
+  //   void Add(DeclModifier *modifier) {
+  //     modifier->Next = head;
+  //     head = modifier;
+  //   }
+  // void Remove();
 
   // /// Add multiple constructed DeclAttributes to this list.
   // void Add(DeclModifierList &modifier) {

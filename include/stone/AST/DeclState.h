@@ -3,6 +3,8 @@
 
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Decl.h"
+#include "stone/AST/DeclState.h"
+#include "stone/AST/Property.h"
 #include "stone/AST/TypeAlignment.h"
 
 namespace stone {

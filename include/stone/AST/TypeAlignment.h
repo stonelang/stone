@@ -18,6 +18,7 @@ class ASTContext;
 class DeclContext;
 class ModuleFile;
 class Attribute;
+class Property;
 
 constexpr size_t ModifierAlignInBits = 3;
 constexpr size_t AttributeAlignInBits = 3;
@@ -28,6 +29,7 @@ constexpr size_t StmtAlignInBits = 3;
 constexpr size_t TypeAlignInBits = 3;
 constexpr size_t ASTContextAlignInBits = 2;
 constexpr size_t DeclContextAlignInBits = 3;
+constexpr size_t PropertyAlignInBits = 3;
 
 } // namespace stone
 
@@ -66,6 +68,7 @@ LLVM_DECLARE_TYPE_ALIGNMENT(stone::ModuleFile, stone::ASTContextAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Type, stone::TypeAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::TypeState, stone::TypeAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Attribute, stone::AttributeAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::Property, stone::PropertyAlignInBits)
 
 static_assert(alignof(void *) >= 2, "pointer alignment is too small");
 

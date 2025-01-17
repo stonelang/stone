@@ -1,10 +1,10 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/DeclState.h"
-#include "stone/AST/Template.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
+#include "stone/AST/Template.h"
 #include "stone/AST/Type.h"
 #include "stone/AST/TypeState.h"
 #include "stone/Basic/LLVM.h"
@@ -134,7 +134,7 @@ bool ValueDecl::IsInstanceMember() const {
 // }
 
 TemplateContext::TemplateContext(DeclContextKind kind, DeclContext *parent,
-                               TemplateParamList *params)
+                                 TemplateParamList *params)
     : TemplateContextBase(), DeclContext(kind, parent) {
 
   // TODO:

@@ -380,16 +380,6 @@ public:
 class TypeDecl : public ValueDecl /*TODO: AnyDecl, ForwardDecl*/ {
 
   friend class ASTContext;
-  /// This indicates the Type object that represents
-  /// this TypeDecl.  It is a cache maintained by
-  /// ASTContext::getTypedefType, ASTContext::getTagDeclKind, and
-  /// ASTContext::getTemplateTypeParmType, and TemplateTypeParmDecl.
-  mutable const TypeState *typeForDecl = nullptr;
-
-  /// The start of the source range for this declaration.
-  // SrcLoc startLoc;
-  // DeclName name;
-  // SrcLoc nameLoc;
 
 protected:
   TypeDecl(DeclKind kind, DeclName name, TypeState *typeState,
@@ -397,13 +387,6 @@ protected:
       : ValueDecl(kind, name, typeState, context) {}
 
 public:
-  // Low-level accessor. If you just want the type defined by this node,
-  // check out ASTContext::getTypeDeclType or one of
-  // ASTContext::getTypedefType, ASTContext::getRecordType, etc. if you
-  // already know the specific kind of node this is.
-  const TypeState *GetTypeForDecl() const { return typeForDecl; }
-  void SetTypeForDecl(const TypeState *TS) { typeForDecl = TS; }
-
   // SrcLoc GetBeginSrcLoc() const LLVM_READONLY { return LocStart; }
   // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
 };

@@ -111,6 +111,7 @@ class alignas(1 << TypeAlignInBits) TypeState
   TypeStateKind kind;
   SrcLoc loc;
   Type *typePtr;
+  /// TypeProperties properties
   TypeModifierList modifiers;
   TypeMetadata metadata;
 
