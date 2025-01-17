@@ -28,10 +28,21 @@ enum class PropertyKind : uint8_t {
 class alignas(1 << PropertyAlignInBits) Property
     : public ASTAllocation<Property> {
   PropertyKind kind;
+  SrcLoc loc;
 
 public:
-  Property();
+  Property(PropertyKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
 };
+
+class ModifierProperty : public Property {
+public:
+  ModifierProperty(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
+};
+
+// class AttributeProperty : public Property {
+// public:
+//   ModifierProperty(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
+// };
 
 } // namespace stone
 
