@@ -85,6 +85,9 @@ class alignas(1 << ModifierAlignInBits) Modifier
   SrcLoc loc;
   ModifierAvailability availability = ModifierAvailability::None;
 
+protected:
+  Modifier *Next = nullptr;
+
 public:
   Modifier(ModifierKind Kind) : Kind(Kind) {}
 
@@ -95,6 +98,8 @@ public:
 
   void SetLoc(SrcLoc L) { loc = L; }
   SrcLoc GetLoc() { return loc; }
+
+  Modifier *GetNext() { return Next; }
 
 public:
   // Add an availability state
@@ -114,8 +119,6 @@ public:
 };
 
 class DeclModifier : public Modifier {
-  DeclModifier *Next = nullptr;
-
 public:
   DeclModifier(ModifierKind Kind) : Modifier(Kind) {}
 };
@@ -162,7 +165,6 @@ class DeclModifierList {
 };
 
 class TypeModifier : public Modifier {
-  TypeModifier *Next = nullptr;
 
 public:
   TypeModifier(ModifierKind Kind) : Modifier(Kind) {}
