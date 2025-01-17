@@ -11,6 +11,7 @@
 #include "stone/AST/Modfifier.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
+#include "stone/AST/Template.h"
 #include "stone/AST/TypeResult.h"
 #include "stone/Basic/StableHasher.h"
 
@@ -278,6 +279,9 @@ public:
   ParserResult<Decl> ParseDecl(ParsingDeclSpec &spec);
 
   ParserResult<Decl> ParseDecl();
+
+  ParserResult<TemplateDecl> ParseTemplateDecl();
+
   ParserStatus ParseDeclAttributeList(DeclAttributeList &attributeList);
   ParserStatus ParseDeclModifierList(DeclModifierList &modifierList);
 

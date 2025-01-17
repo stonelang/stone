@@ -81,11 +81,14 @@ class DeclName final {
   llvm::PointerUnion<DeclNameBase, CompoundDeclName *> nameBaseOrCompound;
 
 public:
-  DeclName()
-      : kind(DeclNameKind::Identifier), nameBaseOrCompound(DeclNameBase()) {}
+  DeclName() : DeclName(DeclNameKind::Identifier, DeclNameBase()) {}
+
+  explicit DeclName(Identifier identifier, SrcLoc identifierLoc = SrcLoc())
+      : DeclName(DeclNameKind::Identifier,
+                 DeclNameBase(identifier, identifierLoc)) {}
 
   explicit DeclName(DeclNameKind kind, DeclNameBase baseName)
-      : kind(kind), nameBaseOrCompound(std::move(baseName)) {}
+      : kind(kind), nameBaseOrCompound(baseName) {}
 
   explicit DeclName(CompoundDeclName *compound)
       : kind(DeclNameKind::Compound), nameBaseOrCompound(compound) {}

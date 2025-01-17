@@ -194,6 +194,7 @@ public:
     modifier->Next = head;
     head = modifier;
   }
+  void Remove();
 
   // /// Add multiple constructed DeclAttributes to this list.
   // void Add(DeclModifierList &modifier) {
@@ -234,6 +235,12 @@ public:
 class TypeModifierList {
   /// Linked list of declaration attributes.
   TypeModifier *head;
+
+  // /// Add a constructed DeclAttribute to this list.
+  // void Add(DeclModifier *modifier) {
+  //   modifier->Next = head;
+  //   head = modifier;
+  // }
 };
 
 } // namespace stone

@@ -1,6 +1,6 @@
 #include "stone/AST/Expr.h"
 #include "stone/AST/ASTContext.h"
-#include "stone/AST/Generics.h"
+#include "stone/AST/Template.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"

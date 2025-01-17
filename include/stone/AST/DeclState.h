@@ -12,6 +12,9 @@ class alignas(1 << DeclAlignInBits) DeclState final : ASTAllocation<DeclState> {
 
 public:
   Decl *D = nullptr;
+  SrcLoc kindLoc;
+  // DeclProperties
+
   // DeclAttributeList attributes;
   // DeclModifierList modifiers;
   // DeclTemplateList templates;

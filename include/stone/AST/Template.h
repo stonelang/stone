@@ -1,5 +1,5 @@
-#ifndef STONE_AST_GENERICS_H
-#define STONE_AST_GENERICS_H
+#ifndef STONE_AST_TEMPLATE_H
+#define STONE_AST_TEMPLATE_H
 
 #include "stone/AST/Decl.h"
 #include "stone/AST/DeclContext.h"
@@ -29,7 +29,7 @@
 namespace stone {
 
 class ASTWalker;
-class GenericTypeParamDecl;
+class TemplateTypeParamDecl;
 
 /// The kind of template argument we're storing.
 // enum class TemplateArgumentKind : uint8_t {
@@ -69,7 +69,7 @@ class GenericTypeParamDecl;
 //   Pack
 // };
 
-enum class GenericRequirementKind : unsigned {
+enum class TemplateRequirementKind : unsigned {
   /// A type bound T : P, where T is a type that depends on a generic
   /// parameter and P is some type that should bound T, either as a concrete
   /// supertype or a protocol to which T must conform.
@@ -87,38 +87,39 @@ enum class GenericRequirementKind : unsigned {
   // when adding enumerators.
 };
 
-class GenericRequirement final {
+class TemplateRequirement final {
 
   SrcLoc separatorLoc;
-  GenericRequirementKind kind : 2;
+  TemplateRequirementKind kind : 2;
   bool invalid : 1;
   Type *rirstType;
 
-  GenericRequirement(const GenericRequirement &) = delete;
-  GenericRequirement &operator=(const GenericRequirement &) = delete;
+  TemplateRequirement(const TemplateRequirement &) = delete;
+  TemplateRequirement &operator=(const TemplateRequirement &) = delete;
 
 public:
 };
 
-class GenericParamList final
-    : private llvm::TrailingObjects<GenericParamList, GenericTypeParamDecl *> {
+class TemplateParamList final
+    : private llvm::TrailingObjects<TemplateParamList,
+                                    TemplateTypeParamDecl *> {
   friend TrailingObjects;
 
   SrcRange brackets;
   unsigned paramCount;
   SrcLoc whereLoc;
-  llvm::MutableArrayRef<GenericRequirement> requirements;
-  GenericParamList *outerParameters;
+  llvm::MutableArrayRef<TemplateRequirement> requirements;
+  TemplateParamList *outerParameters;
 
-  GenericParamList(SrcLoc lAngleLoc,
-                   llvm::ArrayRef<GenericTypeParamDecl *> params,
-                   SrcLoc whereLoc,
-                   llvm::MutableArrayRef<GenericRequirement> requirements,
-                   SrcLoc rAngleLoc);
+  TemplateParamList(SrcLoc lAngleLoc,
+                    llvm::ArrayRef<TemplateTypeParamDecl *> params,
+                    SrcLoc whereLoc,
+                    llvm::MutableArrayRef<TemplateRequirement> requirements,
+                    SrcLoc rAngleLoc);
 
   // Don't copy.
-  GenericParamList(const GenericParamList &) = delete;
-  GenericParamList &operator=(const GenericParamList &) = delete;
+  TemplateParamList(const TemplateParamList &) = delete;
+  TemplateParamList &operator=(const TemplateParamList &) = delete;
 
 public:
   unsigned GetParamCount() const;
@@ -128,8 +129,8 @@ public:
 };
 
 /// A trailing where clause.
-class alignas(GenericRequirement) TrailingWhereClause final
-    : private llvm::TrailingObjects<TrailingWhereClause, GenericRequirement> {
+class alignas(TemplateRequirement) TrailingWhereClause final
+    : private llvm::TrailingObjects<TrailingWhereClause, TemplateRequirement> {
   friend TrailingObjects;
 
   SrcLoc whereLoc;
@@ -139,25 +140,25 @@ class alignas(GenericRequirement) TrailingWhereClause final
   unsigned equirementCount;
 
   TrailingWhereClause(SrcLoc whereLoc, SrcLoc endLoc,
-                      llvm::ArrayRef<GenericRequirement> requirements);
+                      llvm::ArrayRef<TemplateRequirement> requirements);
 
 public:
   /// Create a new trailing where clause with the given set of requirements.
   static TrailingWhereClause *
   Create(ASTContext &ctx, SrcLoc whereLoc, SrcLoc endLoc,
-         llvm::ArrayRef<GenericRequirement> requirements);
+         llvm::ArrayRef<TemplateRequirement> requirements);
 
   /// Retrieve the location of the 'where' keyword.
   SrcLoc GetWhereLoc() const { return whereLoc; }
 
   /// Retrieve the set of requirements.
-  llvm::MutableArrayRef<GenericRequirement> GetRequirements() {
-    return {getTrailingObjects<GenericRequirement>(), equirementCount};
+  llvm::MutableArrayRef<TemplateRequirement> GetRequirements() {
+    return {getTrailingObjects<TemplateRequirement>(), equirementCount};
   }
 
   /// Retrieve the set of requirements.
-  llvm::ArrayRef<GenericRequirement> GetRequirements() const {
-    return {getTrailingObjects<GenericRequirement>(), equirementCount};
+  llvm::ArrayRef<TemplateRequirement> GetRequirements() const {
+    return {getTrailingObjects<TemplateRequirement>(), equirementCount};
   }
 
   /// Compute the source range containing this trailing where clause.
