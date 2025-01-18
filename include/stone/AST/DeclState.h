@@ -13,35 +13,40 @@
 #include <cassert>
 
 namespace stone {
+class ASTContext;
 
 class alignas(1 << DeclAlignInBits) DeclState final : ASTAllocation<DeclState> {
-  friend class ASTContext;
+  friend ASTContext;
 
-public:
-  Decl *D = nullptr;
-  SrcLoc kindLoc;
+  // The ASTContext of the Decl
+  ASTContext *AC = nullptr;
 
   // Efficient memory allocation
   llvm::BumpPtrAllocator allocator;
+  
   // Stores properties with metadata
   llvm::DenseMap<PropertyKind, DeclProperty *> properties;
+
   // Tracks property presence
   llvm::BitVector propertyMask;
 
+  // Direct comparison is disabled for states
+  void operator==(DeclState D) const = delete;
+  void operator!=(DeclState D) const = delete;
+
 public:
   DeclState() : DeclState(nullptr) {}
-
-  explicit DeclState(Decl *decl)
-      : D(decl),
-        propertyMask(static_cast<size_t>(PropertyKind::Last_Type) + 1) {}
-
-  // Overload the bool operator
-  explicit operator bool() const { return D != nullptr; }
+  explicit DeclState(ASTContext *AC)
+      : AC(AC), propertyMask(static_cast<size_t>(PropertyKind::Last_Type) + 1) {
+  }
 
 public:
-  void SetDecl(Decl *decl) { D = decl; }
-  Decl *GetDecl() { return D; }
+  // Overload the bool operator
+  explicit operator bool() const { return !properties.empty(); }
+  ASTContext *GetASTContext() { return AC; }
+  bool HasASTContext() { return AC != nullptr; }
 
+public:
   // Add a property to the state if it doesn't already exist
   template <typename T, typename... Args>
   T *AddProperty(PropertyKind kind, Args &&...args) {
@@ -82,11 +87,6 @@ public:
       }
     }
   }
-
-private:
-  // Direct comparison is disabled for states
-  void operator==(DeclState D) const = delete;
-  void operator!=(DeclState D) const = delete;
 };
 
 } // namespace stone

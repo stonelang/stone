@@ -1,7 +1,8 @@
-#ifndef STONE_AST_TYPERESULT_H
-#define STONE_AST_TYPERESULT_H
+#ifndef STONE_AST_TYPESTATE_H
+#define STONE_AST_TYPESTATE_H
 
-#include "stone/AST/Modifier.h"
+#include "stone/AST/DeclState.h"
+#include "stone/AST/Property.h"
 #include "stone/AST/TypeMetadata.h"
 #include "stone/AST/TypeWalker.h"
 #include "stone/Basic/LLVM.h"
@@ -108,35 +109,48 @@ class alignas(1 << TypeAlignInBits) TypeState
     : public ASTAllocation<std::aligned_storage<8, 8>::type> {
   friend class ASTContext;
 
+  /// The specific type-state
   TypeStateKind kind;
+
+  /// The location of the type
   SrcLoc loc;
-  Type *typePtr;
-  /// TypeProperties properties
-  TypeModifierList modifiers;
-  TypeMetadata metadata;
+
+  /// The type that we are processing
+  Type *typePtr = nullptr;
+
+  /// The owning DeclStae
+  DeclState *declState = nullptr;
+
+  // Efficient memory allocation
+  llvm::BumpPtrAllocator allocator;
+
+  // Stores properties with metadata
+  llvm::DenseMap<PropertyKind, TypeProperty *> properties;
+
+  // Tracks property presence
+  llvm::BitVector propertyMask;
 
 public:
-  TypeStateFlags Flags;
+  TypeStateFlags Status;
 
 public:
-  explicit TypeState(TypeStateKind kind, SrcLoc loc, Type *typePtr = nullptr)
-      : kind(kind), loc(loc), typePtr(typePtr) {}
+  explicit TypeState(TypeStateKind kind)
+      : kind(kind), loc(SrcLoc()), typePtr(nullptr), declState(nullptr) {}
   // Explicit conversion for validity checks
   explicit operator bool() const { return typePtr != nullptr; }
 
 public:
   bool IsNull() const { return typePtr == nullptr; }
+
   Type *GetType() const { return typePtr; }
   void SetType(Type *t) { typePtr = t; }
 
-  /// Get the representative location of this type, for diagnostic
-  /// purposes.
-  /// This location is not necessarily the start location of the TypeRep.
-  SrcLoc GetLoc() const;
+  void SetLoc(SrcLoc L) { loc = L; }
+  SrcLoc GetLoc() { return loc; }
   SrcRange GetSrcRange() const;
 
-  const TypeModifierList &GetModifiers() const { return modifiers; }
-  TypeModifierList &GetModifiers() { return modifiers; }
+  DeclState *GetDeclState() const { return declState; }
+  void SetDeclState(DeclState *DS) { declState = DS; }
 
 public:
   /// Walk this Type.
@@ -153,12 +167,12 @@ private:
 
 class ModuleTypeState : public TypeState {
 public:
-  ModuleTypeState(SrcLoc loc) : TypeState(TypeStateKind::Module, loc) {}
+  ModuleTypeState(SrcLoc loc) : TypeState(TypeStateKind::Module) {}
 };
 
 class FunctionTypeState : public TypeState {
 public:
-  FunctionTypeState(SrcLoc loc) : TypeState(TypeStateKind::Function, loc) {}
+  FunctionTypeState(SrcLoc loc) : TypeState(TypeStateKind::Function) {}
 };
 
 } // namespace stone
