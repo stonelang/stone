@@ -10,14 +10,13 @@ namespace stone {
 template <typename ImplTy, typename RetTy = void, typename... Args>
 class TypeVisitor {
 public:
-  RetTy Visit(TypeState *T, Args... args) {
+  RetTy Visit(Type *T, Args... args) {
     assert(T && "Cannot visit a null Type!");
-    switch (T->GetType()->GetKind()) {
+    switch (T->GetKind()) {
 #define TYPE(KIND, PARENT)                                                     \
   case TypeKind::KIND:                                                         \
     return static_cast<ImplTy *>(this)->Visit##KIND##Type(                     \
-        static_cast<KIND##Type *>(T->GetType()),                               \
-        ::std::forward<Args>(args)...);
+        static_cast<KIND##Type *>(T), ::std::forward<Args>(args)...);
 #include "stone/AST/TypeKind.def"
     }
     llvm_unreachable("Not reachable, all cases handled");
@@ -37,7 +36,7 @@ public:
 #include "stone/AST/TypeKind.def"
 
 public:
-  void VisitType(TypeState *ts) {}
+  void VisitType(Type *T) {}
 };
 
 // namespace syn {

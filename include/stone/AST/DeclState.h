@@ -28,7 +28,7 @@ class alignas(1 << DeclAlignInBits) DeclState final : ASTAllocation<DeclState> {
 
   DeclStateKind kind;
 
-  //Identifier declIdentifier;
+  // Identifier declIdentifier;
 
   PropertyCollector<DeclProperty> properties;
 
