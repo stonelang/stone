@@ -15,6 +15,14 @@
 #include "llvm/Support/TrailingObjects.h"
 #include "llvm/Support/VersionTuple.h"
 
+#include "stone/Basic/SrcLoc.h"
+#include "llvm/ADT/BitVector.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/SmallVector.h"
+#include <cassert>
+#include <cstdint>
+#include <vector>
+
 namespace stone {
 
 enum class PropertyKind : uint8_t {
@@ -153,6 +161,32 @@ public:
 class AlignAttribute : public TypeAttribute {
 public:
   AlignAttribute(SrcLoc loc) : TypeAttribute(PropertyKind::Aligned, loc) {}
+};
+
+template <typename PropertyType> class PropertyCollector {
+  llvm::DenseMap<PropertyKind, PropertyType *> properties;
+  llvm::BitVector propertyMask;
+
+public:
+  PropertyCollector()
+      : propertyMask(static_cast<unsigned>(PropertyKind::Last_Type) + 1) {}
+
+  // Overload the bool operator
+  explicit operator bool() const { return !properties.empty(); }
+
+  void AddProperty(PropertyKind kind, PropertyType *property) {
+    properties[kind] = property;
+    propertyMask.set(static_cast<unsigned>(kind));
+  }
+
+  bool HasProperty(PropertyKind kind) const {
+    return propertyMask.test(static_cast<unsigned>(kind));
+  }
+
+  PropertyType *GetProperty(PropertyKind kind) const {
+    auto it = properties.find(kind);
+    return it != properties.end() ? it->second : nullptr;
+  }
 };
 
 } // namespace stone

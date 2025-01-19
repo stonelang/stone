@@ -108,49 +108,86 @@ public:
 class alignas(1 << TypeAlignInBits) TypeState
     : public ASTAllocation<std::aligned_storage<8, 8>::type> {
   friend class ASTContext;
+  // friend TrailingObjects;
 
   /// The specific type-state
   TypeStateKind kind;
 
-  /// The location of the type
+  DeclState *owningDeclState;
+
+  PropertyCollector<TypeProperty> typeProperties;
+
+  // /// The location of the type
   SrcLoc loc;
 
-  /// The type that we are processing
+  // The type that we are processing
   Type *typePtr = nullptr;
 
-  /// The owning DeclStae
-  DeclState *declState = nullptr;
+  // /// The owning DeclStae
+  // DeclState *declState = nullptr;
 
-  // Efficient memory allocation
-  llvm::BumpPtrAllocator allocator;
+  // // Efficient memory allocation
+  // llvm::BumpPtrAllocator allocator;
 
-  // Stores properties with metadata
-  llvm::DenseMap<PropertyKind, TypeProperty *> properties;
+  // // Stores properties with metadata
+  // llvm::DenseMap<PropertyKind, TypeProperty *> properties;
 
-  // Tracks property presence
-  llvm::BitVector propertyMask;
+  // // Tracks property presence
+  // llvm::BitVector propertyMask;
+
+  // size_t numTrailingDecls = 0;      // Number of trailing Decl* objects
+  // size_t numTrailingTypeStates = 0; // Number of trailing TypeState* objects
 
 public:
   TypeStateFlags Status;
 
 public:
-  explicit TypeState(TypeStateKind kind)
-      : kind(kind), loc(SrcLoc()), typePtr(nullptr), declState(nullptr) {}
-  // Explicit conversion for validity checks
-  explicit operator bool() const { return typePtr != nullptr; }
+  explicit TypeState(TypeStateKind kind) : kind(kind) {}
 
 public:
-  bool IsNull() const { return typePtr == nullptr; }
-
   Type *GetType() const { return typePtr; }
   void SetType(Type *t) { typePtr = t; }
 
   void SetLoc(SrcLoc L) { loc = L; }
-  SrcLoc GetLoc() { return loc; }
-  SrcRange GetSrcRange() const;
+  SrcLoc GetLoc() const { return loc; }
+  // SrcRange GetSrcRange() const;
 
-  DeclState *GetDeclState() const { return declState; }
-  void SetDeclState(DeclState *DS) { declState = DS; }
+  // DeclState *GetDeclState() const { return declState; }
+  // void SetDeclState(DeclState *DS) { declState = DS; }
+
+public:
+  // // Access to trailing Decl* objects
+  // ArrayRef<Decl *> GetTrailingDecls() const {
+  //   return {getTrailingObjects<Decl *>(), numTrailingDecls};
+  // }
+
+  // MutableArrayRef<Decl *> GetTrailingDecls() {
+  //   return {getTrailingObjects<Decl *>(), numTrailingDecls};
+  // }
+
+  // // Access to trailing TypeState* objects
+  // ArrayRef<TypeState *> GetTrailingTypeStates() const {
+  //   return {getTrailingObjects<TypeState *>(), numTrailingTypeStates};
+  // }
+
+  // MutableArrayRef<TypeState *> GetTrailingTypeStates() {
+  //   return {getTrailingObjects<TypeState *>(), numTrailingTypeStates};
+  // }
+
+public:
+  // void AddTypeProperty(PropertyKind kind, TypeProperty *property) {
+  //   typeProperties[kind] = property;
+  //   typePropertyMask.set(static_cast<size_t>(kind));
+  // }
+
+  // TypeProperty *GetTypeProperty(PropertyKind kind) const {
+  //   auto it = typeProperties.find(kind);
+  //   return (it != typeProperties.end()) ? it->second : nullptr;
+  // }
+
+  // bool HasTypeProperty(PropertyKind kind) const {
+  //   return typePropertyMask.test(static_cast<size_t>(kind));
+  // }
 
 public:
   /// Walk this Type.
@@ -167,13 +204,32 @@ private:
 
 class ModuleTypeState : public TypeState {
 public:
-  ModuleTypeState(SrcLoc loc) : TypeState(TypeStateKind::Module) {}
+  ModuleTypeState() : TypeState(TypeStateKind::Module) {}
 };
 
-class FunctionTypeState : public TypeState {
-public:
-  FunctionTypeState(SrcLoc loc) : TypeState(TypeStateKind::Function) {}
-};
+// class FunctionTypeState : public TypeState {
+// public:
+//   FunctionTypeState(SrcLoc loc) : TypeState(TypeStateKind::Function) {}
+
+// public:
+// void AddParamDecls(ArrayRef<Decl *> paramDecls) {
+//   SetTrailingDecls(paramDecls);
+// }
+
+// void AddChildTypeStates(ArrayRef<TypeState *> childTypeStates) {
+//   SetTrailingTypeStates(childTypeStates);
+// }
+
+// // Accessors for parameters and return type
+// ArrayRef<Decl *> GetParamDecls() const {
+//   return GetTrailingDecls();
+// }
+
+// ArrayRef<TypeState *> GetParamTypeStates() const {
+//   auto childTypeStates = GetTrailingTypeStates();
+//   return childTypeStates.drop_back(1); // Exclude the return type
+// }
+// };
 
 } // namespace stone
 #endif

@@ -21,7 +21,7 @@ ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
 
 ModuleDecl::ModuleDecl(DeclName name, ASTContext &AC, ModuleDecl *parent)
     : DeclContext(DeclContextKind::ModuleDecl),
-      TypeDecl(DeclKind::Module, name, new(AC) ModuleTypeState(SrcLoc()), &AC),
+      TypeDecl(DeclKind::Module, name, new(AC) ModuleTypeState(), &AC),
       parent(parent) {
 
   SetVisibilityLevel(VisibilityLevel::Public);

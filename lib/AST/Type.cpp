@@ -125,9 +125,6 @@ BitWidth NumberType::GetBitWidth() const {
 // &Context,
 //                                        const Type *ty) const {}
 
-SrcLoc TypeState::GetLoc() const { return SrcLoc(); }
-SrcRange TypeState::GetSrcRange() const { return SrcRange(); }
-
 // FunType *TypeFactory::MakeFunType(Type result);
 
 // IntegerType *TypeFactory::MakeIntegerType(NumberBitWidthKind bitWidthKind,
