@@ -41,6 +41,7 @@
 
 namespace stone {
 class Type;
+class TypeState;
 
 enum class TypeStateKind : uint8_t {
 #define TYPESTATE(ID, PARENT) ID,
@@ -120,20 +121,8 @@ class alignas(1 << TypeAlignInBits) TypeState
   // /// The location of the type
   SrcLoc loc;
 
-  // The type that we are processing
-  Type *typePtr = nullptr;
-
-  // /// The owning DeclStae
-  // DeclState *declState = nullptr;
-
-  // // Efficient memory allocation
-  // llvm::BumpPtrAllocator allocator;
-
-  // // Stores properties with metadata
-  // llvm::DenseMap<PropertyKind, TypeProperty *> properties;
-
-  // // Tracks property presence
-  // llvm::BitVector propertyMask;
+protected:
+  size_t numTrailingDeclStates;
 
   // size_t numTrailingDecls = 0;      // Number of trailing Decl* objects
   // size_t numTrailingTypeStates = 0; // Number of trailing TypeState* objects
@@ -142,18 +131,16 @@ public:
   TypeStateFlags Status;
 
 public:
-  explicit TypeState(TypeStateKind kind) : kind(kind) {}
+  explicit TypeState(TypeStateKind kind)
+      : kind(kind), owningDeclState(nullptr) {}
 
 public:
-  Type *GetType() const { return typePtr; }
-  void SetType(Type *t) { typePtr = t; }
-
   void SetLoc(SrcLoc L) { loc = L; }
   SrcLoc GetLoc() const { return loc; }
   // SrcRange GetSrcRange() const;
 
-  // DeclState *GetDeclState() const { return declState; }
-  // void SetDeclState(DeclState *DS) { declState = DS; }
+  DeclState *GetDeclState() const { return owningDeclState; }
+  void SetDeclState(DeclState *DS) { owningDeclState = DS; }
 
 public:
   // // Access to trailing Decl* objects
@@ -207,9 +194,20 @@ public:
   ModuleTypeState() : TypeState(TypeStateKind::Module) {}
 };
 
+class FunctionTypeState : public TypeState {
+
+  TypeState *returnTypeState = nullptr;
+
+public:
+  FunctionTypeState() : TypeState(TypeStateKind::Function) {}
+};
+
 // class FunctionTypeState : public TypeState {
+
+//   TypeState *returnTypeState = nullptr;
+
 // public:
-//   FunctionTypeState(SrcLoc loc) : TypeState(TypeStateKind::Function) {}
+//   FunctionTypeState() : TypeState(TypeStateKind::Function) {}
 
 // public:
 // void AddParamDecls(ArrayRef<Decl *> paramDecls) {
@@ -229,6 +227,12 @@ public:
 //   auto childTypeStates = GetTrailingTypeStates();
 //   return childTypeStates.drop_back(1); // Exclude the return type
 // }
+//};
+
+// class NumberTypeState : public TypeState {
+
+// public:
+//   NumberTypeState() : TypeState(TypeStateKind::Function) {}
 // };
 
 } // namespace stone

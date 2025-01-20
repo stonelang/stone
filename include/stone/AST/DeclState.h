@@ -13,6 +13,7 @@
 
 namespace stone {
 class ASTContext;
+class TypeState;
 
 enum class DeclStateKind : uint8_t {
 #undef DECL_KEYWORD
@@ -35,6 +36,9 @@ class alignas(1 << DeclAlignInBits) DeclState final : ASTAllocation<DeclState> {
   // The ASTContext associated with this DeclSate
   ASTContext *AC = nullptr;
 
+  // The TypeState assoicated with the DeclState
+  TypeState *TS = nullptr;
+
   // Direct comparison is disabled for states
   void operator==(DeclState D) const = delete;
   void operator!=(DeclState D) const = delete;
@@ -45,6 +49,9 @@ public:
 public:
   DeclStateKind GetDeclStateKind() { return kind; }
   ASTContext *GetASTContext() { return AC; }
+  void SetTypeState(TypeState *typeState) { TS = typeState; }
+  TypeState *GetTypeSate() { return TS; }
+
   bool HasASTContext() { return AC != nullptr; }
   PropertyCollector<DeclProperty> &GetProperties() { return properties; }
 

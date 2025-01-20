@@ -36,6 +36,8 @@ ABSTRACT_TYPESTATE(DeclRef, TypeState)
   
 TYPESTATE(Module, TypeState)
 TYPESTATE(Function, TypeState)
+TYPESTATE(Builtin, TypeState)
+TYPESTATE(Nominal, TypeState)
 // TYPESTATE(Array, TypeState)
 // TYPESTATE(Dictionary, TypeState)
 // TYPESTATE(Optional, TypeState)
