@@ -297,7 +297,6 @@ public:
   SrcLoc GetKindLoc() const { return kindLoc; }
   void SetKindLoc(SrcLoc loc) { kindLoc = loc; }
 
-
   DeclName GetName() { return name; }
   void SetName(DeclName dn) { name = dn; }
 

@@ -57,20 +57,13 @@ class ASTContext;
 
 class alignas(1 << UnderlyingTypeAlignInBits) UnderlyingType
     : public ASTAllocation<std::aligned_storage<8, 8>::type> {
-
   friend class ASTContext;
+
+  const ASTContext &astContext;
+  UnderlyingType *underlyingType;
 
   UnderlyingType(const UnderlyingType &) = delete;
   void operator=(const UnderlyingType &) = delete;
-
-  /// This union contains to the ASTContext for canonical types, and is
-  /// otherwise lazily populated by ASTContext when the canonical form of a
-  /// non-canonical type is requested. The disposition of the union is stored
-  /// outside of the union for performance. See Bits.UnderlyingType.IsCanonical.
-  union {
-    CanType canType;
-    const ASTContext *astContext;
-  };
 
 protected:
   union {
@@ -90,16 +83,11 @@ protected:
   } Bits;
 
 public:
-  UnderlyingType(TypeKind kind, const ASTContext *canTypeContext)
-      : astContext(nullptr) {
+  UnderlyingType(TypeKind kind, const ASTContext &astContext,
+                 UnderlyingType *underlyingType = nullptr)
+      : astContext(astContext), underlyingType(underlyingType) {
 
     Bits.UnderlyingType.Kind = static_cast<unsigned>(kind);
-
-    /// TODO: I do not like this ....
-    if (canTypeContext) {
-      // Bits.UnderlyingType.IsCanonical = true;
-      astContext = canTypeContext;
-    }
   }
 
 public:
@@ -122,7 +110,7 @@ public:
 
   /// hasCanonicalTypeComputed - Return true if we've already computed a
   /// canonical version of this type.
-  bool IsCanTypeComputed() const { return !canType.IsNull(); }
+  // bool IsCanTypeComputed() const { return !canType.IsNull(); }
 
 public:
   TypeKind GetKind() const {
@@ -214,19 +202,19 @@ public:
   StructType *GetStructType() const;
 
 private:
-  CanType ComputeCanType();
+  // CanType ComputeCanType();
 };
 
-inline bool CanType::IsCanTypeOrNull() const {
-  return IsNull() ||
-         GetPtr() == llvm::DenseMapInfo<UnderlyingType *>::getEmptyKey() ||
-         GetPtr() == llvm::DenseMapInfo<UnderlyingType *>::getTombstoneKey() ||
-         GetPtr()->IsCanType();
-}
+// inline bool CanType::IsCanTypeOrNull() const {
+//   return IsNull() ||
+//          GetPtr() == llvm::DenseMapInfo<UnderlyingType *>::getEmptyKey() ||
+//          GetPtr() == llvm::DenseMapInfo<UnderlyingType *>::getTombstoneKey()
+//          || GetPtr()->IsCanType();
+// }
 
 class BuiltinType : public UnderlyingType {
 protected:
-  BuiltinType(TypeKind kind, const ASTContext &AC) : UnderlyingType(kind, &AC) {
+  BuiltinType(TypeKind kind, const ASTContext &AC) : UnderlyingType(kind, AC) {
     // Bits.UnderlyingType.IsBuiltin = true;
   }
 };
@@ -538,8 +526,8 @@ class FunctionType : public UnderlyingType {
   Type returnType;
 
 public:
-  FunctionType(TypeKind kind, Type returnType, const ASTContext *canTypeCtx)
-      : UnderlyingType(kind, canTypeCtx) {}
+  FunctionType(TypeKind kind, Type returnType, const ASTContext& astContext)
+      : UnderlyingType(kind, astContext) {}
 };
 
 // You are returning Type for now, it may have to be Type
@@ -548,7 +536,7 @@ class FunType : public FunctionType,
   friend TrailingObjects;
 
 public:
-  FunType(Type resultType, const ASTContext *AC);
+  FunType(Type resultType, const ASTContext& AC);
 };
 
 class NominalType : public UnderlyingType {
