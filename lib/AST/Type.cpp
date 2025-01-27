@@ -36,7 +36,7 @@ bool UnderlyingType::IsNominalType() {
   }
 }
 
-FunType::FunType(Type returnType, const ASTContext& astContext)
+FunType::FunType(Type returnType, const ASTContext &astContext)
     : FunctionType(TypeKind::Fun, returnType, astContext) {}
 
 // VoidType *VoidType::Create(const ASTContext &astContext,

@@ -526,7 +526,7 @@ class FunctionType : public UnderlyingType {
   Type returnType;
 
 public:
-  FunctionType(TypeKind kind, Type returnType, const ASTContext& astContext)
+  FunctionType(TypeKind kind, Type returnType, const ASTContext &astContext)
       : UnderlyingType(kind, astContext) {}
 };
 
@@ -536,7 +536,7 @@ class FunType : public FunctionType,
   friend TrailingObjects;
 
 public:
-  FunType(Type resultType, const ASTContext& AC);
+  FunType(Type resultType, const ASTContext &AC);
 };
 
 class NominalType : public UnderlyingType {
