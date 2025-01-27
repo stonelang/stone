@@ -993,7 +993,7 @@ CreateDiagnosticInfoForDecl(const Diagnostic &diagnostic) {
 
     // If a declaration was provided instead of a location, and that declaration
     // has a location we can point to, use that location.
-    loc = decl->GetLoc();
+    loc = decl->GetNameLoc();
 
     if (loc.isInvalid()) {
       // SrcLoc ppLoc = PrettyPrintedDeclarations[decl];
@@ -1018,7 +1018,7 @@ DiagnosticEngine::diagnosticInfoForDiagnostic(const Diagnostic &diagnostic) {
     const stone::Decl *decl = diagnostic.getDecl();
     // If a declaration was provided instead of a location, and that declaration
     // has a location we can point to, use that location.
-    loc = decl->GetLoc();
+    loc = decl->GetNameLoc();
   }
 
   if (loc.isInvalid()) {

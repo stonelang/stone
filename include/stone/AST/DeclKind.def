@@ -1,179 +1,98 @@
 #ifndef ABSTRACT_DECL
-#define ABSTRACT_DECL(Id, Parent)
+#define ABSTRACT_DECL(ID, Parent)
 #endif
 
-#ifndef NAMEABLE_DECL
-#define NAMEABLE_DECL(Id, Parent) DECL(Id, Parent)
+#ifndef CONTEXT_DECL
+#define CONTEXT_DECL(ID, Parent) DECL(ID, Parent)
 #endif
 
-#ifndef NOMINAL_TYPE_DECL
-#define NOMINAL_TYPE_DECL(Id, Parent) NAMEABLE_DECL(Id, Parent)
+#ifndef ITERABLE_NONTEMPLATE_DECL
+#define ITERABLE_NONTEMPLATE_DECL(ID, Parent) CONTEXT_DECL(ID, Parent)
 #endif
 
 #ifndef TEMPLATE_DECL
-#define TEMPLATE_DECL(Id, Parent) NAMEABLE_DECL(Id, Parent)
+#define TEMPLATE_DECL(ID, Parent) CONTEXT_DECL(ID, Parent)
 #endif
 
-/// CONTEXT_DECL(Id, Parent)
-///   Used for Decls that are also DeclContexts. The default behavior is to do
-///   the same as for Decl.
-#ifndef CONTEXT_DECL
-#define CONTEXT_DECL(Id, Parent) DECL(Id, Parent)
+#ifndef TEMPLATE_VALUE_DECL
+#define TEMPLATE_VALUE_DECL(ID, Parent) TEMPLATE_DECL(ID, Parent)
 #endif
 
-/// ITERABLE_NONGENERIC_DECL(Id, Parent)
-///   Used for Decls that are also IterableDeclContexts and DeclContexts. The
-///   default behavior is to do the same as for CONTEXT_DECL. This combination
-///   does not exist at the moment.
-#ifndef ITERABLE_NONGENERIC_DECL
-#ifdef ITERABLE_DECL
-#define ITERABLE_NONGENERIC_DECL(Id, Parent) ITERABLE_DECL(Id, Parent)
-#else
-#define ITERABLE_NONGENERIC_DECL(Id, Parent) CONTEXT_DECL(Id, Parent)
-#endif
+#ifndef ITERABLE_TEMPLATE_DECL
+#define ITERABLE_TEMPLATE_DECL(ID, Parent) TEMPLATE_DECL(ID, Parent)
 #endif
 
-/// GENERIC_DECL(Id, Parent)
-///   Used for Decls that are also GenericContexts. The default behavior is to
-///   do the same as for CONTEXT_DECL.
-#ifndef GENERIC_DECL
-#define GENERIC_DECL(Id, Parent) CONTEXT_DECL(Id, Parent)
-#endif
-
-/// ITERABLE_GENERIC_DECL(Id, Parent)
-///   Used for Decls that are also IterableDeclContexts and GenericContexts. The
-///   default behavior is to do the same as for GENERIC_DECL.
-#ifndef ITERABLE_GENERIC_DECL
-#ifdef ITERABLE_DECL
-#define ITERABLE_GENERIC_DECL(Id, Parent) ITERABLE_DECL(Id, Parent)
-#else
-#define ITERABLE_GENERIC_DECL(Id, Parent) GENERIC_DECL(Id, Parent)
-#endif
-#endif
-
-/// CONTEXT_VALUE_DECL(Id, Parent)
-///   Used for subclasses of ValueDecl that are also DeclContexts. The default
-///   behavior is to do the same as for CONTEXT_DECL.
 #ifndef CONTEXT_VALUE_DECL
-#ifdef VALUE_DECL
-#define CONTEXT_VALUE_DECL(Id, Parent) VALUE_DECL(Id, Parent)
-#else
-#define CONTEXT_VALUE_DECL(Id, Parent) CONTEXT_DECL(Id, Parent)
-#endif
+#define CONTEXT_VALUE_DECL(ID, Parent) CONTEXT_DECL(ID, Parent)
 #endif
 
-/// GENERIC_VALUE_DECL(Id, Parent)
-///   Used for subclasses of ValueDecl that are also GenericContexts. The
-///   default behavior is to do the same as for GENERIC_DECL.
-#ifndef GENERIC_VALUE_DECL
-#ifdef VALUE_DECL
-#define GENERIC_VALUE_DECL(Id, Parent) VALUE_DECL(Id, Parent)
-#else
-#define GENERIC_VALUE_DECL(Id, Parent) GENERIC_DECL(Id, Parent)
-#endif
+#ifndef ITERABLE_TEMPLATE_VALUE_DECL
+#define ITERABLE_TEMPLATE_VALUE_DECL(ID, Parent) ITERABLE_TEMPLATE_DECL(ID, Parent)
 #endif
 
-/// ITERABLE_GENERIC_VALUE_DECL(Id, Parent)
-///   Used for subclasses of ValueDecl that are also IterableDeclContexts and
-///   GenericContexts. The default behavior is to do the same as for
-///   ITERABLE_GENERIC_DECL.
-#ifndef ITERABLE_GENERIC_VALUE_DECL
-#ifdef VALUE_DECL
-#define ITERABLE_GENERIC_VALUE_DECL(Id, Parent) VALUE_DECL(Id, Parent)
-#else
-#define ITERABLE_GENERIC_VALUE_DECL(Id, Parent)                                \
-  ITERABLE_GENERIC_DECL(Id, Parent)
-#endif
-#endif
-
-/// OPERATOR_DECL(Id, Parent)
-///   Used for subclasses of OperatorDecl. The default behavior is to do
-///   the same as for Decl.
 #ifndef OPERATOR_DECL
-#define OPERATOR_DECL(Id, Parent) DECL(Id, Parent)
+#define OPERATOR_DECL(ID, Parent) DECL(ID, Parent)
 #endif
 
-/// NOMINAL_TYPE_DECL(Id, Parent)
-///   Used for subclasses of NominalTypeDecl.  The default behavior is
-///   to do the same as for ITERABLE_GENERIC_VALUE_DECL.
-//#ifndef NOMINAL_TYPE_DECL
-//#define NOMINAL_TYPE_DECL(Id, Parent) ITERABLE_GENERIC_VALUE_DECL(Id, Parent)
-//#endif
-
-/// FUNCTION_DECL(Id, Parent)
-///   Used for subclasses of AbstractFunction. The default behavior is
-///   to do the same as for GENERIC_VALUE_DECL.
-#ifndef FUNCTION_DECL
-#define FUNCTION_DECL(Id, Parent) GENERIC_VALUE_DECL(Id, Parent)
+#ifndef NOMINAL_TYPE_DECL
+#define NOMINAL_TYPE_DECL(ID, Parent) ITERABLE_TEMPLATE_VALUE_DECL(ID, Parent)
 #endif
 
-/// VALUE_DECL(Id, Parent)
-///   Used for subclasses of ValueDecl.  The default behavior is to do
-///   the same as for Decl.
+#ifndef ABSTRACT_FUNCTION_DECL
+#define ABSTRACT_FUNCTION_DECL(ID, Parent) TEMPLATE_VALUE_DECL(ID, Parent)
+#endif
+
 #ifndef VALUE_DECL
-#define VALUE_DECL(Id, Parent) DECL(Id, Parent)
+#define VALUE_DECL(ID, Parent) DECL(ID, Parent)
 #endif
 
-/// A convenience for determining the range of declarations.  These will always
-/// appear immediately after the last member.
 #ifndef DECL_RANGE
-#define DECL_RANGE(Id, First, Last)
+#define DECL_RANGE(ID, First, Last)
 #endif
 
 #ifndef LAST_DECL
-#define LAST_DECL(Id)
+#define LAST_DECL(ID)
 #endif
 
-ABSTRACT_DECL(Named, Decl)
-	ABSTRACT_DECL(Value, NamedDecl)
-		ABSTRACT_DECL(Type, ValueDecl)
-				ABSTRACT_DECL(NominalType, TypeDecl)
-					NOMINAL_TYPE_DECL(Enum, NominalTypeDecl)
-					NOMINAL_TYPE_DECL(Struct, NominalTypeDecl)
-					NOMINAL_TYPE_DECL(Class, NominalTypeDecl)
-					NOMINAL_TYPE_DECL(Interface, NominalTypeDecl)
-					DECL_RANGE(NominalType, Enum, Interface)
-			  VALUE_DECL(Alias, TypeDecl)
-				CONTEXT_VALUE_DECL(Module, TypeDecl)
-			DECL_RANGE(Type, Enum, Module)
-		ABSTRACT_DECL(Function, ValueDecl)
-			FUNCTION_DECL(Fun, FunctionDecl)
-			FUNCTION_DECL(Constructor, FunctionDecl)
-			FUNCTION_DECL(Destructor, FunctionDecl)
-			DECL_RANGE(Function, Fun, Destructor)
-		ABSTRACT_DECL(Storage, ValueDecl)
-			VALUE_DECL(Var, StorageDecl)
-			VALUE_DECL(Param, VarDecl)
-			DECL_RANGE(Storage, Var, Param)
-	DECL_RANGE(Value, Enum, Param)
-	NAMEABLE_DECL(Space, NamedDecl)
-	NAMEABLE_DECL(Import, NamedDecl)
-	NAMEABLE_DECL(Label, NamedDecl) 
-	DECL_RANGE(Named, Enum, Label)
+// Declaration hierarchy starts here
+ABSTRACT_DECL(Value, Decl)
+    ABSTRACT_DECL(Type, ValueDecl)
+        ABSTRACT_DECL(NominalType, TypeDecl)
+            NOMINAL_TYPE_DECL(Enum, NominalTypeDecl)
+            NOMINAL_TYPE_DECL(Struct, NominalTypeDecl)
+            NOMINAL_TYPE_DECL(Class, NominalTypeDecl)
+            NOMINAL_TYPE_DECL(Interface, NominalTypeDecl)
+            DECL_RANGE(NominalType, Enum, Interface)
+        VALUE_DECL(Alias, TypeDecl)
+        CONTEXT_VALUE_DECL(Module, TypeDecl)
+        DECL_RANGE(Alias, Module, Module)
+    ABSTRACT_DECL(Function, ValueDecl)
+        ABSTRACT_FUNCTION_DECL(Fun, FunctionDecl)
+        ABSTRACT_FUNCTION_DECL(Constructor, FunctionDecl)
+        ABSTRACT_FUNCTION_DECL(Destructor, FunctionDecl)
+        DECL_RANGE(Function, Fun, Destructor)
+    ABSTRACT_DECL(Storage, ValueDecl)
+        VALUE_DECL(Var, StorageDecl)
+        VALUE_DECL(Param, VarDecl)
+        DECL_RANGE(Storage, Var, Param)
+    DECL_RANGE(Value, Enum, Param)
 
-	// ABSTRACT_DECL(Template, NamedDecl)
-	// 	TEMPLATE_DECL(FunctionTemplate, Template)
-	// 	TEMPLATE_DECL(StructTemplate, Template)
-	// 	TEMPLATE_DECL(InterfaceTemplate, Template)
-	// 	TEMPLATE_DECL(VarTemplate, Template)
-	// 	TEMPLATE_DECL(TypeAliasTemplate, Template)
-	// 	TEMPLATE_DECL(BuiltinTemplate, Template)
-	// 	DECL_RANGE(Template, FunctionTemplate, BuiltinTemplate)
-
+DECL(Space, Decl)
+DECL(Using, Decl)
+DECL(Label, Decl)
 DECL(IfConfig, Decl)
 LAST_DECL(IfConfig)
 
-#undef NAMEABLE_DECL
+// Cleanup
 #undef NOMINAL_TYPE_DECL
 #undef CONTEXT_DECL
-#undef ITERABLE_NONGENERIC_DECL
-#undef GENERIC_DECL
-#undef ITERABLE_GENERIC_DECL
-#undef ITERABLE_DECL
+#undef ITERABLE_NONTEMPLATE_DECL
+#undef TEMPLATE_DECL
+#undef ITERABLE_TEMPLATE_DECL
 #undef CONTEXT_VALUE_DECL
-#undef GENERIC_VALUE_DECL
-#undef ITERABLE_GENERIC_VALUE_DECL
-#undef BASE_FUNCTION_DECL
+#undef TEMPLATE_VALUE_DECL
+#undef ITERABLE_TEMPLATE_VALUE_DECL
+#undef ABSTRACT_FUNCTION_DECL
 #undef VALUE_DECL
 #undef DECL_RANGE
 #undef ABSTRACT_DECL

@@ -81,9 +81,10 @@ enum PointerTypeKind : unsigned {
 class alignas(1 << DeclAlignInBits) Decl : public ASTAllocation<Decl> {
 
   DeclKind kind;
-  /// The location of the decl
-  SrcLoc loc;
-  DeclContext *dc;
+  SrcLoc kindLoc;
+
+  DeclName name;
+  SrcLoc nameLoc;
 
 protected:
   union {
@@ -293,11 +294,31 @@ public:
 
 public:
   DeclKind GetKind() const { return kind; }
+  SrcLoc GetKindLoc() const { return kindLoc; }
+  void SetKindLoc(SrcLoc loc) { kindLoc = loc; }
 
-  PrettyDeclKind GetPrettyKind() const;
-  static llvm::StringRef GetPrettyKindName(PrettyDeclKind kind);
 
-  SrcLoc GetLoc() const { return loc; }
+  DeclName GetName() { return name; }
+  void SetName(DeclName dn) { name = dn; }
+
+  SrcLoc GetNameLoc() const { return nameLoc; }
+  void SetNameLoc(SrcLoc loc) { nameLoc = loc; }
+
+  /// Get the identifier that names this declaration, if there is one.
+  ///
+  /// This will return NULL if this declaration has no name (e.g., for
+  /// an unnamed class) or if the name is a special name such ast a C++
+  /// constructor.
+  Identifier GetBasicName() const { return name.GetDeclNameBaseIdentifier(); }
+
+  /// Get the name of identifier for this declaration as a StringRef.
+  ///
+  /// This requires that the declaration have a name and that it be a simple
+  /// identifier.
+  llvm::StringRef GetBasicNameText() const {
+    return GetBasicName().GetString();
+  }
+
   DeclContext *GetDeclContextForModule() const;
 
   DeclContext *GetDeclContext() const {
@@ -330,7 +351,8 @@ public:
   }
 
 protected:
-  Decl(DeclKind kind, UnifiedContext context) : kind(kind), context(context) {}
+  Decl(DeclKind kind, DeclName name, SrcLoc nameLoc, UnifiedContext context)
+      : kind(kind), nameLoc(nameLoc), context(context) {}
 
 protected:
   template <typename DeclTy> friend class Redeclarable;
@@ -352,48 +374,7 @@ public:
   }
 };
 
-class NamedDecl : public Decl {
-  /// The name of this declaration, which is typically a normal
-  /// identifier but may also be a special ty of name (C++
-  /// constructor, etc.)
-  DeclName name;
-  SrcLoc nameLoc;
-
-protected:
-  NamedDecl(DeclKind kind, DeclName name, SrcLoc nameLoc,
-            UnifiedContext context)
-      : Decl(kind, context), name(name), nameLoc(nameLoc) {}
-
-public:
-  /// Get the identifier that names this declaration, if there is one.
-  ///
-  /// This will return NULL if this declaration has no name (e.g., for
-  /// an unnamed class) or if the name is a special name such ast a C++
-  /// constructor.
-  Identifier GetBasicName() const { return name.GetDeclNameBaseIdentifier(); }
-
-  /// Get the name of identifier for this declaration as a StringRef.
-  ///
-  /// This requires that the declaration have a name and that it be a simple
-  /// identifier.
-  llvm::StringRef GetBasicNameText() const {
-    return GetBasicName().GetString();
-  }
-
-  void SetDeclName(DeclName name) { this->name = name; }
-  DeclName GetDeclName() { return name; }
-
-  void SetDeclNameLoc(SrcLoc nameLoc) { this->nameLoc = nameLoc; }
-  SrcLoc GetDeclNameLoc() { return nameLoc; }
-
-public:
-  static bool classof(const Decl *d) {
-    return d->GetKind() >= DeclKind::FirstNamedDecl &&
-           d->GetKind() <= DeclKind::LastNamedDecl;
-  }
-};
-
-class ValueDecl : public NamedDecl {
+class ValueDecl : public Decl {
 
   Type type;
   VisibilityLevel visibilityKind;
@@ -401,7 +382,7 @@ class ValueDecl : public NamedDecl {
 public:
   ValueDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type type,
             UnifiedContext context)
-      : NamedDecl(kind, name, nameLoc, context), type(type) {}
+      : Decl(kind, name, nameLoc, context), type(type) {}
 
 public:
   void SetType(Type inputType) { type = inputType; }
@@ -544,11 +525,11 @@ class AliasDecl : public GenericTypeDecl {
 public:
 };
 
-class LabelDecl : public NamedDecl {
+class LabelDecl : public Decl {
 public:
 };
 
-class SpaceDecl final : public NamedDecl, public DeclContext {
+class SpaceDecl final : public Decl, public DeclContext {
 
   SrcLoc lBraceStartLoc;
   SrcLoc rBraceEndLoc;
@@ -557,7 +538,7 @@ class SpaceDecl final : public NamedDecl, public DeclContext {
 public:
   SpaceDecl(Identifier name, SrcLoc nameLoc, DeclContext *parentDC,
             SpaceDecl *parent = nullptr)
-      : NamedDecl(DeclKind::Space, name, nameLoc, context),
+      : Decl(DeclKind::Space, name, nameLoc, context),
         DeclContext(DeclContextKind::SpaceDecl, parentDC) {}
 
 public:
@@ -566,6 +547,7 @@ public:
 class TypeParamDecl : public TypeDecl {};
 
 // This is really your function prototye
+// This should be TypeDecl
 class FunctionDecl : public GenericContext,
                      public ValueDecl
 /*, public Redeclarable<FunctionDecl>*/ {
@@ -793,7 +775,7 @@ class ParamDecl : public VarDecl {
 public:
 };
 
-class ImportDecl final : public NamedDecl {
+class ImportDecl final : public Decl {
   SrcLoc importLoc;
   ImportKind importKind;
 
@@ -801,8 +783,13 @@ public:
   // Module *mod = nullptr;
 };
 
+class UsingDecl final : public Decl {
+
+public:
+};
+
 /// THINK: join a module -- this is also defined lower
-// class JoinDecl final : public NamedDecl {
+// class JoinDecl final : public Decl {
 //   SrcLoc joinLoc;
 
 // public:
