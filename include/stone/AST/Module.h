@@ -2,6 +2,7 @@
 #define STONE_AST_MODULE_H
 
 #include "stone/AST/ASTContext.h"
+#include "stone/AST/ASTAllocation.h"
 #include "stone/AST/ASTScope.h"
 #include "stone/AST/ASTWalker.h"
 #include "stone/AST/Decl.h"
@@ -246,7 +247,7 @@ public:
 
 class ModuleDecl final : public DeclContext,
                          public TypeDecl,
-                         public MemoryAllocation<ModuleDecl> {
+                         public ASTAllocation<ModuleDecl> {
 
   // TODO: This is not yet implemented
   ModuleDecl *parent = nullptr;
