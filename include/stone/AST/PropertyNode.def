@@ -1,0 +1,87 @@
+#ifndef ABSTRACT_PROPERTY
+#define ABSTRACT_PROPERTY(ID, Parent)
+#endif
+
+#ifndef MODIFIER_PROPERTY
+#define MODIFIER_PROPERTY(ID, Parent) PROPERTY(ID, Parent)
+#endif
+
+#ifndef ATTRIBUTE_PROPERTY
+#define ATTRIBUTE_PROPERTY(ID, Parent) PROPERTY(ID, Parent)
+#endif
+
+#ifndef DECL_MODIFIER
+#define DECL_MODIFIER(ID, Parent) MODIFIER_PROPERTY(ID, Parent)
+#endif
+
+#ifndef TYPE_MODIFIER
+#define TYPE_MODIFIER(ID, Parent) MODIFIER_PROPERTY(ID, Parent)
+#endif
+
+#ifndef DECL_ATTRIBUTE
+#define DECL_ATTRIBUTE(ID, Parent) ATTRIBUTE_PROPERTY(ID, Parent)
+#endif
+
+#ifndef TYPE_ATTRIBUTE
+#define TYPE_ATTRIBUTE(ID, Parent) ATTRIBUTE_PROPERTY(ID, Parent)
+#endif
+
+#ifndef PROPERTY_RANGE
+#define PROPERTY_RANGE(ID, First, Last)
+#endif
+
+#ifndef LAST_PROPERTY
+#define LAST_PROPERTY(ID)
+#endif
+
+// Property hierarchy starts here
+
+// Root properties for declarations and types
+ABSTRACT_PROPERTY(Decl, Property)
+    // Declaration-specific modifiers
+    ABSTRACT_PROPERTY(DeclModifier, DeclProperty)
+        ABSTRACT_PROPERTY(Storage, DeclModifier)
+            DECL_MODIFIER(Static, StorageModifier)
+            DECL_MODIFIER(Extern, StorageModifier)
+        ABSTRACT_PROPERTY(Visibility, DeclModifier)
+            DECL_MODIFIER(Public, VisibilityModifier)
+            DECL_MODIFIER(Protected, VisibilityModifier)
+            DECL_MODIFIER(Private, VisibilityModifier)
+        PROPERTY_RANGE(DeclModifier, Static, Private)
+
+    // Declaration-specific attributes
+    ABSTRACT_PROPERTY(DeclAttribute, DeclProperty)
+        DECL_ATTRIBUTE(Deprecated, DeclAttribute)
+        DECL_ATTRIBUTE(Final, DeclAttribute)
+        DECL_ATTRIBUTE(Override, DeclAttribute)
+        DECL_ATTRIBUTE(Inline, DeclAttribute)
+        PROPERTY_RANGE(DeclAttribute, Deprecated, Inline)
+
+ABSTRACT_PROPERTY(Type, Property)
+    // Type-specific modifiers
+    ABSTRACT_PROPERTY(TypeModifier, TypeProperty)
+        TYPE_MODIFIER(Const, TypeModifier)
+        TYPE_MODIFIER(Pure, TypeModifier)
+        TYPE_MODIFIER(Stone, TypeModifier)
+        TYPE_MODIFIER(Volatile, TypeModifier)
+        PROPERTY_RANGE(TypeModifier, Const, Volatile)
+
+    // Type-specific attributes
+    ABSTRACT_PROPERTY(TypeAttribute, TypeProperty)
+        TYPE_ATTRIBUTE(Nullable, TypeAttribute)
+        TYPE_ATTRIBUTE(Aligned, TypeAttribute)
+        TYPE_ATTRIBUTE(Packed, TypeAttribute)
+        PROPERTY_RANGE(TypeAttribute, Nullable, Packed)
+
+LAST_PROPERTY(Packed)
+
+// Undefine macros
+#undef ABSTRACT_PROPERTY
+#undef MODIFIER_PROPERTY
+#undef ATTRIBUTE_PROPERTY
+#undef DECL_MODIFIER
+#undef TYPE_MODIFIER
+#undef DECL_ATTRIBUTE
+#undef TYPE_ATTRIBUTE
+#undef PROPERTY_RANGE
+#undef LAST_PROPERTY

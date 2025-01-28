@@ -26,6 +26,7 @@ set(stone_ast_sources
 	ASTVisitor.cpp
 	ASTWalker.cpp
 	Generics.cpp
+	Property.cpp
 	Type.cpp
 	VerifyDecl.cpp
 	VirtualTable.cpp
