@@ -202,7 +202,7 @@ class DeclName {
   /// Either a single identifier piece stored inline, or a reference to a
   /// compound declaration name.
   llvm::PointerUnion<DeclNameBase, CompoundDeclName *> nameBaseOrCompound;
-  
+
   explicit DeclName(void *opaquePtr)
       : nameBaseOrCompound(
             decltype(nameBaseOrCompound)::getFromOpaqueValue(opaquePtr)) {}

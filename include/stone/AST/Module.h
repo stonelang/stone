@@ -1,8 +1,8 @@
 #ifndef STONE_AST_MODULE_H
 #define STONE_AST_MODULE_H
 
-#include "stone/AST/ASTContext.h"
 #include "stone/AST/ASTAllocation.h"
+#include "stone/AST/ASTContext.h"
 #include "stone/AST/ASTScope.h"
 #include "stone/AST/ASTWalker.h"
 #include "stone/AST/Decl.h"
