@@ -1,0 +1,13 @@
+
+
+atuo T struct Queue{
+
+}
+
+using Queue public fun Push(raw T t) {
+}
+
+public fun Main() -> int {
+	using int raw Queue = new Queue();
+
+}

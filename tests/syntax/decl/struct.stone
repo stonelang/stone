@@ -1,0 +1,12 @@
+
+public struct S0 {
+}
+
+
+public struct S1 {
+}
+
+
+
+public using S1 fun Print() {
+}

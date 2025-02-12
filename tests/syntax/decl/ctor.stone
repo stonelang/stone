@@ -1,0 +1,26 @@
+
+struct Electron {
+	float64 mass; 
+}
+
+using Electron public fun this() using this(0) {
+
+}
+
+
+using Electron public fun this(float64 mass) {
+	this.mass = mass; 
+}
+
+using Electron public fun ~fun() {
+}
+
+
+public fun Test() {
+
+	auto elctron =  new Electron();
+
+	~fun(){
+		del electron; 
+	}
+}

@@ -1,0 +1,6 @@
+
+
+
+fun Main() -> int {
+	return 0;
+}

@@ -103,6 +103,33 @@ public:
       : DeclAttribute(PropertyKind::Deprecated, loc) {}
 };
 
+class TypeProperty : public Property {
+public:
+  TypeProperty(PropertyKind kind, SrcLoc loc) : Property(kind, loc) {}
+};
+
+class TypeModifier : public TypeProperty {
+public:
+  TypeModifier(PropertyKind kind, SrcLoc loc) : TypeProperty(kind, loc) {}
+};
+
+class ConstModifier : public TypeModifier {
+public:
+  ConstModifier(SrcLoc loc) : TypeModifier(PropertyKind::Const, loc) {}
+};
+class PureModifier : public TypeModifier {
+public:
+  PureModifier(SrcLoc loc) : TypeModifier(PropertyKind::Pure, loc) {}
+};
+class StoneModifier : public TypeModifier {
+public:
+  StoneModifier(SrcLoc loc) : TypeModifier(PropertyKind::Stone, loc) {}
+};
+class VolatileModifier : public TypeModifier {
+public:
+  VolatileModifier(SrcLoc loc) : TypeModifier(PropertyKind::Volatile, loc) {}
+};
+
 template <typename PropertyType> class PropertyCollector {
   llvm::DenseMap<PropertyKind, PropertyType *> properties;
   llvm::BitVector propertyMask;
