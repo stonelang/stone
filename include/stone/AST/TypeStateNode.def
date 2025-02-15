@@ -31,7 +31,7 @@
 ABSTRACT_TYPESTATE(DeclRef, TypeState)
   ABSTRACT_TYPESTATE(Identifier, DeclRefTypeState)
     TYPESTATE(SimpleIdentifier, IdentifierTypeState)
-    //TYPESTATE(GenericIdentifier, IdentifierTypeState)
+    //TYPESTATE(TemplateIdentifier, IdentifierTypeState)
   TYPESTATE(Member, DeclRefTypeState)
 
 TYPESTATE(Function, TypeState)

@@ -19,7 +19,7 @@ namespace stone {
 class DiagnosticEngine;
 
 class ASTContext;
-class GenericParamList;
+class TemplateParamList;
 class NormalInterfaceConformance;
 class RootInterfaceConformance;
 class InterfaceConformance;
@@ -238,12 +238,12 @@ enum class InterfaceConformanceState {
 //   getAssociatedConformance(Type assocType, InterfaceDecl *protocol) const;
 
 //   /// Get the generic parameters open on the conforming type.
-//   GenericEnvironment *getGenericEnvironment() const;
+//   TemplateEnvironment *getTemplateEnvironment() const;
 
 //   /// Get the generic signature containing the parameters open on the
 //   conforming
 //   /// interface type.
-//   GenericSignature getGenericSignature() const;
+//   TemplateSignature getTemplateSignature() const;
 
 //   /// Get the substitutions associated with this conformance.
 //   SubstitutionMap getSubstitutions(ModuleDecl *M) const;
@@ -763,11 +763,11 @@ enum class InterfaceConformanceState {
 // class SpecializedInterfaceConformance : public InterfaceConformance,
 //                                        public llvm::FoldingSetNode {
 //   /// The generic conformance from which this conformance was derived.
-//   RootInterfaceConformance *GenericConformance;
+//   RootInterfaceConformance *TemplateConformance;
 
 //   /// The substitutions applied to the generic conformance to produce this
 //   /// conformance.
-//   SubstitutionMap GenericSubstitutions;
+//   SubstitutionMap TemplateSubstitutions;
 
 //   /// The mapping from associated type requirements to their substitutions.
 //   ///
@@ -792,13 +792,14 @@ enum class InterfaceConformanceState {
 // public:
 //   /// Get the generic conformance from which this conformance was derived,
 //   /// if there is one.
-//   RootInterfaceConformance *getGenericConformance() const {
-//     return GenericConformance;
+//   RootInterfaceConformance *getTemplateConformance() const {
+//     return TemplateConformance;
 //   }
 
 //   /// Get the substitution map representing the substitutions used to produce
 //   /// this specialized conformance.
-//   SubstitutionMap getSubstitutionMap() const { return GenericSubstitutions; }
+//   SubstitutionMap getSubstitutionMap() const { return TemplateSubstitutions;
+//   }
 
 //   /// Get any requirements that must be satisfied for this conformance to
 //   apply.
@@ -831,27 +832,27 @@ enum class InterfaceConformanceState {
 
 //   /// Get the protocol being conformed to.
 //   InterfaceDecl *getInterface() const {
-//     return GenericConformance->getInterface();
+//     return TemplateConformance->getInterface();
 //   }
 
 //   /// Get the declaration context that contains the conforming extension or
 //   /// nominal type declaration.
 //   DeclContext *getDeclContext() const {
-//     return GenericConformance->getDeclContext();
+//     return TemplateConformance->getDeclContext();
 //   }
 
 //   /// Retrieve the state of this conformance.
 //   InterfaceConformanceState getState() const {
-//     return GenericConformance->getState();
+//     return TemplateConformance->getState();
 //   }
 
 //   /// Get the kind of source from which this conformance comes.
 //   ConformanceEntryKind getSourceKind() const {
-//     return GenericConformance->getSourceKind();
+//     return TemplateConformance->getSourceKind();
 //   }
 //   /// Get the protocol conformance which implied this implied conformance.
 //   NormalInterfaceConformance *getImplyingConformance() const {
-//     return GenericConformance->getImplyingConformance();
+//     return TemplateConformance->getImplyingConformance();
 //   }
 
 //   bool hasTypeWitness(AssociatedTypeDecl *assocType) const;
@@ -874,11 +875,11 @@ enum class InterfaceConformanceState {
 //   /// Determine whether the witness for the given requirement
 //   /// is either the default definition or was otherwise deduced.
 //   bool usesDefaultDefinition(AssociatedTypeDecl *requirement) const {
-//     return GenericConformance->usesDefaultDefinition(requirement);
+//     return TemplateConformance->usesDefaultDefinition(requirement);
 //   }
 
 //   void Profile(llvm::FoldingSetNodeID &ID) {
-//     Profile(ID, getType(), getGenericConformance(), getSubstitutionMap());
+//     Profile(ID, getType(), getTemplateConformance(), getSubstitutionMap());
 //   }
 
 //   static void Profile(llvm::FoldingSetNodeID &ID, Type type,
@@ -946,7 +947,7 @@ enum class InterfaceConformanceState {
 //   /// Get the declaration context that contains the conforming extension or
 //   /// nominal type declaration.
 //   DeclContext *getDeclContext() const {
-//     auto bgc = getType()->getClassOrBoundGenericClass();
+//     auto bgc = getType()->getClassOrBoundTemplateClass();
 
 //     // In some cases, we may not have a BGC handy, in which case we should
 //     // delegate to the inherited conformance for the decl context.
@@ -1026,7 +1027,7 @@ enum class InterfaceConformanceState {
 //   friend TrailingObjects;
 
 //   InterfaceDecl *protocol;
-//   GenericSignature genericSig;
+//   TemplateSignature genericSig;
 //   size_t numConditionalRequirements : 31;
 //   unsigned builtinConformanceKind : 1;
 
@@ -1035,7 +1036,7 @@ enum class InterfaceConformanceState {
 //   }
 
 //   BuiltinInterfaceConformance(Type conformingType, InterfaceDecl *protocol,
-//                              GenericSignature genericSig,
+//                              TemplateSignature genericSig,
 //                              ArrayRef<Requirement> conditionalRequirements,
 //                              BuiltinConformanceKind kind);
 
@@ -1047,7 +1048,7 @@ enum class InterfaceConformanceState {
 
 //   /// Retrieve the generic signature that describes the type parameters used
 //   /// within the conforming type.
-//   GenericSignature getGenericSignature() const {
+//   TemplateSignature getTemplateSignature() const {
 //     return genericSig;
 //   }
 

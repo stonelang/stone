@@ -6,13 +6,13 @@
 #include "stone/AST/DeclContext.h"
 #include "stone/AST/DeclKind.h"
 #include "stone/AST/DeclName.h"
-#include "stone/AST/Generics.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/IfConfig.h"
 #include "stone/AST/Import.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/Modifier.h"
 #include "stone/AST/Storage.h"
+#include "stone/AST/Template.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeLoc.h"
 #include "stone/AST/Visibility.h"
@@ -41,6 +41,7 @@
 
 namespace stone {
 class Decl;
+class DeclState;
 class Stmt;
 class FunDecl;
 class StructDecl;
@@ -61,7 +62,7 @@ class AliasDecl;
 class ArchetypeKind;
 class ASTPrinter;
 class ASTWalker;
-class GenericParamList;
+class TemplateParamList;
 class TrailingWhereClause;
 class DiagnosticEngine;
 
@@ -85,6 +86,8 @@ class alignas(1 << DeclAlignInBits) Decl : public ASTAllocation<Decl> {
 
   DeclName name;
   SrcLoc nameLoc;
+
+  DeclState *state;
 
 protected:
   union {
@@ -343,6 +346,9 @@ public:
   const DeclModifierList &GetModifiers() const { return Modifiers; }
   DeclModifierList &GetModifiers() { return Modifiers; }
 
+  void SetState(DeclState *ds) { state = ds; }
+  DeclState *GetState() { return state; }
+
 public:
   bool IsTopLevel() { return Bits.Decl.IsTopLevel; }
   void SetIsTopLevel(bool isTopLevel = true) {
@@ -351,7 +357,7 @@ public:
 
 protected:
   Decl(DeclKind kind, DeclName name, SrcLoc nameLoc, UnifiedContext context)
-      : kind(kind), nameLoc(nameLoc), context(context) {}
+      : kind(kind), name(name), nameLoc(nameLoc), context(context) {}
 
 protected:
   template <typename DeclTy> friend class Redeclarable;
@@ -457,11 +463,11 @@ public:
   // void SetStartSrcLoc(startSrcLoc L) { LocStart = L; }
 };
 
-class alignas(8) GenericContextBase {
-  // // Not really public. See GenericContext.
+class alignas(8) TemplateContextBase {
+  // // Not really public. See TemplateContext.
 public:
   /// The state of the generic parameters.
-  enum class GenericParamsState : uint8_t {
+  enum class TemplateParamsState : uint8_t {
     /// The stored generic parameters represent parsed generic parameters,
     /// written in the source.
     Parsed = 0,
@@ -473,7 +479,7 @@ public:
     ParsedAndTypeChecked = 2,
   };
 
-  llvm::PointerIntPair<GenericParamList *, 2, GenericParamsState>
+  llvm::PointerIntPair<TemplateParamList *, 2, TemplateParamsState>
       genericParamsAndState;
 
   /// The trailing where clause.
@@ -483,30 +489,30 @@ public:
   TrailingWhereClause *trailingWhereClause = nullptr;
 
   //   /// The generic signature of this declaration.
-  //   llvm::PointerIntPair<GenericSignature, 1, bool> GenericSigAndBit;
+  //   llvm::PointerIntPair<TemplateSignature, 1, bool> TemplateSigAndBit;
 };
 
-class GenericContext : private GenericContextBase, public DeclContext {
+class TemplateContext : private TemplateContextBase, public DeclContext {
 public:
-  GenericContext(DeclContextKind kind, DeclContext *parent,
-                 GenericParamList *params = nullptr);
+  TemplateContext(DeclContextKind kind, DeclContext *parent,
+                  TemplateParamList *params = nullptr);
 };
 
-class GenericTypeDecl : public GenericContext, public TypeDecl {
+class TemplateTypeDecl : public TemplateContext, public TypeDecl {
 public:
-  GenericTypeDecl(DeclKind K, DeclContext *DC, Identifier name, SrcLoc nameLoc,
-                  Type type,
-                  /*llvm::ArrayRef<InheritedEntry> inherited,*/
-                  GenericParamList *genericParams = nullptr);
+  TemplateTypeDecl(DeclKind K, DeclContext *DC, Identifier name, SrcLoc nameLoc,
+                   Type type,
+                   /*llvm::ArrayRef<InheritedEntry> inherited,*/
+                   TemplateParamList *genericParams = nullptr);
 };
 
-class GenericTypeParamDecl final
+class TemplateTypeParamDecl final
     : public TypeDecl,
-      private llvm::TrailingObjects<GenericTypeParamDecl, Type *, SrcLoc> {
+      private llvm::TrailingObjects<TemplateTypeParamDecl, Type *, SrcLoc> {
   friend TrailingObjects;
 };
 
-class AliasDecl : public GenericTypeDecl {
+class AliasDecl : public TemplateTypeDecl {
 
   /// The location of the 'alias' keyword // seems that this location should be
   /// in TypeDecl
@@ -547,7 +553,7 @@ class TypeParamDecl : public TypeDecl {};
 
 // This is really your function prototye
 // This should be TypeDecl
-class FunctionDecl : public GenericContext,
+class FunctionDecl : public TemplateContext,
                      public ValueDecl
 /*, public Redeclarable<FunctionDecl>*/ {
 
@@ -588,7 +594,7 @@ public:
 public:
   FunctionDecl(DeclKind kind, DeclName name, SrcLoc nameLoc, Type resultType,
                DeclContext *parent)
-      : GenericContext(DeclContextKind::FunctionDecl, parent),
+      : TemplateContext(DeclContextKind::FunctionDecl, parent),
         ValueDecl(kind, name, nameLoc, resultType, parent) {}
 
 public:
@@ -706,7 +712,7 @@ class DestructorDecl : public FunctionDecl {
 public:
 };
 
-class NominalTypeDecl : public GenericTypeDecl {
+class NominalTypeDecl : public TemplateTypeDecl {
 public:
   static bool classof(const Decl *d) { return true; }
 };
@@ -796,7 +802,7 @@ public:
 
 class TrustDecl final
     : public Decl,
-      public llvm::TrailingObjects<TrustDecl, GenericParamList *> {
+      public llvm::TrailingObjects<TrustDecl, TemplateParamList *> {
 
 public:
 };

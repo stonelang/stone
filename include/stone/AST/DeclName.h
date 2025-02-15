@@ -15,7 +15,7 @@ class ASTContext;
 class DeclName;
 class DeclNameTable;
 
-class GenericDecl;
+class TemplateDecl;
 // class TypeSourceInfo
 
 enum class DeclNameKind : uint8 {

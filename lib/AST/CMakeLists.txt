@@ -25,7 +25,7 @@ set(stone_ast_sources
 	ASTScope.cpp
 	ASTVisitor.cpp
 	ASTWalker.cpp
-	Generics.cpp
+	Template.cpp
 	Property.cpp
 	Type.cpp
 	VerifyDecl.cpp

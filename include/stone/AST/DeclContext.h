@@ -46,7 +46,7 @@ enum class DeclContextKind : uint8 {
   ModuleFile,
   FunctionDecl,
   EnumElementDecl,
-  GenericTypeDecl,
+  TemplateTypeDecl,
   ClosureExpr,
   SerializedLocal,
   Initializer,
@@ -129,7 +129,7 @@ public:
   bool IsDecl() {
     return IsAny(DeclContextKind::SpaceDecl, DeclContextKind::ModuleDecl,
                  DeclContextKind::FunctionDecl,
-                 DeclContextKind::GenericTypeDecl,
+                 DeclContextKind::TemplateTypeDecl,
                  DeclContextKind::EnumElementDecl);
   }
   Decl *ToDecl() {

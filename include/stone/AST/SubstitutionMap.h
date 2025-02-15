@@ -13,10 +13,10 @@ class FoldingSetNodeID;
 
 namespace stone {
 
-// class GenericEnvironment;
-// class GenericParamList;
+// class TemplateEnvironment;
+// class TemplateParamList;
 // class SubstitutableType;
-// typedef CanTypeWrapper<GenericTypeParamType> CanGenericTypeParamType;
+// typedef CanTypeWrapper<TemplateTypeParamType> CanTemplateTypeParamType;
 
 // template<class Type> class CanTypeWrapper;
 // typedef CanTypeWrapper<SubstitutableType> CanSubstitutableType;
@@ -70,7 +70,7 @@ public:
 
   //   /// Form a substitution map for the given generic signature with the
   //   /// specified replacement types and conformances.
-  //   SubstitutionMap(GenericSignature genericSig,
+  //   SubstitutionMap(TemplateSignature genericSig,
   //                   ArrayRef<Type> replacementTypes,
   //                   ArrayRef<ProtocolConformanceRef> conformances);
 
@@ -83,7 +83,7 @@ public:
   //   /// Build an interface type substitution map for the given generic
   //   /// signature and a vector of Substitutions that correspond to the
   //   /// requirements of this generic signature.
-  //   static SubstitutionMap get(GenericSignature genericSig,
+  //   static SubstitutionMap get(TemplateSignature genericSig,
   //                              ArrayRef<Type> replacementTypes,
   //                              ArrayRef<ProtocolConformanceRef> conformances)
   //                              {
@@ -92,19 +92,19 @@ public:
 
   //   /// Build an interface type substitution map for the given generic
   //   /// signature using the mapping in the given substitutions.
-  //   static SubstitutionMap get(GenericSignature genericSig,
+  //   static SubstitutionMap get(TemplateSignature genericSig,
   //                              SubstitutionMap substitutions);
 
   //   /// Build an interface type substitution map for the given generic
   //   signature
   //   /// from a type substitution function and conformance lookup function.
-  //   static SubstitutionMap get(GenericSignature genericSig,
+  //   static SubstitutionMap get(TemplateSignature genericSig,
   //                              TypeSubstitutionFn subs,
   //                              LookupConformanceFn lookupConformance);
 
   //   /// Retrieve the generic signature describing the environment in which
   //   /// substitutions occur.
-  //   GenericSignature getGenericSignature() const;
+  //   TemplateSignature getTemplateSignature() const;
 
   //   /// Retrieve the array of protocol conformances, which line up with the
   //   /// requirements of the generic signature.
@@ -190,19 +190,20 @@ public:
   //   static SubstitutionMap
   //   getOverrideSubstitutions(const NominalTypeDecl *baseNominal,
   //                            const NominalTypeDecl *derivedNominal,
-  //                            GenericSignature baseSig,
-  //                            const GenericParamList *derivedParams);
+  //                            TemplateSignature baseSig,
+  //                            const TemplateParamList *derivedParams);
 
   //   /// Combine two substitution maps as follows.
   //   ///
   //   /// The result is written in terms of the generic parameters of
   //   'genericSig'.
   //   ///
-  //   /// Generic parameters with a depth or index less than
+  //   /// Template parameters with a depth or index less than
   //   'firstDepthOrIndex'
   //   /// come from 'firstSubMap'.
   //   ///
-  //   /// Generic parameters with a depth greater than 'firstDepthOrIndex' come
+  //   /// Template parameters with a depth greater than 'firstDepthOrIndex'
+  //   come
   //   /// from 'secondSubMap', but are looked up starting with a depth or index
   //   of
   //   /// 'secondDepthOrIndex'.
@@ -214,7 +215,7 @@ public:
   //                           CombineSubstitutionMaps how,
   //                           unsigned baseDepthOrIndex,
   //                           unsigned origDepthOrIndex,
-  //                           GenericSignature genericSig);
+  //                           TemplateSignature genericSig);
 
   //   /// Swap archetypes in the substitution map's replacement types with
   //   their
@@ -262,8 +263,8 @@ public:
   //   }
 
   // private:
-  //   friend class GenericSignature;
-  //   friend class GenericEnvironment;
+  //   friend class TemplateSignature;
+  //   friend class TemplateEnvironment;
   //   friend struct QuerySubstitutionMap;
 
   //   /// Look up the replacement for the given type parameter or interface
@@ -306,12 +307,12 @@ public:
 //   unsigned BaseDepth;
 //   unsigned OrigDepth;
 //   SubstitutionMap BaseSubMap;
-//   const GenericParamList *DerivedParams;
+//   const TemplateParamList *DerivedParams;
 
 //   OverrideSubsInfo(const NominalTypeDecl *baseNominal,
 //                    const NominalTypeDecl *derivedNominal,
-//                    GenericSignature baseSig,
-//                    const GenericParamList *derivedParams);
+//                    TemplateSignature baseSig,
+//                    const TemplateParamList *derivedParams);
 // };
 
 // struct QueryOverrideSubs {

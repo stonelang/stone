@@ -162,7 +162,7 @@ public:
   // /// This method configures whether the walker should explore into the
   // generic
   // /// params in AbstractFunctionDecl and NominalTypeDecl.
-  // virtual bool shouldWalkIntoGenericParams() { return false; }
+  // virtual bool shouldWalkIntoTemplateParams() { return false; }
 
   // /// This method configures whether the walker should walk into the
   // /// initializers of lazy variables.  These initializers are semantically

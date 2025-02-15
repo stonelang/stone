@@ -1,9 +1,9 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/ASTContext.h"
-#include "stone/AST/Generics.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
 #include "stone/AST/Stmt.h"
+#include "stone/AST/Template.h"
 #include "stone/AST/Type.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/LangOptions.h"
@@ -131,15 +131,15 @@ bool ValueDecl::IsInstanceMember() const {
 //   llvm_unreachable("Unknown decl kind");
 // }
 
-GenericContext::GenericContext(DeclContextKind kind, DeclContext *parent,
-                               GenericParamList *params)
-    : GenericContextBase(), DeclContext(kind, parent) {
+TemplateContext::TemplateContext(DeclContextKind kind, DeclContext *parent,
+                                 TemplateParamList *params)
+    : TemplateContextBase(), DeclContext(kind, parent) {
 
   // TODO:
   // if (params) {
   //   params->SetDeclContext(this);
   //   cenericParamsAndState.setPointerAndInt(params,
-  //   GenericParamsState::Parsed);
+  //   TemplateParamsState::Parsed);
   // }
 }
 

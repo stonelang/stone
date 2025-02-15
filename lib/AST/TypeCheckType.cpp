@@ -27,4 +27,4 @@ public:
 
 // void TypeChecker::CheckTypes(TrailingWhereClause *whereClause) {}
 
-// void TypeChecker::CheckTypes(GenericParamList *params) {}
+// void TypeChecker::CheckTypes(TemplateParamList *params) {}

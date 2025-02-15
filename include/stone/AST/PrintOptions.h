@@ -185,7 +185,7 @@ public:
   bool IsForSwiftInterface = false;
 
   /// Whether to print generic requirements in a where clause.
-  bool PrintGenericRequirements = true;
+  bool PrintTemplateRequirements = true;
 
   /// Whether to print generic signatures with inverse requirements (ie,
   /// ~Copyable noting the absence of Copyable) or the internal desugared form
@@ -228,7 +228,7 @@ public:
   bool SuppressOptionalIsolatedParams = false;
 
   /// Suppress Noncopyable generics.
-  bool SuppressNoncopyableGenerics = false;
+  bool SuppressNoncopyableTemplates = false;
 
   /// Suppress printing of `borrowing` and `consuming`.
   bool SuppressNoncopyableOwnershipModifiers = false;
