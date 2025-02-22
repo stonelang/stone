@@ -2,7 +2,8 @@
 #define STONE_AST_DECLSTATE_H
 
 #include "stone/AST/ASTAllocation.h"
-#include "stone/AST/DeclState.h"
+#include "stone/AST/DeclName.h"
+
 #include "stone/AST/Property.h"
 #include "stone/AST/TypeAlignment.h"
 
@@ -25,6 +26,8 @@ class alignas(1 << DeclAlignInBits) DeclState final : ASTAllocation<DeclState> {
 
   TypeState *typeState = nullptr;
 
+  DeclName declName;
+
 public:
   void SetTypeState(TypeState *TS) { typeState = TS; }
   TypeState *GetTypeState() { return typeState; }
@@ -37,6 +40,8 @@ public:
   void AddProperty(PropertyKind kind, DeclProperty *property) {
     properties.AddProperty(kind, property);
   }
+  void SetDeclName(DeclName name) { declName = name; }
+  DeclName GetDeclName() { return declName; }
 
 private:
   // Direct comparison is disabled for states

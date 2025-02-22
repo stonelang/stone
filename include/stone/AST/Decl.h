@@ -258,10 +258,10 @@ protected:
   } Bits;
 
   // Storage for the declaration attributes.
-  DeclAttributeList Attributes;
+  // DeclAttributeList Attributes;
 
   // Storage for the declaration attributes.
-  DeclModifierList Modifiers;
+  // DeclModifierList Modifiers;
 
   /// The next declaration in the list of declarations within this
   /// member context.
@@ -340,11 +340,11 @@ public:
     return *context.get<ASTContext *>();
   }
 
-  const DeclAttributeList &GetAttributes() const { return Attributes; }
-  DeclAttributeList &GetAttributes() { return Attributes; }
+  // const DeclAttributeList &GetAttributes() const { return Attributes; }
+  // DeclAttributeList &GetAttributes() { return Attributes; }
 
-  const DeclModifierList &GetModifiers() const { return Modifiers; }
-  DeclModifierList &GetModifiers() { return Modifiers; }
+  // const DeclModifierList &GetModifiers() const { return Modifiers; }
+  // DeclModifierList &GetModifiers() { return Modifiers; }
 
   void SetState(DeclState *ds) { state = ds; }
   DeclState *GetState() { return state; }

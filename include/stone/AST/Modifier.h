@@ -113,60 +113,61 @@ public:
   }
 };
 
-class DeclModifier : public Modifier {
-  DeclModifier *Next = nullptr;
+// class DeclModifier : public Modifier {
+//   DeclModifier *Next = nullptr;
 
-public:
-  DeclModifier(ModifierKind Kind) : Modifier(Kind) {}
-};
+// public:
+//   DeclModifier(ModifierKind Kind) : Modifier(Kind) {}
+// };
 
-class StorageDeclModifier : public DeclModifier {
+// class StorageDeclModifier : public DeclModifier {
 
-public:
-  StorageDeclModifier(ModifierKind Kind) : DeclModifier(Kind) {}
-};
+// public:
+//   StorageDeclModifier(ModifierKind Kind) : DeclModifier(Kind) {}
+// };
 
-class StaticDeclModifier : public StorageDeclModifier {
+// class StaticDeclModifier : public StorageDeclModifier {
 
-public:
-  StaticDeclModifier() : StorageDeclModifier(ModifierKind::Static) {}
-};
+// public:
+//   StaticDeclModifier() : StorageDeclModifier(ModifierKind::Static) {}
+// };
 
-class ExternDeclModifier : public StorageDeclModifier {
-public:
-  ExternDeclModifier() : StorageDeclModifier(ModifierKind::Extern) {}
-};
+// class ExternDeclModifier : public StorageDeclModifier {
+// public:
+//   ExternDeclModifier() : StorageDeclModifier(ModifierKind::Extern) {}
+// };
 
-class VisibilityDeclModifier : public DeclModifier {
-public:
-  VisibilityDeclModifier(ModifierKind Kind) : DeclModifier(Kind) {}
-};
+// class VisibilityDeclModifier : public DeclModifier {
+// public:
+//   VisibilityDeclModifier(ModifierKind Kind) : DeclModifier(Kind) {}
+// };
 
-class PublicDeclModifier : public VisibilityDeclModifier {
-public:
-  PublicDeclModifier() : VisibilityDeclModifier(ModifierKind::Public) {}
-};
-class ProtectedDeclModifier : public VisibilityDeclModifier {
-public:
-  ProtectedDeclModifier() : VisibilityDeclModifier(ModifierKind::Protected) {}
-};
-class PrivateDeclModifier : public VisibilityDeclModifier {
-public:
-  PrivateDeclModifier() : VisibilityDeclModifier(ModifierKind::Protected) {}
-};
+// class PublicDeclModifier : public VisibilityDeclModifier {
+// public:
+//   PublicDeclModifier() : VisibilityDeclModifier(ModifierKind::Public) {}
+// };
+// class ProtectedDeclModifier : public VisibilityDeclModifier {
+// public:
+//   ProtectedDeclModifier() : VisibilityDeclModifier(ModifierKind::Protected)
+//   {}
+// };
+// class PrivateDeclModifier : public VisibilityDeclModifier {
+// public:
+//   PrivateDeclModifier() : VisibilityDeclModifier(ModifierKind::Protected) {}
+// };
 
-/// Attributes that may be applied to declarations.
-class DeclModifierList {
-  /// Linked list of declaration attributes.
-  DeclModifier *modifiers;
-};
+// /// Attributes that may be applied to declarations.
+// class DeclModifierList {
+//   /// Linked list of declaration attributes.
+//   DeclModifier *modifiers;
+// };
 
-class TypeModifier : public Modifier {
-  TypeModifier *Next = nullptr;
+// class TypeModifier : public Modifier {
+//   TypeModifier *Next = nullptr;
 
-public:
-  TypeModifier(ModifierKind Kind) : Modifier(Kind) {}
-};
+// public:
+//   TypeModifier(ModifierKind Kind) : Modifier(Kind) {}
+// };
 
 // class MutableTypeModifier : public TypeModifier { };
 // class VolatileTypeModifier : public TypeModifier {};
@@ -177,49 +178,49 @@ public:
 //   VolatileTypeModifier() : TypeModifier(ModifierKind::Volatile) {}
 // };
 
-class ConstTypeModifier : public TypeModifier {
+// class ConstTypeModifier : public TypeModifier {
 
-public:
-  ConstTypeModifier() : TypeModifier(ModifierKind::Const) {}
-};
-// class PureTypeModifier : public TypeModifier {};
-// class StoneTypeModifier : public TypeModifier {};
+// public:
+//   ConstTypeModifier() : TypeModifier(ModifierKind::Const) {}
+// };
+// // class PureTypeModifier : public TypeModifier {};
+// // class StoneTypeModifier : public TypeModifier {};
 
-class AccessTypeModifier : public TypeModifier {
-  unsigned levels;
+// class AccessTypeModifier : public TypeModifier {
+//   unsigned levels;
 
-public:
-  AccessTypeModifier(ModifierKind kind, unsigned levels)
-      : TypeModifier(kind), levels(levels) {}
+// public:
+//   AccessTypeModifier(ModifierKind kind, unsigned levels)
+//       : TypeModifier(kind), levels(levels) {}
 
-public:
-  /// Get the number of levels for this access modifier.
-  unsigned GetLevels() const { return levels; }
+// public:
+//   /// Get the number of levels for this access modifier.
+//   unsigned GetLevels() const { return levels; }
 
-  /// Set the number of levels for this access modifier.
-  void SetLevels(int newLevels) { levels = newLevels; }
-};
-class PointerTypeModifier : public AccessTypeModifier {
-public:
-  PointerTypeModifier(unsigned levels = 1)
-      : AccessTypeModifier(ModifierKind::Pointer, levels) {}
-};
-// class OwnTypeModifier : public AccessTypeModifier {};
-// class MoveTypeModifier : public AccessTypeModifier {};
+//   /// Set the number of levels for this access modifier.
+//   void SetLevels(int newLevels) { levels = newLevels; }
+// };
+// class PointerTypeModifier : public AccessTypeModifier {
+// public:
+//   PointerTypeModifier(unsigned levels = 1)
+//       : AccessTypeModifier(ModifierKind::Pointer, levels) {}
+// };
+// // class OwnTypeModifier : public AccessTypeModifier {};
+// // class MoveTypeModifier : public AccessTypeModifier {};
 
-class ReferenceTypeModifier : public AccessTypeModifier {
-public:
-  ReferenceTypeModifier(unsigned levels = 1)
-      : AccessTypeModifier(ModifierKind::Reference, levels) {}
-};
+// class ReferenceTypeModifier : public AccessTypeModifier {
+// public:
+//   ReferenceTypeModifier(unsigned levels = 1)
+//       : AccessTypeModifier(ModifierKind::Reference, levels) {}
+// };
 
-// class ArrayTypeModifier : public AccessTypeModifier {};
+// // class ArrayTypeModifier : public AccessTypeModifier {};
 
-/// Attributes that may be applied to declarations.
-class TypeModifierList {
-  /// Linked list of declaration attributes.
-  TypeModifier *modifiers;
-};
+// /// Attributes that may be applied to declarations.
+// class TypeModifierList {
+//   /// Linked list of declaration attributes.
+//   TypeModifier *modifiers;
+// };
 
 } // namespace stone
 

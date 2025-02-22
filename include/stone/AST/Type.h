@@ -66,8 +66,8 @@ enum class RefQualifierKind : uint8 {
 
 class Type {
   UnderlyingType *typePtr;
-  TypeModifierList Modifiers;
-  // TypeMetadata* metadata;
+  // TypeModifierList Modifiers;
+  //  TypeMetadata* metadata;
 public:
   Type(UnderlyingType *typePtr = 0) : typePtr(typePtr) {}
 
@@ -80,8 +80,8 @@ public:
   }
   explicit operator bool() const { return typePtr != 0; }
 
-  const TypeModifierList &GetModifiers() const { return Modifiers; }
-  TypeModifierList &GetModifiers() { return Modifiers; }
+  // const TypeModifierList &GetModifiers() const { return Modifiers; }
+  // TypeModifierList &GetModifiers() { return Modifiers; }
 
 public:
   /// Walk this Type.

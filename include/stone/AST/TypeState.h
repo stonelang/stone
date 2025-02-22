@@ -1,7 +1,13 @@
-#ifndef STONE_AST_TYPERESULT_H
-#define STONE_AST_TYPERESULT_H
+#ifndef STONE_AST_TYPESTATE_H
+#define STONE_AST_TYPESTATE_H
 
+#include "stone/AST/DeclState.h"
+#include "stone/AST/Property.h"
+#include "stone/AST/TypeMetadata.h"
+#include "stone/AST/TypeWalker.h"
+#include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
+
 #include <stdint.h>
 
 namespace stone {
@@ -71,26 +77,76 @@ public:
   void RemoveInvalid() { RemoveFlag(TypeStateFlags::Invalid); }
 };
 
-class TypeState {
+class alignas(1 << TypeAlignInBits) TypeState
+    : public ASTAllocation<TypeState> {
   friend class ASTContext;
 
   TypeStateKind kind;
   SrcLoc loc;
   Type *ty = nullptr;
-  // TypeModifierList modifiers;
+
+  PropertyCollector<TypeProperty> properties;
 
 public:
   TypeStateFlags Flags;
 
 public:
   explicit TypeState(TypeStateKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
-  virtual ~TypeState() = default;
-  // Explicit conversion for validity checks
-  explicit operator bool() const { return ty != nullptr; }
 
 public:
   Type *GetType() const { return ty; }
   void SetType(Type *t) { ty = t; }
+
+  PropertyCollector<TypeProperty> &GetProperties() { return properties; }
+
+  bool HasProperty(PropertyKind kind) const {
+    return properties.HasProperty(kind);
+  }
+  void AddProperty(PropertyKind kind, TypeProperty *property) {
+    properties.AddProperty(kind, property);
+  }
+};
+
+class BuiltinTypeState final : public TypeState {
+  TypeKind builtinTypeKind;
+
+public:
+  BuiltinTypeState(SrcLoc loc) : TypeState(TypeStateKind::Builtin, loc) {}
+
+public:
+  void SetBuiltinTypeKind(TypeKind typeKind) { builtinTypeKind = typeKind; }
+  TypeKind GetBuiltinTypeKind() { return builtinTypeKind; }
+};
+
+class FunctionTypeState : public TypeState {
+
+  SrcLoc arrowLoc;
+  SrcLoc lParenLoc;
+  SrcLoc rParenLoc;
+
+  TypeState *resultTypeState = nullptr;
+
+public:
+  FunctionTypeState(SrcLoc loc) : TypeState(TypeStateKind::Function, loc) {}
+
+public:
+  void SetResultTypeState(TypeState *typeState) { resultTypeState = typeState; }
+  TypeState *GetResultTypeState() { return resultTypeState; }
+
+  // void SetBody(BraceStmt *BS) { bodyStmt = BS; }
+  // BraceStmt *GetBody() { return bodyStmt; }
+
+  void SetArrow(SrcLoc loc) { arrowLoc = loc; }
+  SrcLoc GetArrow() { return arrowLoc; }
+  bool HasArrow() { return GetArrow().isValid(); }
+
+  void SetLParen(SrcLoc loc) { lParenLoc = loc; }
+  SrcLoc GetLParen() { return lParenLoc; }
+  bool HasLParen() { return GetLParen().isValid(); }
+
+  void SetRParen(SrcLoc loc) { rParenLoc = loc; }
+  SrcLoc GetRParen() { return rParenLoc; }
+  bool HasRParen() { return GetRParen().isValid(); }
 };
 
 } // namespace stone

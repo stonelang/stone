@@ -38,3 +38,5 @@ protected:
 };
 
 } // namespace stone
+
+#endif
