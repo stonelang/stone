@@ -28,6 +28,9 @@
 
 using namespace stone;
 
+Decl::Decl(DeclKind kind, DeclName name, SrcLoc nameLoc, UnifiedContext context)
+    : kind(kind), name(name), nameLoc(nameLoc), context(context) {}
+
 template <typename DeclTy, typename AllocatorTy>
 void *Decl::AllocateMemory(AllocatorTy &allocatorTy, size_t baseSize,
                            bool extraSace) {

@@ -43,7 +43,6 @@ struct Builtin final {
   Builtin(const Builtin &) = delete;
   void operator=(const Builtin &) = delete;
   Builtin(const ASTContext &AC);
-
 };
 
 } // namespace stone

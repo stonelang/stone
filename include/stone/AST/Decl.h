@@ -356,8 +356,7 @@ public:
   }
 
 protected:
-  Decl(DeclKind kind, DeclName name, SrcLoc nameLoc, UnifiedContext context)
-      : kind(kind), name(name), nameLoc(nameLoc), context(context) {}
+  Decl(DeclKind kind, DeclName name, SrcLoc nameLoc, UnifiedContext context);
 
 protected:
   template <typename DeclTy> friend class Redeclarable;
