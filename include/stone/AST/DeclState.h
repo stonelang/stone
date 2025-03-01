@@ -17,7 +17,8 @@ namespace stone {
 
 class TypeState;
 
-class alignas(1 << DeclAlignInBits) DeclState final : ASTAllocation<DeclState> {
+class alignas(1 << DeclAlignInBits) DeclState final
+    : public ASTAllocation<DeclState> {
 
   PropertyCollector<DeclProperty> properties;
 

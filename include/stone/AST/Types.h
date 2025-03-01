@@ -243,7 +243,7 @@ public:
       : BuiltinType(TypeKind::Null, astContext) {}
 };
 
-enum class BitWidthKind : uint8_t {
+enum class BitWidth : uint8_t {
   Size,   // Platform-dependent size (e.g., int, uint)
   Size8,  // 8 bits
   Size16, // 16 bits
@@ -255,61 +255,17 @@ enum class BitWidthKind : uint8_t {
 class NumberType : public BuiltinType {
   friend ASTContext;
 
-protected:
+  bool IsNumberType(TypeKind kind) const;
+
 public:
   NumberType(TypeKind kind, const ASTContext &AC) : BuiltinType(kind, AC) {}
 
 public:
-  BitWidthKind GetBitWidthKind() const {
-    switch (GetKind()) {
-    case TypeKind::Int:
-    case TypeKind::UInt:
-    case TypeKind::Float:
-      return BitWidthKind::Size;
-    case TypeKind::Int8:
-      return BitWidthKind::Size8;
-    case TypeKind::Int16:
-      return BitWidthKind::Size16;
-    case TypeKind::Int32:
-      return BitWidthKind::Size32;
-    case TypeKind::Int64:
-      return BitWidthKind::Size64;
-    case TypeKind::Int128:
-      return BitWidthKind::Size128;
-    case TypeKind::UInt8:
-      return BitWidthKind::Size8;
-    case TypeKind::UInt16:
-      return BitWidthKind::Size16;
-    case TypeKind::UInt32:
-      return BitWidthKind::Size32;
-    case TypeKind::UInt64:
-      return BitWidthKind::Size64;
-    case TypeKind::UInt128:
-      return BitWidthKind::Size128;
-    case TypeKind::Float16:
-      return BitWidthKind::Size16;
-    case TypeKind::Float32:
-      return BitWidthKind::Size32;
-    case TypeKind::Float64:
-      return BitWidthKind::Size64;
-    case TypeKind::Float128:
-      return BitWidthKind::Size128;
-    case TypeKind::Complex32:
-      return BitWidthKind::Size32;
-    case TypeKind::Imaginary32:
-      return BitWidthKind::Size32;
-    case TypeKind::Imaginary64:
-      return BitWidthKind::Size64;
-    }
-    llvm_unreachable("Unknown number type");
-  }
-
-  bool IsSigned() const {
-    return false; // TODO:
-  }
-  bool IsFloat() const { return false; }
-  bool IsImaginary() const { return false; }
-  bool IsComplex() const { return false; }
+  BitWidth GetBitWidth() const;
+  bool IsSigned() const;
+  bool IsFloat() const;
+  bool IsImaginary() const;
+  bool IsComplex() const;
   // Power();
 };
 

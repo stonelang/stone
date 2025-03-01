@@ -36,6 +36,55 @@ bool UnderlyingType::IsNominalType() {
   }
 }
 
+BitWidth NumberType::GetBitWidth() const {
+  switch (GetKind()) {
+  case TypeKind::Int:
+  case TypeKind::UInt:
+  case TypeKind::Float:
+    return BitWidth::Size;
+  case TypeKind::Int8:
+    return BitWidth::Size8;
+  case TypeKind::Int16:
+    return BitWidth::Size16;
+  case TypeKind::Int32:
+    return BitWidth::Size32;
+  case TypeKind::Int64:
+    return BitWidth::Size64;
+  case TypeKind::Int128:
+    return BitWidth::Size128;
+  case TypeKind::UInt8:
+    return BitWidth::Size8;
+  case TypeKind::UInt16:
+    return BitWidth::Size16;
+  case TypeKind::UInt32:
+    return BitWidth::Size32;
+  case TypeKind::UInt64:
+    return BitWidth::Size64;
+  case TypeKind::UInt128:
+    return BitWidth::Size128;
+  case TypeKind::Float16:
+    return BitWidth::Size16;
+  case TypeKind::Float32:
+    return BitWidth::Size32;
+  case TypeKind::Float64:
+    return BitWidth::Size64;
+  case TypeKind::Float128:
+    return BitWidth::Size128;
+  case TypeKind::Complex32:
+    return BitWidth::Size32;
+  case TypeKind::Imaginary32:
+    return BitWidth::Size32;
+  case TypeKind::Imaginary64:
+    return BitWidth::Size64;
+  }
+  llvm_unreachable("Unknown number type");
+}
+bool NumberType::IsNumberType(TypeKind kind) const { return false; }
+bool NumberType::IsSigned() const { return false; }
+bool NumberType::IsFloat() const { return false; }
+bool NumberType::IsImaginary() const { return false; }
+bool NumberType::IsComplex() const { return false; }
+
 FunType::FunType(Type returnType, const ASTContext &astContext)
     : FunctionType(TypeKind::Fun, returnType, astContext) {}
 
