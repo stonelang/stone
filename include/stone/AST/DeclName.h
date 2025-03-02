@@ -38,57 +38,10 @@ public:
 public:
   bool IsValid() const { return !identifier.IsEmpty(); }
 
-  // bool isSubscript() const { return getKind() == Kind::Subscript; }
-
-  /// Return the identifier backing the name. Assumes that the name is not
-  /// special.
   Identifier GetIdentifier() const {
     // assert(!IsSpecial() && "Cannot retrieve identifier from special names");
     return identifier;
   }
-
-  // bool empty() const { return !isSpecial() && getIdentifier().empty(); }
-
-  // bool isOperator() const {
-  //   return !isSpecial() && getIdentifier().isOperator();
-  // }
-
-  // bool isEditorPlaceholder() const {
-  //   return !isSpecial() && getIdentifier().isEditorPlaceholder();
-  // }
-
-  // bool hasDollarPrefix() const {
-  //   return getIdentifier().hasDollarPrefix();
-  // }
-
-  /// A representation of the name to be displayed to users. May be ambiguous
-  /// between identifiers and special names.
-  // StringRef userFacingName() const {
-  //   if (empty())
-  //     return "_";
-
-  //   switch (getKind()) {
-  //   case Kind::Normal:
-  //     return getIdentifier().str();
-  //   case Kind::Subscript:
-  //     return "subscript";
-  //   case Kind::Constructor:
-  //     return "init";
-  //   case Kind::Destructor:
-  //     return "deinit";
-  //   }
-  //   llvm_unreachable("unhandled kind");
-  // }
-
-  // int compare(DeclNameBase other) const {
-  //   return userFacingName().compare(other.userFacingName());
-  // }
-
-  // bool operator==(StringRef Str) const {
-  //   return !IsSpecial() && GetIdentifier().IsEqual(Str);
-  // }
-
-  // bool operator!=(StringRef Str) const { return !(*this == Str); }
 
   bool operator==(DeclNameBase RHS) const {
     return identifier == RHS.identifier;
@@ -104,66 +57,6 @@ public:
     return Identifier::GetFromOpaquePointer(P);
   }
 };
-
-// namespace detail {
-// // Using, Constructor, and Destructor
-// class alignas(IdentifierAlignment) SpecialDeclNameExtra
-//     : public llvm::FoldingSetNode {
-//   friend class DeclName;
-//   friend class DeclNameTable;
-
-//   /// The type associated with this declaration name.
-//   Type ty;
-
-// public:
-//   SpecialDeclNameExtra(Type inputTy) : ty(inputTy) {}
-//   void Profile(llvm::FoldingSetNodeID &ID) {
-//     // TODO: ID.AddPointer(ty.GetAsOpaquePtr());
-//   }
-// };
-
-// /// Contains extra information for the name of an overloaded operator
-// /// in C++, such as "operator+. This do not includes literal or conversion
-// /// operators. For literal operators see LiteralOperatorIdName and for
-// /// conversion operators see CXXSpecialNameExtra.
-// class alignas(IdentifierAlignment) OperatorIdName
-//     : public detail::SpecialDeclName {
-//   friend class DeclName;
-//   friend class DeclNameTable;
-
-//   /// The kind of this operator.
-//   opr::OverloadedOperatorKind Kind = opr::None;
-// };
-
-// /// Contains the actual identifier that makes up the
-// /// name of a C++ literal operator.
-// class alignas(IdentifierAlignment) LiteralOperatorIdName
-//     : public detail::SpecialDeclName,
-//       public llvm::FoldingSetNode {
-//   friend class DeclName;
-//   friend class DeclNameTable;
-
-//   Identifier *ID;
-
-//   LiteralOperatorIdName(Identifier *II)
-//       : SpecialDeclName(LiteralOperatorName), ID(II) {}
-
-// public:
-//   void Profile(llvm::FoldingSetNodeID &FSID) { FSID.AddPointer(ID); }
-// };
-
-// } // namespace detail
-
-// private:
-// /// In a special DeclName representing a subscript, this opaque pointer
-// /// is used as the data of the base name identifier.
-// /// This is an implementation detail that should never leak outside of
-// /// DeclName.
-// static const Identifier::Aligner SubscriptIdentifierData;
-// /// As above, for special constructor DeclNames.
-// static const Identifier::Aligner ConstructorIdentifierData;
-// /// As above, for special destructor DeclNames.
-// static const Identifier::Aligner DestructorIdentifierData;
 
 /// Represents a compound declaration name.
 struct alignas(Identifier) CompoundDeclName final
@@ -246,28 +139,17 @@ public:
   int Compare(DeclName other);
 };
 
-class DeclNameLoc final {
-  DeclName name;
+// class DeclNameLoc final {
+//   DeclName name;
 
-public:
-  DeclNameLoc(DeclName name) : name(name) {}
-};
+// public:
+//   DeclNameLoc(DeclName name) : name(name) {}
+// };
 
 // Take a look at name look
 class DeclNameTable final {
-  /// Used to allocate elements in the FoldingSets below.
-  // llvm::FoldingSet<DeclName> constructors;
-  // llvm::FoldingSet<DeclName> destructors;
-
 public:
-  //   /// Returns the decl name constructor for the given Type.
-  // Declame GetConstructorDeclName(Identifier identifier);
-
-  // /// Returns the name of a C++ destructor for the given Type.
-  // Declame GetDestructorDeclName(Identifier identifier);
-
-  // DeclName GetSpecialName(Special::NameKind Kind,
-  //                                   CanType Ty);
+  DeclNameTable() {}
 };
 
 } // namespace stone

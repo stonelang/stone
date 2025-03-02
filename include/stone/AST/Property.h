@@ -130,20 +130,21 @@ public:
   VolatileModifier(SrcLoc loc) : TypeModifier(PropertyKind::Volatile, loc) {}
 };
 
-template <typename PropertyType> class PropertyCollector {
+template <typename PropertyType> class PropertyContext {
+  //llvm::DenseMap<PropertyKind, PropertyType *> duplicates;
   llvm::DenseMap<PropertyKind, PropertyType *> properties;
   llvm::BitVector propertyMask;
 
 public:
-  PropertyCollector()
+  PropertyContext()
       : propertyMask(static_cast<unsigned>(PropertyKind::Last_Type) + 1) {}
 
   // Overload the bool operator
   explicit operator bool() const { return !properties.empty(); }
 
-  void AddProperty(PropertyKind kind, PropertyType *property) {
-    properties[kind] = property;
-    propertyMask.set(static_cast<unsigned>(kind));
+  void AddProperty(PropertyType *property) {
+    properties[property->GetKind()] = property;
+    propertyMask.set(static_cast<unsigned>(property->GetKind()));
   }
 
   bool HasProperty(PropertyKind kind) const {

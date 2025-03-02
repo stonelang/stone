@@ -78,14 +78,13 @@ public:
 };
 
 class alignas(1 << TypeAlignInBits) TypeState
-    : public ASTAllocation<TypeState> {
+    : public ASTAllocation<TypeState>,
+      public PropertyContext<TypeProperty> {
   friend class ASTContext;
 
   TypeStateKind kind;
   SrcLoc typeLoc;
   Type *ty = nullptr;
-
-  PropertyCollector<TypeProperty> properties;
 
 public:
   TypeStateFlags Flags;
@@ -97,15 +96,6 @@ public:
 public:
   Type *GetType() const { return ty; }
   void SetType(Type *t) { ty = t; }
-
-  PropertyCollector<TypeProperty> &GetProperties() { return properties; }
-
-  bool HasProperty(PropertyKind kind) const {
-    return properties.HasProperty(kind);
-  }
-  void AddProperty(PropertyKind kind, TypeProperty *property) {
-    properties.AddProperty(kind, property);
-  }
 
   void SetLoc(SrcLoc loc) { typeLoc = loc; }
   SrcLoc GetLoc() { return typeLoc; }

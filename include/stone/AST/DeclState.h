@@ -18,29 +18,29 @@ namespace stone {
 class TypeState;
 
 class alignas(1 << DeclAlignInBits) DeclState final
-    : public ASTAllocation<DeclState> {
-
-  PropertyCollector<DeclProperty> properties;
+    : public ASTAllocation<DeclState>,
+      public PropertyContext<DeclProperty> {
 
   // The ASTContext associated with this DeclSate
-  ASTContext *AC = nullptr;
+  ASTContext &astContext;
 
+  // The TypeState assoicated with the DeclState
   TypeState *typeState = nullptr;
 
+  // The declaration name
   DeclName declName;
 
 public:
+  // Every DeclState must have a context
+
+  DeclState(ASTContext &AC) : astContext(astContext) {}
+
+public:
+  ASTContext &GetASTContext() { return astContext; }
+
   void SetTypeState(TypeState *TS) { typeState = TS; }
   TypeState *GetTypeState() { return typeState; }
 
-  PropertyCollector<DeclProperty> &GetProperties() { return properties; }
-
-  bool HasProperty(PropertyKind kind) const {
-    return properties.HasProperty(kind);
-  }
-  void AddProperty(PropertyKind kind, DeclProperty *property) {
-    properties.AddProperty(kind, property);
-  }
   void SetDeclName(DeclName name) { declName = name; }
   DeclName GetDeclName() { return declName; }
 
