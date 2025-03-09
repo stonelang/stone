@@ -574,7 +574,7 @@ static void formatSelectionArgument(StringRef ModifierArguments,
 //   // Compatibility aliases are only interesting insofar as their underlying
 //   // types are interesting.
 //   if (aliasDecl->isCompatibilityAlias()) {
-//     auto underlyingTy = aliasDecl->getUnderlyingType();
+//     auto underlyingTy = aliasDecl->getTypeBase();
 //     return isInterestingTypealias(underlyingTy);
 //   }
 

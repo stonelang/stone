@@ -305,7 +305,7 @@ public:
 
   /// When printing a type alias type, whether print the underlying type instead
   /// of the alias.
-  bool PrintTypeAliasUnderlyingType = false;
+  bool PrintTypeAliasTypeBase = false;
 
   /// Print the definition of a macro, e.g. `= #externalMacro(...)`.
   bool PrintMacroDefinitions = true;

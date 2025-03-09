@@ -131,9 +131,9 @@ public:
 };
 
 template <typename PropertyType> class PropertyContext {
-  //llvm::DenseMap<PropertyKind, PropertyType *> duplicates;
-  llvm::DenseMap<PropertyKind, PropertyType *> properties;
   llvm::BitVector propertyMask;
+  llvm::DenseMap<PropertyKind, PropertyType *> properties;
+  llvm::DenseMap<PropertyKind, std::vector<PropertyType *>> duplicates;
 
 public:
   PropertyContext()
@@ -149,6 +149,10 @@ public:
 
   bool HasProperty(PropertyKind kind) const {
     return propertyMask.test(static_cast<unsigned>(kind));
+  }
+  bool HasProperty(PropertyType *property) const {
+    assert(property && "Cannot add null property!");
+    return HasProperty(property->GetKind());
   }
 
   PropertyType *GetProperty(PropertyKind kind) const {

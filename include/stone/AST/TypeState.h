@@ -84,7 +84,9 @@ class alignas(1 << TypeAlignInBits) TypeState
 
   TypeStateKind kind;
   SrcLoc typeLoc;
-  Type *ty = nullptr;
+  // Type *ty = nullptr;
+
+  // TypeMetadata* metadata;
 
 public:
   TypeStateFlags Flags;
@@ -94,8 +96,8 @@ public:
       : kind(kind), typeLoc(loc) {}
 
 public:
-  Type *GetType() const { return ty; }
-  void SetType(Type *t) { ty = t; }
+  // Type *GetType() const { return ty; }
+  // void SetType(Type *t) { ty = t; }
 
   void SetLoc(SrcLoc loc) { typeLoc = loc; }
   SrcLoc GetLoc() { return typeLoc; }

@@ -15,8 +15,8 @@ static bool IsTypeKind(TypeKind kind) {
   }
 }
 
-// == UnderlyingType ==//
-bool UnderlyingType::IsBasic() {
+// == TypeBase ==//
+bool TypeBase::IsBasic() {
   switch (GetKind()) {
   case TypeKind::Float:
   case TypeKind::Int:
@@ -26,7 +26,7 @@ bool UnderlyingType::IsBasic() {
   }
 }
 
-bool UnderlyingType::IsNominalType() {
+bool TypeBase::IsNominalType() {
   switch (GetKind()) {
   case TypeKind::Interface:
   case TypeKind::Struct:

@@ -193,6 +193,9 @@ ERROR(error_unicode_escape_braces,none,
 NOTE(note_prev_decl_def,none,
      "previous definition of %0 is here", (const stone::Decl *))
 
+
+WARNING(warnning_duplicate_modifier,none, "duplicate modifier %0 ", (StringRef))
+
 ERROR(error_case_stmt_without_body,none,
       "%select{'case'|'default'}0 label in a 'match' should have at least one "
       "executable statement", (bool))

@@ -45,7 +45,7 @@ class EnumDecl;
 class ModuleDecl;
 class InterfaceType;
 class StructDecl;
-class UnderlyingType;
+class TypeBase;
 class Type;
 class TypeWalker;
 
@@ -65,16 +65,18 @@ enum class RefQualifierKind : uint8 {
 };
 
 class Type {
-  UnderlyingType *typePtr;
+  TypeBase *typePtr;
   // TypeModifierList Modifiers;
   //  TypeMetadata* metadata;
+  // TypeState *typeState = nullptr;
+
 public:
-  Type(UnderlyingType *typePtr = 0) : typePtr(typePtr) {}
+  Type(TypeBase *typePtr = 0) : typePtr(typePtr) {}
 
 public:
   bool IsNull() const { return typePtr == 0; }
-  UnderlyingType *GetPtr() const { return typePtr; }
-  UnderlyingType *operator->() const {
+  TypeBase *GetPtr() const { return typePtr; }
+  TypeBase *operator->() const {
     assert(typePtr && "Cannot dereference a null Type!");
     return typePtr;
   }
@@ -108,7 +110,7 @@ public:
   CanType() = default;
 
 public:
-  explicit CanType(UnderlyingType *ty) : Type(ty) {
+  explicit CanType(TypeBase *ty) : Type(ty) {
     // TODO: assert(IsCanTypeOrNull() &&
     //        "Forming a CanType out of a non-canonical type!");
   }

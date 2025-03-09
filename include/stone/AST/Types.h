@@ -46,6 +46,7 @@
 namespace stone {
 
 class Type;
+class TypeState;
 class TypeWalker;
 class CanType;
 class SugarType;
@@ -55,20 +56,22 @@ class FunType;
 class StructType;
 class ASTContext;
 
-class alignas(1 << UnderlyingTypeAlignInBits) UnderlyingType
+class alignas(1 << TypeBaseAlignInBits) TypeBase
     : public ASTAllocation<std::aligned_storage<8, 8>::type> {
   friend class ASTContext;
 
   const ASTContext &astContext;
-  UnderlyingType *underlyingType;
 
-  UnderlyingType(const UnderlyingType &) = delete;
-  void operator=(const UnderlyingType &) = delete;
+  /// The underlying type
+  TypeBase *underlyingType = nullptr;
+
+  TypeBase(const TypeBase &) = delete;
+  void operator=(const TypeBase &) = delete;
 
 protected:
   union {
     uint64_t OpaqueBits;
-    STONE_INLINE_BITFIELD_BASE(UnderlyingType,
+    STONE_INLINE_BITFIELD_BASE(TypeBase,
                                stone::BitMax(NumTypeKindBits, 8) + 1 + 1 + 1,
                                Kind
                                : stone::BitMax(NumTypeKindBits, 8),
@@ -83,39 +86,38 @@ protected:
   } Bits;
 
 public:
-  UnderlyingType(TypeKind kind, const ASTContext &astContext,
-                 UnderlyingType *underlyingType = nullptr)
+  TypeBase(TypeKind kind, const ASTContext &astContext,
+           TypeBase *underlyingType = nullptr)
       : astContext(astContext), underlyingType(underlyingType) {
 
-    Bits.UnderlyingType.Kind = static_cast<unsigned>(kind);
+    Bits.TypeBase.Kind = static_cast<unsigned>(kind);
+    Bits.TypeBase.IsCanonical = true;
+
+    if (underlyingType) {
+      Bits.TypeBase.IsCanonical = false;
+    }
   }
 
 public:
   bool IsBasic();
   bool IsNominalType();
 
-  /// getASTContext - Return the ASTContext that this type belongs to.
+  /// GetASTContext - Return the ASTContext that this type belongs to.
   ASTContext &GetASTContext();
 
 public:
-  // We can do this because all types are generally cannonical types.
-  // CanType GetCanType();
-
-  /// isCanonical - Return true if this is a canonical type.
-  bool IsCanType() const { return Bits.UnderlyingType.IsCanonical; }
-
-  bool AllowQualifiers() const { return Bits.UnderlyingType.AllowQualifiers; }
-
+  bool AllowQualifiers() const { return Bits.TypeBase.AllowQualifiers; }
   bool HasQualifiers() const;
 
-  /// hasCanonicalTypeComputed - Return true if we've already computed a
-  /// canonical version of this type.
-  // bool IsCanTypeComputed() const { return !canType.IsNull(); }
+  bool IsCanType() const { return Bits.TypeBase.IsCanonical; }
+  bool HasCanType() { return underlyingType != nullptr; }
+  TypeBase *GetCanType() { return underlyingType; }
+
+  // void SetState(TypeState *TS) { typeState = TS; }
+  // TypeState *GetState() { return typeState; }
 
 public:
-  TypeKind GetKind() const {
-    return static_cast<TypeKind>(Bits.UnderlyingType.Kind);
-  }
+  TypeKind GetKind() const { return static_cast<TypeKind>(Bits.TypeBase.Kind); }
   llvm::StringRef GetName() const;
 
 public:
@@ -207,19 +209,19 @@ private:
 
 // inline bool CanType::IsCanTypeOrNull() const {
 //   return IsNull() ||
-//          GetPtr() == llvm::DenseMapInfo<UnderlyingType *>::getEmptyKey() ||
-//          GetPtr() == llvm::DenseMapInfo<UnderlyingType *>::getTombstoneKey()
+//          GetPtr() == llvm::DenseMapInfo<TypeBase *>::getEmptyKey() ||
+//          GetPtr() == llvm::DenseMapInfo<TypeBase *>::getTombstoneKey()
 //          || GetPtr()->IsCanType();
 // }
 
-class BuiltinType : public UnderlyingType {
+class BuiltinType : public TypeBase {
 protected:
-  BuiltinType(TypeKind kind, const ASTContext &AC) : UnderlyingType(kind, AC) {
-    // Bits.UnderlyingType.IsBuiltin = true;
+  BuiltinType(TypeKind kind, const ASTContext &AC) : TypeBase(kind, AC) {
+    // Bits.TypeBase.IsBuiltin = true;
   }
 };
 
-// class IdentifierType : public UnderlyingType{
+// class IdentifierType : public TypeBase{
 // public:
 // };
 
@@ -410,7 +412,7 @@ public:
 public:
   static FloatType *Create(const ASTContext &astContext);
 
-  static bool classof(const UnderlyingType *T) {
+  static bool classof(const TypeBase *T) {
     return T->GetKind() == TypeKind::Float;
   }
 };
@@ -478,12 +480,12 @@ public:
 // // class TemplateParmType : public Type{
 // // };
 
-class FunctionType : public UnderlyingType {
+class FunctionType : public TypeBase {
   Type returnType;
 
 public:
   FunctionType(TypeKind kind, Type returnType, const ASTContext &astContext)
-      : UnderlyingType(kind, astContext) {}
+      : TypeBase(kind, astContext) {}
 };
 
 // You are returning Type for now, it may have to be Type
@@ -495,13 +497,13 @@ public:
   FunType(Type resultType, const ASTContext &AC);
 };
 
-class NominalType : public UnderlyingType {
+class NominalType : public TypeBase {
 protected:
   friend ASTContext;
 
 public:
   // Implement isa/cast/dyncast/etc.
-  static bool classof(const UnderlyingType *ty) {
+  static bool classof(const TypeBase *ty) {
     return ty->GetKind() >= TypeKind::First_NominalType &&
            ty->GetKind() <= TypeKind::Last_NominalType;
   }
@@ -525,7 +527,7 @@ public:
   // GetString();
 };
 
-class DeducedType : public UnderlyingType {
+class DeducedType : public TypeBase {
 protected:
   friend class ASTContext; // ASTContext creates these
 };
@@ -534,7 +536,7 @@ class AutoType final : public DeducedType, public llvm::FoldingSetNode {
 public:
 };
 
-class AccessType : public UnderlyingType {
+class AccessType : public TypeBase {
   // Base class for access-related types.
 };
 
@@ -680,7 +682,7 @@ class RefType : public ReferenceType {
 //       : Type(TypeKind::Module, &AC), mod(mod) {}
 // };
 
-class SugarType : public UnderlyingType {
+class SugarType : public TypeBase {
   // The state of this union is known via Bits.SugarType.HasCachedType so
   // that
   // we can avoid masking the pointer on the fast path.

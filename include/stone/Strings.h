@@ -26,7 +26,7 @@ constexpr static const char *STDLibName = "Stone";
 constexpr static const char *BuiltinName = "Builtin";
 
 ///
-constexpr static const char *BuiltinInt32Name = "Builtin.Int";
+constexpr static const char *BuiltinInt32Name = "Builtin.Int32";
 
 } // namespace strings
 } // namespace stone

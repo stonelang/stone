@@ -347,7 +347,7 @@ public fun Particle::Fire(int* i ) -> void {
 }
 
 
-auto(T where T using Resource) 
+auto T where T using Resource 
 struct ResourceManager {
     ptr own T resource;
 }
@@ -391,6 +391,11 @@ public fun Main() -> void {
     }
 }
 
+
+
+class Type {
+    TypeState* typeState = nullptr;
+};
 
 
 
