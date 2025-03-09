@@ -53,6 +53,7 @@ public:
 };
 
 class DeclModifier : public DeclProperty {
+
 public:
   DeclModifier(PropertyKind kind, SrcLoc loc) : DeclProperty(kind, loc) {}
 };
@@ -130,23 +131,27 @@ public:
   VolatileModifier(SrcLoc loc) : TypeModifier(PropertyKind::Volatile, loc) {}
 };
 
-template <typename PropertyType> class PropertyContext {
+class TypeAttribute : public TypeProperty {
+public:
+  TypeAttribute(PropertyKind kind, SrcLoc loc) : TypeProperty(kind, loc) {}
+};
+
+template <typename PropertyType> class PropertyList {
   llvm::BitVector propertyMask;
   llvm::DenseMap<PropertyKind, PropertyType *> properties;
-  llvm::DenseMap<PropertyKind, std::vector<PropertyType *>> duplicates;
 
 public:
-  PropertyContext()
+  PropertyList()
       : propertyMask(static_cast<unsigned>(PropertyKind::Last_Type) + 1) {}
 
   // Overload the bool operator
   explicit operator bool() const { return !properties.empty(); }
 
+public:
   void AddProperty(PropertyType *property) {
     properties[property->GetKind()] = property;
     propertyMask.set(static_cast<unsigned>(property->GetKind()));
   }
-
   bool HasProperty(PropertyKind kind) const {
     return propertyMask.test(static_cast<unsigned>(kind));
   }

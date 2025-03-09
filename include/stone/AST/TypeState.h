@@ -77,41 +77,104 @@ public:
   void RemoveInvalid() { RemoveFlag(TypeStateFlags::Invalid); }
 };
 
+class TypeModifierFlags final {
+public:
+  enum ID : unsigned {
+    None = 0,
+    Const = 1 << 0,
+    Pure = 1 << 1,
+    Restrict = 1 << 2,
+    Volatile = 1 << 3,
+    Stone = 1 << 4,
+  };
+
+private:
+  unsigned flags = ID::None;
+
+public:
+  // Set specific modifiers using bitwise OR
+  void AddModifier(ID modifier) { flags |= modifier; }
+
+  // Check for specific modifiers
+  bool HasConst() const { return flags & ID::Const; }
+  bool HasPure() const { return flags & ID::Pure; }
+  bool HasRestrict() const { return flags & ID::Restrict; }
+  bool HasVolatile() const { return flags & ID::Volatile; }
+  bool HasStone() const { return flags & ID::Stone; }
+
+  // Remove a modifier if needed
+  void RemoveModifier(ID modifier) { flags &= ~modifier; }
+
+  // Clear all modifiers
+  void Clear() { flags = ID::None; }
+};
+
 class alignas(1 << TypeAlignInBits) TypeState
     : public ASTAllocation<TypeState>,
-      public PropertyContext<TypeProperty> {
+      public PropertyList<TypeProperty> {
   friend class ASTContext;
 
   TypeStateKind kind;
   SrcLoc typeLoc;
-  // Type *ty = nullptr;
+  Type *owningType = nullptr;
+  TypeMetadata *metadata = nullptr;
 
-  // TypeMetadata* metadata;
-
-public:
-  TypeStateFlags Flags;
+  TypeStateFlags stateFlags;
+  TypeModifierFlags modifierFlags;
 
 public:
   explicit TypeState(TypeStateKind kind, SrcLoc loc)
       : kind(kind), typeLoc(loc) {}
 
 public:
-  // Type *GetType() const { return ty; }
-  // void SetType(Type *t) { ty = t; }
+  void AddTypeModifier(TypeModifier *mod) {
+    switch (mod->GetKind()) {
+    case PropertyKind::Const:
+      if (modifierFlags.HasConst()) {
+        return; // Avoid adding duplicate
+      }
+      modifierFlags.AddModifier(TypeModifierFlags::Const);
+      break;
+
+    case PropertyKind::Pure:
+      if (modifierFlags.HasPure()) {
+        return; // Avoid adding duplicate
+      }
+      modifierFlags.AddModifier(TypeModifierFlags::Pure);
+      break;
+
+    default:
+      assert(false && "Unknown modifier-property!");
+    }
+
+    AddProperty(mod); // Add to the property list for metadata and diagnostics
+  }
+
+  void AddTypeAttribute(TypeAttribute *attr) {}
+
+public:
+  Type *GetType() const { return owningType; }
+  void SetType(Type *ty) { owningType = ty; }
 
   void SetLoc(SrcLoc loc) { typeLoc = loc; }
   SrcLoc GetLoc() { return typeLoc; }
+
+public:
+  bool HasConst() const { return modifierFlags.HasConst(); }
+  bool HasPure() const { return modifierFlags.HasPure(); }
 };
 
 class BuiltinTypeState final : public TypeState {
-  TypeKind builtinTypeKind;
 
 public:
   BuiltinTypeState(SrcLoc loc) : TypeState(TypeStateKind::Builtin, loc) {}
 
 public:
-  void SetBuiltinTypeKind(TypeKind typeKind) { builtinTypeKind = typeKind; }
-  TypeKind GetBuiltinTypeKind() { return builtinTypeKind; }
+  // Directly set the Type object instead of managing TypeKind
+  void SetBuiltinType(Type *type) { SetType(type); }
+
+  // Retrieve the type directly from the base TypeState
+  Type *GetBuiltinType() const { return GetType(); }
 };
 
 class FunctionTypeState : public TypeState {

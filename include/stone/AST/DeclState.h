@@ -19,7 +19,7 @@ class TypeState;
 
 class alignas(1 << DeclAlignInBits) DeclState final
     : public ASTAllocation<DeclState>,
-      public PropertyContext<DeclProperty> {
+      public PropertyList<DeclProperty> {
 
   // The ASTContext associated with this DeclSate
   ASTContext &astContext;
