@@ -18,7 +18,7 @@ namespace stone {
 class Decl;
 class TypeState;
 
-class alignas(1 << DeclAlignInBits) DeclState final
+class alignas(1 << DeclAlignInBits) DeclState
     : public ASTAllocation<DeclState> {
 
   // The ASTContext associated with this DeclSate

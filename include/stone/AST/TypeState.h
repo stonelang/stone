@@ -85,15 +85,13 @@ class alignas(1 << TypeAlignInBits) TypeState
 
   friend class ASTContext;
 
-  friend class ASTContext;
-
   TypeStateKind kind; // The kind of TypeState (Builtin, Function, etc.)
-  SrcLoc typeLoc; // Source location of the type
+  SrcLoc typeLoc;     // Source location of the type
 
   Type *owningType = nullptr; // The Type associated with this TypeState
-  TypeMetadata *metadata = nullptr; // Metadata related to the TypeState
+  TypeMetadata *typeMetadata = nullptr; // Metadata related to the TypeState
 
-  TypeStateFlags stateFlags; // Flags for type properties
+  TypeStateFlags stateFlags;       // Flags for type properties
   TypeModifierFlags modifierFlags; // Type modifiers (const, pure, etc.)
 
   PropertyList<TypeProperty> typeProperties; // Properties for this TypeState
@@ -104,7 +102,6 @@ public:
       : kind(kind), typeLoc(loc) {}
 
 public:
-
   void AddTypeProperty(TypeProperty *property) {
     // switch (mod->GetKind()) {
     // case PropertyKind::Const:
@@ -135,9 +132,9 @@ public:
 
 public:
   Type *GetType() const { return owningType; }
-  void SetType(Type *ty) { 
+  void SetType(Type *ty) {
     assert(ty && "TypeState cannot be assigned a null Type!");
-    owningType = ty; 
+    owningType = ty;
   }
 
   void SetLoc(SrcLoc loc) { typeLoc = loc; }
@@ -162,6 +159,17 @@ public:
 
   // Retrieve the type directly from the base TypeState
   Type *GetBuiltinType() const { return GetType(); }
+};
+
+class IdentifierTypeState : public TypeState {
+public:
+  IdentifierTypeState(TypeStateKind kind, SrcLoc loc) : TypeState(kind, loc) {}
+};
+
+class SimpleIdentifierTypeState : public IdentifierTypeState {
+public:
+  SimpleIdentifierTypeState(SrcLoc loc)
+      : IdentifierTypeState(TypeStateKind::SimpleIdentifier, loc) {}
 };
 
 class FunctionTypeState : public TypeState {
