@@ -89,12 +89,15 @@ class alignas(1 << TypeAlignInBits) TypeState
   SrcLoc typeLoc;     // Source location of the type
 
   Type *owningType = nullptr; // The Type associated with this TypeState
+
   TypeMetadata *typeMetadata = nullptr; // Metadata related to the TypeState
 
   TypeStateFlags stateFlags;       // Flags for type properties
+
   TypeModifierFlags modifierFlags; // Type modifiers (const, pure, etc.)
 
   PropertyList<TypeProperty> typeProperties; // Properties for this TypeState
+  
   DeclState *declState = nullptr; // The DeclState that owns this TypeState
 
 public:
