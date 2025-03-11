@@ -5,6 +5,7 @@
 #include "stone/AST/Stmt.h"
 #include "stone/AST/Template.h"
 #include "stone/AST/Type.h"
+#include "stone/AST/TypeState.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/LangOptions.h"
 #include "stone/Basic/SrcLoc.h"
@@ -218,3 +219,5 @@ VarDecl *VarDecl::Create(ASTContext &astContext) {
   // sizeof(VarDecl)); return ::new (declPtr) VarDecl(astContext);
   return nullptr;
 }
+
+DeclState::DeclState(ASTContext &astContext) : astContext(astContext) {}

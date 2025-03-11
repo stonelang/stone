@@ -4,6 +4,7 @@
 #include "stone/AST/DeclState.h"
 #include "stone/AST/Property.h"
 #include "stone/AST/TypeMetadata.h"
+#include "stone/AST/TypeModifier.h"
 #include "stone/AST/TypeWalker.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
@@ -13,8 +14,10 @@
 namespace stone {
 
 class Type;
+class DeclState;
 
 enum class TypeStateKind : uint8_t {
+  None = 0,
 #define TYPESTATE(ID, PARENT) ID,
 #define LAST_TYPESTATE(ID) Last_TypeState = ID,
 #include "TypeStateNode.def"
@@ -77,87 +80,71 @@ public:
   void RemoveInvalid() { RemoveFlag(TypeStateFlags::Invalid); }
 };
 
-class TypeModifierFlags final {
-public:
-  enum ID : unsigned {
-    None = 0,
-    Const = 1 << 0,
-    Pure = 1 << 1,
-    Restrict = 1 << 2,
-    Volatile = 1 << 3,
-    Stone = 1 << 4,
-  };
-
-private:
-  unsigned flags = ID::None;
-
-public:
-  // Set specific modifiers using bitwise OR
-  void AddModifier(ID modifier) { flags |= modifier; }
-
-  // Check for specific modifiers
-  bool HasConst() const { return flags & ID::Const; }
-  bool HasPure() const { return flags & ID::Pure; }
-  bool HasRestrict() const { return flags & ID::Restrict; }
-  bool HasVolatile() const { return flags & ID::Volatile; }
-  bool HasStone() const { return flags & ID::Stone; }
-
-  // Remove a modifier if needed
-  void RemoveModifier(ID modifier) { flags &= ~modifier; }
-
-  // Clear all modifiers
-  void Clear() { flags = ID::None; }
-};
-
 class alignas(1 << TypeAlignInBits) TypeState
-    : public ASTAllocation<TypeState>,
-      public PropertyList<TypeProperty> {
+    : public ASTAllocation<TypeState> {
+
   friend class ASTContext;
 
-  TypeStateKind kind;
-  SrcLoc typeLoc;
-  Type *owningType = nullptr;
-  TypeMetadata *metadata = nullptr;
+  friend class ASTContext;
 
-  TypeStateFlags stateFlags;
-  TypeModifierFlags modifierFlags;
+  TypeStateKind kind; // The kind of TypeState (Builtin, Function, etc.)
+  SrcLoc typeLoc; // Source location of the type
+
+  Type *owningType = nullptr; // The Type associated with this TypeState
+  TypeMetadata *metadata = nullptr; // Metadata related to the TypeState
+
+  TypeStateFlags stateFlags; // Flags for type properties
+  TypeModifierFlags modifierFlags; // Type modifiers (const, pure, etc.)
+
+  PropertyList<TypeProperty> typeProperties; // Properties for this TypeState
+  DeclState *declState = nullptr; // The DeclState that owns this TypeState
 
 public:
   explicit TypeState(TypeStateKind kind, SrcLoc loc)
       : kind(kind), typeLoc(loc) {}
 
 public:
-  void AddTypeModifier(TypeModifier *mod) {
-    switch (mod->GetKind()) {
-    case PropertyKind::Const:
-      if (modifierFlags.HasConst()) {
-        return; // Avoid adding duplicate
-      }
-      modifierFlags.AddModifier(TypeModifierFlags::Const);
-      break;
 
-    case PropertyKind::Pure:
-      if (modifierFlags.HasPure()) {
-        return; // Avoid adding duplicate
-      }
-      modifierFlags.AddModifier(TypeModifierFlags::Pure);
-      break;
+  void AddTypeProperty(TypeProperty *property) {
+    // switch (mod->GetKind()) {
+    // case PropertyKind::Const:
+    //   if (modifierFlags.HasConst()) {
+    //     return; // Avoid adding duplicate
+    //   }
+    //   modifierFlags.AddModifier(TypeModifierFlags::Const);
+    //   break;
 
-    default:
-      assert(false && "Unknown modifier-property!");
-    }
+    // case PropertyKind::Pure:
+    //   if (modifierFlags.HasPure()) {
+    //     return; // Avoid adding duplicate
+    //   }
+    //   modifierFlags.AddModifier(TypeModifierFlags::Pure);
+    //   break;
 
-    AddProperty(mod); // Add to the property list for metadata and diagnostics
+    // default:
+    //   assert(false && "Unknown modifier-property!");
+    // }
+
+    // AddProperty(mod); // Add to the property list for metadata and
+    // diagnostics
   }
 
-  void AddTypeAttribute(TypeAttribute *attr) {}
+  // void AddTypeAttribute(TypeAttribute *attr) {}
+
+  PropertyList<TypeProperty> &GetTypeProperties() { return typeProperties; }
 
 public:
   Type *GetType() const { return owningType; }
-  void SetType(Type *ty) { owningType = ty; }
+  void SetType(Type *ty) { 
+    assert(ty && "TypeState cannot be assigned a null Type!");
+    owningType = ty; 
+  }
 
   void SetLoc(SrcLoc loc) { typeLoc = loc; }
   SrcLoc GetLoc() { return typeLoc; }
+
+  void SetDeclState(DeclState *D) { declState = D; }
+  DeclState *GetDeclState() const { return declState; }
 
 public:
   bool HasConst() const { return modifierFlags.HasConst(); }
