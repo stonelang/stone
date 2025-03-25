@@ -25,7 +25,7 @@ bool Type::IsBuiltinType() const {
   }
 }
 
-bool Type::IsNominalType() {
+bool Type::IsNominalType() const {
   switch (GetKind()) {
   case TypeKind::Interface:
   case TypeKind::Struct:
@@ -34,25 +34,6 @@ bool Type::IsNominalType() {
     return false;
   }
 }
-
-FunType::FunType(TypeState *returnType)
-    : FunctionType(TypeKind::Fun, returnType) {}
-
-// VoidType *VoidType::Create(const ASTContext &astContext,
-// MemoryAllocationArena arena) {
-//   return new (astContext) VoidType(astContext);
-// }
-
-// NullType* NullType::Create(const ASTContext& sc, MemoryAllocationArena
-// arena)
-// {
-//   return new(sc, arena) NullType(sc);
-// }
-// BoolType* BoolType::Create(const ASTContext& sc, MemoryAllocationArena
-// arena)
-// {
-//   return new(sc, arena) BoolType(sc);
-// }
 
 BitWidth NumberType::GetBitWidth() const {
   switch (GetKind()) {
@@ -98,6 +79,38 @@ BitWidth NumberType::GetBitWidth() const {
   llvm_unreachable("Unknown number type");
 }
 
+BuiltinType::BuiltinType(TypeKind kind, TypeState *TS) : Type(kind, TS) {
+  // Bits.Type.IsBuiltin = true;
+  TS->SetCanType(this);
+}
+
+bool NumberType::IsNumberType(TypeKind kind) const { return false; }
+bool NumberType::IsSigned() const { return false; }
+bool NumberType::IsFloat() const { return false; }
+bool NumberType::IsImaginary() const { return false; }
+bool NumberType::IsComplex() const { return false; }
+
+FunType::FunType(TypeState *TS) : FunctionType(TypeKind::Fun, TS) {}
+
+// VoidType *VoidType::Create(const ASTContext &astContext,
+// MemoryAllocationArena arena) {
+//   return new (astContext) VoidType(astContext);
+// }
+
+// NullType* NullType::Create(const ASTContext& sc, MemoryAllocationArena
+// arena)
+// {
+//   return new(sc, arena) NullType(sc);
+// }
+// BoolType* BoolType::Create(const ASTContext& sc, MemoryAllocationArena
+// arena)
+// {
+//   return new(sc, arena) BoolType(sc);
+// }
+
+// == Type == //
+// bool Type::Walk(TypeWalker &walker) const {}
+
 // == TypeQualifierCollector == //
 
 /// Collect any qualifiers on the given type and return an
@@ -125,6 +138,15 @@ BitWidth NumberType::GetBitWidth() const {
 // &Context,
 //                                        const Type *ty) const {}
 
+// == TypeLoc == //
+// bool TypeLoc::IsError() const { return true; }
+
+// SrcLoc TypeLoc::GetLoc() const { return SrcLoc(); }
+
+// SrcRange TypeLoc::GetSrcRange() const { return SrcRange(); }
+
+// void TypeLoc::SetType(Type ty) {}
+
 // FunType *TypeFactory::MakeFunType(Type result);
 
 // IntegerType *TypeFactory::MakeIntegerType(NumberBitWidthKind bitWidthKind,
@@ -141,6 +163,3 @@ BitWidth NumberType::GetBitWidth() const {
 //                              const ASTContext &astContext) {
 //   return new (astContext) FloatType(bitWidthKind, astContext);
 // }
-
-// == Type == //
-bool TypeState::Walk(TypeWalker &walker) const {}

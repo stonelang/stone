@@ -38,7 +38,7 @@ class ASTContext;
 /// It is aligned to 8 bytes because DeclName needs the lower 3 bits.
 class Identifier final {
   friend class ASTContext;
-  friend class DeclIdentifier;
+  friend class DeclNameBase;
 
   const char *dataPointer;
 
@@ -187,19 +187,6 @@ public:
     Val <<= NumLowBitsAvailable;
     return Identifier((const char *)Val);
   }
-};
-
-class DeclIdentifier final {
-  Identifier identifier;
-  SrcLoc loc;
-
-public:
-  explicit DeclIdentifier(Identifier identifier, SrcLoc loc)
-      : identifier(identifier), loc(loc) {}
-
-public:
-  Identifier GetIdentifier() { return identifier; }
-  SrcLoc GetLoc() { return loc; }
 };
 
 namespace detail {

@@ -8,42 +8,15 @@
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/SrcLoc.h"
 
-#include "llvm/ADT/APFloat.h"
-#include "llvm/ADT/APInt.h"
-#include "llvm/ADT/APSInt.h"
-#include "llvm/ADT/ArrayRef.h"
-#include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/DenseMapInfo.h"
-#include "llvm/ADT/FoldingSet.h"
-#include "llvm/ADT/Hashing.h"
-#include "llvm/ADT/PointerIntPair.h"
-#include "llvm/ADT/PointerUnion.h"
-#include "llvm/ADT/STLExtras.h"
-#include "llvm/ADT/SmallVector.h"
-#include "llvm/ADT/StringRef.h"
-#include "llvm/ADT/Twine.h"
-#include "llvm/ADT/iterator_range.h"
-#include "llvm/Support/Casting.h"
-#include "llvm/Support/ErrorHandling.h"
-#include "llvm/Support/PointerLikeTypeTraits.h"
-#include "llvm/Support/TrailingObjects.h"
-#include "llvm/Support/type_traits.h"
-
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <optional>
 #include <stdint.h>
-#include <string>
-#include <type_traits>
-#include <utility>
 
 namespace stone {
+
 class Type;
-class TypeState;
+class DeclState;
 
 enum class TypeStateKind : uint8_t {
+  None = 0,
 #define TYPESTATE(ID, PARENT) ID,
 #define LAST_TYPESTATE(ID) Last_TypeState = ID,
 #include "TypeStateNode.def"
@@ -106,134 +79,184 @@ public:
   void RemoveInvalid() { RemoveFlag(TypeStateFlags::Invalid); }
 };
 
-class alignas(1 << TypeAlignInBits) TypeState
-    : public ASTAllocation<std::aligned_storage<8, 8>::type> {
-  friend class ASTContext;
-  // friend TrailingObjects;
-
-  /// The specific type-state
-  TypeStateKind kind;
-
-  DeclState *owningDeclState;
-
-  PropertyCollector<TypeProperty> typeProperties;
-
-  // /// The location of the type
-  SrcLoc loc;
-
-protected:
-  size_t numTrailingDeclStates;
-
-  // size_t numTrailingDecls = 0;      // Number of trailing Decl* objects
-  // size_t numTrailingTypeStates = 0; // Number of trailing TypeState* objects
-
+class TypeModifierFlags final {
 public:
-  TypeStateFlags Status;
-
-public:
-  explicit TypeState(TypeStateKind kind)
-      : kind(kind), owningDeclState(nullptr) {}
-
-public:
-  void SetLoc(SrcLoc L) { loc = L; }
-  SrcLoc GetLoc() const { return loc; }
-  // SrcRange GetSrcRange() const;
-
-  DeclState *GetDeclState() const { return owningDeclState; }
-  void SetDeclState(DeclState *DS) { owningDeclState = DS; }
-
-public:
-  // // Access to trailing Decl* objects
-  // ArrayRef<Decl *> GetTrailingDecls() const {
-  //   return {getTrailingObjects<Decl *>(), numTrailingDecls};
-  // }
-
-  // MutableArrayRef<Decl *> GetTrailingDecls() {
-  //   return {getTrailingObjects<Decl *>(), numTrailingDecls};
-  // }
-
-  // // Access to trailing TypeState* objects
-  // ArrayRef<TypeState *> GetTrailingTypeStates() const {
-  //   return {getTrailingObjects<TypeState *>(), numTrailingTypeStates};
-  // }
-
-  // MutableArrayRef<TypeState *> GetTrailingTypeStates() {
-  //   return {getTrailingObjects<TypeState *>(), numTrailingTypeStates};
-  // }
-
-public:
-  // void AddTypeProperty(PropertyKind kind, TypeProperty *property) {
-  //   typeProperties[kind] = property;
-  //   typePropertyMask.set(static_cast<size_t>(kind));
-  // }
-
-  // TypeProperty *GetTypeProperty(PropertyKind kind) const {
-  //   auto it = typeProperties.find(kind);
-  //   return (it != typeProperties.end()) ? it->second : nullptr;
-  // }
-
-  // bool HasTypeProperty(PropertyKind kind) const {
-  //   return typePropertyMask.test(static_cast<size_t>(kind));
-  // }
-
-public:
-  /// Walk this Type.
-  ///
-  /// Returns true if the walk was aborted.
-  bool Walk(TypeWalker &walker) const;
-  bool Walk(TypeWalker &&walker) const { return Walk(walker); }
+  enum ID : unsigned {
+    None = 0,
+    Const = 1 << 0,
+    Pure = 1 << 1,
+    Restrict = 1 << 2,
+    Volatile = 1 << 3,
+    Stone = 1 << 4,
+  };
 
 private:
-  // Direct comparison is disabled for types, because they may not be canonical.
-  void operator==(TypeState T) const = delete;
-  void operator!=(TypeState T) const = delete;
+  unsigned flags = ID::None;
+
+public:
+  // Set specific modifiers using bitwise OR
+  void AddModifier(ID modifier) { flags |= modifier; }
+
+  // Check for specific modifiers
+  bool HasConst() const { return flags & ID::Const; }
+  bool HasPure() const { return flags & ID::Pure; }
+  bool HasRestrict() const { return flags & ID::Restrict; }
+  bool HasVolatile() const { return flags & ID::Volatile; }
+  bool HasStone() const { return flags & ID::Stone; }
+
+  // Remove a modifier if needed
+  void RemoveModifier(ID modifier) { flags &= ~modifier; }
+
+  // Clear all modifiers
+  void Clear() { flags = ID::None; }
 };
 
-class ModuleTypeState : public TypeState {
+
+class alignas(1 << TypeAlignInBits) TypeState
+    : public ASTAllocation<TypeState> {
+
+  friend class ASTContext;
+
+  // The kind of TypeState (Builtin, Function, etc.)
+  TypeStateKind kind;
+
+  // Source location of the type
+  SrcLoc typeLoc;
+
+  // The canonical type associated with this TypeSate
+  Type *canType = nullptr;
+
+  // Metadata related to the TypeState
+  TypeMetadata *typeMetadata = nullptr;
+
+  // Flags for type properties
+  TypeStateFlags stateFlags;
+
+  // Type modifiers (const, pure, etc.)
+  TypeModifierFlags modifierFlags;
+
+  // Properties for this TypeState
+  PropertyList<TypeProperty> typeProperties;
+
+  // The DeclState that owns this TypeState
+  DeclState *declState = nullptr;
+
 public:
-  ModuleTypeState() : TypeState(TypeStateKind::Module) {}
+  explicit TypeState(TypeStateKind kind, SrcLoc loc)
+      : kind(kind), typeLoc(loc) {}
+
+public:
+  TypeStateKind GetKind() { return kind; }
+
+  void AddTypeProperty(TypeProperty *property) {
+    // switch (mod->GetKind()) {
+    // case PropertyKind::Const:
+    //   if (modifierFlags.HasConst()) {
+    //     return; // Avoid adding duplicate
+    //   }
+    //   modifierFlags.AddModifier(TypeModifierFlags::Const);
+    //   break;
+
+    // case PropertyKind::Pure:
+    //   if (modifierFlags.HasPure()) {
+    //     return; // Avoid adding duplicate
+    //   }
+    //   modifierFlags.AddModifier(TypeModifierFlags::Pure);
+    //   break;
+
+    // default:
+    //   assert(false && "Unknown modifier-property!");
+    // }
+
+    // AddProperty(mod); // Add to the property list for metadata and
+    // diagnostics
+  }
+
+  // void AddTypeAttribute(TypeAttribute *attr) {}
+
+  PropertyList<TypeProperty> &GetTypeProperties() { return typeProperties; }
+
+  //\return true if the type is FunType
+  bool IsBuiltin() { return GetKind() == TypeStateKind::Builtin; }
+
+  //\return true if the type is FunType
+  bool IsFunction() { return GetKind() == TypeStateKind::Function; }
+
+  // //\return true if the type is enum type
+  // bool IsEnum() const { return GetKind() == TypeStateKind::Enum; }
+
+  // //\return true if the type is struct type
+  // bool IsStruct() const { return GetKind() == TypeStateKind::Struct; }
+
+  // //\return true if the type is class type
+  // bool IsClass() const { return GetKind() == TypeStateKind::Class; }
+
+public:
+  Type *GetCanType() const { return canType; }
+
+  void SetCanType(Type *ty) {
+    assert(ty && "TypeState cannot be assigned a null Type!");
+    canType = ty;
+  }
+
+  void SetLoc(SrcLoc loc) { typeLoc = loc; }
+  SrcLoc GetLoc() { return typeLoc; }
+
+  void SetDeclState(DeclState *D) { declState = D; }
+  DeclState *GetDeclState() const { return declState; }
+
+public:
+  bool HasConst() const { return modifierFlags.HasConst(); }
+  bool HasPure() const { return modifierFlags.HasPure(); }
+};
+
+class BuiltinTypeState final : public TypeState {
+
+public:
+  BuiltinTypeState() : TypeState(TypeStateKind::Builtin, SrcLoc()) {}
+};
+
+class IdentifierTypeState : public TypeState {
+public:
+  IdentifierTypeState(TypeStateKind kind, SrcLoc loc) : TypeState(kind, loc) {}
+};
+
+class SimpleIdentifierTypeState : public IdentifierTypeState {
+public:
+  SimpleIdentifierTypeState(SrcLoc loc)
+      : IdentifierTypeState(TypeStateKind::SimpleIdentifier, loc) {}
 };
 
 class FunctionTypeState : public TypeState {
 
-  TypeState *returnTypeState = nullptr;
+  SrcLoc arrowLoc;
+  SrcLoc lParenLoc;
+  SrcLoc rParenLoc;
+
+  TypeState *resultTypeState = nullptr;
 
 public:
-  FunctionTypeState() : TypeState(TypeStateKind::Function) {}
+  FunctionTypeState(SrcLoc loc) : TypeState(TypeStateKind::Function, loc) {}
+
+public:
+  void SetResultTypeState(TypeState *typeState) { resultTypeState = typeState; }
+  TypeState *GetResultTypeState() { return resultTypeState; }
+
+  // void SetBody(BraceStmt *BS) { bodyStmt = BS; }
+  // BraceStmt *GetBody() { return bodyStmt; }
+
+  void SetArrow(SrcLoc loc) { arrowLoc = loc; }
+  SrcLoc GetArrow() { return arrowLoc; }
+  bool HasArrow() { return GetArrow().isValid(); }
+
+  void SetLParen(SrcLoc loc) { lParenLoc = loc; }
+  SrcLoc GetLParen() { return lParenLoc; }
+  bool HasLParen() { return GetLParen().isValid(); }
+
+  void SetRParen(SrcLoc loc) { rParenLoc = loc; }
+  SrcLoc GetRParen() { return rParenLoc; }
+  bool HasRParen() { return GetRParen().isValid(); }
 };
-
-// class FunctionTypeState : public TypeState {
-
-//   TypeState *returnTypeState = nullptr;
-
-// public:
-//   FunctionTypeState() : TypeState(TypeStateKind::Function) {}
-
-// public:
-// void AddParamDecls(ArrayRef<Decl *> paramDecls) {
-//   SetTrailingDecls(paramDecls);
-// }
-
-// void AddChildTypeStates(ArrayRef<TypeState *> childTypeStates) {
-//   SetTrailingTypeStates(childTypeStates);
-// }
-
-// // Accessors for parameters and return type
-// ArrayRef<Decl *> GetParamDecls() const {
-//   return GetTrailingDecls();
-// }
-
-// ArrayRef<TypeState *> GetParamTypeStates() const {
-//   auto childTypeStates = GetTrailingTypeStates();
-//   return childTypeStates.drop_back(1); // Exclude the return type
-// }
-//};
-
-// class NumberTypeState : public TypeState {
-
-// public:
-//   NumberTypeState() : TypeState(TypeStateKind::Function) {}
-// };
 
 } // namespace stone
 #endif

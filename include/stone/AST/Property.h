@@ -2,9 +2,10 @@
 #define STONE_AST_PROPERTY_H
 
 #include "stone/AST/ASTAllocation.h"
-#include "stone/AST/AttributeKind.h"
+#include "stone/AST/Attribute.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/TypeAlignment.h"
+#include "stone/AST/Visibility.h"
 #include "stone/Basic/SrcLoc.h"
 
 #include "llvm/ADT/DenseMapInfo.h"
@@ -34,27 +35,10 @@ enum class PropertyKind : uint8_t {
 #include "stone/AST/PropertyNode.def"
 };
 
-// Define the enum class
-enum class PropertyAvailability : uint8_t {
-  None = 1 << 0,   // Default, unspecified availability
-  Active = 1 << 1, // Modifier is active
-  Ignore = 1 << 2, // Modifier is ignored
-};
-
-enum class PropertyScope : uint8_t {
-  None = 0, // Default, unspecified scope
-  Global,   // For global declarations
-  Member,   // For class or struct members
-  Param,    // For param members
-  Local     // For local variables or parameters
-};
-
 class alignas(1 << PropertyAlignInBits) Property
     : public ASTAllocation<Property> {
   PropertyKind kind;
   SrcLoc loc;
-  PropertyScope scope;
-  PropertyAvailability availability;
 
 public:
   Property(PropertyKind kind, SrcLoc loc) : kind(kind), loc(loc) {}
@@ -62,33 +46,6 @@ public:
 public:
   PropertyKind GetKind() { return kind; }
   SrcLoc GetLoc() { return loc; }
-
-public:
-  void SetScope(PropertyScope S) { scope = S; }
-  PropertyScope GetScope() { return scope; }
-  bool IsGlobal() const { return scope == PropertyScope::Global; }
-  bool IsMember() const { return scope == PropertyScope::Member; }
-  bool IsParam() const { return scope == PropertyScope::Param; }
-  bool IsLocal() const { return scope == PropertyScope::Local; }
-
-public:
-  PropertyAvailability GetAvailability() const { return availability; }
-  void SetAvailability(PropertyAvailability avail) { availability = avail; }
-  // Check specific availability states
-  bool IsActive() const { return availability == PropertyAvailability::Active; }
-  bool IsIgnored() const {
-    return availability == PropertyAvailability::Ignore;
-  }
-
-public:
-  // bool IsModifier() const {
-  //   return kind >= PropertyKind::First_ModifierType &&
-  //          kind <= PropertyKind::Last_ModifierType;
-  // }
-
-  // bool IsAttribute() const;
-
-  bool Matches(PropertyKind targetKind) const { return kind == targetKind; }
 };
 
 class DeclProperty : public Property {
@@ -97,40 +54,52 @@ public:
 };
 
 class DeclModifier : public DeclProperty {
+
 public:
   DeclModifier(PropertyKind kind, SrcLoc loc) : DeclProperty(kind, loc) {}
-
-public:
-  bool IsStorage() const;
-  bool IsVisibility() const;
 };
 
-class StaticModifier : public DeclModifier {
-
+class StorageModifier : public DeclModifier {
 public:
-  StaticModifier(SrcLoc loc) : DeclModifier(PropertyKind::Static, loc) {}
+  StorageModifier(PropertyKind kind, SrcLoc loc) : DeclModifier(kind, loc) {}
 };
 
-class ExternModifier : public DeclModifier {
+class StaticModifier : public StorageModifier {
+
 public:
-  ExternModifier(SrcLoc loc) : DeclModifier(PropertyKind::Extern, loc) {}
+  StaticModifier(SrcLoc loc) : StorageModifier(PropertyKind::Static, loc) {}
 };
-class PublicModifier : public DeclModifier {
+
+class ExternModifier : public StorageModifier {
 public:
-  PublicModifier(SrcLoc loc) : DeclModifier(PropertyKind::Public, loc) {}
+  ExternModifier(SrcLoc loc) : StorageModifier(PropertyKind::Extern, loc) {}
 };
-class ProtectedModifier : public DeclModifier {
+
+class AutoModifier : public StorageModifier {
 public:
-  ProtectedModifier(SrcLoc loc) : DeclModifier(PropertyKind::Protected, loc) {}
+  AutoModifier(SrcLoc loc) : StorageModifier(PropertyKind::Auto, loc) {}
 };
-class PrivateModifier : public DeclModifier {
+
+class VisibilityModifier : public DeclModifier {
+  VisibilityLevel visibilityLevel;
+
 public:
-  PrivateModifier(SrcLoc loc) : DeclModifier(PropertyKind::Private, loc) {}
+  VisibilityModifier(VisibilityLevel level, SrcLoc loc)
+      : DeclModifier(PropertyKind::Visibility, loc), visibilityLevel(level) {}
+
+public:
+  VisibilityLevel GetVisibilityLevel() { return visibilityLevel; }
+  void SetVisibilityLevel(VisibilityLevel level) { visibilityLevel = level; }
 };
 
 class DeclAttribute : public DeclProperty {
 public:
   DeclAttribute(PropertyKind kind, SrcLoc loc) : DeclProperty(kind, loc) {}
+};
+
+class InlineAttribute : public DeclAttribute {
+public:
+  InlineAttribute(SrcLoc loc) : DeclAttribute(PropertyKind::Inline, loc) {}
 };
 
 class DeprecatedAttribute : public DeclAttribute {
@@ -153,40 +122,95 @@ class ConstModifier : public TypeModifier {
 public:
   ConstModifier(SrcLoc loc) : TypeModifier(PropertyKind::Const, loc) {}
 };
+class PureModifier : public TypeModifier {
+public:
+  PureModifier(SrcLoc loc) : TypeModifier(PropertyKind::Pure, loc) {}
+};
+class StoneModifier : public TypeModifier {
+public:
+  StoneModifier(SrcLoc loc) : TypeModifier(PropertyKind::Stone, loc) {}
+};
+class VolatileModifier : public TypeModifier {
+public:
+  VolatileModifier(SrcLoc loc) : TypeModifier(PropertyKind::Volatile, loc) {}
+};
+class MutableModifier : public TypeModifier {
+public:
+  MutableModifier(SrcLoc loc) : TypeModifier(PropertyKind::Mutable, loc) {}
+};
 
 class TypeAttribute : public TypeProperty {
 public:
   TypeAttribute(PropertyKind kind, SrcLoc loc) : TypeProperty(kind, loc) {}
 };
-class AlignAttribute : public TypeAttribute {
-public:
-  AlignAttribute(SrcLoc loc) : TypeAttribute(PropertyKind::Aligned, loc) {}
-};
 
-template <typename PropertyType> class PropertyCollector {
-  llvm::DenseMap<PropertyKind, PropertyType *> properties;
+template <typename PropertyType> class PropertyList {
   llvm::BitVector propertyMask;
+  llvm::DenseMap<PropertyKind, PropertyType *> properties;
 
 public:
-  PropertyCollector()
+  PropertyList()
       : propertyMask(static_cast<unsigned>(PropertyKind::Last_Type) + 1) {}
 
   // Overload the bool operator
   explicit operator bool() const { return !properties.empty(); }
 
-  void AddProperty(PropertyKind kind, PropertyType *property) {
-    properties[kind] = property;
-    propertyMask.set(static_cast<unsigned>(kind));
+public:
+  void AddProperty(PropertyType *property) {
+    properties[property->GetKind()] = property;
+    propertyMask.set(static_cast<unsigned>(property->GetKind()));
   }
-
   bool HasProperty(PropertyKind kind) const {
     return propertyMask.test(static_cast<unsigned>(kind));
+  }
+  bool HasProperty(PropertyType *property) const {
+    assert(property && "Cannot add null property!");
+    return HasProperty(property->GetKind());
   }
 
   PropertyType *GetProperty(PropertyKind kind) const {
     auto it = properties.find(kind);
     return it != properties.end() ? it->second : nullptr;
   }
+  bool IsEmpty() const { return properties.size() == 0; }
+};
+
+class DeclPropertyList : public PropertyList<DeclProperty> {
+  ASTContext &AC;
+
+public:
+  explicit DeclPropertyList(ASTContext &AC) : AC(AC) {}
+
+public:
+  void AddPublic(SrcLoc loc) {
+    AddProperty(new (AC) VisibilityModifier(VisibilityLevel::Public, loc));
+  }
+  void AddPrivate(SrcLoc loc) {
+    AddProperty(new (AC) VisibilityModifier(VisibilityLevel::Private, loc));
+  }
+  void AddInternal(SrcLoc loc) {
+    AddProperty(new (AC) VisibilityModifier(VisibilityLevel::Internal, loc));
+  }
+  void AddStatic(SrcLoc loc) { AddProperty(new (AC) StaticModifier(loc)); }
+  void AddExtern(SrcLoc loc) { AddProperty(new (AC) ExternModifier(loc)); }
+  // void AddInlineAttribute(SrcLoc loc) {
+  //   GetDeclState()->AddDeclProperty(new (parser.GetASTContext())
+  //                                       InlineAttribute(loc));
+  // }
+};
+
+class TypePropertyList : public PropertyList<TypeProperty> {
+  ASTContext &AC;
+
+public:
+  explicit TypePropertyList(ASTContext &AC) : AC(AC) {}
+
+public:
+  void AddConst(SrcLoc loc) { AddProperty(new (AC) ConstModifier(loc)); }
+  void AddPure(SrcLoc loc) { AddProperty(new (AC) PureModifier(loc)); }
+  void AddStone(SrcLoc loc) { AddProperty(new (AC) StoneModifier(loc)); }
+  void AddVolatile(SrcLoc loc) { AddProperty(new (AC) VolatileModifier(loc)); }
+  void AddMutable(SrcLoc loc) { AddProperty(new (AC) MutableModifier(loc)); }
 };
 
 } // namespace stone
@@ -213,5 +237,4 @@ template <> struct DenseMapInfo<stone::PropertyKind> {
   }
 };
 } // namespace llvm
-
 #endif

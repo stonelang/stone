@@ -1,8 +1,8 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/ASTContext.h"
-#include "stone/AST/DeclState.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
+#include "stone/AST/Property.h"
 #include "stone/AST/Stmt.h"
 #include "stone/AST/Template.h"
 #include "stone/AST/Type.h"
@@ -29,6 +29,9 @@
 #include <utility>
 
 using namespace stone;
+
+Decl::Decl(DeclKind kind, DeclState *declState, UnifiedContext context)
+    : kind(kind), declState(declState), context(context) {}
 
 template <typename DeclTy, typename AllocatorTy>
 void *Decl::AllocateMemory(AllocatorTy &allocatorTy, size_t baseSize,
@@ -105,6 +108,41 @@ bool ValueDecl::IsInstanceMember() const {
   llvm_unreachable("bad DeclKind");
 }
 
+bool ValueDecl::IsPublic() const {
+  return GetVisibilityLevel() == VisibilityLevel::Public;
+}
+
+bool ValueDecl::IsPrivate() const {
+  return GetVisibilityLevel() == VisibilityLevel::Private;
+}
+
+bool ValueDecl::IsInternal() const {
+  return GetVisibilityLevel() == VisibilityLevel::Internal;
+}
+
+bool ValueDecl::HasVisibilityLevel() const {
+  return GetState()->GetDeclPropertyList().HasProperty(
+      PropertyKind::Visibility);
+}
+
+VisibilityLevel ValueDecl::GetVisibilityLevel() const {
+  if (HasVisibilityLevel()) {
+    auto vm = static_cast<VisibilityModifier *>(
+        GetState()->GetDeclPropertyList().GetProperty(
+            PropertyKind::Visibility));
+    return vm->GetVisibilityLevel();
+  }
+  return VisibilityLevel::None;
+}
+
+void ValueDecl::ChangeVisibility(VisibilityLevel level) {
+  if (HasVisibilityLevel()) {
+    auto vm = static_cast<VisibilityModifier *>(
+        GetState()->GetDeclPropertyList().GetProperty(
+            PropertyKind::Visibility));
+    return vm->SetVisibilityLevel(level);
+  }
+}
 // void Decl::SetInvalid() {
 //   switch (GetKind()) {
 // #define VALUE_DECL(ID, PARENT)
@@ -155,13 +193,16 @@ bool FunDecl::IsMain() const {
   if (IsInstanceMember()) {
     return false;
   }
-  return GetIdentifier() == GetASTContext().GetBuiltin().BuiltinMainIdentifier;
+
+  return GetBasicName() == GetASTContext().GetBuiltin().BuiltinMainIdentifier;
 }
 
 /// True if the function is a defer body.
 bool FunDecl::IsDeferBody() const {}
 
-bool FunDecl::IsStatic() const { return false; }
+bool FunDecl::IsStatic() const {
+  return GetState()->GetDeclPropertyList().HasProperty(PropertyKind::Static);
+}
 
 // TODO: Remove
 bool FunDecl::IsMember() const { return false; }
@@ -171,19 +212,15 @@ bool FunDecl::IsForward() const { return false; }
 
 bool FunDecl::HasReturn() const { return false; }
 
-FunDecl *FunDecl::Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
-                         DeclName name, TypeState *result,
-                         DeclContext *parent) {
+FunDecl *FunDecl::Create(DeclState *DS, DeclContext *parent) {
 
   size_t size = sizeof(FunDecl);
   // + (HasImplicitThisDecl ? sizeof(ParamDecl *) : 0);
-  void *funDeclPtr = Decl::AllocateMemory<FunDecl>(AC, size);
-  auto FD = ::new (funDeclPtr)
-      FunDecl(DeclKind::Fun, staticLoc, name, result, parent);
+  void *funDeclPtr = Decl::AllocateMemory<FunDecl>(DS->GetASTContext(), size);
+  auto FD =
+      ::new (funDeclPtr) FunDecl(DeclKind::Fun, DS, parent); // TODO: DeclState
   return FD;
 }
-// FunDecl(DeclKind kind, SrcLoc staticLoc, DeclName name,
-//          TypeState *result, DeclContext *parent)
 
 // FunDecl *FunDecl::CreateImplicit(DeclSpecifierCollector &collector,
 //                                  ASTContext &sc, DeclContext *parent) {
@@ -200,13 +237,13 @@ FunDecl *FunDecl::Create(ASTContext &AC, SrcLoc staticLoc, SrcLoc funLoc,
 //   return nullptr;
 // }
 
-ModuleDecl *ModuleDecl::Create(DeclName name, ASTContext &astContext) {
+ModuleDecl *ModuleDecl::Create(Identifier name, ASTContext &astContext) {
   size_t size = sizeof(ModuleDecl);
   auto declPtr = Decl::AllocateMemory<ModuleDecl>(astContext, size);
-  return ::new (declPtr) ModuleDecl(name, astContext);
+  return ::new (declPtr) ModuleDecl(nullptr, astContext); // TODO: DeclState
 }
 
-ModuleDecl *ModuleDecl::CreateMainModule(DeclName name,
+ModuleDecl *ModuleDecl::CreateMainModule(Identifier name,
                                          ASTContext &astContext) {
   auto mainModuleDecl = ModuleDecl::Create(name, astContext);
   mainModuleDecl->Bits.ModuleDecl.IsMainModule = true;
@@ -218,3 +255,7 @@ VarDecl *VarDecl::Create(ASTContext &astContext) {
   // sizeof(VarDecl)); return ::new (declPtr) VarDecl(astContext);
   return nullptr;
 }
+
+DeclState::DeclState(ASTContext &astContext)
+    : astContext(astContext), declPropertyList(astContext),
+      typePropertyList(astContext) {}

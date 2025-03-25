@@ -1,6 +1,7 @@
 #ifndef STONE_AST_MODULE_H
 #define STONE_AST_MODULE_H
 
+#include "stone/AST/ASTAllocation.h"
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/ASTScope.h"
 #include "stone/AST/ASTWalker.h"
@@ -255,7 +256,7 @@ class ModuleDecl final : public DeclContext,
   mutable Identifier moduleABIName;
 
 public:
-  ModuleDecl(DeclName name, ASTContext &tc, ModuleDecl *parent = nullptr);
+  ModuleDecl(DeclState *DS, ASTContext &AC, ModuleDecl *parent = nullptr);
 
 public:
   using Decl::GetASTContext;
@@ -320,8 +321,8 @@ public:
   }
 
 public:
-  static ModuleDecl *Create(DeclName name, ASTContext &astContext);
-  static ModuleDecl *CreateMainModule(DeclName name, ASTContext &astContext);
+  static ModuleDecl *Create(Identifier name, ASTContext &astContext);
+  static ModuleDecl *CreateMainModule(Identifier name, ASTContext &astContext);
   static inline unsigned AlignOfModuleFile() { return alignof(ModuleFile &); }
 };
 

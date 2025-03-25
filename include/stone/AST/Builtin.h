@@ -33,7 +33,7 @@ struct Builtin final {
   const Type *BuiltinNullType;
   const Type *BuiltinBoolType;
 
-  // Type GetType(llvm::StringRef name);
+  static bool IsBuiltinTypeKind(TypeKind kind);
 
   // Declare the set of builtin identifiers.
 #define BUILTIN_IDENTIFIER_WITH_NAME(Name, IdStr)                              \

@@ -585,14 +585,14 @@ static void formatSelectionArgument(StringRef ModifierArguments,
 // }
 
 // /// Walks the type recursively desugaring  types to display, but skipping
-// /// `GenericTypeParamType` because we would lose association with its
+// /// `TemplateTypeParamType` because we would lose association with its
 // original
 // /// declaration and end up presenting the parameter in τ_0_0 format on
 // /// diagnostic.
 // static Type getAkaTypeForDisplay(Type type) {
 //   return type.transform([](Type visitTy) -> Type {
 //     if (isa<SugarType>(visitTy.getPointer()) &&
-//         !isa<GenericTypeParamType>(visitTy.getPointer()))
+//         !isa<TemplateTypeParamType>(visitTy.getPointer()))
 //       return getAkaTypeForDisplay(visitTy->getDesugaredType());
 //     return visitTy;
 //   });
@@ -993,7 +993,7 @@ CreateDiagnosticInfoForDecl(const Diagnostic &diagnostic) {
 
     // If a declaration was provided instead of a location, and that declaration
     // has a location we can point to, use that location.
-    loc = decl->GetLoc();
+    loc = decl->GetNameLoc();
 
     if (loc.isInvalid()) {
       // SrcLoc ppLoc = PrettyPrintedDeclarations[decl];
@@ -1018,7 +1018,7 @@ DiagnosticEngine::diagnosticInfoForDiagnostic(const Diagnostic &diagnostic) {
     const stone::Decl *decl = diagnostic.getDecl();
     // If a declaration was provided instead of a location, and that declaration
     // has a location we can point to, use that location.
-    loc = decl->GetLoc();
+    loc = decl->GetNameLoc();
   }
 
   if (loc.isInvalid()) {

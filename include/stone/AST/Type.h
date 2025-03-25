@@ -1,14 +1,14 @@
-#ifndef STONE_AST_TYPE_H
-#define STONE_AST_TYPE_H
+#ifndef STONE_AST_ABSTRACTTYPE_H
+#define STONE_AST_ABSTRACTTYPE_H
 
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/Foreign.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/Ownership.h"
+#include "stone/AST/Type.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/TypeChunk.h"
 #include "stone/AST/TypeKind.h"
-#include "stone/AST/TypeState.h"
 #include "stone/Basic/Basic.h"
 #include "stone/Basic/SrcLoc.h"
 
@@ -49,7 +49,7 @@ class Type;
 class TypeState;
 class TypeWalker;
 class CanType;
-class SugarType;
+class SugType;
 class Int8Type;
 class Int16Type;
 class FunType;
@@ -58,8 +58,9 @@ class ASTContext;
 
 class alignas(1 << TypeAlignInBits) Type
     : public ASTAllocation<std::aligned_storage<8, 8>::type> {
-
   friend class ASTContext;
+
+  TypeState *typeState = nullptr;
 
   Type(const Type &) = delete;
   void operator=(const Type &) = delete;
@@ -81,25 +82,25 @@ protected:
 
   } Bits;
 
-  Type *underlyingType;
-
 public:
-  Type(TypeKind kind, Type *typePtr = nullptr) : underlyingType(typePtr) {
+  Type(TypeKind kind, TypeState *typeState) : typeState(typeState) {
     Bits.Type.Kind = static_cast<unsigned>(kind);
   }
 
 public:
   TypeKind GetKind() const { return static_cast<TypeKind>(Bits.Type.Kind); }
-  llvm::StringRef GetName() const;
-  bool IsCanType() const {
-    return (Bits.Type.IsCanonical && !HasUnderlyingType());
-  }
-  Type *GetUnderlyingType() const { return underlyingType; }
-  bool HasUnderlyingType() const { return underlyingType != nullptr; }
+  /// Identifier GetName() const;
+  // Return the ASTContext that this type belongs to.
+
+  ASTContext &GetASTContext();
+  TypeState *GetState() { return typeState; }
 
 public:
   ///\return true if the type is a builtin type.
   bool IsBuiltinType() const;
+
+  ///\return true if the type is a nominal type.
+  bool IsNominalType() const;
 
   ///\return true if the type is a integer type : int, char, bool
   bool IsIntegerType() const;
@@ -173,22 +174,21 @@ public:
   ///\return true if the type is imaginary32
   bool IsImaginary64Type() const;
 
-  //\return true if the type is a nominal type
-  bool IsNominalType();
-
   //\return true if the type is FunType
   bool IsFunType() const;
   FunType *GetFunType() const;
 
   bool IsStructType() const;
   StructType *GetStructType() const;
+
+private:
+  // CanType ComputeCanType();
 };
 
 class BuiltinType : public Type {
+
 protected:
-  BuiltinType(TypeKind kind) : Type(kind) {
-    // Bits.Type.IsBuiltin = true;
-  }
+  explicit BuiltinType(TypeKind kind, TypeState *TS);
 };
 
 // class IdentifierType : public Type{
@@ -197,12 +197,12 @@ protected:
 
 // // class StringType : public BuiltinType {
 // // public:
-// //   StringType(const ASTContext &AC) : BuiltinType(TypeKind::String, AC) {}
+// //   StringType(TypeState *TS) : BuiltinType(TypeKind::String, TS) {}
 // // };
 
 class VoidType : public BuiltinType {
 public:
-  VoidType() : BuiltinType(TypeKind::Void) {}
+  VoidType(TypeState *TS) : BuiltinType(TypeKind::Void, TS) {}
 
 public:
   static VoidType *Create(const ASTContext &astContext);
@@ -210,7 +210,7 @@ public:
 
 class NullType : public BuiltinType {
 public:
-  NullType() : BuiltinType(TypeKind::Null) {}
+  NullType(TypeState *TS) : BuiltinType(TypeKind::Null, TS) {}
 };
 
 enum class BitWidth : uint8_t {
@@ -225,18 +225,17 @@ enum class BitWidth : uint8_t {
 class NumberType : public BuiltinType {
   friend ASTContext;
 
-protected:
+  bool IsNumberType(TypeKind kind) const;
+
 public:
-  NumberType(TypeKind kind) : BuiltinType(kind) {}
+  NumberType(TypeKind kind, TypeState *TS) : BuiltinType(kind, TS) {}
 
 public:
   BitWidth GetBitWidth() const;
-  bool IsSigned() const {
-    return false; // TODO:
-  }
-  bool IsFloat() const { return false; }
-  bool IsImaginary() const { return false; }
-  bool IsComplex() const { return false; }
+  bool IsSigned() const;
+  bool IsFloat() const;
+  bool IsImaginary() const;
+  bool IsComplex() const;
   // Power();
 };
 
@@ -244,7 +243,7 @@ class IntType : public NumberType {
   friend ASTContext;
 
 public:
-  IntType() : NumberType(TypeKind::Int) {}
+  IntType(TypeState *TS) : NumberType(TypeKind::Int, TS) {}
 
 public:
   static IntType *Create(const ASTContext &AC);
@@ -254,7 +253,7 @@ class Int8Type : public NumberType {
   friend ASTContext;
 
 public:
-  Int8Type() : NumberType(TypeKind::Int8) {}
+  Int8Type(TypeState *TS) : NumberType(TypeKind::Int8, TS) {}
 
 public:
   static Int8Type *Create(const ASTContext &AC);
@@ -264,7 +263,7 @@ class Int16Type : public NumberType {
   friend ASTContext;
 
 public:
-  Int16Type() : NumberType(TypeKind::Int16) {}
+  Int16Type(TypeState *TS) : NumberType(TypeKind::Int16, TS) {}
 
 public:
   static Int16Type *Create(const ASTContext &AC);
@@ -274,7 +273,7 @@ class Int32Type : public NumberType {
   friend ASTContext;
 
 public:
-  Int32Type() : NumberType(TypeKind::Int32) {}
+  Int32Type(TypeState *TS) : NumberType(TypeKind::Int32, TS) {}
 
 public:
   static Int16Type *Create(const ASTContext &AC);
@@ -284,7 +283,7 @@ class Int64Type : public NumberType {
   friend ASTContext;
 
 public:
-  Int64Type() : NumberType(TypeKind::Int64) {}
+  Int64Type(TypeState *TS) : NumberType(TypeKind::Int64, TS) {}
 
 public:
   static Int64Type *Create(const ASTContext &AC);
@@ -294,7 +293,7 @@ class Int128Type : public NumberType {
   friend ASTContext;
 
 public:
-  Int128Type() : NumberType(TypeKind::Int128) {}
+  Int128Type(TypeState *TS) : NumberType(TypeKind::Int128, TS) {}
 
 public:
   static Int128Type *Create(const ASTContext &AC);
@@ -304,74 +303,74 @@ class UIntType : public NumberType {
   friend class ASTContext;
 
 public:
-  UIntType() : NumberType(TypeKind::UInt) {}
+  UIntType(TypeState *TS) : NumberType(TypeKind::UInt, TS) {}
 };
 class UInt8Type : public NumberType {
   friend class ASTContext;
 
 public:
-  UInt8Type() : NumberType(TypeKind::UInt8) {}
+  UInt8Type(TypeState *TS) : NumberType(TypeKind::UInt8, TS) {}
 };
 class UInt16Type : public NumberType {
   friend class ASTContext;
 
 public:
-  UInt16Type() : NumberType(TypeKind::UInt16) {}
+  UInt16Type(TypeState *TS) : NumberType(TypeKind::UInt16, TS) {}
 };
 
 class UInt32Type : public NumberType {
   friend class ASTContext;
 
 public:
-  UInt32Type() : NumberType(TypeKind::UInt32) {}
+  UInt32Type(TypeState *TS) : NumberType(TypeKind::UInt32, TS) {}
 };
 
 class UInt64Type final : public NumberType {
   friend class ASTContext;
 
 public:
-  UInt64Type() : NumberType(TypeKind::UInt64) {}
+  UInt64Type(TypeState *TS) : NumberType(TypeKind::UInt64, TS) {}
 };
 class UInt128Type final : public NumberType {
   friend class ASTContext;
 
 public:
-  UInt128Type() : NumberType(TypeKind::UInt128) {}
+  UInt128Type(TypeState *TS) : NumberType(TypeKind::UInt128, TS) {}
 };
 
 class Complex32Type final : public NumberType {
   friend class ASTContext;
 
 public:
-  Complex32Type() : NumberType(TypeKind::Complex32) {}
+  Complex32Type(TypeState *TS) : NumberType(TypeKind::Complex32, TS) {}
 };
 
 class Complex64Type final : public NumberType {
   friend class ASTContext;
 
 public:
-  Complex64Type() : NumberType(TypeKind::Complex64) {}
+  Complex64Type(TypeState *TS) : NumberType(TypeKind::Complex64, TS) {}
 };
 
 class Imaginary32Type final : public NumberType {
   friend class ASTContext;
 
 public:
-  Imaginary32Type() : NumberType(TypeKind::Imaginary32) {}
+  Imaginary32Type(TypeState *TS) : NumberType(TypeKind::Imaginary32, TS) {}
 };
 
 class Imaginary64Type final : public NumberType {
   friend class ASTContext;
 
 public:
-  Imaginary64Type() : NumberType(TypeKind::Imaginary64) {}
+  Imaginary64Type(TypeState *TS) : NumberType(TypeKind::Imaginary64, TS) {}
 };
 
 class FloatType : public NumberType {
   friend ASTContext;
 
 public:
-  FloatType() : NumberType(TypeKind::Float) {}
+  FloatType(TypeState *TS) : NumberType(TypeKind::Float, TS) {}
 
 public:
   const llvm::fltSemantics &GetAPFloatSemantics() const;
@@ -386,52 +385,52 @@ class Float16Type : public NumberType {
   friend ASTContext;
 
 public:
-  Float16Type() : NumberType(TypeKind::Float16) {}
+  Float16Type(TypeState *TS) : NumberType(TypeKind::Float16, TS) {}
 };
 
 class Float32Type : public NumberType {
   friend ASTContext;
 
 public:
-  Float32Type() : NumberType(TypeKind::Float32) {}
+  Float32Type(TypeState *TS) : NumberType(TypeKind::Float32, TS) {}
 };
 
 class Float64Type : public NumberType {
   friend ASTContext;
 
 public:
-  Float64Type() : NumberType(TypeKind::Float64) {}
+  Float64Type(TypeState *TS) : NumberType(TypeKind::Float64, TS) {}
 };
 class Float128Type : public NumberType {
   friend ASTContext;
 
 public:
-  Float128Type() : NumberType(TypeKind::Float128) {}
+  Float128Type(TypeState *TS) : NumberType(TypeKind::Float128, TS) {}
 };
 
 class CharType final : public BuiltinType {
 public:
-  CharType() : BuiltinType(TypeKind::Char) {}
+  CharType(TypeState *TS) : BuiltinType(TypeKind::Char, TS) {}
 };
 
 class Char8Type final : public BuiltinType {
 public:
-  Char8Type() : BuiltinType(TypeKind::Char8) {}
+  Char8Type(TypeState *TS) : BuiltinType(TypeKind::Char8, TS) {}
 };
 
 class Char16Type final : public BuiltinType {
 public:
-  Char16Type() : BuiltinType(TypeKind::Char16) {}
+  Char16Type(TypeState *TS) : BuiltinType(TypeKind::Char16, TS) {}
 };
 
 class Char32Type final : public BuiltinType {
 public:
-  Char32Type() : BuiltinType(TypeKind::Char32) {}
+  Char32Type(TypeState *TS) : BuiltinType(TypeKind::Char32, TS) {}
 };
 
 class StringType final : public BuiltinType {
 public:
-  StringType() : BuiltinType(TypeKind::String) {}
+  StringType(TypeState *TS) : BuiltinType(TypeKind::String, TS) {}
 
 public:
   size_t GetLength() const;
@@ -439,27 +438,24 @@ public:
 
 class BoolType final : public BuiltinType {
 public:
-  BoolType() : BuiltinType(TypeKind::Bool) {}
+  BoolType(TypeState *TS) : BuiltinType(TypeKind::Bool, TS) {}
 };
 
 // // class TemplateParmType : public Type{
 // // };
 
 class FunctionType : public Type {
-  TypeState *returnType;
-
 public:
-  FunctionType(TypeKind kind, TypeState *returnType)
-      : Type(kind), returnType(returnType) {}
+  FunctionType(TypeKind kind, TypeState *TS) : Type(kind, TS) {}
 };
 
 // You are returning Type for now, it may have to be Type
 class FunType : public FunctionType,
-                private llvm::TrailingObjects<FunType, TypeState> {
+                private llvm::TrailingObjects<FunType, Type> {
   friend TrailingObjects;
 
 public:
-  FunType(TypeState *resultType);
+  FunType(TypeState *TS);
 };
 
 class NominalType : public Type {
@@ -643,40 +639,40 @@ class RefType : public ReferenceType {
 //   }
 
 // private:
-//   ModuleType(ModuleDecl *mod, const ASTContext &AC)
+//   ModuleType(ModuleDecl *mod, TypeState *TS)
 //       : Type(TypeKind::Module, &AC), mod(mod) {}
 // };
 
-class SugarType : public Type {
-  // The state of this union is known via Bits.SugarType.HasCachedType so
+class SugType : public Type {
+  // The state of this union is known via Bits.SugType.HasCachedType so
   // that
   // we can avoid masking the pointer on the fast path.
   // union {
-  //   Type *underlyingType;
+  //   Type *canType;
   //   const ASTContext *Context;
   // };
 };
 /// An alias to a type
 /// alias Int = int; My using use using Int = int;
-class AliasType : public SugarType {
+class AliasType : public SugType {
 public:
 };
 
 // /// An alias to a type
 // /// using Int = int; My using use using Int = int;
-// class UsingType : public SugarType {
+// class UsingType : public SugType {
 // public:
 // };
 
 // /// A type with a special syntax that is always sugar for a library type.
 // The
 // /// library type may have multiple base types. For unary syntax sugar, see
-// /// UnarySyntaxSugarType.
+// /// UnarySyntaxSugType.
 // ///
 // /// The prime examples are:
 // /// Arrays: [T] -> Array<T>
 // /// Dictionaries: [K : V]  -> Dictionary<K, V>
-// class SyntaxSugarType : public SugarType {
+// class SyntaxSugType : public SugType {
 // public:
 // };
 
@@ -687,7 +683,7 @@ public:
 // /// \code
 // /// auto dict: [string : int] = ["hello" : 0, "world" : 1]
 // /// \endcode
-// class DictionaryType : public SyntaxSugarType {
+// class DictionaryType : public SyntaxSugType {
 // public:
 // };
 

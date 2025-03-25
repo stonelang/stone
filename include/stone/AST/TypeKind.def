@@ -103,9 +103,9 @@ ABSTRACT_TYPE(Nominal, Type)
 TYPE_RANGE(Nominal, Enum, Interface)
 LAST_TYPE(Interface)
 
-ABSTRACT_SUGARED_TYPE(Sugar, Type)
-  TYPE_SPECIFIER(Alias, SugarType)
-TYPE_RANGE(Sugar, Alias, Alias)
+ABSTRACT_SUGARED_TYPE(Sug, Type)
+  TYPE_SPECIFIER(Alias, SugType)
+TYPE_RANGE(Sug, Alias, Alias)
 
 // Cleanup
 #undef TYPE

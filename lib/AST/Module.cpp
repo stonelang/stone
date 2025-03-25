@@ -1,6 +1,5 @@
 #include "stone/AST/Module.h"
 #include "stone/AST/ASTContext.h"
-#include "stone/AST/TypeState.h"
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
@@ -19,12 +18,11 @@ using namespace stone;
 ModuleFile::ModuleFile(ModuleFileKind kind, ModuleDecl &owner)
     : DeclContext(DeclContextKind::ModuleFile, &owner), kind(kind) {}
 
-ModuleDecl::ModuleDecl(DeclName name, ASTContext &AC, ModuleDecl *parent)
+ModuleDecl::ModuleDecl(DeclState *DS, ASTContext &AC, ModuleDecl *parent)
     : DeclContext(DeclContextKind::ModuleDecl),
-      TypeDecl(DeclKind::Module, name, new(AC) ModuleTypeState(), &AC),
-      parent(parent) {
+      TypeDecl(DeclKind::Module, DS, &AC), parent(parent) {
 
-  SetVisibilityLevel(VisibilityLevel::Public);
+  // SetVisibilityLevel(VisibilityLevel::Public);
 
   Bits.ModuleDecl.IsStaticLibrary = 0;
   Bits.ModuleDecl.IsTestingEnabled = 0;
@@ -55,7 +53,7 @@ void ModuleDecl::AddFile(ModuleFile &file) {
 
 Identifier ModuleDecl::GetRealName() const {
   // This will return the real name for an alias (if used) or getName()
-  return GetASTContext().GetRealModuleName(GetIdentifier());
+  return GetASTContext().GetRealModuleName(GetBasicName());
 }
 
 bool ModuleDecl::Walk(ASTWalker &waker) {}
