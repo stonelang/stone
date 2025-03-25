@@ -10,5 +10,5 @@ DeclStateKind stone::GetDeclStateKindFor(tok kind) {
     return DeclStateKind::pretty;
 #include "stone/Basic/TokenKind.def"
   }
-  assert(false && "Unable to match the token-kind with a pretty token-kind" !);
+  assert(false && "Unable to match the token-kind with a pretty token-kind!");
 }

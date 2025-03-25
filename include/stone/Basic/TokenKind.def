@@ -1,63 +1,133 @@
+/// TOKEN(name)
+///   Expands by default for every token kind.
 #ifndef TOKEN
 #define TOKEN(name)
 #endif
 
+/// KEYWORD(kw)
+///   Expands by default for every keyword, such as
+///   'if', 'else', etc. If you only want to use Swift keywords
 #ifndef KEYWORD
 #define KEYWORD(kw) TOKEN(kw_##kw)
 #endif
 
-#ifndef DECL_KEYWORD
-#define DECL_KEYWORD(kw, pretty) TOKEN(kw_##kw)
+/// KEYWORD(kw)
+///   Expands by default for every keyword, such as
+///   'if', 'else', etc. If you only want to use Swift keywords
+#ifndef ACTIVE_KEYWORD
+#define ACTIVE_KEYWORD(kw) KEYWORD(kw)
 #endif
 
+
+/// RESERVED_DECL_KEYWORD(kw)
+///   Expands for every keyword that can be used in a declaration.
+#ifndef ACTIVE_DECL_KEYWORD
+#define ACTIVE_DECL_KEYWORD(kw) ACTIVE_KEYWORD(kw)
+#endif
+
+
+/// DEPRECATED_DECL_KEYWORD(kw)
+///   Expands for every keyword that can be used in a declaration.
+#ifndef DEPRECATED_KEYWORD
+#define DEPRECATED_KEYWORD(kw) KEYWORD(kw)
+#endif
+
+/// DEPRECATED_DECL_KEYWORD(kw)
+///   Expands for every keyword that can be used in a declaration.
+#ifndef DEPRECATED_DECL_KEYWORD
+#define DEPRECATED_DECL_KEYWORD(kw) DEPRECATED_KEYWORD(kw)
+#endif
+
+
+/// RESERVED_DECL_KEYWORD(kw)
+///   Expands for every keyword that can be used in a declaration.
+#ifndef RESERVED_KEYWORD
+#define RESERVED_KEYWORD(kw) KEYWORD(kw)
+#endif
+
+
+/// RESERVED_DECL_KEYWORD(kw)
+///   Expands for every keyword that can be used in a declaration.
+#ifndef RESERVED_DECL_KEYWORD
+#define RESERVED_DECL_KEYWORD(kw) RESERVED_KEYWORD(kw)
+#endif
+
+
+/// STMT_KEYWORD(kw)
+///   Expands for every keyword used in statement grammar.
 #ifndef STMT_KEYWORD
 #define STMT_KEYWORD(kw) KEYWORD(kw)
 #endif
 
+/// EXPR_KEYWORD(kw)
+///   Expands for every stone keyword used in an expression, such as 'true',
+///   'false', and 'as'
 #ifndef EXPR_KEYWORD
 #define EXPR_KEYWORD(kw) KEYWORD(kw)
 #endif
 
+/// PAT_KEYWORD(kw)
+///   Expands for every stone keyword used in a pattern, which is currently
+///   limited to '_'
 #ifndef PAT_KEYWORD
 #define PAT_KEYWORD(kw) KEYWORD(kw)
 #endif
 
+/// POUND_KEYWORD(kw)
+///   Every keyword prefixed with a '#'.
 #ifndef POUND_KEYWORD
 #define POUND_KEYWORD(kw) TOKEN(pound_##kw)
 #endif
 
-#ifndef ACTIVE_DECL_KEYWORD
-#define ACTIVE_DECL_KEYWORD(kw, pretty) DECL_KEYWORD(kw, pretty)
+/// POUND_CONFIG(kw)
+///   Every keyword prefixed with a '#' representing a configuration.
+#ifndef POUND_CONFIG
+#define POUND_CONFIG(kw) POUND_KEYWORD(kw)
 #endif
 
-#ifndef RESERVED_DECL_KEYWORD
-#define RESERVED_DECL_KEYWORD(kw, pretty) DECL_KEYWORD(kw, pretty)
+/// POUND_DIRECTIVE_KEYWORD(kw)
+///   Every keyword prefixed with a '#' that is a sc control directive.
+#ifndef POUND_DIRECTIVE_KEYWORD
+#define POUND_DIRECTIVE_KEYWORD(kw) POUND_KEYWORD(kw)
 #endif
 
-#ifndef DEPRECATED_DECL_KEYWORD
-#define DEPRECATED_DECL_KEYWORD(kw, pretty) DECL_KEYWORD(kw, pretty)
+/// POUND_COND_DIRECTIVE_KEYWORD(kw)
+///   Every keyword prefixed with a '#' that is part of conditional compilation
+///   control.
+#ifndef POUND_COND_DIRECTIVE_KEYWORD
+#define POUND_COND_DIRECTIVE_KEYWORD(kw) POUND_DIRECTIVE_KEYWORD(kw)
 #endif
 
+/// PUNCTUATOR(name, str)
+///   Expands for every punctuator.
+///   \param name  The symbolic name of the punctuator, such as
+///                'l_paren' or 'arrow'.
+///   \param str   A string literal containing the spelling of the punctuator,
+///                such as '"("' or '"->"'.
 #ifndef PUNCTUATOR
 #define PUNCTUATOR(name, str) TOKEN(name)
 #endif
 
+/// LITERAL(name)
+///   Tokens representing literal values, e.g. 'integer_literal'.
 #ifndef LITERAL
 #define LITERAL(name) TOKEN(name)
 #endif
 
+/// MISC(name)
+///   Miscellaneous tokens, e.g. 'eof' and 'unknown'.
 #ifndef MISC
 #define MISC(name) TOKEN(name)
 #endif
 
-// Miscellaneous tokens
+// Miscellaneous tokens. TODO: replace with TOK
 TOKEN(eof)
 TOKEN(alien)
 TOKEN(dollarident)
 TOKEN(code_complete)
 TOKEN(identifier)
-TOKEN(oper_binary_unspaced)
-TOKEN(oper_binary_spaced)
+TOKEN(oper_binary_unspaced) // "x+y"
+TOKEN(oper_binary_spaced)   // "x + y"
 TOKEN(oper_postfix)
 TOKEN(oper_prefix)
 TOKEN(comment)
@@ -65,85 +135,92 @@ TOKEN(string_quote)
 TOKEN(multiline_string_quote)
 TOKEN(string_segment)
 
-// Literals
+// Single-token literals
 LITERAL(integer_literal)
 LITERAL(floating_literal)
 LITERAL(string_literal)
 LITERAL(imaginary_literal)
 LITERAL(regex_literal)
 
-// Declaration keywords
-ACTIVE_DECL_KEYWORD(this, This) 
-ACTIVE_DECL_KEYWORD(interface, Interface)
-ACTIVE_DECL_KEYWORD(enum, Enum)
-ACTIVE_DECL_KEYWORD(struct, Struct)
-ACTIVE_DECL_KEYWORD(private, Private)
-ACTIVE_DECL_KEYWORD(internal, Internal)
-ACTIVE_DECL_KEYWORD(public, Public)
-ACTIVE_DECL_KEYWORD(static, Static)
-ACTIVE_DECL_KEYWORD(space, Space)
-ACTIVE_DECL_KEYWORD(inline, Inline)
-ACTIVE_DECL_KEYWORD(new, New)
-ACTIVE_DECL_KEYWORD(const, Const)
-ACTIVE_DECL_KEYWORD(stone, Stone)
-ACTIVE_DECL_KEYWORD(volatile, Volatile)
-ACTIVE_DECL_KEYWORD(restrict, Restrict)
-ACTIVE_DECL_KEYWORD(mutable, Mutable)
-ACTIVE_DECL_KEYWORD(trust, Trust)
-ACTIVE_DECL_KEYWORD(delete, Delete)
-ACTIVE_DECL_KEYWORD(operator, Operator)
-ACTIVE_DECL_KEYWORD(fun, Fun)
-ACTIVE_DECL_KEYWORD(bool, Bool)
-ACTIVE_DECL_KEYWORD(auto, Auto)
-ACTIVE_DECL_KEYWORD(void, Void)
-ACTIVE_DECL_KEYWORD(int, Int)
-ACTIVE_DECL_KEYWORD(int8, Int8)
-ACTIVE_DECL_KEYWORD(int16, Int16)
-ACTIVE_DECL_KEYWORD(int32, Int32)
-ACTIVE_DECL_KEYWORD(int64, Int64)
-ACTIVE_DECL_KEYWORD(uint, UInt)
-ACTIVE_DECL_KEYWORD(uint8, UInt8)
-ACTIVE_DECL_KEYWORD(byte, Byte)
-ACTIVE_DECL_KEYWORD(ubyte, UByte)
-ACTIVE_DECL_KEYWORD(uint16, UInt16)
-ACTIVE_DECL_KEYWORD(uint32, UInt32)
-ACTIVE_DECL_KEYWORD(uint64, UInt64)
-ACTIVE_DECL_KEYWORD(float, Float)
-ACTIVE_DECL_KEYWORD(float32, Float32)
-ACTIVE_DECL_KEYWORD(float64, Float64)
-ACTIVE_DECL_KEYWORD(complex32, Complex32)
-ACTIVE_DECL_KEYWORD(complex64, Complex64)
-ACTIVE_DECL_KEYWORD(imaginary32, Imaginary32)
-ACTIVE_DECL_KEYWORD(imaginary64, Imaginary64)
-ACTIVE_DECL_KEYWORD(real, Real)
-ACTIVE_DECL_KEYWORD(char, Char)
-ACTIVE_DECL_KEYWORD(char8, Char8)
-ACTIVE_DECL_KEYWORD(char16, Char16)
-ACTIVE_DECL_KEYWORD(char32, Char32)
-ACTIVE_DECL_KEYWORD(string, String)
-ACTIVE_DECL_KEYWORD(alias, Alias)
-ACTIVE_DECL_KEYWORD(import, Import)
-ACTIVE_DECL_KEYWORD(join, Join)
-ACTIVE_DECL_KEYWORD(own, Own)
-ACTIVE_DECL_KEYWORD(raw, Raw)
-ACTIVE_DECL_KEYWORD(ref, Ref)
-ACTIVE_DECL_KEYWORD(unseal, Unseal)
+ACTIVE_DECL_KEYWORD(interface)
+ACTIVE_DECL_KEYWORD(enum)
+ACTIVE_DECL_KEYWORD(struct)
+ACTIVE_DECL_KEYWORD(this) // move to expr_decl 
+ACTIVE_DECL_KEYWORD(private)
+ACTIVE_DECL_KEYWORD(internal)
+ACTIVE_DECL_KEYWORD(public)
+ACTIVE_DECL_KEYWORD(static)
+ACTIVE_DECL_KEYWORD(space)
+ACTIVE_DECL_KEYWORD(inline)
+ACTIVE_DECL_KEYWORD(new)
+ACTIVE_DECL_KEYWORD(const)
+ACTIVE_DECL_KEYWORD(pure)
+ACTIVE_DECL_KEYWORD(stone)
+ACTIVE_DECL_KEYWORD(volatile)
+ACTIVE_DECL_KEYWORD(restrict)
+ACTIVE_DECL_KEYWORD(mutable)
+ACTIVE_DECL_KEYWORD(trust)
+ACTIVE_DECL_KEYWORD(delete)
+ACTIVE_DECL_KEYWORD(operator)
+ACTIVE_DECL_KEYWORD(fun)
+ACTIVE_DECL_KEYWORD(bool)
 
-// Reserved declaration keywords
-RESERVED_DECL_KEYWORD(type, Type)
-RESERVED_DECL_KEYWORD(safe, Safe)
-RESERVED_DECL_KEYWORD(any, Any)
-RESERVED_DECL_KEYWORD(object, Object)
-RESERVED_DECL_KEYWORD(forward, Forward)
-RESERVED_DECL_KEYWORD(class, Class)
-RESERVED_DECL_KEYWORD(immutable, Immutable)
-RESERVED_DECL_KEYWORD(module, Module)
-RESERVED_DECL_KEYWORD(global, Global)
-RESERVED_DECL_KEYWORD(register, Register)
+ACTIVE_DECL_KEYWORD(auto)
+ACTIVE_DECL_KEYWORD(void)
+ACTIVE_DECL_KEYWORD(int)
+ACTIVE_DECL_KEYWORD(int8)
+ACTIVE_DECL_KEYWORD(int16)
+ACTIVE_DECL_KEYWORD(int32)
+ACTIVE_DECL_KEYWORD(int64)
+ACTIVE_DECL_KEYWORD(uint)
+ACTIVE_DECL_KEYWORD(uint8)
+// alias for unit8
+ACTIVE_DECL_KEYWORD(byte)
+ACTIVE_DECL_KEYWORD(ubyte)
+ACTIVE_DECL_KEYWORD(uint16)
+ACTIVE_DECL_KEYWORD(uint32)
+ACTIVE_DECL_KEYWORD(uint64)
+ACTIVE_DECL_KEYWORD(float)
+ACTIVE_DECL_KEYWORD(float32)
+ACTIVE_DECL_KEYWORD(float64)
+ACTIVE_DECL_KEYWORD(complex32)
+ACTIVE_DECL_KEYWORD(complex64)
+ACTIVE_DECL_KEYWORD(imaginary32)
+ACTIVE_DECL_KEYWORD(imaginary64)
+ACTIVE_DECL_KEYWORD(real)
+ACTIVE_DECL_KEYWORD(char)
+ACTIVE_DECL_KEYWORD(char8)
+ACTIVE_DECL_KEYWORD(char16)
+ACTIVE_DECL_KEYWORD(char32)
+ACTIVE_DECL_KEYWORD(string)
+ACTIVE_DECL_KEYWORD(alias)
+ACTIVE_DECL_KEYWORD(import)
+ACTIVE_DECL_KEYWORD(join)
+ACTIVE_DECL_KEYWORD(own)
+ACTIVE_DECL_KEYWORD(ptr)
+ACTIVE_DECL_KEYWORD(ref)
+ACTIVE_DECL_KEYWORD(aim)
+ACTIVE_DECL_KEYWORD(raw)
+ACTIVE_DECL_KEYWORD(unseal)
 
-// Statement keywords
+RESERVED_DECL_KEYWORD(type)
+RESERVED_DECL_KEYWORD(val)
+RESERVED_DECL_KEYWORD(safe)
+RESERVED_DECL_KEYWORD(any)
+RESERVED_DECL_KEYWORD(object)
+
+RESERVED_DECL_KEYWORD(forward)
+RESERVED_DECL_KEYWORD(class)
+RESERVED_DECL_KEYWORD(immutable)
+RESERVED_DECL_KEYWORD(module)
+RESERVED_DECL_KEYWORD(global)
+RESERVED_DECL_KEYWORD(register)
+
+// Statement keywords.
 STMT_KEYWORD(defer)
 STMT_KEYWORD(if)
+STMT_KEYWORD(do)
+//STMT_KEYWORD(loop)
 STMT_KEYWORD(else)
 STMT_KEYWORD(for)
 STMT_KEYWORD(in)
@@ -151,20 +228,27 @@ STMT_KEYWORD(while)
 STMT_KEYWORD(return)
 STMT_KEYWORD(break)
 STMT_KEYWORD(continue)
+STMT_KEYWORD(next)
 STMT_KEYWORD(switch)
+STMT_KEYWORD(match)
+STMT_KEYWORD(with)
 STMT_KEYWORD(case)
 STMT_KEYWORD(default)
+//STMT_KEYWORD(where)
+//STMT_KEYWORD(pin)
 
-// Expression keywords
-EXPR_KEYWORD(true)
+// Expression keywords.
+//EXPR_KEYWORD(as)
 EXPR_KEYWORD(false)
+EXPR_KEYWORD(true)
+//EXPR_KEYWORD(is)
 EXPR_KEYWORD(null)
 EXPR_KEYWORD(move)
 
-// Pattern keywords
+
+// Pattern keywords.
 PAT_KEYWORD(_)
 
-// Punctuators
 // Punctuators.
 PUNCTUATOR(l_paren, "(")
 PUNCTUATOR(r_paren, ")")
@@ -211,22 +295,35 @@ PUNCTUATOR(doubleplus,   "++")
 PUNCTUATOR(plusequal,    "+=")
 PUNCTUATOR(percent,      "%")
 
-// Pound keywords
+
+// Keywords prefixed with a '#'.  "if" becomes "tok::pound_if".
 POUND_KEYWORD(if)
 POUND_KEYWORD(else)
+POUND_KEYWORD(elseif)
 POUND_KEYWORD(endif)
+POUND_KEYWORD(file)
+
+// Keywords prefixed with a '#' that are build configurations.
+POUND_CONFIG(available)
 
 #undef TOKEN
 #undef KEYWORD
 #undef DECL_KEYWORD
 #undef ACTIVE_KEYWORD
 #undef ACTIVE_DECL_KEYWORD
+#undef RESERVED_KEYWORD
 #undef RESERVED_DECL_KEYWORD
+#undef DEPRECATED_KEYWORD
 #undef DEPRECATED_DECL_KEYWORD
 #undef STMT_KEYWORD
 #undef EXPR_KEYWORD
 #undef PAT_KEYWORD
+#undef SIL_KEYWORD
 #undef POUND_KEYWORD
+#undef POUND_OBJECT_LITERAL
+#undef POUND_CONFIG
+#undef POUND_DIRECTIVE_KEYWORD
+#undef POUND_COND_DIRECTIVE_KEYWORD
 #undef PUNCTUATOR
 #undef LITERAL
 #undef MISC
