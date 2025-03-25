@@ -9,6 +9,7 @@ set(stone_ast_sources
 	Builtin.cpp
 	Comment.cpp
 	Decl.cpp
+	DeclState.cpp
 	DeclContext.cpp
 	DeclName.cpp
 	Diagnostics.cpp
