@@ -190,7 +190,7 @@ public:
     return IsAny(tok::kw_public, tok::kw_internal, tok::kw_private);
   }
 
-  bool IsBuiltinType() const { return Token::IsBuiltinType(kind); }
+  bool IsBuiltin() const { return Token::IsBuiltin(kind); }
 
   bool IsNominalType() const {
     return IsAny(tok::kw_enum, tok::kw_struct, tok::kw_interface,
@@ -313,36 +313,7 @@ public:
   }
 
 public:
-  static bool IsBuiltinType(tok kind) {
-    switch (kind) {
-    case tok::kw_void:
-    case tok::kw_auto:
-    case tok::kw_char:
-    case tok::kw_char8:
-    case tok::kw_char16:
-    case tok::kw_char32:
-    case tok::kw_int:
-    case tok::kw_int8:
-    case tok::kw_int16:
-    case tok::kw_int32:
-    case tok::kw_int64:
-    case tok::kw_uint:
-    case tok::kw_uint8:
-    case tok::kw_uint16:
-    case tok::kw_uint32:
-    case tok::kw_uint64:
-    case tok::kw_float:
-    case tok::kw_float32:
-    case tok::kw_float64:
-    case tok::kw_complex32:
-    case tok::kw_complex64:
-    case tok::kw_imaginary32:
-    case tok::kw_imaginary64:
-      return true;
-    default:
-      return false;
-    }
-  }
+  static bool IsBuiltin(tok kind);
 };
 } // namespace stone
 

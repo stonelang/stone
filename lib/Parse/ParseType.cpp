@@ -1,167 +1,7 @@
+#include "stone/AST/TypeState.h"
 #include "stone/Parse/Parser.h"
-#include "stone/Parse/ParsingDeclSpec.h"
-#include "stone/Parse/ParsingTypeSpec.h"
 
 using namespace stone;
-
-ParsingTypeSpec::ParsingTypeSpec(ParsingTypeSpecKind kind, SrcLoc loc)
-    : kind(kind), loc(loc) {}
-
-void ParsingTypeSpec::SetType(Type qualType) { ty = qualType; }
-
-bool ParsingTypeSpec::HasType() const { return (!ty ? false : true); }
-
-ParsingBuiltinTypeSpec::ParsingBuiltinTypeSpec(TypeKind kind, SrcLoc loc)
-    : ParsingTypeSpec(ParsingTypeSpecKind::Builtin, loc), kind(kind) {
-
-  assert(ParsingBuiltinTypeSpec::IsBuiltinType(kind) &&
-         "Invalid builtin-type!");
-}
-
-bool ParsingBuiltinTypeSpec::IsInt8Type() const {
-  return IsTypeKind(TypeKind::Int8);
-}
-
-bool ParsingBuiltinTypeSpec::IsInt16Type() const {
-  return IsTypeKind(TypeKind::Int16);
-}
-
-bool ParsingBuiltinTypeSpec::IsInt32Type() const {
-  return IsTypeKind(TypeKind::Int32);
-}
-
-bool ParsingBuiltinTypeSpec::IsInt64Type() const {
-  return IsTypeKind(TypeKind::Int64);
-}
-
-bool ParsingBuiltinTypeSpec::IsInt128Type() const {
-  return IsTypeKind(TypeKind::Int128);
-}
-
-bool ParsingBuiltinTypeSpec::IsUIntType() const {
-  return IsTypeKind(TypeKind::UInt);
-}
-
-bool ParsingBuiltinTypeSpec::Isuint8Type() const {
-  return IsTypeKind(TypeKind::uint8);
-}
-
-bool ParsingBuiltinTypeSpec::IsUInt16Type() const {
-  return IsTypeKind(TypeKind::UInt16);
-}
-
-bool ParsingBuiltinTypeSpec::IsUInt32Type() const {
-  return IsTypeKind(TypeKind::UInt32);
-}
-
-bool ParsingBuiltinTypeSpec::IsUInt64Type() const {
-  return IsTypeKind(TypeKind::UInt64);
-}
-
-bool ParsingBuiltinTypeSpec::IsUInt128Type() const {
-  return IsTypeKind(TypeKind::UInt128);
-}
-
-bool ParsingBuiltinTypeSpec::IsBoolType() const {
-  return IsTypeKind(TypeKind::Bool);
-}
-
-bool ParsingBuiltinTypeSpec::IsCharType() const {
-  return IsTypeKind(TypeKind::Char);
-}
-
-bool ParsingBuiltinTypeSpec::IsChar8Type() const {
-  return IsTypeKind(TypeKind::Char8);
-}
-
-bool ParsingBuiltinTypeSpec::IsChar16Type() const {
-  return IsTypeKind(TypeKind::Char16);
-}
-
-bool ParsingBuiltinTypeSpec::IsChar32Type() const {
-  return IsTypeKind(TypeKind::Char32);
-}
-
-// bool ParsingBuiltinTypeSpec::IsRealType() const {
-//   return IsTypeKind(TypeKind::Real);
-// }
-
-bool ParsingBuiltinTypeSpec::IsFloatType() const {
-  return IsTypeKind(TypeKind::Float);
-}
-
-bool ParsingBuiltinTypeSpec::IsFloat16Type() const {
-  return IsTypeKind(TypeKind::Float16);
-}
-
-bool ParsingBuiltinTypeSpec::IsFloat32Type() const {
-  return IsTypeKind(TypeKind::Float32);
-}
-
-bool ParsingBuiltinTypeSpec::IsFloat64Type() const {
-  return IsTypeKind(TypeKind::Float64);
-}
-
-bool ParsingBuiltinTypeSpec::IsFloat128Type() const {
-  return IsTypeKind(TypeKind::Float128);
-}
-
-bool ParsingBuiltinTypeSpec::IsComplex32Type() const {
-  return IsTypeKind(TypeKind::Complex32);
-}
-
-bool ParsingBuiltinTypeSpec::IsComplex64Type() const {
-  return IsTypeKind(TypeKind::Complex64);
-}
-
-bool ParsingBuiltinTypeSpec::IsImaginary32Type() const {
-  return IsTypeKind(TypeKind::Imaginary32);
-}
-
-bool ParsingBuiltinTypeSpec::IsImaginary64Type() const {
-  return IsTypeKind(TypeKind::Imaginary64);
-}
-
-bool ParsingBuiltinTypeSpec::IsNullType() const {
-  return IsTypeKind(TypeKind::Null);
-}
-bool ParsingBuiltinTypeSpec::IsAutoType() const {
-  return IsTypeKind(TypeKind::Auto);
-}
-bool ParsingBuiltinTypeSpec::IsVoidType() const {
-  return IsTypeKind(TypeKind::Void);
-}
-
-bool ParsingBuiltinTypeSpec::IsBuiltinType(TypeKind kind) {
-  switch (kind) {
-  case TypeKind::Void:
-  case TypeKind::Null:
-  case TypeKind::Auto:
-  case TypeKind::Char:
-  case TypeKind::Char8:
-  case TypeKind::Char16:
-  case TypeKind::Char32:
-  case TypeKind::Int:
-  case TypeKind::Int8:
-  case TypeKind::Int16:
-  case TypeKind::Int32:
-  case TypeKind::Int64:
-  case TypeKind::UInt:
-  case TypeKind::uint8:
-  case TypeKind::UInt16:
-  case TypeKind::UInt32:
-  case TypeKind::UInt64:
-  case TypeKind::Float:
-  case TypeKind::Float32:
-  case TypeKind::Float64:
-  case TypeKind::Complex32:
-  case TypeKind::Complex64:
-  case TypeKind::Imaginary32:
-  case TypeKind::Imaginary64:
-    return true;
-  }
-  return false;
-}
 
 TypeKind Parser::ResolveBuiltinTypeKind(tok kind) {
   switch (kind) {
@@ -192,7 +32,7 @@ TypeKind Parser::ResolveBuiltinTypeKind(tok kind) {
   case tok::kw_uint:
     return TypeKind::UInt;
   case tok::kw_uint8:
-    return TypeKind::uint8;
+    return TypeKind::UInt8;
   case tok::kw_uint16:
     return TypeKind::UInt16;
   case tok::kw_uint32:
@@ -217,13 +57,13 @@ TypeKind Parser::ResolveBuiltinTypeKind(tok kind) {
   llvm_unreachable("Unable to resolve token-kind to a type-kind");
 }
 
-ParserResult<ParsingTypeSpec> Parser::ParseType() {
+ParserResult<TypeState> Parser::ParseType() {
   return ParseType(diag::expected_type);
 }
 
-ParserResult<ParsingTypeSpec> Parser::ParseType(Diag<> message) {
+ParserResult<TypeState> Parser::ParseType(Diag<> message) {
 
-  if (GetCurTok().IsBuiltinType()) {
+  if (GetCurTok().IsBuiltin()) {
     return ParseBuiltinType(message);
   }
 
@@ -232,31 +72,68 @@ ParserResult<ParsingTypeSpec> Parser::ParseType(Diag<> message) {
   }
 }
 
-ParserResult<ParsingTypeSpec> Parser::ParseDeclResultType(Diag<> message) {
+ParserStatus Parser::ParseTypeModifiers(TypePropertyList &modifiers) {
+  ParserStatus status;
+  while (IsParsing()) {
+    switch (GetCurTok().GetKind()) {
+    case tok::kw_const: {
+      modifiers.AddConst(ConsumeToken());
+      continue;
+    }
+    case tok::kw_pure: {
+      modifiers.AddPure(ConsumeToken());
+      continue;
+    }
+    case tok::kw_stone: {
+      modifiers.AddStone(ConsumeToken());
+      continue;
+    }
+    case tok::kw_volatile: {
+      modifiers.AddVolatile(ConsumeToken());
+      continue;
+    }
+    default:
+      break;
+    }
+    return status;
+  }
+  return status;
+}
+
+ParserStatus Parser::ParseTypeAttributes(TypePropertyList &attributes) {
+  ParserStatus status;
+  return status;
+}
+
+ParserResult<TypeState> Parser::ParseDeclResultType(Diag<> message) {
   /// TODO: There is more -- return ParseType for now
   return ParseType(message);
 }
 
-ParserResult<ParsingTypeSpec> Parser::ParseBuiltinType(Diag<> message) {
+ParserResult<TypeState> Parser::ParseBuiltinType(Diag<> message) {
 
-  assert(GetCurTok().IsBuiltinType() &&
+  assert(GetCurTok().IsBuiltin() &&
          "ParseBuiltinType requires a builtin-type token");
 
-  auto builtinTypeKind = Parser::ResolveBuiltinTypeKind(GetCurTok().GetKind());
-  auto builtinTypeSpec =
-      CreateParsingBuiltinTypeSpec(builtinTypeKind, ConsumeToken());
+  // Check for modifiers
+  TypePropertyList modifiers(GetASTContext());
+  ParseTypeModifiers(modifiers);
 
-  return stone::MakeParserResult<ParsingBuiltinTypeSpec>(builtinTypeSpec);
+  // auto builtinTypeKind =
+  // Parser::ResolveBuiltinTypeKind(GetCurTok().GetKind()); auto builtinType =
+  // ResolveBuiltinType(builtinTypeKind); return
+  // stone::MakeParserResult<BuiltinTypeState>(builtinType->GetState());
 }
 
-ParserResult<ParsingTypeSpec> Parser::ParseFunctionType(Diag<> diagID) {
+ParserResult<TypeState> Parser::ParseFunctionType(Diag<> diagID) {
 
   assert(GetCurTok().IsFun() && "ParseFunctionType requires a fun-type token");
-  auto funTypeSpec = CreateParsingFunTypeSpec(ConsumeToken());
-  return stone::MakeParserResult<ParsingFunTypeSpec>(funTypeSpec);
+  // auto functionTypeState =
+  //     new (GetASTContext()) FunctionTypeState(ConsumeToken());
+  // return stone::MakeParserResult<FunctionTypeState>(funTypeState);
 }
 
-Type Parser::ResolveBuiltinType(TypeKind typeKind) {
+const Type *Parser::ResolveBuiltinType(TypeKind typeKind) {
   switch (typeKind) {
   case TypeKind::Int:
     return GetASTContext().GetBuiltin().BuiltinIntType;
@@ -270,28 +147,4 @@ Type Parser::ResolveBuiltinType(TypeKind typeKind) {
     return GetASTContext().GetBuiltin().BuiltinInt32Type;
   }
   llvm_unreachable("Unable to resolve builtin-type");
-}
-
-ParsingBuiltinTypeSpec *
-Parser::CreateParsingBuiltinTypeSpec(TypeKind builtinKind, SrcLoc loc) {
-
-  auto builtinTypeSpec = new (*this) ParsingBuiltinTypeSpec(builtinKind, loc);
-  auto builtinType = ResolveBuiltinType(builtinKind);
-  builtinTypeSpec->SetType(builtinType);
-
-  return builtinTypeSpec;
-}
-
-ParsingFunTypeSpec *Parser::CreateParsingFunTypeSpec(SrcLoc loc) {
-
-  return new (*this) ParsingFunTypeSpec(loc);
-}
-ParsingStructTypeSpec *Parser::CreateParsingStructTypeSpec(SrcLoc loc) {
-
-  return new (*this) ParsingStructTypeSpec(loc);
-}
-
-ParsingIdentifierTypeSpec *Parser::CreateParsingIdentifierTypeSpec(SrcLoc loc) {
-
-  return new (*this) ParsingIdentifierTypeSpec(loc);
 }

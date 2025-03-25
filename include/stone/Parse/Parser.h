@@ -4,15 +4,12 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/ASTNode.h"
 #include "stone/AST/ASTScope.h"
-#include "stone/AST/Attribute.h"
 #include "stone/AST/DiagnosticsParse.h"
 #include "stone/AST/Expr.h"
 #include "stone/AST/Identifier.h"
-#include "stone/AST/Modfifier.h"
 #include "stone/AST/Module.h"
+#include "stone/AST/Property.h"
 #include "stone/AST/Stmt.h"
-#include "stone/AST/Template.h"
-#include "stone/AST/TypeResult.h"
 #include "stone/Basic/StableHasher.h"
 
 #include "stone/Parse/CodeCompletionCallbacks.h"
@@ -28,12 +25,9 @@ namespace stone {
 class BraceStmt;
 class Parser;
 class ParsingDeclOptions;
-class ParsingDeclSpec;
-class ParsingTypeSpec;
-class ParsingBuiltinTypeSpec;
-class ParsingFunTypeSpec;
-class ParsingStructTypeSpec;
-class ParsingIdentifierTypeSpec;
+class TypeState;
+class FunctionTypeState;
+class ParsingDeclState;
 class CodeCompletionCallbacks;
 
 using ParsingScopeCache = llvm::SmallVector<ASTScope *, 16>;
@@ -265,60 +259,44 @@ public:
   bool IsStartOfDecl();
   bool IsTopLevelDeclParsing();
   bool ParseTopLevelDecls();
-  ParserResult<Decl> ParseTopLevelDecl(ParsingDeclSpec &spec);
 
-  // ParserStatus ParseDeclSpec(ParsingDeclSpec &spec);
+  ParserResult<Decl> ParseTopLevelDecl(ParsingDeclState &PDS);
+  ParserResult<Decl> ParseDecl(ParsingDeclState &PDS);
 
-  // ParserStatus ParseQualSpec(DeclSpec &spec);
-  // ParserStatus ParseTypeSpec(DeclSpec &spec);
-  // ParserStatus ParseBuiltinTypeSpec(DeclSpec &spec);
-
-  ParserStatus ParseQualifierList(ParsingDeclSpec &spec);
-  ParserStatus ParseVisibilityList(ParsingDeclSpec &spec);
-
-  ParserResult<Decl> ParseDecl(ParsingDeclSpec &spec);
-
-  ParserResult<Decl> ParseDecl();
-
-  ParserResult<TemplateDecl> ParseTemplateDecl();
-
-  ParserStatus ParseDeclAttributeList(DeclAttributeList &attributeList);
-  ParserStatus ParseDeclModifierList(DeclModifierList &modifierList);
-
-  ParserResult<ImportDecl> ParseImportDecl(ParsingDeclSpec &spec);
+  ParserStatus ParseDeclAttributes(DeclPropertyList &attributes);
+  ParserStatus ParseDeclModifiers(DeclPropertyList &modifiers);
 
 public:
-  ParserResult<FunDecl> ParseFunDecl(ParsingDeclSpec &spec);
-  ParserResult<StructDecl> ParseStructDecl(ParsingDeclSpec &spec);
+  ParserResult<ImportDecl> ParseImportDecl(ParsingDeclState &PDS);
+  ParserResult<FunDecl> ParseFunDecl(ParsingDeclState &PDS);
+  ParserResult<StructDecl> ParseStructDecl(ParsingDeclState &PDS);
+  ParserResult<EnumDecl> ParseEnumDecl(ParsingDeclState &PDS);
+  ParserResult<InterfaceDecl> ParseInterfaceDecl(ParsingDeclState &PDS);
+  ParserResult<ClassDecl> ParseClassDecl(ParsingDeclState &PDS);
+  ParserResult<VarDecl> ParseVarDecl(ParsingDeclState &PDS);
 
 private:
-  ParserStatus ParseFunctionSignature(ParsingDeclSpec &spec);
-  ParserStatus ParseFunctionArguments(ParsingDeclSpec &spec);
-  ParserStatus ParseFunctionBody(ParsingDeclSpec &spec);
+  ParserStatus ParseFunctionSignature(FunctionTypeState &FTS);
+  ParserStatus ParseFunctionArguments(FunctionTypeState &FTS);
+  ParserResult<TypeState> ParseFunctionResultType(FunctionTypeState &FTS);
+  ParserStatus ParseFunctionBody(FunctionTypeState &FTS);
 
 public:
-  // ParserStatus ParseStorageSpec(ParsingDeclSpec &spec);
-  // ParserStatus ParseVisibilitySpec(ParsingDeclSpec &spec);
-  // ParserStatus ParseBuiltinTypeSpec(ParsingDeclSpec &spec);
-  // ParserStatus ParseNominalTypeSpec(ParsingDeclSpec &spec);
-  // ParserStatus ParseFunctionTypeSpec(ParsingDeclSpec &spec);
+  ParserResult<TypeState> ParseType();
+  ParserResult<TypeState> ParseType(Diag<> diagID);
 
-  ParserResult<VarDecl> ParseVarDecl(ParsingDeclSpec &spec);
+  ParserStatus ParseTypeAttributes(TypePropertyList &attributes);
+  ParserStatus ParseTypeModifiers(TypePropertyList &modifiers);
 
-public:
-  // ParserResult<Type> ParseType();
-
-  ParserResult<ParsingTypeSpec> ParseType();
-  ParserResult<ParsingTypeSpec> ParseType(Diag<> diagID);
-  ParserResult<ParsingTypeSpec> ParseDeclResultType(Diag<> diagID);
-  ParserResult<ParsingTypeSpec> ParseBuiltinType(Diag<> diagID);
+  ParserResult<TypeState> ParseDeclResultType(Diag<> diagID);
+  ParserResult<TypeState> ParseBuiltinType(Diag<> diagID);
 
 private:
   static TypeKind ResolveBuiltinTypeKind(tok kind);
-  Type ResolveBuiltinType(TypeKind typeKind);
+  const Type *ResolveBuiltinType(TypeKind typeKind);
 
 public:
-  ParserResult<ParsingTypeSpec> ParseFunctionType(Diag<> diagID);
+  ParserResult<TypeState> ParseFunctionType(Diag<> diagID);
 
   // ParserResult<ParsingType> ParseTypeIdentifier(ParsingType *Base);
 
@@ -333,11 +311,11 @@ public:
   // Type GetCachedBuiltinType(BuiltinTypeRep::Kind kind);
 
 public:
-  ParsingBuiltinTypeSpec *CreateParsingBuiltinTypeSpec(TypeKind kind,
-                                                       SrcLoc loc);
-  ParsingFunTypeSpec *CreateParsingFunTypeSpec(SrcLoc loc);
-  ParsingStructTypeSpec *CreateParsingStructTypeSpec(SrcLoc loc);
-  ParsingIdentifierTypeSpec *CreateParsingIdentifierTypeSpec(SrcLoc loc);
+  // ParsingBuiltinTypeSpec *CreateParsingBuiltinTypeSpec(TypeKind kind,
+  //                                                      SrcLoc loc);
+  // ParsingFunTypeSpec *CreateParsingFunTypeSpec(SrcLoc loc);
+  // ParsingStructTypeSpec *CreateParsingStructTypeSpec(SrcLoc loc);
+  // ParsingIdentifierTypeSpec *CreateParsingIdentifierTypeSpec(SrcLoc loc);
 
 public:
   /// Return a parsed decl name

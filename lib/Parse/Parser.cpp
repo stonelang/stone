@@ -2,7 +2,6 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/Basic/SrcLoc.h"
 #include "stone/Basic/SrcMgr.h"
-#include "stone/Parse/ParsingTypeSpec.h"
 
 using namespace stone;
 

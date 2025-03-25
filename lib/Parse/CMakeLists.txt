@@ -5,6 +5,7 @@ set(stone_parse_sources
   ParseDecl.cpp
   Parser.cpp
   ParseType.cpp
+  Parsing.cpp
  
   LINK_LIBS
   StoneAST

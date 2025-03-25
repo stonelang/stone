@@ -1,11 +1,8 @@
-
+#include "stone/AST/DeclState.h"
 #include "stone/AST/DiagnosticsParse.h"
-
 #include "stone/Parse/Parser.h"
-#include "stone/Parse/ParsingDeclSpec.h"
+#include "stone/Parse/Parsing.h"
 using namespace stone;
-
-ParsingDeclSpec::~ParsingDeclSpec() {}
 
 bool Parser::IsStartOfDecl() {
   return curTok.IsAny(tok::kw_public, tok::kw_internal, tok::kw_private,
@@ -34,9 +31,10 @@ bool Parser::ParseTopLevelDecls() {
   };
 
   while (IsTopLevelDeclParsing()) {
-    ParsingDeclSpec spec(*this);
-    spec.GetParsingDeclOptions().AddAllowTopLevel();
-    auto result = ParseTopLevelDecl(spec);
+    ParsingDeclState PDS(*this);
+    PDS.GetParsingDeclOptions().AddAllowTopLevel();
+    auto result = ParseTopLevelDecl(PDS);
+
     if (!ParsedTopLevelDecl(result)) {
       return false;
     }
@@ -48,7 +46,7 @@ bool Parser::ParseTopLevelDecls() {
   return true;
 }
 
-ParserResult<Decl> Parser::ParseTopLevelDecl(ParsingDeclSpec &spec) {
+ParserResult<Decl> Parser::ParseTopLevelDecl(ParsingDeclState &PDS) {
 
   // Make sure we have a top level-decl
   assert(IsTopLevelDeclParsing() &&
@@ -59,271 +57,259 @@ ParserResult<Decl> Parser::ParseTopLevelDecl(ParsingDeclSpec &spec) {
   // ParsingScope scope(*this, ASTScopeKind::TopLevelDecl,
   //                    "parsing top-level declaration");
 
-  return ParseDecl(spec);
+  return ParseDecl(PDS);
 }
 
-ParserStatus Parser::ParseQualifierList(ParsingDeclSpec &spec) {
-  ParserStatus status;
-  while (IsParsing()) {
-    switch (GetCurTok().GetKind()) {
-    case tok::kw_const: {
-      spec.GetConstQualifier().SetLoc(ConsumeToken());
-      break;
-    }
-    case tok::kw_stone: {
-      spec.GetStoneQualifier().SetLoc(ConsumeToken());
-      break;
-    }
-    case tok::kw_restrict: {
-      spec.GetRestrictQualifier().SetLoc(ConsumeToken());
-      break;
-    }
-    case tok::kw_volatile: {
-      spec.GetVolatileQualifier().SetLoc(ConsumeToken());
-      break;
-    }
-    default:
-      break;
-    }
-    return status;
-  }
-}
-
-ParserStatus Parser::ParseVisibilityList(ParsingDeclSpec &spec) {
+ParserStatus Parser::ParseDeclModifiers(DeclPropertyList &modifiers) {
   ParserStatus status;
   while (IsParsing()) {
     switch (GetCurTok().GetKind()) {
     case tok::kw_public: {
-      spec.GetPublicVisibility().SetLoc(ConsumeToken());
+      modifiers.AddPublic(ConsumeToken());
       continue;
     }
     case tok::kw_internal: {
-      spec.GetInternalVisibility().SetLoc(ConsumeToken());
+      modifiers.AddInternal(ConsumeToken());
       continue;
     }
     case tok::kw_private: {
-      spec.GetPrivateVisibility().SetLoc(ConsumeToken());
+      modifiers.AddPrivate(ConsumeToken());
       continue;
     }
+    case tok::kw_static: {
+      modifiers.AddStatic(ConsumeToken());
+      continue;
+    }
+    // case tok::kw_extern: {
+    //   PDS.AddExternModifier(ConsumeToken());
+    //   continue;
+    // }
     default:
       break;
     }
     return status;
   }
 }
+ParserStatus Parser::ParseDeclAttributes(DeclPropertyList &attributes) {
+  ParserStatus status;
 
-ParserResult<Decl> Parser::ParseDecl() {
-
-  DeclAttributeList attributeLis;
-  DeclModifierList modifierList;
+  return status;
 }
+ParserResult<Decl> Parser::ParseDecl(ParsingDeclState &PDS) {
 
-ParserResult<Decl> Parser::ParseDecl(ParsingDeclSpec &spec) {
+  ParserResult<Decl> declResult;
+  auto status = ParseDeclAttributes(PDS.GetDeclPropertyList());
 
-  ParserResult<Decl> DeclResult;
-  auto status = ParseQualifierList(spec);
-  if (status.IsError() || spec.HasQualifierOverflow()) {
-    return DeclResult;
+  if (status.IsError()) {
+    return declResult;
   }
-  status |= ParseVisibilityList(spec);
-  if (status.IsError() || spec.HasVisibilityOverflow()) {
-    return DeclResult;
+  status |= ParseDeclModifiers(PDS.GetDeclPropertyList());
+  if (status.IsError()) {
+    return declResult;
+  }
+  status |= ParseTypeAttributes(PDS.GetTypePropertyList());
+  if (status.IsError()) {
+    return declResult;
+  }
+  status |= ParseTypeModifiers(PDS.GetTypePropertyList());
+  if (status.IsError()) {
+    return declResult;
   }
 
   switch (GetCurTok().GetKind()) {
   case tok::kw_import: {
-    DeclResult = ParseImportDecl(spec);
-    break;
-  }
-  case tok::kw_void:
-  case tok::kw_auto:
-  case tok::kw_char:
-  case tok::kw_char8:
-  case tok::kw_char16:
-  case tok::kw_char32:
-  case tok::kw_int:
-  case tok::kw_int8:
-  case tok::kw_int16:
-  case tok::kw_int32:
-  case tok::kw_int64:
-  case tok::kw_uint:
-  case tok::kw_uint8:
-  case tok::kw_uint16:
-  case tok::kw_uint32:
-  case tok::kw_uint64:
-  case tok::kw_float:
-  case tok::kw_float32:
-  case tok::kw_float64:
-  case tok::kw_complex32:
-  case tok::kw_complex64:
-  case tok::kw_imaginary32:
-  case tok::kw_imaginary64: {
-    DeclResult = ParseVarDecl(spec);
+    declResult = ParseImportDecl(PDS);
     break;
   }
   case tok::kw_fun: {
-    DeclResult = ParseFunDecl(spec);
+    declResult = ParseFunDecl(PDS);
     break;
   }
   case tok::kw_struct: {
-    DeclResult = ParseStructDecl(spec);
+    declResult = ParseStructDecl(PDS);
     break;
   }
+  default: {
+    if (GetCurTok().IsBuiltin()) {
+      declResult = ParseVarDecl(PDS);
+      break;
+    }
   }
-  return DeclResult;
+  }
+  return declResult;
 }
 
-ParserResult<ImportDecl> Parser::ParseImportDecl(ParsingDeclSpec &spec) {
+ParserResult<ImportDecl> Parser::ParseImportDecl(ParsingDeclState &PDS) {
   assert(GetCurTok().IsImport() &&
          "ParseImportDecl requires a import specifier");
 
   return nullptr;
 }
 
-ParserResult<FunDecl> Parser::ParseFunDecl(ParsingDeclSpec &spec) {
-
+ParserResult<FunDecl> Parser::ParseFunDecl(ParsingDeclState &PDS) {
   assert(GetCurTok().IsFun() && "ParseFunDecl requires a fun specifier");
 
-  auto funTypeSpec = ParseType();
-  assert(funTypeSpec && "Expected a fun type!");
+  auto typeStateResult = ParseType();
+  assert(typeStateResult && "Expected a FunctionTypeState!");
 
-  spec.SetParsingTypeSpec(funTypeSpec.Get());
+  auto functionTypeState =
+      static_cast<FunctionTypeState *>(typeStateResult.Get());
 
+  PDS.GetDeclState()->SetTypeState(functionTypeState);
   ParserStatus status;
-  SrcLoc basicNameLoc;
-  status = ParseIdentifier(spec.basicName, basicNameLoc);
-  spec.basicNameLoc.SetLoc(basicNameLoc);
 
-  // Now, parse the function signature
-  status |= ParseFunctionSignature(spec);
-  if (status.IsError()) {
-    return status;
-  }
-  status |= ParseFunctionBody(spec);
+  // spec.SetParsingTypeSpec(funTypeSpec.Get());
 
-  auto FD = FunDecl::Create(
-      GetASTContext(), spec.GetParsingFunTypeSpec()->GetStatic(),
-      spec.GetParsingFunTypeSpec()->GetLoc(), spec.declName,
-      spec.declNameLoc.GetLoc(),
-      spec.GetParsingFunTypeSpec()->GetResultType()->GetType(),
-      GetCurDeclContext());
+  // ParserStatus status;
+  // SrcLoc basicNameLoc;
+  // status = ParseIdentifier(spec.basicName, basicNameLoc);
+  // spec.basicNameLoc.SetLoc(basicNameLoc);
 
-  // Very simple for the time being
-  return stone::MakeParserResult<FunDecl>(FD);
+  // // Now, parse the function signature
+  status |= ParseFunctionSignature(*functionTypeState);
+
+  // if (status.IsError()) {
+  //   return status;
+  // }
+  status |= ParseFunctionBody(*functionTypeState);
+
+  // auto FD = FunDecl::Create(
+  //     GetASTContext(), spec.GetParsingFunTypeSpec()->GetStatic(),
+  //     spec.GetParsingFunTypeSpec()->GetLoc(), spec.declName,
+  //     spec.declNameLoc.GetLoc(),
+  //     spec.GetParsingFunTypeSpec()->GetResultType()->GetType(),
+  //     GetCurDeclContext());
+
+  // // Very simple for the time being
+  // return stone::MakeParserResult<FunDecl>(FD);
 }
 
-ParserStatus Parser::ParseFunctionSignature(ParsingDeclSpec &spec) {
+ParserStatus Parser::ParseFunctionSignature(FunctionTypeState &FTS) {
 
-  assert(spec.HasParsingTypeSpec() &&
-         "ParseFunctionSignature requires a type-spec");
-  assert(spec.GetParsingTypeSpec()->IsFunction() &&
-         "ParseFunctionSignature type-pec is not function");
+  // assert(PDS.GetDeclState()->HasTypeState() &&
+  //        "ParseFunctionSignature requires a FunctionTypeState");
 
-  auto funTypeSpec = spec.GetParsingFunTypeSpec();
+  // assert(PDS.GetDeclState()->GetTypeState()->IsFunction() &&
+  //        "ParseFunctionSignature TypeSate is not FunctionTypeState");
 
-  ParserStatus status;
+  // auto functionTypeState = PDS.GetDeclState()->GetTypeState();
 
-  status = ParseFunctionArguments(spec);
-  if (status.IsError()) {
-    return status;
-  }
+  // ParserStatus status;
 
-  spec.declName = DeclName(spec.basicName);
-
-  // if (!GetCurTok().IsArrow()) {
-  //   status.SetIsError();
+  // status = ParseFunctionArguments(spec);
+  // if (status.IsError()) {
   //   return status;
   // }
 
-  SrcLoc arrowLoc;
-  if (!ConsumeIf(tok::arrow, arrowLoc)) {
-    // FixIt ':' to '->'.
-    diagnose(GetCurTok(), diag::error_expected_arrow_after_function_decl)
-        .fixItReplace(curTok.GetLoc(), llvm::StringRef("->"));
-    // arrowLoc = ConsumeToken(tok::colon);
-    return MakeParserError();
-  }
+  // spec.declName = DeclName(spec.basicName);
 
-  funTypeSpec->SetArrow(arrowLoc);
+  // // if (!GetCurTok().IsArrow()) {
+  // //   status.SetIsError();
+  // //   return status;
+  // // }
 
-  // Before we check for qualifiers, there should not be any because this is a
-  // function fun Print() -> const T {}
-  // TODO: Check for qualifiers
-  status |= ParseQualifierList(spec);
-  auto resultType =
-      ParseDeclResultType(diag::error_expected_type_for_function_result);
+  // SrcLoc arrowLoc;
+  // if (!ConsumeIf(tok::arrow, arrowLoc)) {
+  //   // FixIt ':' to '->'.
+  //   diagnose(GetCurTok(), diag::error_expected_arrow_after_function_decl)
+  //       .fixItReplace(curTok.GetLoc(), llvm::StringRef("->"));
+  //   // arrowLoc = ConsumeToken(tok::colon);
+  //   return MakeParserError();
+  // }
 
-  // Update the decl-spec with the result type
-  funTypeSpec->SetResultType(resultType.Get());
+  // funTypeSpec->SetArrow(arrowLoc);
+
+  // // Before we check for qualifiers, there should not be any because this
+  // is
+  // a
+  // // function fun Print() -> const T {}
+  // // TODO: Check for qualifiers
+  // status |= ParseQualifierList(spec);
+  // auto resultType =
+  //     ParseDeclResultType(diag::error_expected_type_for_function_result);
+
+  // // Update the decl-spec with the result type
+  // funTypeSpec->SetResultType(resultType.Get());
 
   // Jsut return success for now
   return MakeParserSuccess();
 }
 
 // TODO: Pass in the function spec in the future.
-ParserStatus Parser::ParseFunctionArguments(ParsingDeclSpec &spec) {
+ParserStatus Parser::ParseFunctionArguments(FunctionTypeState &FTS) {
 
-  assert(spec.HasParsingTypeSpec() &&
-         "ParseFunctionSignature requires a type-spec");
-  assert(spec.GetParsingTypeSpec()->IsFunction() &&
-         "ParseFunctionSignature type-pec is not function");
+  // auto parsingFunTypeSpec = spec.GetParsingFunTypeSpec();
 
-  auto parsingFunTypeSpec = spec.GetParsingFunTypeSpec();
+  // if (!GetCurTok().IsLParen()) {
+  //   return MakeParserError();
+  // }
+  // parsingFunTypeSpec->SetLParen(ConsumeToken(tok::l_paren));
 
-  if (!GetCurTok().IsLParen()) {
-    return MakeParserError();
-  }
-  parsingFunTypeSpec->SetLParen(ConsumeToken(tok::l_paren));
-
-  if (!GetCurTok().IsRParen()) {
-    return MakeParserError();
-  }
-  parsingFunTypeSpec->SetRParen(ConsumeToken(tok::r_paren));
+  // if (!GetCurTok().IsRParen()) {
+  //   return MakeParserError();
+  // }
+  // parsingFunTypeSpec->SetRParen(ConsumeToken(tok::r_paren));
 
   return MakeParserSuccess();
 }
 
-ParserStatus Parser::ParseFunctionBody(ParsingDeclSpec &spec) {
+ParserResult<TypeState>
+Parser::ParseFunctionResultType(FunctionTypeState &FTS) {
 
-  assert(spec.HasParsingTypeSpec() &&
-         "ParseFunctionSignature requires a type-spec");
-  assert(spec.GetParsingTypeSpec()->IsFunction() &&
-         "ParseFunctionSignature type-pec is not function");
+  if (!FTS.HasArrow()) {
+    return MakeParserSuccess();
+  }
+  // Check for modifiers
+  TypePropertyList modifiers(GetASTContext());
+  ParseTypeModifiers(modifiers);
 
-  auto parsingFunTypeSpec = spec.GetParsingFunTypeSpec();
+  // auto resultTypeState = ParseType();
 
-  // TODO:  BraceStmtPair braceStmtPair;
+  // functionTypeState->SetResultTypeState(resultTypeState);
 
-  // This is where you what to start a BracePairDelimeter
-  ParserStatus status;
-  // ParsingScope funBodyScope(*this, ScopeKind::FunctionBody,
-  //                           "parsing fun arguments");
-
-  assert(curTok.Is(tok::l_brace) && "Require '{' brace.");
-  auto lParenLoc = ConsumeToken(tok::l_brace);
-
-  assert(curTok.Is(tok::r_brace) && "Require '}' brace.");
-  auto rParenLoc = ConsumeToken(tok::r_brace);
-
-  // Simple for now
-  auto FB = BraceStmt::Create(lParenLoc, {}, rParenLoc, GetASTContext());
-
-  parsingFunTypeSpec->SetBody(FB);
-
-  // parsingFunTypeSpec->SetBody(functionBody,
-  // FunctionDecl::BodyStatus::Parsed);
-
-  return status;
+  return MakeParserSuccess();
 }
 
-ParserResult<VarDecl> Parser::ParseVarDecl(ParsingDeclSpec &spec) {
+ParserStatus Parser::ParseFunctionBody(FunctionTypeState &FTS) {
+  // assert(spec.HasParsingTypeSpec() &&
+  //        "ParseFunctionSignature requires a type-spec");
+  // assert(spec.GetParsingTypeSpec()->IsFunction() &&
+  //        "ParseFunctionSignature type-pec is not function");
+
+  // auto parsingFunTypeSpec = spec.GetParsingFunTypeSpec();
+
+  // // TODO:  BraceStmtPair braceStmtPair;
+
+  // // This is where you what to start a BracePairDelimeter
+  // ParserStatus status;
+  // // ParsingScope funBodyScope(*this, ScopeKind::FunctionBody,
+  // //                           "parsing fun arguments");
+
+  // assert(curTok.Is(tok::l_brace) && "Require '{' brace.");
+  // auto lParenLoc = ConsumeToken(tok::l_brace);
+
+  // assert(curTok.Is(tok::r_brace) && "Require '}' brace.");
+  // auto rParenLoc = ConsumeToken(tok::r_brace);
+
+  // // Simple for now
+  // auto FB = BraceStmt::Create(lParenLoc, {}, rParenLoc, GetASTContext());
+
+  // parsingFunTypeSpec->SetBody(FB);
+
+  // // parsingFunTypeSpec->SetBody(functionBody,
+  // // FunctionDecl::BodyStatus::Parsed);
+
+  // return status;
+}
+
+ParserResult<VarDecl> Parser::ParseVarDecl(ParsingDeclState &PDS) {
   ParserResult<VarDecl> result;
-  auto parsingTypeSpecResult = ParseType();
+  auto typeState = ParseType();
 
   return result;
 }
 
-// ParserStatus Parser::ParseFunctionArguments(ParsingDeclSpec &spec) {
+// ParserStatus Parser::ParseFunctionArguments(DeclState* DS) {
 
 //   ParserStatus status;
 //   SrcLoc lParenLoc;
@@ -344,4 +330,4 @@ ParserResult<VarDecl> Parser::ParseVarDecl(ParsingDeclSpec &spec) {
 //   return DeclName();
 // }
 
-ParserResult<StructDecl> Parser::ParseStructDecl(ParsingDeclSpec &spec) {}
+ParserResult<StructDecl> Parser::ParseStructDecl(ParsingDeclState &PDS) {}
