@@ -106,28 +106,28 @@ public:
 };
 
 class AbstractTypeInfluencerList {
-  //   llvm::BitVector mask;
-  //   llvm::DenseMap<TypeInfluencerKind, TypeInfluencer *> influencers;
+  llvm::BitVector mask;
+  llvm::DenseMap<TypeInfluencerKind, TypeInfluencer *> influencers;
 
-  // public:
-  //   AbstractTypeInfluencerList()
-  //       : mask(static_cast<unsigned>(TypeInfluencerKind::Last_Type) + 1) {}
+public:
+  AbstractTypeInfluencerList()
+      : mask(static_cast<unsigned>(TypeInfluencerKind::Last_Type) + 1) {}
 
-  //   // Overload the bool operator
-  //   explicit operator bool() const { return !influencers.empty(); }
+  // Overload the bool operator
+  explicit operator bool() const { return !influencers.empty(); }
 
-  // public:
-  //   void Add(TypeInfluencer *influencer) {
-  //     influencers[influencer->GetKind()] = influencer;
-  //     mask.set(static_cast<unsigned>(influencer->GetKind()));
-  //   }
-  //   bool Has(TypeInfluencerKind kind) const {
-  //     return mask.test(static_cast<unsigned>(kind));
-  //   }
-  //   bool Has(TypeInfluencer *influencer) const {
-  //     assert(influencer && "Cannot add null type-influencer!");
-  //     return Has(influencer->GetKind());
-  //   }
+public:
+  void Add(TypeInfluencer *influencer) {
+    influencers[influencer->GetKind()] = influencer;
+    mask.set(static_cast<unsigned>(influencer->GetKind()));
+  }
+  bool Has(TypeInfluencerKind kind) const {
+    return mask.test(static_cast<unsigned>(kind));
+  }
+  bool Has(TypeInfluencer *influencer) const {
+    assert(influencer && "Cannot add null type-influencer!");
+    return Has(influencer->GetKind());
+  }
 
   //   TypeInfluencer *Get(TypeInfluencerKind kind) const {
   //     auto it = influencers.find(kind);
@@ -136,10 +136,7 @@ class AbstractTypeInfluencerList {
   //   bool IsEmpty() const { return influencers.size() == 0; }
 
 public:
-  void Add(TypeInfluencer *influencer) {}
   TypeInfluencer *Get(TypeInfluencerKind kind) const {}
-  bool Has(TypeInfluencerKind kind) const {}
-  bool Has(TypeInfluencer *influencer) const {}
 };
 
 class TypeInfluencerList final : public AbstractTypeInfluencerList {
@@ -162,26 +159,26 @@ public:
 
 } // namespace stone
 
-// namespace llvm {
+namespace llvm {
 
-// template <> struct DenseMapInfo<stone::TypeInfluencerKind> {
+template <> struct DenseMapInfo<stone::TypeInfluencerKind> {
 
-//   static inline stone::TypeInfluencerKind getEmptyKey() {
-//     return stone::TypeInfluencerKind::None;
-//   }
-//   static inline stone::TypeInfluencerKind getTombstoneKey() {
-//     return static_cast<stone::TypeInfluencerKind>(
-//         static_cast<uint8_t>(stone::TypeInfluencerKind::Last_Type) + 1);
-//   }
-//   static unsigned getHashValue(stone::TypeInfluencerKind kind) {
-//     return static_cast<unsigned>(kind);
-//   }
-//   static bool isEqual(stone::TypeInfluencerKind lhs,
-//                       stone::TypeInfluencerKind rhs) {
-//     return lhs == rhs;
-//   }
-// };
+  static inline stone::TypeInfluencerKind getEmptyKey() {
+    return stone::TypeInfluencerKind::None;
+  }
+  static inline stone::TypeInfluencerKind getTombstoneKey() {
+    return static_cast<stone::TypeInfluencerKind>(
+        static_cast<uint8_t>(stone::TypeInfluencerKind::Last_Type) + 1);
+  }
+  static unsigned getHashValue(stone::TypeInfluencerKind kind) {
+    return static_cast<unsigned>(kind);
+  }
+  static bool isEqual(stone::TypeInfluencerKind lhs,
+                      stone::TypeInfluencerKind rhs) {
+    return lhs == rhs;
+  }
+};
 
-// } // namespace llvm
+} // namespace llvm
 
 #endif

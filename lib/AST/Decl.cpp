@@ -122,8 +122,7 @@ bool ValueDecl::IsInternal() const {
 }
 
 bool ValueDecl::HasVisibilityLevel() const {
-  return GetState()->GetDeclInfluencerList().Has(
-      DeclInfluencerKind::Visibility);
+  return GetState()->GetDeclInfluencerList().HasVisibility();
 }
 
 VisibilityLevel ValueDecl::GetVisibilityLevel() const {
@@ -139,8 +138,7 @@ VisibilityLevel ValueDecl::GetVisibilityLevel() const {
 void ValueDecl::ChangeVisibility(VisibilityLevel level) {
   if (HasVisibilityLevel()) {
     auto vm = static_cast<VisibilityModifier *>(
-        GetState()->GetDeclInfluencerList().Get(
-            DeclInfluencerKind::Visibility));
+        GetState()->GetDeclInfluencerList().Get(DeclInfluencerKind::Visibility));
     return vm->SetLevel(level);
   }
 }
@@ -201,7 +199,7 @@ bool FunDecl::IsMain() const {
 bool FunDecl::IsDeferBody() const {}
 
 bool FunDecl::IsStatic() const {
-  return GetState()->GetDeclInfluencerList().Has(DeclInfluencerKind::Static);
+  return GetState()->GetDeclInfluencerList().HasStatic();
 }
 
 // TODO: Remove
