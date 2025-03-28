@@ -1,21 +1,15 @@
-#ifndef ABSTRACT_INFLUENCER
-#define ABSTRACT_INFLUENCER(ID, Parent)
+#ifndef ABSTRACT_DECL_INFLUENCER
+#define ABSTRACT_DECL_INFLUENCER(ID, Parent)
 #endif
 
-#ifndef MODIFIER_INFLUENCER
-#define MODIFIER_INFLUENCER(ID, Parent) INFLUENCER(ID, Parent)
+
+#ifndef DECL_MODIFIER_INFLUENCER
+#define DECL_MODIFIER_INFLUENCER(ID, Parent) DECL_INFLUENCER(ID, Parent)
 #endif
 
-#ifndef ATTRIBUTE_INFLUENCER
-#define ATTRIBUTE_INFLUENCER(ID, Parent) INFLUENCER(ID, Parent)
-#endif
 
-#ifndef DECL_MODIFIER
-#define DECL_MODIFIER(ID, Parent) MODIFIER_INFLUENCER(ID, Parent)
-#endif
-
-#ifndef DECL_ATTRIBUTE
-#define DECL_ATTRIBUTE(ID, Parent) ATTRIBUTE_INFLUENCER(ID, Parent)
+#ifndef DECL_ATTRIBUTE_INFLUENCER
+#define DECL_ATTRIBUTE_INFLUENCER(ID, Parent) DECL_INFLUENCER(ID, Parent)
 #endif
 
 
@@ -27,37 +21,25 @@
 #define LAST_DECL_INFLUENCER(ID)
 #endif
 
-// Property hierarchy starts here
+ABSTRACT_DECL_INFLUENCER(DeclModifier, DeclInfluencer)
+    DECL_MODIFIER_INFLUENCER(Static, DeclModifier)
+    DECL_MODIFIER_INFLUENCER(Extern, DeclModifier)
+    DECL_MODIFIER_INFLUENCER(Auto,   DeclModifier)
+    DECL_MODIFIER_INFLUENCER(Visibility, DeclModifier)
+    DECL_INFLUENCER_RANGE(DeclModifier, Static, Visibility)
 
-// Root properties for declarations and types
-ABSTRACT_INFLUENCER(Decl, Property)
-    // Declaration-specific modifiers
-    ABSTRACT_INFLUENCER(DeclModifier, DeclProperty)
-        DECL_MODIFIER(Static, DeclModifier)
-        DECL_MODIFIER(Extern, DeclModifier)
-        DECL_MODIFIER(Public, DeclModifier)
-        DECL_MODIFIER(Protected, DeclModifier)
-        DECL_MODIFIER(Private, DeclModifier)
-        INFLUENCER_RANGE(DeclModifier, Static, Private)
+ABSTRACT_DECL_INFLUENCER(DeclAttribute, DeclInfluencer)
+    DECL_ATTRIBUTE_INFLUENCER(Deprecated, DeclAttribute)
+    DECL_ATTRIBUTE_INFLUENCER(Override, DeclAttribute)
+    DECL_ATTRIBUTE_INFLUENCER(Inline, DeclAttribute)
+    DECL_INFLUENCER_RANGE(DeclAttribute, Deprecated, Inline)
 
-    // Declaration-specific attributes
-    ABSTRACT_INFLUENCER(DeclAttribute, DeclProperty)
-        DECL_ATTRIBUTE(Deprecated, DeclAttribute)
-        DECL_ATTRIBUTE(Final, DeclAttribute)
-        DECL_ATTRIBUTE(Override, DeclAttribute)
-        DECL_ATTRIBUTE(Inline, DeclAttribute)
-        INFLUENCER_RANGE(DeclAttribute, Deprecated, Inline)
-
-
-LAST_DECL_INFLUENCER(Packed)
+LAST_DECL_INFLUENCER(Inline)
 
 // Undefine macros
-#undef ABSTRACT_INFLUENCER
-#undef MODIFIER_INFLUENCER
-#undef ATTRIBUTE_INFLUENCER
-#undef DECL_MODIFIER
-#undef TYPE_MODIFIER
-#undef DECL_ATTRIBUTE
-#undef TYPE_ATTRIBUTE
-#undef INFLUENCER_RANGE
-#undef LAST_INFLUENCER
+#undef ABSTRACT_DECL_INFLUENCER
+#undef DECL_MODIFIER_INFLUENCER
+#undef DECL_ATTRIBUTE_INFLUENCER
+#undef DECL_INFLUENCER_RANGE
+#undef LAST_DECL_INFLUENCER
+

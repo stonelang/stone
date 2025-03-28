@@ -4,8 +4,9 @@
 #include "stone/AST/ASTAllocation.h"
 #include "stone/AST/DeclName.h"
 
-#include "stone/AST/Property.h"
+#include "stone/AST/DeclInfluencer.h"
 #include "stone/AST/TypeAlignment.h"
+#include "stone/AST/TypeInfluencer.h"
 #include "stone/AST/TypeState.h"
 
 #include "llvm/ADT/BitVector.h"
@@ -29,10 +30,10 @@ class alignas(1 << DeclAlignInBits) DeclState
   TypeState *typeState = nullptr;
 
   // The properties for the DeclState
-  DeclPropertyList declPropertyList;
+  DeclInfluencerList declInfluencerList;
 
   // The properties for the DeclState
-  TypePropertyList typePropertyList;
+  TypeInfluencerList typeInfluencerList;
 
   // The Decl associated with this DeclState
   Decl *owningDecl = nullptr;
@@ -66,8 +67,8 @@ public:
   void SetDeclName(DeclName name) { declName = name; }
   DeclName GetDeclName() { return declName; }
 
-  TypePropertyList &GetTypePropertyList() { return typePropertyList; }
-  DeclPropertyList &GetDeclPropertyList() { return declPropertyList; }
+  TypeInfluencerList &GetTypeInfluencerList() { return typeInfluencerList; }
+  DeclInfluencerList &GetDeclInfluencerList() { return declInfluencerList; }
 
 private:
   // Direct comparison is disabled for states

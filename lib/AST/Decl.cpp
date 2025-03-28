@@ -1,11 +1,12 @@
 #include "stone/AST/Decl.h"
 #include "stone/AST/ASTContext.h"
+#include "stone/AST/DeclInfluencer.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
-#include "stone/AST/Property.h"
 #include "stone/AST/Stmt.h"
 #include "stone/AST/Template.h"
 #include "stone/AST/Type.h"
+#include "stone/AST/TypeInfluencer.h"
 #include "stone/AST/TypeState.h"
 #include "stone/Basic/LLVM.h"
 #include "stone/Basic/LangOptions.h"
@@ -121,16 +122,16 @@ bool ValueDecl::IsInternal() const {
 }
 
 bool ValueDecl::HasVisibilityLevel() const {
-  return GetState()->GetDeclPropertyList().HasProperty(
-      PropertyKind::Visibility);
+  return GetState()->GetDeclInfluencerList().Has(
+      DeclInfluencerKind::Visibility);
 }
 
 VisibilityLevel ValueDecl::GetVisibilityLevel() const {
   if (HasVisibilityLevel()) {
     auto vm = static_cast<VisibilityModifier *>(
-        GetState()->GetDeclPropertyList().GetProperty(
-            PropertyKind::Visibility));
-    return vm->GetVisibilityLevel();
+        GetState()->GetDeclInfluencerList().Get(
+            DeclInfluencerKind::Visibility));
+    return vm->GetLevel();
   }
   return VisibilityLevel::None;
 }
@@ -138,9 +139,9 @@ VisibilityLevel ValueDecl::GetVisibilityLevel() const {
 void ValueDecl::ChangeVisibility(VisibilityLevel level) {
   if (HasVisibilityLevel()) {
     auto vm = static_cast<VisibilityModifier *>(
-        GetState()->GetDeclPropertyList().GetProperty(
-            PropertyKind::Visibility));
-    return vm->SetVisibilityLevel(level);
+        GetState()->GetDeclInfluencerList().Get(
+            DeclInfluencerKind::Visibility));
+    return vm->SetLevel(level);
   }
 }
 // void Decl::SetInvalid() {
@@ -193,7 +194,6 @@ bool FunDecl::IsMain() const {
   if (IsInstanceMember()) {
     return false;
   }
-
   return GetBasicName() == GetASTContext().GetBuiltin().BuiltinMainIdentifier;
 }
 
@@ -201,7 +201,7 @@ bool FunDecl::IsMain() const {
 bool FunDecl::IsDeferBody() const {}
 
 bool FunDecl::IsStatic() const {
-  return GetState()->GetDeclPropertyList().HasProperty(PropertyKind::Static);
+  return GetState()->GetDeclInfluencerList().Has(DeclInfluencerKind::Static);
 }
 
 // TODO: Remove
@@ -257,5 +257,5 @@ VarDecl *VarDecl::Create(ASTContext &astContext) {
 }
 
 DeclState::DeclState(ASTContext &astContext)
-    : astContext(astContext), declPropertyList(astContext),
-      typePropertyList(astContext) {}
+    : astContext(astContext), declInfluencerList(astContext),
+      typeInfluencerList(astContext) {}

@@ -293,6 +293,8 @@ public:
   /// Whether this declaration was "used", meaning that a definition is
   /// required.
   // unsigned used : 1;
+protected:
+  Decl(DeclKind kind, DeclState *declState, UnifiedContext context);
 
 public:
   DeclKind GetKind() const { return kind; }
@@ -340,15 +342,14 @@ public:
   }
 
   DeclState *GetState() const { return declState; }
+  bool HasModifiers();
+  bool HasAttributes();
 
 public:
   bool IsTopLevel() { return Bits.Decl.IsTopLevel; }
   void SetIsTopLevel(bool isTopLevel = true) {
     Bits.Decl.IsTopLevel = isTopLevel;
   }
-
-protected:
-  Decl(DeclKind kind, DeclState *declState, UnifiedContext context);
 
 protected:
   template <typename DeclTy> friend class Redeclarable;

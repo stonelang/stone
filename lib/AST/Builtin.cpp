@@ -6,70 +6,91 @@
 
 using namespace stone;
 
-Builtin::Builtin(const ASTContext &AC) {
+Builtin::Builtin(const ASTContext &astContext) {
 
   // Create VoidType
-  BuiltinVoidType = new (AC) VoidType(new (AC) BuiltinTypeState());
+  BuiltinVoidType =
+      new (astContext) VoidType(new (astContext) BuiltinTypeState(astContext));
 
   // Create NullType
-  BuiltinNullType = new (AC) NullType(new (AC) BuiltinTypeState());
+  BuiltinNullType =
+      new (astContext) NullType(new (astContext) BuiltinTypeState(astContext));
 
   // Create BoolType
-  BuiltinBoolType = new (AC) BoolType(new (AC) BuiltinTypeState());
+  BuiltinBoolType =
+      new (astContext) BoolType(new (astContext) BuiltinTypeState(astContext));
 
   // Create Float16Type
-  BuiltinFloat16Type = new (AC) Float16Type(new (AC) BuiltinTypeState());
+  BuiltinFloat16Type = new (astContext)
+      Float16Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create Float32Type
-  BuiltinFloat32Type = new (AC) Float32Type(new (AC) BuiltinTypeState());
+  BuiltinFloat32Type = new (astContext)
+      Float32Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create Float64Type
-  BuiltinFloat64Type = new (AC) Float64Type(new (AC) BuiltinTypeState());
+  BuiltinFloat64Type = new (astContext)
+      Float64Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create Float128Type
-  BuiltinFloat128Type = new (AC) Float128Type(new (AC) BuiltinTypeState());
+  BuiltinFloat128Type = new (astContext)
+      Float128Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create FloatType
-  BuiltinFloatType = new (AC) FloatType(new (AC) BuiltinTypeState());
+  BuiltinFloatType =
+      new (astContext) FloatType(new (astContext) BuiltinTypeState(astContext));
 
   // Create Int8Type
-  BuiltinInt8Type = new (AC) Int8Type(new (AC) BuiltinTypeState());
+  BuiltinInt8Type =
+      new (astContext) Int8Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create Int16Type
-  BuiltinInt16Type = new (AC) Int16Type(new (AC) BuiltinTypeState());
+  BuiltinInt16Type =
+      new (astContext) Int16Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create Int32Type
-  BuiltinInt32Type = new (AC) Int32Type(new (AC) BuiltinTypeState());
+  BuiltinInt32Type =
+      new (astContext) Int32Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create Int64Type
-  BuiltinInt64Type = new (AC) Int64Type(new (AC) BuiltinTypeState());
+  BuiltinInt64Type =
+      new (astContext) Int64Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create Int128Type
-  BuiltinInt128Type = new (AC) Int128Type(new (AC) BuiltinTypeState());
+  BuiltinInt128Type = new (astContext)
+      Int128Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create IntType
-  BuiltinIntType = new (AC) IntType(new (AC) BuiltinTypeState());
+  BuiltinIntType =
+      new (astContext) IntType(new (astContext) BuiltinTypeState(astContext));
 
   // Create UInt8Type
-  BuiltinUInt8Type = new (AC) UInt8Type(new (AC) BuiltinTypeState());
+  BuiltinUInt8Type =
+      new (astContext) UInt8Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create UInt16Type
-  BuiltinUInt16Type = new (AC) UInt16Type(new (AC) BuiltinTypeState());
+  BuiltinUInt16Type = new (astContext)
+      UInt16Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create UInt32Type
-  BuiltinUInt32Type = new (AC) UInt32Type(new (AC) BuiltinTypeState());
+  BuiltinUInt32Type = new (astContext)
+      UInt32Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create UInt64Type
-  BuiltinUInt64Type = new (AC) UInt64Type(new (AC) BuiltinTypeState());
+  BuiltinUInt64Type = new (astContext)
+      UInt64Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create UInt128Type
-  BuiltinUInt128Type = new (AC) UInt128Type(new (AC) BuiltinTypeState());
+  BuiltinUInt128Type = new (astContext)
+      UInt128Type(new (astContext) BuiltinTypeState(astContext));
 
   // Create UIntType
-  BuiltinUIntType = new (AC) UIntType(new (AC) BuiltinTypeState());
+  BuiltinUIntType =
+      new (astContext) UIntType(new (astContext) BuiltinTypeState(astContext));
 
   // Create UIntType
-  BuiltinUIntType = new (AC) UIntType(new (AC) BuiltinTypeState());
+  BuiltinUIntType =
+      new (astContext) UIntType(new (astContext) BuiltinTypeState(astContext));
 }
 
 bool Builtin::IsBuiltinTypeKind(TypeKind kind) {

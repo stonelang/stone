@@ -18,7 +18,9 @@ class ASTContext;
 class DeclContext;
 class ModuleFile;
 class Attribute;
-class Property;
+class DeclInfluencer;
+class TypeInfluencer;
+class DeclState;
 
 constexpr size_t ModifierAlignInBits = 3;
 constexpr size_t AttributeAlignInBits = 3;
@@ -29,7 +31,6 @@ constexpr size_t StmtAlignInBits = 3;
 constexpr size_t TypeAlignInBits = 3;
 constexpr size_t ASTContextAlignInBits = 2;
 constexpr size_t DeclContextAlignInBits = 3;
-constexpr size_t PropertyAlignInBits = 3;
 
 } // namespace stone
 
@@ -60,15 +61,18 @@ LLVM_DECLARE_TYPE_ALIGNMENT(stone::Decl, stone::DeclAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::InterfaceDecl, stone::DeclAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::TypeDecl, stone::DeclAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::ValueDecl, stone::DeclAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::DeclState, stone::DeclAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::DeclInfluencer, stone::DeclAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::DeclContext, stone::DeclContextAlignInBits)
+
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::Type, stone::TypeAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::TypeState, stone::TypeAlignInBits)
+LLVM_DECLARE_TYPE_ALIGNMENT(stone::TypeInfluencer, stone::TypeAlignInBits)
+
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Stmt, stone::StmtAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::Expr, stone::ExprAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::ASTContext, stone::ASTContextAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::DeclContext, stone::DeclContextAlignInBits)
 LLVM_DECLARE_TYPE_ALIGNMENT(stone::ModuleFile, stone::ASTContextAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::Type, stone::TypeAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::TypeState, stone::TypeAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::Attribute, stone::AttributeAlignInBits)
-LLVM_DECLARE_TYPE_ALIGNMENT(stone::Property, stone::PropertyAlignInBits)
 
 static_assert(alignof(void *) >= 2, "pointer alignment is too small");
 

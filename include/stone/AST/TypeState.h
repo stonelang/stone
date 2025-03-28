@@ -2,7 +2,7 @@
 #define STONE_AST_TYPESTATE_H
 
 #include "stone/AST/DeclState.h"
-#include "stone/AST/Property.h"
+#include "stone/AST/TypeInfluencer.h"
 #include "stone/AST/TypeMetadata.h"
 #include "stone/AST/TypeWalker.h"
 #include "stone/Basic/LLVM.h"
@@ -111,11 +111,12 @@ public:
   void Clear() { flags = ID::None; }
 };
 
-
 class alignas(1 << TypeAlignInBits) TypeState
     : public ASTAllocation<TypeState> {
 
   friend class ASTContext;
+
+  const ASTContext &astContext;
 
   // The kind of TypeState (Builtin, Function, etc.)
   TypeStateKind kind;
@@ -136,45 +137,22 @@ class alignas(1 << TypeAlignInBits) TypeState
   TypeModifierFlags modifierFlags;
 
   // Properties for this TypeState
-  PropertyList<TypeProperty> typeProperties;
+  TypeInfluencerList influencers;
 
   // The DeclState that owns this TypeState
   DeclState *declState = nullptr;
 
 public:
-  explicit TypeState(TypeStateKind kind, SrcLoc loc)
-      : kind(kind), typeLoc(loc) {}
+  explicit TypeState(TypeStateKind kind, SrcLoc loc,
+                     const ASTContext &astContext)
+      : kind(kind), typeLoc(loc), astContext(astContext),
+        influencers(astContext) {}
 
 public:
   TypeStateKind GetKind() { return kind; }
 
-  void AddTypeProperty(TypeProperty *property) {
-    // switch (mod->GetKind()) {
-    // case PropertyKind::Const:
-    //   if (modifierFlags.HasConst()) {
-    //     return; // Avoid adding duplicate
-    //   }
-    //   modifierFlags.AddModifier(TypeModifierFlags::Const);
-    //   break;
-
-    // case PropertyKind::Pure:
-    //   if (modifierFlags.HasPure()) {
-    //     return; // Avoid adding duplicate
-    //   }
-    //   modifierFlags.AddModifier(TypeModifierFlags::Pure);
-    //   break;
-
-    // default:
-    //   assert(false && "Unknown modifier-property!");
-    // }
-
-    // AddProperty(mod); // Add to the property list for metadata and
-    // diagnostics
-  }
-
-  // void AddTypeAttribute(TypeAttribute *attr) {}
-
-  PropertyList<TypeProperty> &GetTypeProperties() { return typeProperties; }
+  //\return TypeInfluencerList
+  TypeInfluencerList &GetTypeInfluencerList() { return influencers; }
 
   //\return true if the type is FunType
   bool IsBuiltin() { return GetKind() == TypeStateKind::Builtin; }
@@ -213,18 +191,21 @@ public:
 class BuiltinTypeState final : public TypeState {
 
 public:
-  BuiltinTypeState() : TypeState(TypeStateKind::Builtin, SrcLoc()) {}
+  BuiltinTypeState(const ASTContext &astContext)
+      : TypeState(TypeStateKind::Builtin, SrcLoc(), astContext) {}
 };
 
 class IdentifierTypeState : public TypeState {
 public:
-  IdentifierTypeState(TypeStateKind kind, SrcLoc loc) : TypeState(kind, loc) {}
+  IdentifierTypeState(TypeStateKind kind, SrcLoc loc,
+                      const ASTContext &astContext)
+      : TypeState(kind, loc, astContext) {}
 };
 
 class SimpleIdentifierTypeState : public IdentifierTypeState {
 public:
-  SimpleIdentifierTypeState(SrcLoc loc)
-      : IdentifierTypeState(TypeStateKind::SimpleIdentifier, loc) {}
+  SimpleIdentifierTypeState(SrcLoc loc, const ASTContext &astContext)
+      : IdentifierTypeState(TypeStateKind::SimpleIdentifier, loc, astContext) {}
 };
 
 class FunctionTypeState : public TypeState {
@@ -236,7 +217,8 @@ class FunctionTypeState : public TypeState {
   TypeState *resultTypeState = nullptr;
 
 public:
-  FunctionTypeState(SrcLoc loc) : TypeState(TypeStateKind::Function, loc) {}
+  FunctionTypeState(SrcLoc loc, const ASTContext &astContext)
+      : TypeState(TypeStateKind::Function, loc, astContext) {}
 
 public:
   void SetResultTypeState(TypeState *typeState) { resultTypeState = typeState; }
