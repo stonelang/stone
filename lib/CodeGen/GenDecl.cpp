@@ -41,11 +41,11 @@ void CodeGenModule::EmitDecl(Decl *D) {
     // return EmitFunDecl(D->GetAsFunDecl());
   }
   case DeclKind::Struct:
-    return EmitStructDecl(D->GetAsStructDecl());
+    return EmitStructDecl(llvm::cast<StructDecl>(D));
   case DeclKind::Class:
-    return EmitClassDecl(D->GetAsClassDecl());
+    return EmitClassDecl(llvm::cast<ClassDecl>(D));
   case DeclKind::Interface:
-    return EmitInterfaceDecl(D->GetAsInterfaceDecl());
+    return EmitInterfaceDecl(llvm::cast<InterfaceDecl>(D));
   }
   llvm_unreachable("bad decl kind!");
 }

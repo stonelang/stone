@@ -32,7 +32,7 @@ enum class AvailabilitySpecKind {
 
 /// The root class for specifications of API availability in availability
 /// queries.
-class AvailabilitySpec : public MemoryAllocation<AvailabilitySpec> {
+class AvailabilitySpec : public ASTAllocation<AvailabilitySpec> {
   AvailabilitySpecKind Kind;
 
 public:

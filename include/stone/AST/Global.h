@@ -35,7 +35,7 @@ public:
   GlobalDecl() = default;
   GlobalDecl(const VarDecl *d) { SetGlobalDecl(d); }
   GlobalDecl(const FunctionDecl *d) { SetGlobalDecl(d); }
-  GlobalDecl(const NamedDecl *d) { SetGlobalDecl(d); }
+  GlobalDecl(const Decl *d) { SetGlobalDecl(d); }
 
   // GlobalDecl(const ConstructorDecl *d, ConstructorKind ty);
   // GlobalDecl(const DestructorDecl *d, DestructorKind ty);
