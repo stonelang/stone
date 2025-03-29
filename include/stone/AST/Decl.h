@@ -11,7 +11,6 @@
 #include "stone/AST/Import.h"
 #include "stone/AST/InlineBitfield.h"
 #include "stone/AST/Modifier.h"
-#include "stone/AST/Storage.h"
 #include "stone/AST/Template.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/Visibility.h"
@@ -545,8 +544,6 @@ class FunctionDecl : public ValueDecl,
   /// BodyKind::TypeChecked.
   BraceStmt *body;
 
-  StorageSpecKind storageSpecKind;
-
   /// Info - Further source/type location info for special kinds of names.
   // TODO: DeclNameLoc specialNameLoc;
 
@@ -587,9 +584,6 @@ public:
   BraceStmt *GetBody(bool canSynthesize = true) const;
   /// Set a new body for the function.
   void SetBody(BraceStmt *body, BodyStatus bodyStatus);
-
-  void SetStorageSpecKind(StorageSpecKind ssk) { storageSpecKind = ssk; }
-  StorageSpecKind GetStorageSpecKind() { return storageSpecKind; }
 
   bool IsMember() { return Bits.FunctionDecl.IsMember; }
 

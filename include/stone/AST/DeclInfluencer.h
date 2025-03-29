@@ -86,18 +86,51 @@ public:
       : DeclInfluencer(kind, loc) {}
 };
 
-class StaticModifier : public DeclModifier {
+/// The storage duration for an object (per C++ [ctx.stc]).
+enum class StorageDuration : uint8_t {
+  None = 0,
+  FullExpression, ///< Full-expression storage duration (for temporaries).
+  Automatic,      ///< Automatic storage duration (most local variables).
+  Thread,         ///< Thread storage duration.
+  Static,         ///< Static storage duration.
+  Dynamic         ///< Dynamic storage duration.
+};
+class StorageModifier : public DeclInfluencer {
+
+private:
+  StorageDuration storageDuration;
+
 public:
-  StaticModifier(SrcLoc loc) : DeclModifier(DeclInfluencerKind::Static, loc) {}
+  StorageModifier(DeclInfluencerKind kind, SrcLoc loc)
+      : DeclInfluencer(kind, loc) {}
+
+public:
+  void SetDuration(StorageDuration duration) {
+    storageDuration = duration;
+  }
+  StorageDuration GetDuration() { return storageDuration; }
 };
 
-class ExternModifier : public DeclModifier {
+class StaticModifier : public StorageModifier {
 public:
-  ExternModifier(SrcLoc loc) : DeclModifier(DeclInfluencerKind::Extern, loc) {}
+  StaticModifier(SrcLoc loc)
+      : StorageModifier(DeclInfluencerKind::Static, loc) {}
 };
-class AutoModifier : public DeclModifier {
+
+class ExternModifier : public StorageModifier {
 public:
-  AutoModifier(SrcLoc loc) : DeclModifier(DeclInfluencerKind::Auto, loc) {}
+  ExternModifier(SrcLoc loc)
+      : StorageModifier(DeclInfluencerKind::Extern, loc) {}
+};
+class AutoModifier : public StorageModifier {
+public:
+  AutoModifier(SrcLoc loc) : StorageModifier(DeclInfluencerKind::Auto, loc) {}
+};
+
+class RegisterModifier : public StorageModifier {
+public:
+  RegisterModifier(SrcLoc loc)
+      : StorageModifier(DeclInfluencerKind::Register, loc) {}
 };
 
 class VisibilityModifier : public DeclModifier {

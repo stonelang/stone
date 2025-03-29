@@ -22,11 +22,14 @@
 #endif
 
 ABSTRACT_DECL_INFLUENCER(DeclModifier, DeclInfluencer)
-    DECL_MODIFIER_INFLUENCER(Static, DeclModifier)
-    DECL_MODIFIER_INFLUENCER(Extern, DeclModifier)
-    DECL_MODIFIER_INFLUENCER(Auto,   DeclModifier)
+    ABSTRACT_DECL_INFLUENCER(Storage, DeclModifier)
+        DECL_MODIFIER_INFLUENCER(Static,  StorageModifier)
+        DECL_MODIFIER_INFLUENCER(Extern,  StorageModifier)
+        DECL_MODIFIER_INFLUENCER(Auto,    StorageModifier)
+        DECL_MODIFIER_INFLUENCER(Register,StorageModifier)
+        DECL_INFLUENCER_RANGE(Storage, Static, Register)
     DECL_MODIFIER_INFLUENCER(Visibility, DeclModifier)
-    DECL_INFLUENCER_RANGE(DeclModifier, Static, Visibility)
+        DECL_INFLUENCER_RANGE(DeclModifier, Static, Visibility)
 
 ABSTRACT_DECL_INFLUENCER(DeclAttribute, DeclInfluencer)
     DECL_ATTRIBUTE_INFLUENCER(Deprecated, DeclAttribute)
