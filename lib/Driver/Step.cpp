@@ -84,6 +84,7 @@ LinkStep::LinkStep(Steps inputs, LinkType linkType, bool allowLTO)
       allowLTO(allowLTO) {
 
   assert((linkType != LinkType::None));
+  assert((linkType == LinkType::StaticLibrary) && !allowLTO);
 }
 
 LinkStep *LinkStep::Create(Driver &driver, Steps inputs, LinkType linkType,

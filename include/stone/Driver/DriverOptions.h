@@ -2,9 +2,8 @@
 #define STONE_DRIVER_DRIVEROPTIONS_H
 
 #include "stone/Driver/StepKind.h"
-#include "stone/Support/Options.h"
 #include "stone/Support/InputFile.h"
-
+#include "stone/Support/Options.h"
 
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/SmallString.h"
