@@ -79,38 +79,6 @@ public:
   void RemoveInvalid() { RemoveFlag(TypeStateFlags::Invalid); }
 };
 
-class TypeModifierFlags final {
-public:
-  enum ID : unsigned {
-    None = 0,
-    Const = 1 << 0,
-    Pure = 1 << 1,
-    Restrict = 1 << 2,
-    Volatile = 1 << 3,
-    Stone = 1 << 4,
-  };
-
-private:
-  unsigned flags = ID::None;
-
-public:
-  // Set specific modifiers using bitwise OR
-  void AddModifier(ID modifier) { flags |= modifier; }
-
-  // Check for specific modifiers
-  bool HasConst() const { return flags & ID::Const; }
-  bool HasPure() const { return flags & ID::Pure; }
-  bool HasRestrict() const { return flags & ID::Restrict; }
-  bool HasVolatile() const { return flags & ID::Volatile; }
-  bool HasStone() const { return flags & ID::Stone; }
-
-  // Remove a modifier if needed
-  void RemoveModifier(ID modifier) { flags &= ~modifier; }
-
-  // Clear all modifiers
-  void Clear() { flags = ID::None; }
-};
-
 class alignas(1 << TypeAlignInBits) TypeState
     : public ASTAllocation<TypeState> {
 
@@ -132,9 +100,6 @@ class alignas(1 << TypeAlignInBits) TypeState
 
   // Flags for type properties
   TypeStateFlags stateFlags;
-
-  // Type modifiers (const, pure, etc.)
-  TypeModifierFlags modifierFlags;
 
   // Properties for this TypeState
   TypeInfluencerList influencers;
@@ -182,10 +147,6 @@ public:
 
   void SetDeclState(DeclState *D) { declState = D; }
   DeclState *GetDeclState() const { return declState; }
-
-public:
-  bool HasConst() const { return modifierFlags.HasConst(); }
-  bool HasPure() const { return modifierFlags.HasPure(); }
 };
 
 class BuiltinTypeState final : public TypeState {
@@ -208,6 +169,28 @@ public:
       : IdentifierTypeState(TypeStateKind::SimpleIdentifier, loc, astContext) {}
 };
 
+class FunctionTypeStateOptions final {
+public:
+  enum Kind : unsigned {
+    None = 0,
+    ForcedInline = 1 << 1,
+  };
+
+private:
+  unsigned options = Kind::None;
+
+public:
+  bool HasOption(FunctionTypeStateOptions::Kind option) const {
+    return (options & option) == option;
+  }
+  void AddOption(FunctionTypeStateOptions::Kind option) {
+    options = static_cast<FunctionTypeStateOptions::Kind>(options | option);
+  }
+  void RemoveOption(FunctionTypeStateOptions::Kind option) {
+    options = static_cast<FunctionTypeStateOptions::Kind>(options & ~option);
+  }
+};
+
 class FunctionTypeState : public TypeState {
 
   SrcLoc arrowLoc;
@@ -215,6 +198,14 @@ class FunctionTypeState : public TypeState {
   SrcLoc rParenLoc;
 
   TypeState *resultTypeState = nullptr;
+
+  FunctionTypeStateOptions options;
+
+public:
+  enum class CallingConvention : uint8 { Stone, C };
+
+private:
+  CallingConvention callingConvention;
 
 public:
   FunctionTypeState(SrcLoc loc, const ASTContext &astContext)
@@ -238,6 +229,15 @@ public:
   void SetRParen(SrcLoc loc) { rParenLoc = loc; }
   SrcLoc GetRParen() { return rParenLoc; }
   bool HasRParen() { return GetRParen().isValid(); }
+
+  FunctionTypeStateOptions &GetOptions() { return options; }
+
+  void SetCallingConvention(FunctionTypeState::CallingConvention convention) {
+    callingConvention = convention;
+  }
+  FunctionTypeState::CallingConvention GetCallingConvention() {
+    return callingConvention;
+  }
 };
 
 } // namespace stone
