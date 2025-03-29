@@ -23,7 +23,6 @@
 #include <cassert>
 #include <cstdint>
 #include <vector>
-
 namespace stone {
 
 enum class DeclInfluencerKind : uint8_t {
@@ -34,6 +33,31 @@ enum class DeclInfluencerKind : uint8_t {
   First_##ID##Type = FirstID, Last_##ID##Type = LastID,
 #include "stone/AST/DeclInfluencerNode.def"
 };
+} // namespace stone
+
+namespace llvm {
+
+template <> struct DenseMapInfo<stone::DeclInfluencerKind> {
+
+  static inline stone::DeclInfluencerKind getEmptyKey() {
+    return stone::DeclInfluencerKind::None;
+  }
+  static inline stone::DeclInfluencerKind getTombstoneKey() {
+    return static_cast<stone::DeclInfluencerKind>(
+        static_cast<uint8_t>(stone::DeclInfluencerKind::Last_Type) + 1);
+  }
+  static unsigned getHashValue(stone::DeclInfluencerKind kind) {
+    return static_cast<unsigned>(kind);
+  }
+  static bool isEqual(stone::DeclInfluencerKind lhs,
+                      stone::DeclInfluencerKind rhs) {
+    return lhs == rhs;
+  }
+};
+
+} // namespace llvm
+
+namespace stone {
 
 class alignas(1 << DeclAlignInBits) DeclInfluencer
     : public ASTAllocation<DeclInfluencer> {
@@ -133,8 +157,8 @@ protected:
 
 public:
   DeclInfluencer *Get(DeclInfluencerKind kind) const {
-    // auto it = influencers.find(kind);
-    // return it != influencers.end() ? it->second : nullptr;
+    auto it = influencers.find(kind);
+    return it != influencers.end() ? it->second : nullptr;
   }
 
 public:
@@ -170,28 +194,6 @@ public:
   void AddExtern(SrcLoc loc) { Add(new (astContext) ExternModifier(loc)); }
   bool HasExtern() { return Has(DeclInfluencerKind::Extern); }
 };
-
 } // namespace stone
 
-namespace llvm {
-
-template <> struct DenseMapInfo<stone::DeclInfluencerKind> {
-
-  static inline stone::DeclInfluencerKind getEmptyKey() {
-    return stone::DeclInfluencerKind::None;
-  }
-  static inline stone::DeclInfluencerKind getTombstoneKey() {
-    return static_cast<stone::DeclInfluencerKind>(
-        static_cast<uint8_t>(stone::DeclInfluencerKind::Last_Type) + 1);
-  }
-  static unsigned getHashValue(stone::DeclInfluencerKind kind) {
-    return static_cast<unsigned>(kind);
-  }
-  static bool isEqual(stone::DeclInfluencerKind lhs,
-                      stone::DeclInfluencerKind rhs) {
-    return lhs == rhs;
-  }
-};
-
-} // namespace llvm
 #endif

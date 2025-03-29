@@ -36,6 +36,32 @@ enum class TypeInfluencerKind : uint8_t {
 #include "stone/AST/TypeInfluencerNode.def"
 };
 
+} // namespace stone
+
+namespace llvm {
+
+template <> struct DenseMapInfo<stone::TypeInfluencerKind> {
+
+  static inline stone::TypeInfluencerKind getEmptyKey() {
+    return stone::TypeInfluencerKind::None;
+  }
+  static inline stone::TypeInfluencerKind getTombstoneKey() {
+    return static_cast<stone::TypeInfluencerKind>(
+        static_cast<uint8_t>(stone::TypeInfluencerKind::Last_Type) + 1);
+  }
+  static unsigned getHashValue(stone::TypeInfluencerKind kind) {
+    return static_cast<unsigned>(kind);
+  }
+  static bool isEqual(stone::TypeInfluencerKind lhs,
+                      stone::TypeInfluencerKind rhs) {
+    return lhs == rhs;
+  }
+};
+
+} // namespace llvm
+
+namespace stone {
+
 class alignas(1 << TypeAlignInBits) TypeInfluencer
     : public ASTAllocation<TypeInfluencer> {
   TypeInfluencerKind kind;
@@ -129,14 +155,11 @@ public:
     return Has(influencer->GetKind());
   }
 
-  //   TypeInfluencer *Get(TypeInfluencerKind kind) const {
-  //     auto it = influencers.find(kind);
-  //     return it != influencers.end() ? it->second : nullptr;
-  //   }
-  //   bool IsEmpty() const { return influencers.size() == 0; }
-
-public:
-  TypeInfluencer *Get(TypeInfluencerKind kind) const {}
+  TypeInfluencer *Get(TypeInfluencerKind kind) const {
+    auto it = influencers.find(kind);
+    return it != influencers.end() ? it->second : nullptr;
+  }
+  bool IsEmpty() const { return influencers.size() == 0; }
 };
 
 class TypeInfluencerList final : public AbstractTypeInfluencerList {
@@ -158,27 +181,5 @@ public:
 };
 
 } // namespace stone
-
-namespace llvm {
-
-template <> struct DenseMapInfo<stone::TypeInfluencerKind> {
-
-  static inline stone::TypeInfluencerKind getEmptyKey() {
-    return stone::TypeInfluencerKind::None;
-  }
-  static inline stone::TypeInfluencerKind getTombstoneKey() {
-    return static_cast<stone::TypeInfluencerKind>(
-        static_cast<uint8_t>(stone::TypeInfluencerKind::Last_Type) + 1);
-  }
-  static unsigned getHashValue(stone::TypeInfluencerKind kind) {
-    return static_cast<unsigned>(kind);
-  }
-  static bool isEqual(stone::TypeInfluencerKind lhs,
-                      stone::TypeInfluencerKind rhs) {
-    return lhs == rhs;
-  }
-};
-
-} // namespace llvm
 
 #endif

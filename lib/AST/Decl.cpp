@@ -138,7 +138,8 @@ VisibilityLevel ValueDecl::GetVisibilityLevel() const {
 void ValueDecl::ChangeVisibility(VisibilityLevel level) {
   if (HasVisibilityLevel()) {
     auto vm = static_cast<VisibilityModifier *>(
-        GetState()->GetDeclInfluencerList().Get(DeclInfluencerKind::Visibility));
+        GetState()->GetDeclInfluencerList().Get(
+            DeclInfluencerKind::Visibility));
     return vm->SetLevel(level);
   }
 }
