@@ -79,9 +79,9 @@ MergeModuleStep *MergeModuleStep::Create(Driver &driver, Steps inputs) {
   return new (driver) MergeModuleStep(inputs);
 }
 
-LinkStep::LinkStep(Steps inputs, LinkType linkType, bool withLTO)
+LinkStep::LinkStep(Steps inputs, LinkType linkType, bool allowLTO)
     : JobStep(StepKind::Link, inputs, FileType::Image), linkType(linkType),
-      withLTO(withLTO) {
+      allowLTO(allowLTO) {
 
   assert((linkType != LinkType::None));
 }

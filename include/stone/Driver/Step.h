@@ -3,6 +3,7 @@
 
 #include "stone/Basic/Allocation.h"
 #include "stone/Basic/OptionSet.h"
+#include "stone/Driver/DriverOptions.h"
 #include "stone/Driver/StepKind.h"
 #include "stone/Support/InputFile.h"
 
@@ -145,30 +146,17 @@ public:
   static MergeModuleStep *Create(Driver &driver, Steps inputs);
   static bool classof(const Step *step) { return step->IsMergeModule(); }
 };
-enum class LinkType : uint8_t {
-  // We are not linking
-  None = 0,
-  // The default output compiling -- sc looks afor a main file and
-  // outputs an executable file
-  Executable,
 
-  // The default library output: 'stone test.stone -emit-library ->test.dylib'
-  DynamicLibrary,
-
-  // The Library output that requires static: 'stone test.stone -emit-library
-  // -satic -> test.a'
-  StaticLibrary
-};
 class LinkStep final : public JobStep {
 
-  bool withLTO;
+  bool allowLTO;
   LinkType linkType;
 
 public:
-  LinkStep(Steps inputs, LinkType linkType, bool withLTO = false);
+  LinkStep(Steps inputs, LinkType linkType, bool allowLTO = false);
 
 public:
-  bool WithLTO() const { return withLTO; }
+  bool AllowLTO() const { return allowLTO; }
 
   LinkType GetLinkType() const { return linkType; }
 
@@ -182,7 +170,7 @@ public:
 
 public:
   static LinkStep *Create(Driver &driver, Steps inputs, LinkType linkType,
-                          bool withLTO = false);
+                          bool allowLTO = false);
 
   static bool classof(const Step *step) { return step->IsLink(); }
 };

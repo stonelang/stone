@@ -17,6 +17,21 @@
 
 namespace stone {
 
+enum class LinkType : uint8_t {
+  // We are not linking
+  None = 0,
+  // The default output compiling -- sc looks afor a main file and
+  // outputs an executable file
+  Executable,
+
+  // The default library output: 'stone test.stone -emit-library ->test.dylib'
+  DynamicLibrary,
+
+  // The Library output that requires static: 'stone test.stone -emit-library
+  // -satic -> test.a'
+  StaticLibrary
+};
+
 enum class DriverActionKind : uint8_t {
 #define MODE(A) A,
 #include "stone/Support/ActionKind.def"

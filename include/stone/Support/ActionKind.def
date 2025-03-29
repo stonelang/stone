@@ -27,6 +27,7 @@ COMPILER_MODE(EmitObject)
 COMPILER_MODE(EmitModule)   
 COMPILER_MODE(MergeModules)
 COMPILER_MODE(EmitAssembly)
+
 DRIVER_MODE(EmitLibrary)
 DRIVER_MODE(EmitExecutable)
 

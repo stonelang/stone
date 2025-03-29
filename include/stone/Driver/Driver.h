@@ -24,7 +24,7 @@ class DerivedArgList;
 
 namespace stone {
 
-class Driver final {
+class Driver {
 
   /// The allocator used to create Driver objects.
   /// Driver objects are never destructed; rather, all memory associated
