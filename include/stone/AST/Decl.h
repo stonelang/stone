@@ -10,7 +10,6 @@
 #include "stone/AST/IfConfig.h"
 #include "stone/AST/Import.h"
 #include "stone/AST/InlineBitfield.h"
-#include "stone/AST/Modifier.h"
 #include "stone/AST/Template.h"
 #include "stone/AST/TypeAlignment.h"
 #include "stone/AST/Visibility.h"
