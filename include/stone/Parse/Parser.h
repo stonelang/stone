@@ -4,12 +4,13 @@
 #include "stone/AST/ASTContext.h"
 #include "stone/AST/ASTNode.h"
 #include "stone/AST/ASTScope.h"
+#include "stone/AST/DeclInfluencer.h"
 #include "stone/AST/DiagnosticsParse.h"
 #include "stone/AST/Expr.h"
 #include "stone/AST/Identifier.h"
 #include "stone/AST/Module.h"
-#include "stone/AST/Property.h"
 #include "stone/AST/Stmt.h"
+#include "stone/AST/TypeInfluencer.h"
 #include "stone/Basic/StableHasher.h"
 
 #include "stone/Parse/CodeCompletionCallbacks.h"
@@ -263,8 +264,8 @@ public:
   ParserResult<Decl> ParseTopLevelDecl(ParsingDeclState &PDS);
   ParserResult<Decl> ParseDecl(ParsingDeclState &PDS);
 
-  ParserStatus ParseDeclAttributes(DeclPropertyList &attributes);
-  ParserStatus ParseDeclModifiers(DeclPropertyList &modifiers);
+  ParserStatus ParseDeclAttributes(DeclInfluencerList &attributes);
+  ParserStatus ParseDeclModifiers(DeclInfluencerList &modifiers);
 
 public:
   ParserResult<ImportDecl> ParseImportDecl(ParsingDeclState &PDS);
@@ -285,8 +286,8 @@ public:
   ParserResult<TypeState> ParseType();
   ParserResult<TypeState> ParseType(Diag<> diagID);
 
-  ParserStatus ParseTypeAttributes(TypePropertyList &attributes);
-  ParserStatus ParseTypeModifiers(TypePropertyList &modifiers);
+  ParserStatus ParseTypeAttributes(TypeInfluencerList &attributes);
+  ParserStatus ParseTypeModifiers(TypeInfluencerList &modifiers);
 
   ParserResult<TypeState> ParseDeclResultType(Diag<> diagID);
   ParserResult<TypeState> ParseBuiltinType(Diag<> diagID);

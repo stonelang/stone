@@ -72,7 +72,7 @@ ParserResult<TypeState> Parser::ParseType(Diag<> message) {
   }
 }
 
-ParserStatus Parser::ParseTypeModifiers(TypePropertyList &modifiers) {
+ParserStatus Parser::ParseTypeModifiers(TypeInfluencerList &modifiers) {
   ParserStatus status;
   while (IsParsing()) {
     switch (GetCurTok().GetKind()) {
@@ -100,7 +100,7 @@ ParserStatus Parser::ParseTypeModifiers(TypePropertyList &modifiers) {
   return status;
 }
 
-ParserStatus Parser::ParseTypeAttributes(TypePropertyList &attributes) {
+ParserStatus Parser::ParseTypeAttributes(TypeInfluencerList &attributes) {
   ParserStatus status;
   return status;
 }
@@ -116,7 +116,7 @@ ParserResult<TypeState> Parser::ParseBuiltinType(Diag<> message) {
          "ParseBuiltinType requires a builtin-type token");
 
   // Check for modifiers
-  TypePropertyList modifiers(GetASTContext());
+  TypeInfluencerList modifiers(GetASTContext());
   ParseTypeModifiers(modifiers);
 
   // auto builtinTypeKind =

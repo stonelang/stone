@@ -97,11 +97,11 @@ public:
   Identifier GetDeclIdentifier() { return declIdentifier; }
   Parser &GetParser() { return parser; }
 
-  TypePropertyList &GetTypePropertyList() {
-    return declState->GetTypePropertyList();
+  TypeInfluencerList &GetTypeInfluencerList() {
+    return declState->GetTypeInfluencerList();
   }
-  DeclPropertyList &GetDeclPropertyList() {
-    return declState->GetDeclPropertyList();
+  DeclInfluencerList &GetDeclInfluencerList() {
+    return declState->GetDeclInfluencerList();
   }
 };
 

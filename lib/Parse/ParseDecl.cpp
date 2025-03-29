@@ -60,7 +60,7 @@ ParserResult<Decl> Parser::ParseTopLevelDecl(ParsingDeclState &PDS) {
   return ParseDecl(PDS);
 }
 
-ParserStatus Parser::ParseDeclModifiers(DeclPropertyList &modifiers) {
+ParserStatus Parser::ParseDeclModifiers(DeclInfluencerList &modifiers) {
   ParserStatus status;
   while (IsParsing()) {
     switch (GetCurTok().GetKind()) {
@@ -90,7 +90,7 @@ ParserStatus Parser::ParseDeclModifiers(DeclPropertyList &modifiers) {
     return status;
   }
 }
-ParserStatus Parser::ParseDeclAttributes(DeclPropertyList &attributes) {
+ParserStatus Parser::ParseDeclAttributes(DeclInfluencerList &attributes) {
   ParserStatus status;
 
   return status;
@@ -98,20 +98,20 @@ ParserStatus Parser::ParseDeclAttributes(DeclPropertyList &attributes) {
 ParserResult<Decl> Parser::ParseDecl(ParsingDeclState &PDS) {
 
   ParserResult<Decl> declResult;
-  auto status = ParseDeclAttributes(PDS.GetDeclPropertyList());
+  auto status = ParseDeclAttributes(PDS.GetDeclInfluencerList());
 
   if (status.IsError()) {
     return declResult;
   }
-  status |= ParseDeclModifiers(PDS.GetDeclPropertyList());
+  status |= ParseDeclModifiers(PDS.GetDeclInfluencerList());
   if (status.IsError()) {
     return declResult;
   }
-  status |= ParseTypeAttributes(PDS.GetTypePropertyList());
+  status |= ParseTypeAttributes(PDS.GetTypeInfluencerList());
   if (status.IsError()) {
     return declResult;
   }
-  status |= ParseTypeModifiers(PDS.GetTypePropertyList());
+  status |= ParseTypeModifiers(PDS.GetTypeInfluencerList());
   if (status.IsError()) {
     return declResult;
   }
@@ -260,7 +260,7 @@ Parser::ParseFunctionResultType(FunctionTypeState &FTS) {
     return MakeParserSuccess();
   }
   // Check for modifiers
-  TypePropertyList modifiers(GetASTContext());
+  TypeInfluencerList modifiers(GetASTContext());
   ParseTypeModifiers(modifiers);
 
   // auto resultTypeState = ParseType();
