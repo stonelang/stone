@@ -3,6 +3,8 @@
 
 using namespace stone;
 
+DriverOptions::DriverOptions() {}
+
 llvm::ArrayRef<StepKind> DriverOptions::GetStepKindList(DriverActionKind kind) {
 
   switch (kind) {

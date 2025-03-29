@@ -24,7 +24,10 @@ class DerivedArgList;
 
 namespace stone {
 
-class Driver {
+class Driver final {
+
+  struct Module;
+  struct Linker;
 
   /// The allocator used to create Driver objects.
   /// Driver objects are never destructed; rather, all memory associated
@@ -33,6 +36,13 @@ class Driver {
   mutable llvm::BumpPtrAllocator allocator;
 
 public:
+  Driver();
+
+public:
+  void BuildTopLevelSteps();
+  Step *BuildStep();
+  void PrintSteps();
+
   StepKind GetFinalStepKind(DriverActionKind kind);
 
 public:

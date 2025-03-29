@@ -9,6 +9,7 @@ class DitNode {
 
 class DitDecl : public DitNode {
 }
+
 class DitProjectDecl : public DitDecl {
 
 };

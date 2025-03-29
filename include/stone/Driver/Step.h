@@ -105,12 +105,18 @@ public:
 
 class CompileStep final : public JobStep {
 
+  CompileCallKind compileCallKind;
+
 public:
   /// In this scenario, one compile job with all inputs to be added.
   CompileStep(FileType outputFileType);
 
   /// In this scenario, one compile job for eache input.
   CompileStep(Step *input, FileType outputFileType);
+
+public:
+  void SetCallKind(CompileCallKind callKind) { compileCallKind = callKind; }
+  CompileCallKind GetCallKind() { return compileCallKind; }
 
 public:
   static CompileStep *Create(Driver &driver, FileType outputFileType);

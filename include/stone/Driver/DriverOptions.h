@@ -3,6 +3,8 @@
 
 #include "stone/Driver/StepKind.h"
 #include "stone/Support/Options.h"
+#include "stone/Support/InputFile.h"
+
 
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/SmallString.h"
@@ -16,6 +18,20 @@
 #include <string>
 
 namespace stone {
+
+enum class CompileCallKind {
+  None = 0,
+  // compile file1, ..., compile filek
+  Bijection,
+  // compile file1, ..., filek
+  AllAtOnce,
+
+};
+enum class ToolChainKind {
+  None = 0,
+  /// Darwin tool-chain
+  Darwin,
+};
 
 enum class LinkType : uint8_t {
   // We are not linking
@@ -37,8 +53,13 @@ enum class DriverActionKind : uint8_t {
 #include "stone/Support/ActionKind.def"
 };
 
-class DriverOptions : public Options {
+class DriverOptions final : public Options {
   DriverActionKind primaryActionKind = DriverActionKind::None;
+
+  std::vector<const InputFile> inputs;
+
+public:
+  DriverOptions();
 
 public:
   /// \return the Action
@@ -46,6 +67,13 @@ public:
 
 public:
   static llvm::ArrayRef<StepKind> GetStepKindList(DriverActionKind kind);
+
+public:
+  llvm::ArrayRef<const InputFile> GetInputs() const { return inputs; }
+
+  unsigned InputCount() const { return inputs.size(); }
+  bool HasInputs() const { return !inputs.empty() && (InputCount() > 0); }
+  bool HasNoInputs() const { return !HasInputs(); }
 };
 
 } // namespace stone

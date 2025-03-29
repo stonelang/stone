@@ -2,6 +2,35 @@
 
 using namespace stone;
 
+Driver::Driver() {}
+
+struct Driver::Module {
+
+  Driver &driver;
+
+  Module(Driver &driver) : driver(driver) {}
+
+  ~Module() {}
+
+  llvm::SmallVector<const CompileStep *> Steps;
+};
+
+struct Driver::Linker {
+  Driver &driver;
+
+  Linker(Driver &driver) : driver(driver) {}
+
+  ~Linker() {}
+
+  llvm::SmallVector<const LinkStep *> Steps;
+};
+
+void Driver::BuildTopLevelSteps() {}
+
+Step *Driver::BuildStep() {}
+
+void Driver::PrintSteps() {}
+
 StepKind Driver::GetFinalStepKind(DriverActionKind kind) {
   switch (kind) {
   case DriverActionKind::Parse:
