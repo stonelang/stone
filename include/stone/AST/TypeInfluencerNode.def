@@ -22,6 +22,7 @@
 ABSTRACT_TYPE_INFLUENCER(TypeModifier, TypeInfluencer)
     TYPE_MODIFIER_INFLUENCER(Const, TypeModifier)
     TYPE_MODIFIER_INFLUENCER(Pure, TypeModifier)
+    TYPE_MODIFIER_INFLUENCER(Restrict, TypeModifier)
     TYPE_MODIFIER_INFLUENCER(Stone,   TypeModifier)
     TYPE_MODIFIER_INFLUENCER(Mutable, TypeModifier)
     TYPE_MODIFIER_INFLUENCER(Volatile, TypeModifier)

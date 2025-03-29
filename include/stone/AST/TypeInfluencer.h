@@ -107,6 +107,11 @@ public:
   VolatileModifier(SrcLoc loc)
       : TypeModifier(TypeInfluencerKind::Volatile, loc) {}
 };
+class RestrictModifier : public TypeModifier {
+public:
+  RestrictModifier(SrcLoc loc)
+      : TypeModifier(TypeInfluencerKind::Restrict, loc) {}
+};
 class MutableModifier : public TypeModifier {
 public:
   MutableModifier(SrcLoc loc)
@@ -175,6 +180,7 @@ public:
 public:
   void AddConst(SrcLoc loc) { Add(new (astContext) ConstModifier(loc)); }
   void AddPure(SrcLoc loc) { Add(new (astContext) PureModifier(loc)); }
+  void AddRestrict(SrcLoc loc) { Add(new (astContext) RestrictModifier(loc)); }
   void AddStone(SrcLoc loc) { Add(new (astContext) StoneModifier(loc)); }
   void AddVolatile(SrcLoc loc) { Add(new (astContext) VolatileModifier(loc)); }
   void AddMutable(SrcLoc loc) { Add(new (astContext) MutableModifier(loc)); }

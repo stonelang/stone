@@ -105,9 +105,7 @@ public:
       : DeclInfluencer(kind, loc) {}
 
 public:
-  void SetDuration(StorageDuration duration) {
-    storageDuration = duration;
-  }
+  void SetDuration(StorageDuration duration) { storageDuration = duration; }
   StorageDuration GetDuration() { return storageDuration; }
 };
 
