@@ -1,12 +1,13 @@
 #ifndef STONE_DRIVER_DRIVER_H
 #define STONE_DRIVER_DRIVER_H
 
+#include "stone/AST/Diagnostics.h"
+#include "stone/Driver/DriverOptions.h"
+#include "stone/Driver/Step.h"
+
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/Allocator.h"
-
-#include "stone/Driver/DriverOptions.h"
-#include "stone/Driver/Step.h"
 
 #include <functional>
 #include <memory>
@@ -29,20 +30,46 @@ class Driver final {
   struct Module;
   struct Linker;
 
+  SrcMgr srcMgr;
+  DiagnosticEngine diags{srcMgr};
+  DriverOptions driverOpts;
+
   /// The allocator used to create Driver objects.
-  /// Driver objects are never destructed; rather, all memory associated
-  /// with the Driver objects will be released when the Driver
-  /// itself is destroyed.
+  /// These objects will be released after the Driver is destroyed.
   mutable llvm::BumpPtrAllocator allocator;
 
 public:
   Driver();
 
 public:
+  void AddDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.addConsumer(consumer);
+  }
+  void RemoveDiagnosticConsumer(DiagnosticConsumer &consumer) {
+    diags.removeConsumer(consumer);
+  }
+  /// Set the main exec path
+  void SetMainExecutablePath(llvm::StringRef executablePath) {
+    driverOpts.SetMainExecutablePath(executablePath);
+  }
+  /// Set the main exec path
+  void SetMainExecutableName(llvm::StringRef executableName) {
+    driverOpts.SetMainExecutableName(executableName);
+  }
+
+public:
+  DiagnosticEngine &GetDiags() { return diags; }
+  const DiagnosticEngine &GetDiags() const { return diags; }
+
+  bool HasError() const { return diags.hadAnyError(); }
+  SrcMgr &GetSrcMgr() { return srcMgr; }
+
+  DriverOptions &GetDriverOptions() { return driverOpts; }
+
+public:
   void BuildTopLevelSteps();
   Step *BuildStep();
   void PrintSteps();
-
   StepKind GetFinalStepKind(DriverActionKind kind);
 
 public:

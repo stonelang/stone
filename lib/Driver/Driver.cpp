@@ -12,7 +12,7 @@ struct Driver::Module {
 
   ~Module() {}
 
-  llvm::SmallVector<const CompileStep *> Steps;
+  llvm::SmallVector<const CompileStep *> Inputs;
 };
 
 struct Driver::Linker {
@@ -22,7 +22,7 @@ struct Driver::Linker {
 
   ~Linker() {}
 
-  llvm::SmallVector<const LinkStep *> Steps;
+  llvm::SmallVector<const LinkStep *> Inputs;
 };
 
 void Driver::BuildTopLevelSteps() {}
